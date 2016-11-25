@@ -4,22 +4,16 @@ Joe Reid <claire@packetflinger.com>
 An open source remake of the Rocket Arena mod for Quake 2
 
 ### Rocket Arena?
--------------
-
 Rocket Arena 2 is a team-based mod for Quake 2. Games are arranged into rounds 
 where each player spawns with all allowed items/weapons and they battle until 
 everyone from one team is fragged.
 
 ### Why?
-----
-
 Yes, there is an existing RA2 mod that is available, but it dates back to the 
 20th century and the source code is not available (or at least I'm unable to
 locate it). 
  
 ### Client commands
----------------
-
 OpenFFA supports a number of custom client commands, some of them are
 reproduced below.
 
