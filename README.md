@@ -13,11 +13,11 @@ Yes, there is an existing RA2 mod that is available, but it dates back to the
 20th century and the source code is not available (or at least I'm unable to
 locate it). 
  
-### Client commands
+Client commands
+---------------
 OpenFFA supports a number of custom client commands, some of them are
 reproduced below.
 
-[horizontal]
 commands:: Show custom client commands list
 
 Admin commands
