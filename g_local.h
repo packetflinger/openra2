@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2016 Packetflinger.com
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // g_local.h -- local definitions for game module
 
+#include <glib.h>
 #include "q_shared.h"
 #include "q_list.h"
+
+#define true 		1
+#define false		0
 
 #define TAG_GAME    765     // clear when unloading the dll
 #define TAG_LEVEL   766     // clear when loading a new level
@@ -573,6 +578,18 @@ typedef struct {
 #define MAP_EXCLUSIVE   0x40000000
 #define MAP_WEIGHTED    0x80000000
 
+#define MAX_ARENAS		9
+
+// maps contain multiple arenas
+typedef struct {
+	char		name[50];
+	uint8_t		arena;
+	uint32_t	weapon_flags;
+	uint32_t	damage_flags;
+	uint8_t 	rounds;
+	uint32_t 	round_timelimit;
+} arena_entry_t;
+
 typedef struct map_entry_s {
     list_t  list;
     list_t  queue;
@@ -582,6 +599,7 @@ typedef struct map_entry_s {
     float   weight;
     int     num_hits, num_in, num_out; // for statistics
     char    name[1];
+	arena_entry_t arenas[MAX_ARENAS];
 } map_entry_t;
 
 struct flood_s;
@@ -704,6 +722,10 @@ extern  cvar_t  *flood_wavedelay;
 extern  cvar_t  *flood_infos;
 extern  cvar_t  *flood_perinfo;
 extern  cvar_t  *flood_infodelay;
+
+extern 	cvar_t	*g_arena_weapflags;
+extern	cvar_t	*g_arena_dmgflags;
+extern	cvar_t	*g_arena_numrounds;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;

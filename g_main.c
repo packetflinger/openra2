@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2016 Packetflinger.com
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -93,6 +94,10 @@ cvar_t  *flood_wavedelay;
 cvar_t  *flood_infos;
 cvar_t  *flood_perinfo;
 cvar_t  *flood_infodelay;
+
+cvar_t	*g_arena_weapflags;
+cvar_t	*g_arena_dmgflags;
+cvar_t	*g_arena_numrounds;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -437,19 +442,23 @@ static void G_PickNextMap(void)
 static void G_LoadMapList(void)
 {
     char path[MAX_OSPATH];
+	char apath[MAX_OSPATH];
     char buffer[MAX_STRING_CHARS];
-    char *token;
-    const char *data;
+	char abuffer[MAX_STRING_CHARS];
+    char *token, *arena_token;
+    const char *data, *arena_data;
     map_entry_t *map;
-    FILE *fp;
+    FILE *fp, *afp;
     size_t len;
     int linenum, nummaps;
-
+	int8_t arena_num;
+	_Bool inarena;
+	
     if (!game.dir[0]) {
         return;
     }
     len = Q_concat(path, sizeof(path), game.dir, "/mapcfg/",
-                   g_maps_file->string, ".txt", NULL);
+                   g_maps_file->string, NULL);
     if (len >= sizeof(path)) {
         return;
     }
@@ -461,6 +470,9 @@ static void G_LoadMapList(void)
     }
 
     linenum = nummaps = 0;
+	arena_num = 0;
+	inarena = false;
+	
     while (1) {
         data = fgets(buffer, sizeof(buffer), fp);
         if (!data) {
@@ -477,7 +489,7 @@ static void G_LoadMapList(void)
         if (!*token) {
             continue;
         }
-
+		
         len = strlen(token);
         if (len >= MAX_QPATH) {
             gi.dprintf("%s: oversize mapname at line %d\n",
@@ -487,7 +499,57 @@ static void G_LoadMapList(void)
 
         map = G_Malloc(sizeof(*map) + len);
         memcpy(map->name, token, len + 1);
+		
+		// loop for arena settings
+		len = Q_concat(apath, sizeof(apath), game.dir, "/mapcfg/",
+                   token, ".cfg", NULL);
+		afp = fopen(apath, "r");
+		if (afp) {
+			arena_num = -1;
+			gi.dprintf("Parsing %s\n", apath);
+			while (1) {
+				arena_data = fgets(abuffer, sizeof(abuffer), afp);
+				if (!arena_data) {
+					break;
+				}
+				
+				if (arena_data[0] == '#' || arena_data[0] == '/') {
+					continue;
+				}
 
+				arena_token = COM_Parse(&arena_data);
+				if (!*arena_token) {
+					continue;
+				}
+				
+				if (g_strcmp0(arena_token, "{") == 0) {
+					arena_num++;
+					inarena = true;
+				}
+				
+				if (g_strcmp0(arena_token, "}") == 0) {
+					inarena = false;
+				}
+				
+				if (g_strcmp0(arena_token, "arena") == 0 && inarena) {
+					map->arenas[arena_num].arena = atoi(COM_Parse(&arena_data));
+				}
+				
+				if (g_strcmp0(arena_token, "damage") == 0 && inarena) {
+					map->arenas[arena_num].damage_flags = atoi(COM_Parse(&arena_data));
+				}
+				
+				if (g_strcmp0(arena_token, "weapons") == 0 && inarena) {
+					map->arenas[arena_num].weapon_flags = atoi(COM_Parse(&arena_data));
+				}
+				
+				if (g_strcmp0(arena_token, "rounds") == 0 && inarena) {
+					map->arenas[arena_num].rounds = atoi(COM_Parse(&arena_data));
+				}
+			}
+			fclose(afp);
+		}
+/*
         token = COM_Parse(&data);
         map->min_players = atoi(token);
 
@@ -514,15 +576,15 @@ static void G_LoadMapList(void)
         if (map->max_players > game.maxclients) {
             map->max_players = game.maxclients;
         }
-
+*/
         List_Append(&g_map_list, &map->list);
         nummaps++;
     }
 
     fclose(fp);
 
-    gi.dprintf("Loaded %d maps from '%s'\n",
-               nummaps, path);
+    gi.dprintf("Loaded %d maps and %d arenas from '%s'\n",
+               nummaps, arena_num + 1, path);
 }
 
 static void G_LoadSkinList(void)
@@ -1039,6 +1101,11 @@ static void G_Init(void)
     flood_perinfo = gi.cvar("flood_perinfo", "30", 0);
     flood_infodelay = gi.cvar("flood_infodelay", "60", 0);
 
+	// arena defaults
+	g_arena_weapflags = gi.cvar("g_arena_weapflags", "512", 0);
+	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
+	g_arena_numrounds = gi.cvar("g_arena_runrounds", "9", 0);
+	
     // force deathmatch
     //gi.cvar_set( "coop", "0" ); //atu
     //gi.cvar_set( "deathmatch", "1" );
