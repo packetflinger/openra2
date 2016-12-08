@@ -122,6 +122,17 @@ static qboolean CheckCheats(edict_t *ent)
     return qtrue;
 }
 
+
+static void Cmd_Arena_f(edict_t *ent) {
+	uint8_t newarena = atoi(gi.argv(1));
+	
+	gi.cprintf(ent, PRINT_HIGH, "Switching arenas: %d -> %d\n", ent->client->pers.arena, newarena);
+	ent->client->pers.arena = newarena;
+
+	change_arena(ent);
+}
+
+
 /*
 ==================
 Cmd_Give_f
@@ -1670,6 +1681,8 @@ void ClientCommand(edict_t *ent)
         Cmd_CastVote_f(ent, qfalse);
     else if (Q_stricmp(cmd, "menu") == 0)
         Cmd_Menu_f(ent);
+	else if (Q_stricmp(cmd, "arena") == 0)
+		Cmd_Arena_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }

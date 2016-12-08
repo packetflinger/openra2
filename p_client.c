@@ -24,6 +24,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo);
 
 void SP_misc_teleporter_dest(edict_t *ent);
 
+
 /*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
 The normal starting point for a level.
 */
@@ -728,6 +729,28 @@ static float PlayersRangeFromSpot(edict_t *spot)
     return bestplayerdistance;
 }
 
+static edict_t *SelectArenaSpawnPoint(edict_t *player) {
+	edict_t *spot = NULL;
+	edict_t *spawns[MAX_SPAWNS];
+	int i;
+	
+	for (i = 0; i < level.numspawns; i++) {
+        spawns[i] = level.spawns[i];
+    }
+	
+	G_ShuffleArray(spawns, level.numspawns);
+	
+	for (i = 0; i < level.numspawns; i++) {
+        spot = spawns[i];
+
+        if (spot->arena == player->client->pers.arena) {
+			return spot;
+		}
+    }
+	
+	return world;
+}
+
 static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
 {
     edict_t *spawns[MAX_SPAWNS];
@@ -906,11 +929,13 @@ Chooses a player start, deathmatch start, coop start, etc
 static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
 {
     edict_t *spot = NULL;
-
+	spot = SelectArenaSpawnPoint(ent);
+	/*
     if (level.numspawns && PLAYER_SPAWNED(ent)) {
         spot = SelectDeathmatchSpawnPoint();
     }
-
+	*/
+	
     // find a single player start spot
     if (!spot) {
         while ((spot = G_Find(spot, FOFS(classname), "info_player_start")) != NULL) {
@@ -1023,6 +1048,19 @@ static void CopyToBodyQue(edict_t *ent)
     gi.linkentity(body);
 }
 
+void change_arena(edict_t *self) {
+	
+	PutClientInServer(self);
+	
+	// add a teleportation effect
+    self->s.event = EV_PLAYER_TELEPORT;
+
+    // hold in place briefly
+    self->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    self->client->ps.pmove.pm_time = 14;
+
+    self->client->respawn_framenum = level.framenum;
+}
 
 void respawn(edict_t *self)
 {
@@ -1568,6 +1606,7 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
     ent->client->level.first_time = qtrue;
     ent->client->pers.loopback = !strcmp(s, "loopback");
     ent->client->pers.muted = action == IPA_MUTE;
+	ent->client->pers.arena = 1;
 
     // save ip
     Q_strlcpy(ent->client->pers.ip, s, sizeof(ent->client->pers.ip));

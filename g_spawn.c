@@ -124,6 +124,7 @@ void SP_misc_easterchick2(edict_t *self);
 
 void SP_monster_commander_body(edict_t *self);
 
+
 static const spawn_t    g_spawns[] = {
     {"item_health", SP_item_health},
     {"item_health_small", SP_item_health_small},
@@ -240,7 +241,8 @@ static const field_t g_fields[] = {
     {"origin", FOFS(s.origin), F_VECTOR},
     {"angles", FOFS(s.angles), F_VECTOR},
     {"angle", FOFS(s.angles), F_ANGLEHACK},
-
+	{"arena", FOFS(arena), F_INT},
+	
     {NULL}
 };
 

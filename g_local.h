@@ -871,6 +871,7 @@ void G_EndDamage(void);
 void G_SetDeltaAngles(edict_t *ent, vec3_t angles);
 void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
+void change_arena(edict_t *self);
 
 //
 // g_player.c
@@ -1077,6 +1078,7 @@ typedef struct {
                 admin: 1,
                 noviewid: 1,
                 muted: 1;
+	int			arena;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,
@@ -1357,6 +1359,8 @@ struct edict_s {
 
     // hack for proper s.old_origin updates
     vec3_t      old_origin;
+	
+	int			arena;
 };
 
 //
