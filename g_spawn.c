@@ -603,6 +603,23 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     G_FindTeams();
     //G_UpdateItemBans();
 
+	// find arenas
+	ent = NULL;
+	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
+		
+		if (level.arena_count == MAX_ARENAS) {
+            break;
+        }
+		
+        level.arenas[level.arena_count].number = ent->arena;
+		Q_strlcpy(
+			level.arenas[level.arena_count].name, 
+			ent->message, 
+			sizeof(level.arenas[level.arena_count].name)
+		);
+		level.arena_count++;
+    }
+	
     // find spawnpoints
     ent = NULL;
     while ((ent = G_Find(ent, FOFS(classname), "info_player_deathmatch")) != NULL) {

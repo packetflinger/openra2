@@ -124,6 +124,34 @@ static qboolean CheckCheats(edict_t *ent)
 
 
 static void Cmd_Arena_f(edict_t *ent) {
+	int i;
+	
+	if (gi.argc() != 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID  P/S    Name\n", level.mapname);
+		for (i=0; i<MAX_ARENAS; i++) {
+			if (level.arenas[i].number < 1) {
+				continue;
+			}
+			
+			if (ent->client->pers.arena == level.arenas[i].number) {
+				gi.cprintf(ent, PRINT_HIGH, "-> %d   %02d/%02d  %s <-\n", 
+					level.arenas[i].number, 
+					level.arenas[i].player_count, 
+					level.arenas[i].spectator_count, 
+					level.arenas[i].name
+				);
+			} else {
+				gi.cprintf(ent, PRINT_HIGH, "   %d   %02d/%02d  %s\n", 
+					level.arenas[i].number, 
+					level.arenas[i].player_count, 
+					level.arenas[i].spectator_count, 
+					level.arenas[i].name
+				);
+			}
+		}
+		return;
+	}
+	
 	uint8_t newarena = atoi(gi.argv(1));
 	
 	gi.cprintf(ent, PRINT_HIGH, "Switching arenas: %d -> %d\n", ent->client->pers.arena, newarena);

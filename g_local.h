@@ -412,12 +412,21 @@ typedef struct {
 
 #define MAX_SCORES  10
 
+#define MAX_ARENAS		9
+
 typedef struct {
     char name[MAX_NETNAME];
     int score;
     time_t time;
 } score_t;
 
+
+typedef struct {
+	int		number;
+	char	name[50];
+	int		player_count;
+	int		spectator_count;
+} arena_t;
 
 //
 // this structure is cleared as each map is entered
@@ -515,6 +524,9 @@ typedef struct {
 
     edict_t     *current_entity;    // entity running from G_RunFrame
     int         body_que;           // dead bodies
+	
+	arena_t		arenas[MAX_ARENAS];
+	int			arena_count;
 } level_locals_t;
 
 
@@ -578,7 +590,9 @@ typedef struct {
 #define MAP_EXCLUSIVE   0x40000000
 #define MAP_WEIGHTED    0x80000000
 
-#define MAX_ARENAS		9
+
+
+
 
 // maps contain multiple arenas
 typedef struct {
