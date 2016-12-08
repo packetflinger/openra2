@@ -620,6 +620,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		level.arena_count++;
     }
 	
+	level.map = G_FindMap(mapname);
+	
     // find spawnpoints
     ent = NULL;
     while ((ent = G_Find(ent, FOFS(classname), "info_player_deathmatch")) != NULL) {

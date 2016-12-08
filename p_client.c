@@ -65,16 +65,39 @@ void SP_info_player_intermission(void)
 // give the player all the items/weapons they need
 void Arena_GiveItems(edict_t *ent) {
 	
+	int flags;
+	flags = level.map->arenas[ent->client->pers.arena].weapon_flags;
+	
+	if (flags < 2)
+		flags = ARENAWEAPON_ALL;
+		
 	// weapons
-	ent->client->inventory[ITEM_BFG] = 1;
-	ent->client->inventory[ITEM_RAILGUN] = 1;
-	ent->client->inventory[ITEM_ROCKETLAUNCHER] = 1;
-	ent->client->inventory[ITEM_HYPERBLASTER] = 1;
-	ent->client->inventory[ITEM_GRENADELAUNCHER] = 1;
-	ent->client->inventory[ITEM_CHAINGUN] = 1;
-	ent->client->inventory[ITEM_MACHINEGUN] = 1;
-	ent->client->inventory[ITEM_SUPERSHOTGUN] = 1;
-	ent->client->inventory[ITEM_SHOTGUN] = 1;
+	if (flags & ARENAWEAPON_SHOTGUN)
+		ent->client->inventory[ITEM_SHOTGUN] = 1;
+	
+	if (flags & ARENAWEAPON_SUPERSHOTGUN)
+		ent->client->inventory[ITEM_SUPERSHOTGUN] = 1;
+	
+	if (flags & ARENAWEAPON_MACHINEGUN)
+		ent->client->inventory[ITEM_MACHINEGUN] = 1;
+	
+	if (flags & ARENAWEAPON_CHAINGUN)
+		ent->client->inventory[ITEM_CHAINGUN] = 1;
+	
+	if (flags & ARENAWEAPON_GRENADELAUNCHER)
+		ent->client->inventory[ITEM_GRENADELAUNCHER] = 1;
+	
+	if (flags & ARENAWEAPON_HYPERBLASTER)
+		ent->client->inventory[ITEM_HYPERBLASTER] = 1;
+	
+	if (flags & ARENAWEAPON_ROCKETLAUNCHER)
+		ent->client->inventory[ITEM_ROCKETLAUNCHER] = 1;
+	
+	if (flags & ARENAWEAPON_RAILGUN)
+		ent->client->inventory[ITEM_RAILGUN] = 1;
+	
+	if (flags & ARENAWEAPON_BFG)
+		ent->client->inventory[ITEM_BFG] = 1;
 	
 	// ammo
 	ent->client->inventory[ITEM_SLUGS] = 25;

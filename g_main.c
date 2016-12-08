@@ -523,7 +523,6 @@ static void G_LoadMapList(void)
 				}
 				
 				if (g_strcmp0(arena_token, "{") == 0) {
-					arena_num++;
 					inarena = true;
 				}
 				
@@ -532,7 +531,7 @@ static void G_LoadMapList(void)
 				}
 				
 				if (g_strcmp0(arena_token, "arena") == 0 && inarena) {
-					map->arenas[arena_num].arena = atoi(COM_Parse(&arena_data));
+					arena_num = atoi(COM_Parse(&arena_data));
 				}
 				
 				if (g_strcmp0(arena_token, "damage") == 0 && inarena) {
@@ -549,34 +548,7 @@ static void G_LoadMapList(void)
 			}
 			fclose(afp);
 		}
-/*
-        token = COM_Parse(&data);
-        map->min_players = atoi(token);
 
-        token = COM_Parse(&data);
-        map->max_players = *token ? atoi(token) : game.maxclients;
-
-        token = COM_Parse(&data);
-        map->flags = atoi(token);
-
-        token = COM_Parse(&data);
-        if (*token == '@') {
-            map->flags |= MAP_EXCLUSIVE;
-            map->weight = 0;
-        } else if (*token) {
-            map->flags |= MAP_WEIGHTED;
-            map->weight = atof(token);
-        } else {
-            map->weight = 1;
-        }
-
-        if (map->min_players < 0) {
-            map->min_players = 0;
-        }
-        if (map->max_players > game.maxclients) {
-            map->max_players = game.maxclients;
-        }
-*/
         List_Append(&g_map_list, &map->list);
         nummaps++;
     }
@@ -707,6 +679,19 @@ static void G_SetTimeVar(int remaining)
     int min = remaining / 60;
 
     gi.cvar_set("time_remaining", va("%d:%02d", min, sec));
+}
+
+
+static void CheckArenaRules(void) {
+	int i;
+	arena_t arena;
+	
+	// check for all arenas in the map
+	for (i=0; i<level.arena_count; i++) {
+		arena = level.arenas[i];
+		
+		// do stuff here
+	}
 }
 
 /*
@@ -943,6 +928,7 @@ void G_RunFrame(void)
         {
             // see if it is time to end a deathmatch
             CheckDMRules();
+			CheckArenaRules();
         }
 
         // check vote timeout

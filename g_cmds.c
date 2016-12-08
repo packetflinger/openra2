@@ -127,6 +127,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	int i;
 	
 	if (gi.argc() != 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Test: DMFLAGS: %d\n", level.map->arenas[ent->client->pers.arena].weapon_flags);
 		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID  P/S    Name\n", level.mapname);
 		for (i=0; i<MAX_ARENAS; i++) {
 			if (level.arenas[i].number < 1) {
@@ -134,6 +135,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 			}
 			
 			if (ent->client->pers.arena == level.arenas[i].number) {
+				
 				gi.cprintf(ent, PRINT_HIGH, "-> %d   %02d/%02d  %s <-\n", 
 					level.arenas[i].number, 
 					level.arenas[i].player_count, 

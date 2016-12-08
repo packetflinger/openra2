@@ -60,6 +60,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define svc_configstring    13
 
 //==================================================================
+// for setting which weapons are allowed in arenas - all weaps == 2046
+#define ARENAWEAPON_SHOTGUN			2
+#define ARENAWEAPON_SUPERSHOTGUN	4
+#define ARENAWEAPON_MACHINEGUN		8
+#define ARENAWEAPON_CHAINGUN		16
+#define ARENAWEAPON_GRENADE			32
+#define ARENAWEAPON_GRENADELAUNCHER	64
+#define ARENAWEAPON_HYPERBLASTER	128
+#define ARENAWEAPON_ROCKETLAUNCHER	256
+#define ARENAWEAPON_RAILGUN			512
+#define ARENAWEAPON_BFG				1024
+#define ARENAWEAPON_ALL				2046
+
+//==================================================================
 #define MATCH_STATE_NONE 1
 #define MATCH_STATE_WARMUP 2
 #define MATCH_STATE_COUNTDOWN 3
@@ -428,6 +442,28 @@ typedef struct {
 	int		spectator_count;
 } arena_t;
 
+// maps contain multiple arenas
+typedef struct {
+	char		name[50];
+	uint8_t		arena;
+	uint32_t	weapon_flags;
+	uint32_t	damage_flags;
+	uint8_t 	rounds;
+	uint32_t 	round_timelimit;
+} arena_entry_t;
+
+typedef struct map_entry_s {
+    list_t  list;
+    list_t  queue;
+    int     min_players;
+    int     max_players;
+    int     flags;
+    float   weight;
+    int     num_hits, num_in, num_out; // for statistics
+    char    name[1];
+	arena_entry_t arenas[MAX_ARENAS];
+} map_entry_t;
+
 //
 // this structure is cleared as each map is entered
 //
@@ -527,6 +563,7 @@ typedef struct {
 	
 	arena_t		arenas[MAX_ARENAS];
 	int			arena_count;
+	map_entry_t	*map;
 } level_locals_t;
 
 
@@ -590,31 +627,6 @@ typedef struct {
 #define MAP_EXCLUSIVE   0x40000000
 #define MAP_WEIGHTED    0x80000000
 
-
-
-
-
-// maps contain multiple arenas
-typedef struct {
-	char		name[50];
-	uint8_t		arena;
-	uint32_t	weapon_flags;
-	uint32_t	damage_flags;
-	uint8_t 	rounds;
-	uint32_t 	round_timelimit;
-} arena_entry_t;
-
-typedef struct map_entry_s {
-    list_t  list;
-    list_t  queue;
-    int     min_players;
-    int     max_players;
-    int     flags;
-    float   weight;
-    int     num_hits, num_in, num_out; // for statistics
-    char    name[1];
-	arena_entry_t arenas[MAX_ARENAS];
-} map_entry_t;
 
 struct flood_s;
 
