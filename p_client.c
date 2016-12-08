@@ -62,6 +62,33 @@ void SP_info_player_intermission(void)
 //=======================================================================
 
 
+// give the player all the items/weapons they need
+void Arena_GiveItems(edict_t *ent) {
+	
+	// weapons
+	ent->client->inventory[ITEM_BFG] = 1;
+	ent->client->inventory[ITEM_RAILGUN] = 1;
+	ent->client->inventory[ITEM_ROCKETLAUNCHER] = 1;
+	ent->client->inventory[ITEM_HYPERBLASTER] = 1;
+	ent->client->inventory[ITEM_GRENADELAUNCHER] = 1;
+	ent->client->inventory[ITEM_CHAINGUN] = 1;
+	ent->client->inventory[ITEM_MACHINEGUN] = 1;
+	ent->client->inventory[ITEM_SUPERSHOTGUN] = 1;
+	ent->client->inventory[ITEM_SHOTGUN] = 1;
+	
+	// ammo
+	ent->client->inventory[ITEM_SLUGS] = 25;
+	ent->client->inventory[ITEM_ROCKETS] = 30;
+	ent->client->inventory[ITEM_CELLS] = 150;
+	ent->client->inventory[ITEM_GRENADES] = 20;
+	ent->client->inventory[ITEM_BULLETS] = 200;
+	ent->client->inventory[ITEM_SHELLS] = 50;
+	
+	// armor
+	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
+}
+
+
 void player_pain(edict_t *self, edict_t *other, float kick, int damage)
 {
     // player pain is handled at the end of the frame in P_DamageFeedback
@@ -1299,6 +1326,9 @@ void PutClientInServer(edict_t *ent)
         // could't spawn in?
     }
 
+	// give the player all the guns and ammo they need
+	Arena_GiveItems(ent);
+	
     // force the current weapon up
     client->newweapon = client->weapon;
     ChangeWeapon(ent);
