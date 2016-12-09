@@ -153,6 +153,13 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	if (!ent->client)
 		return;
 	
+	//already on a team
+	if (ent->client->pers.team) {
+		gi.cprintf(ent, PRINT_HIGH, "Removing you from %s\n", ent->client->pers.team->name);
+		ent->client->pers.team->player_count--;
+		ent->client->pers.team = NULL;
+	}
+	
 	arena_team_t *team;
 	team = FindTeam(ent, type);
 	if (!team) {
@@ -160,8 +167,9 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 	
-	gi.dprintf("team type: %d\n", team->type);
+	gi.cprintf(ent, PRINT_HIGH, "Adding you to %s\n", team->name);
 	ent->client->pers.team = team;
+	team->player_count++;
 }
 
 void player_pain(edict_t *self, edict_t *other, float kick, int damage)

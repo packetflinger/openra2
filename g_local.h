@@ -428,6 +428,8 @@ typedef struct {
 
 #define MAX_ARENAS		9
 #define MAX_ARENA_TEAM_PLAYERS	10
+#define ARENA_HOME_SKIN		"female/jezebel"
+#define ARENA_AWAY_SKIN		"male/cypher"
 
 typedef struct {
     char name[MAX_NETNAME];
@@ -442,6 +444,7 @@ typedef enum {
 
 typedef struct {
 	char 				name[20];
+	char				skin[25];
 	edict_t				*players[MAX_ARENA_TEAM_PLAYERS];
 	arena_team_type_t 	type;
 	int					player_count;

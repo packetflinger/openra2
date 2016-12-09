@@ -605,6 +605,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 	// find arenas
 	ent = NULL;
+	arena_team_t *team;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
 		
 		if (level.arena_count == MAX_ARENAS) {
@@ -619,11 +620,16 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		);
 		
 		
-		// each arena has 2 teams
-		level.arenas[level.arena_count].team_home.type = ARENA_TEAM_HOME;
-		level.arenas[level.arena_count].team_home.type = ARENA_TEAM_AWAY;
+		// setup the teams
+		team = &(level.arenas[level.arena_count].team_home);
+		team->type = ARENA_TEAM_HOME;
+		Q_strlcpy(team->skin, ARENA_HOME_SKIN, sizeof(ARENA_HOME_SKIN));
+		Q_strlcpy(team->name, "Home Team", sizeof("Home Team"));
 		
-		
+		team = &(level.arenas[level.arena_count].team_away);
+		team->type = ARENA_TEAM_AWAY;
+		Q_strlcpy(team->skin, ARENA_AWAY_SKIN, sizeof(ARENA_AWAY_SKIN));
+		Q_strlcpy(team->name, "Away Team", sizeof("Away Team"));
 		
 		level.arena_count++;
     }

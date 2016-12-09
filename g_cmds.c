@@ -163,13 +163,25 @@ static void Cmd_Arena_f(edict_t *ent) {
 }
 
 static void Cmd_Team_f(edict_t *ent) {
+	
+	char *teamname;
+	
 	if (gi.argc() != 2) {
 		gi.cprintf(ent, PRINT_HIGH, "Usage: team <home|away> to join a team.\n");
 		return;
 	}
 	
+	teamname = gi.argv(1);
 	gi.cprintf(ent, PRINT_HIGH, "Joining team...\n");
-	Arena_JoinTeam(ent, ARENA_TEAM_HOME);
+	if (Q_stricmp(teamname, "home") == 0) {
+		Arena_JoinTeam(ent, ARENA_TEAM_HOME);
+		return;
+	}
+	
+	if (Q_stricmp(teamname, "away") == 0) {
+		Arena_JoinTeam(ent, ARENA_TEAM_AWAY);
+		return;
+	}
 }
 
 /*
