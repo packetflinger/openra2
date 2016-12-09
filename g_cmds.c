@@ -162,6 +162,15 @@ static void Cmd_Arena_f(edict_t *ent) {
 	change_arena(ent);
 }
 
+static void Cmd_Team_f(edict_t *ent) {
+	if (gi.argc() != 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Usage: team <home|away> to join a team.\n");
+		return;
+	}
+	
+	gi.cprintf(ent, PRINT_HIGH, "Joining team...\n");
+	Arena_JoinTeam(ent, ARENA_TEAM_HOME);
+}
 
 /*
 ==================
@@ -988,7 +997,8 @@ static void Cmd_Observe_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
         return;
     }
-    if (G_SpecRateLimited(ent)) {
+    if (
+	(ent)) {
         return;
     }
     if (ent->client->pers.connected == CONN_SPECTATOR) {
@@ -1713,6 +1723,8 @@ void ClientCommand(edict_t *ent)
         Cmd_Menu_f(ent);
 	else if (Q_stricmp(cmd, "arena") == 0)
 		Cmd_Arena_f(ent);
+	else if (Q_stricmp(cmd, "team") == 0)
+		Cmd_Team_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }

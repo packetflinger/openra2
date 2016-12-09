@@ -617,6 +617,14 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 			ent->message, 
 			sizeof(level.arenas[level.arena_count].name)
 		);
+		
+		
+		// each arena has 2 teams
+		level.arenas[level.arena_count].team_home.type = ARENA_TEAM_HOME;
+		level.arenas[level.arena_count].team_home.type = ARENA_TEAM_AWAY;
+		
+		
+		
 		level.arena_count++;
     }
 	

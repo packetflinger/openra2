@@ -427,6 +427,7 @@ typedef struct {
 #define MAX_SCORES  10
 
 #define MAX_ARENAS		9
+#define MAX_ARENA_TEAM_PLAYERS	10
 
 typedef struct {
     char name[MAX_NETNAME];
@@ -434,12 +435,25 @@ typedef struct {
     time_t time;
 } score_t;
 
+typedef enum {
+	ARENA_TEAM_HOME,
+	ARENA_TEAM_AWAY,
+} arena_team_type_t;
 
 typedef struct {
-	int		number;
-	char	name[50];
-	int		player_count;
-	int		spectator_count;
+	char 				name[20];
+	edict_t				*players[MAX_ARENA_TEAM_PLAYERS];
+	arena_team_type_t 	type;
+	int					player_count;
+} arena_team_t;
+
+typedef struct {
+	int				number;
+	char			name[50];
+	int				player_count;
+	int				spectator_count;
+	arena_team_t	team_home;
+	arena_team_t	team_away;
 } arena_t;
 
 // maps contain multiple arenas
@@ -835,7 +849,7 @@ char    *vtos(vec3_t v);
 
 float vectoyaw(vec3_t vec);
 void vectoangles(vec3_t vec, vec3_t angles);
-
+arena_t *FindArena(edict_t *ent);
 //
 // g_combat.c
 //
@@ -898,6 +912,7 @@ void G_SetDeltaAngles(edict_t *ent, vec3_t angles);
 void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
 void change_arena(edict_t *self);
+void Arena_JoinTeam(edict_t *ent, arena_team_type_t type);
 
 //
 // g_player.c
@@ -1105,6 +1120,7 @@ typedef struct {
                 noviewid: 1,
                 muted: 1;
 	int			arena;
+	arena_team_t	*team;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,

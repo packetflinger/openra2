@@ -111,6 +111,58 @@ void Arena_GiveItems(edict_t *ent) {
 	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
 }
 
+arena_t *FindArena(edict_t *ent) {
+	int i, a;
+	if (!ent->client)
+		return NULL;
+	
+	a = ent->client->pers.arena;
+	
+	if (a < 1)
+		return NULL;
+
+	for (i=0; i<MAX_ARENAS; i++) {
+		
+		if (level.arenas[i].number == a) {
+			return &(level.arenas[i]); 
+		}
+	}
+	
+	return NULL;
+}
+
+static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
+	arena_t *a;
+	
+	a = FindArena(ent);
+	if (!a) {
+		return NULL;
+	}
+	
+	if (a->team_home.type == type)
+		return &(a->team_home);
+	
+	if (a->team_away.type == type)
+		return &(a->team_away);
+	
+	return NULL;
+}
+
+void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
+	
+	if (!ent->client)
+		return;
+	
+	arena_team_t *team;
+	team = FindTeam(ent, type);
+	if (!team) {
+		gi.cprintf(ent, PRINT_HIGH, "Unknown team, can't join it\n");
+		return;
+	}
+	
+	gi.dprintf("team type: %d\n", team->type);
+	ent->client->pers.team = team;
+}
 
 void player_pain(edict_t *self, edict_t *other, float kick, int damage)
 {
@@ -980,11 +1032,10 @@ static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
 {
     edict_t *spot = NULL;
 	spot = SelectArenaSpawnPoint(ent);
-	/*
-    if (level.numspawns && PLAYER_SPAWNED(ent)) {
+	
+    if (!spot && level.numspawns && PLAYER_SPAWNED(ent)) {
         spot = SelectDeathmatchSpawnPoint();
     }
-	*/
 	
     // find a single player start spot
     if (!spot) {

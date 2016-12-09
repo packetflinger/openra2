@@ -592,3 +592,15 @@ qboolean G_KillBox(edict_t *ent)
     return qtrue;        // all clear
 }
 
+// level.arenas array isn't indexed with arena numbers...
+int ArenaIndex(int arena_num) {
+	
+	int i;
+	for (i=0; i<MAX_ARENAS; i++) {
+		if (level.arenas[i].number == arena_num) {
+			return i;
+		}
+	}
+	
+	return 0;
+}
