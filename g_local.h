@@ -431,6 +431,8 @@ typedef struct {
 #define ARENA_HOME_SKIN		"female/jezebel"
 #define ARENA_AWAY_SKIN		"male/cypher"
 
+#define str_equal(x, y)		(Q_stricmp((x), (y)) == 0)
+
 typedef struct {
     char name[MAX_NETNAME];
     int score;
@@ -438,9 +440,19 @@ typedef struct {
 } score_t;
 
 typedef enum {
+	ARENA_TEAM_NONE,
 	ARENA_TEAM_HOME,
 	ARENA_TEAM_AWAY,
 } arena_team_type_t;
+
+typedef enum {
+	ARENA_STATE_WARMUP,
+	ARENA_STATE_COUNTDOWN,
+	ARENA_STATE_PLAY,
+	ARENA_STATE_OVERTIME,
+	ARENA_STATE_TIMEOUT,
+	ARENA_STATE_ROUNDPAUSE,		// the gap between rounds in a match
+} arena_state_t;
 
 typedef struct {
 	char 				name[20];
@@ -453,6 +465,7 @@ typedef struct {
 typedef struct {
 	int				number;
 	char			name[50];
+	arena_state_t	state;
 	int				player_count;
 	int				spectator_count;
 	arena_team_t	team_home;
@@ -1109,20 +1122,22 @@ typedef struct flood_s {
 
 // client data that stays across multiple level loads
 typedef struct {
-    char        netname[MAX_NETNAME];
-    char        skin[MAX_SKINNAME];
-    char        ip[32];
-    int         hand;
-    float       fov;
-    gender_t    gender;
-    int         uf;
-    conn_t      connected;
-    qboolean    loopback: 1,
-                mvdspec: 1,
-                admin: 1,
-                noviewid: 1,
-                muted: 1;
-	int			arena;
+    char        	netname[MAX_NETNAME];
+    char        	skin[MAX_SKINNAME];
+    char        	ip[32];
+    int         	hand;
+    float       	fov;
+    gender_t    	gender;
+    int         	uf;
+    conn_t      	connected;
+    qboolean    	loopback: 1,
+					mvdspec: 1,
+					admin: 1,
+					noviewid: 1,
+					muted: 1;
+	qboolean		ready;
+	int				arena;
+	arena_t			*arena_p;
 	arena_team_t	*team;
 } client_persistant_t;
 

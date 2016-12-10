@@ -150,14 +150,27 @@ static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 
 void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	
+	arena_t *arena;
+	
 	if (!ent->client)
 		return;
+
+	arena = FindArena(ent);
 	
-	//already on a team
+	// match has started, cant join
+	if (arena->state >= ARENA_STATE_PLAY) {
+		gi.cprintf(ent, PRINT_HIGH, "Match in progress, you can't join now\n");
+		return;
+	}
+	
+	//already on a team, remove first
 	if (ent->client->pers.team) {
-		gi.cprintf(ent, PRINT_HIGH, "Removing you from %s\n", ent->client->pers.team->name);
+		gi.cprintf(ent, PRINT_HIGH, "Removing you from %s (%d)\n", 
+			ent->client->pers.team->name, 
+			ent->client->pers.team->player_count
+		);
 		ent->client->pers.team->player_count--;
-		ent->client->pers.team = NULL;
+		ent->client->pers.team = 0;
 	}
 	
 	arena_team_t *team;
@@ -167,9 +180,48 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 	
-	gi.cprintf(ent, PRINT_HIGH, "Adding you to %s\n", team->name);
+	// add player to the team
 	ent->client->pers.team = team;
 	team->player_count++;
+	gi.cprintf(ent, PRINT_HIGH, "Adding you to %s (%d players)\n", team->name, team->player_count);
+	
+	// throw them into the game
+	spectator_respawn(ent, CONN_SPAWNED);
+}
+
+void arena_bprintf(edict_t *sender, int level, const char *fmt, ...) {
+	va_list     argptr;
+    char        string[MAX_STRING_CHARS];
+    size_t      len;
+    int         i;
+	arena_t		*arena;
+	edict_t		*other;
+	
+    va_start(argptr, fmt);
+    len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
+    va_end(argptr);
+
+	
+    if (len >= sizeof(string)) {
+        return;
+    }
+
+	arena = FindArena(sender);
+	
+	for (i = 1; i <= game.maxclients; i++) {
+        other = &g_edicts[i];
+		
+        if (!other->inuse)
+            continue;
+		
+        if (!other->client)
+            continue;
+		
+        if (arena->number != other->client->pers.arena_p->number)
+			continue;
+		
+        gi.cprintf(other, level, "%s\n", string);
+    }
 }
 
 void player_pain(edict_t *self, edict_t *other, float kick, int damage)
@@ -1488,6 +1540,10 @@ void ClientBegin(edict_t *ent)
         gi.unicast(ent, qfalse);
 
         ent->client->level.first_time = qfalse;
+		
+		// set the default arena to 1
+		ent->client->pers.arena = 1;
+		ent->client->pers.arena_p = FindArena(ent);
     }
 
     // make sure all view stuff is valid
@@ -1995,7 +2051,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
     // fire weapon from final position if needed
     if (client->latched_buttons & BUTTON_ATTACK) {
         if (client->pers.connected == CONN_PREGAME) {
-            spectator_respawn(ent, CONN_SPAWNED);
+            //spectator_respawn(ent, CONN_SPAWNED);
         } else if (client->pers.connected == CONN_SPECTATOR) {
             client->latched_buttons = 0;
             if (client->chase_target) {

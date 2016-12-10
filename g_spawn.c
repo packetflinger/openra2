@@ -612,12 +612,15 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
             break;
         }
 		
+		memset(&(level.arenas[level.arena_count]), 0, sizeof(arena_t));
+		
         level.arenas[level.arena_count].number = ent->arena;
 		Q_strlcpy(
 			level.arenas[level.arena_count].name, 
 			ent->message, 
 			sizeof(level.arenas[level.arena_count].name)
 		);
+		
 		
 		
 		// setup the teams
@@ -919,8 +922,8 @@ void SP_worldspawn(edict_t *ent)
     G_HighlightStr(buffer, "SPECTATOR MODE", sizeof(buffer));
     gi.configstring(CS_SPECMODE, buffer);
 
-    G_HighlightStr(buffer, "Press ATTACK to join", sizeof(buffer));
-    gi.configstring(CS_PREGAME, buffer);
+    //G_HighlightStr(buffer, "Press ATTACK to join", sizeof(buffer));
+    //gi.configstring(CS_PREGAME, buffer);
 
     //---------------
 

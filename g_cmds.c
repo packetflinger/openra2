@@ -123,6 +123,21 @@ static qboolean CheckCheats(edict_t *ent)
 }
 
 
+static void Cmd_Ready_f(edict_t *ent) {
+	if (!ent->client)
+		return;
+	
+	if (!ent->client->pers.ready) {
+		ent->client->pers.ready = qtrue;
+		// arena_bprintf
+		return;
+	} else {
+		ent->client->pers.ready = qfalse;
+		// arena_bprintf
+		return;
+	}
+}
+
 static void Cmd_Arena_f(edict_t *ent) {
 	int i;
 	
@@ -158,7 +173,8 @@ static void Cmd_Arena_f(edict_t *ent) {
 	
 	gi.cprintf(ent, PRINT_HIGH, "Switching arenas: %d -> %d\n", ent->client->pers.arena, newarena);
 	ent->client->pers.arena = newarena;
-
+	ent->client->pers.arena_p = FindArena(ent);
+	
 	change_arena(ent);
 }
 
@@ -173,12 +189,12 @@ static void Cmd_Team_f(edict_t *ent) {
 	
 	teamname = gi.argv(1);
 	gi.cprintf(ent, PRINT_HIGH, "Joining team...\n");
-	if (Q_stricmp(teamname, "home") == 0) {
+	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
 		Arena_JoinTeam(ent, ARENA_TEAM_HOME);
 		return;
 	}
 	
-	if (Q_stricmp(teamname, "away") == 0) {
+	if (str_equal(teamname, "away") || str_equal(teamname, "2")) {
 		Arena_JoinTeam(ent, ARENA_TEAM_AWAY);
 		return;
 	}
@@ -849,8 +865,8 @@ void Cmd_Players_f(edict_t *ent)
     qboolean show_ips = !ent || ent->client->pers.admin;
 
     gi.cprintf(ent, PRINT_HIGH,
-               "id score ping time name            idle %s\n"
-               "-- ----- ---- ---- --------------- ---- %s\n",
+               "id score ping time name            idle arena team%s\n"
+               "-- ----- ---- ---- --------------- ---- ----- ----%s\n",
                show_ips ? "address" : "",
                show_ips ? "-------" : "");
 
@@ -877,8 +893,28 @@ void Cmd_Players_f(edict_t *ent)
         } else {
             sprintf(time, "%d", sec / 60);
         }
-        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %s\n",
+		
+		arena_t *arena;
+		arena = FindArena(c->edict);
+		
+		arena_team_t *team;
+		char *teamname = "";
+		if (c->pers.team) {
+			team = c->pers.team;
+			switch (team->type) {
+				case ARENA_TEAM_NONE:
+					teamname = "";
+					break;
+				case ARENA_TEAM_HOME:
+					teamname = "home";
+					break;
+				case ARENA_TEAM_AWAY:
+					teamname = "away";
+			}
+		}
+        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %4s %5s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
+				   va("%d", arena->number), teamname,
                    show_ips ? c->pers.ip : "");
     }
 }
@@ -1737,6 +1773,8 @@ void ClientCommand(edict_t *ent)
 		Cmd_Arena_f(ent);
 	else if (Q_stricmp(cmd, "team") == 0)
 		Cmd_Team_f(ent);
+	else if (Q_stricmp(cmd, "ready") == 0)
+		Cmd_Ready_f(ent);	
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }
