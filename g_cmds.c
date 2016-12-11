@@ -188,7 +188,7 @@ static void Cmd_Team_f(edict_t *ent) {
 	}
 	
 	teamname = gi.argv(1);
-	gi.cprintf(ent, PRINT_HIGH, "Joining team...\n");
+	
 	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
 		Arena_JoinTeam(ent, ARENA_TEAM_HOME);
 		return;
@@ -865,8 +865,8 @@ void Cmd_Players_f(edict_t *ent)
     qboolean show_ips = !ent || ent->client->pers.admin;
 
     gi.cprintf(ent, PRINT_HIGH,
-               "id score ping time name            idle arena team%s\n"
-               "-- ----- ---- ---- --------------- ---- ----- ----%s\n",
+               "id score ping time name            idle arena team capt%s\n"
+               "-- ----- ---- ---- --------------- ---- ----- ---- ----%s\n",
                show_ips ? "address" : "",
                show_ips ? "-------" : "");
 
@@ -899,6 +899,7 @@ void Cmd_Players_f(edict_t *ent)
 		
 		arena_team_t *team;
 		char *teamname = "";
+		char *capt = "";
 		if (c->pers.team) {
 			team = c->pers.team;
 			switch (team->type) {
@@ -911,11 +912,16 @@ void Cmd_Players_f(edict_t *ent)
 				case ARENA_TEAM_AWAY:
 					teamname = "away";
 			}
+			
+			if (team->captain == ent) {
+				capt = "*";
+			}
 		}
-        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %4s %5s %4s\n",
+		
+        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %4s %5s %4s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
 				   va("%d", arena->number), teamname,
-                   show_ips ? c->pers.ip : "");
+                   show_ips ? c->pers.ip : "", capt);
     }
 }
 
@@ -1040,15 +1046,14 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 
 static void Cmd_Observe_f(edict_t *ent)
 {
+	Arena_PartTeam(ent);
+	
     if (ent->client->pers.connected == CONN_PREGAME) {
         ent->client->pers.connected = CONN_SPECTATOR;
         gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
         return;
     }
-    if (
-	(ent)) {
-        return;
-    }
+
     if (ent->client->pers.connected == CONN_SPECTATOR) {
         spectator_respawn(ent, CONN_SPAWNED);
     } else {

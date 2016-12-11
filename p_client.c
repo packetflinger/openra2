@@ -148,14 +148,68 @@ static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 	return NULL;
 }
 
-void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
+void Arena_SetSkin(edict_t *ent, const char *skin) {
 	
-	arena_t *arena;
+	if (!ent->client) {
+		return;
+	}
+	
+	edict_t *e;
+	
+	for (e = g_edicts + 1; e <= g_edicts + game.maxclients; e++) {	
+		if (!e->inuse)
+			continue;
+		
+		gi.WriteByte(svc_configstring);
+		gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
+		gi.WriteString(va("%s\\%s", ent->client->pers.netname, skin));
+		gi.unicast(e, true);
+	}
+}
+
+// remove this player from whatever team they're on
+void Arena_PartTeam(edict_t *ent) {
+	
+	arena_team_t *oldteam;
 	
 	if (!ent->client)
 		return;
+	
+	oldteam = ent->client->pers.team;
+	
+	if (!oldteam)
+		return;
+	
+	gi.cprintf(ent, PRINT_HIGH, "Removing you from %s\n", oldteam->name);
+	
+	oldteam->player_count--;
+	if (oldteam->captain == ent) {
+		oldteam->captain = 0;
+	}
+	
+	ent->client->pers.team = 0;
+}
 
+void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
+	
+	if (!ent->client)
+		return;
+	
+	arena_t *arena;
 	arena = FindArena(ent);
+	
+	arena_team_t *team;
+	team = FindTeam(ent, type);
+	
+	if (!arena) {
+		gi.cprintf(ent, PRINT_HIGH, "Unknown arena\n");
+		return;
+	}
+	
+	if (!team) {
+		gi.cprintf(ent, PRINT_HIGH, "Unknown team, can't join it\n");
+		return;
+	}
 	
 	// match has started, cant join
 	if (arena->state >= ARENA_STATE_PLAY) {
@@ -163,27 +217,28 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 	
-	//already on a team, remove first
+	//already on that team
 	if (ent->client->pers.team) {
-		gi.cprintf(ent, PRINT_HIGH, "Removing you from %s (%d)\n", 
-			ent->client->pers.team->name, 
-			ent->client->pers.team->player_count
-		);
-		ent->client->pers.team->player_count--;
-		ent->client->pers.team = 0;
-	}
-	
-	arena_team_t *team;
-	team = FindTeam(ent, type);
-	if (!team) {
-		gi.cprintf(ent, PRINT_HIGH, "Unknown team, can't join it\n");
-		return;
+		if (ent->client->pers.team == team) {
+			gi.cprintf(ent, PRINT_HIGH, "You're already on that team dumbass!\n");
+			return;
+		}
+		
+		Arena_PartTeam(ent);
 	}
 	
 	// add player to the team
 	ent->client->pers.team = team;
 	team->player_count++;
-	gi.cprintf(ent, PRINT_HIGH, "Adding you to %s (%d players)\n", team->name, team->player_count);
+	
+	if (!team->captain) {
+		team->captain = ent;
+	}
+	
+	gi.bprintf(PRINT_HIGH, "%s joined %s\n", ent->client->pers.netname, team->name);
+	
+	// force the skin
+	Arena_SetSkin(ent, team->skin);
 	
 	// throw them into the game
 	spectator_respawn(ent, CONN_SPAWNED);

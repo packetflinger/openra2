@@ -458,6 +458,7 @@ typedef struct {
 	char 				name[20];
 	char				skin[25];
 	edict_t				*players[MAX_ARENA_TEAM_PLAYERS];
+	edict_t				*captain;
 	arena_team_type_t 	type;
 	int					player_count;
 } arena_team_t;
@@ -929,6 +930,7 @@ void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
 void change_arena(edict_t *self);
 void Arena_JoinTeam(edict_t *ent, arena_team_type_t type);
+void Arena_PartTeam(edict_t *ent);
 
 //
 // g_player.c
