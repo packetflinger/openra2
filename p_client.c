@@ -244,12 +244,12 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	spectator_respawn(ent, CONN_SPAWNED);
 }
 
-void arena_bprintf(edict_t *sender, int level, const char *fmt, ...) {
+// broadcast print to only members of specified arena
+void Arena_bprintf(arena_t *arena, int level, const char *fmt, ...) {
 	va_list     argptr;
     char        string[MAX_STRING_CHARS];
     size_t      len;
     int         i;
-	arena_t		*arena;
 	edict_t		*other;
 	
     va_start(argptr, fmt);
@@ -260,8 +260,6 @@ void arena_bprintf(edict_t *sender, int level, const char *fmt, ...) {
     if (len >= sizeof(string)) {
         return;
     }
-
-	arena = FindArena(sender);
 	
 	for (i = 1; i <= game.maxclients; i++) {
         other = &g_edicts[i];
@@ -272,7 +270,7 @@ void arena_bprintf(edict_t *sender, int level, const char *fmt, ...) {
         if (!other->client)
             continue;
 		
-        if (arena->number != other->client->pers.arena_p->number)
+        if (arena != other->client->pers.arena_p)
 			continue;
 		
         gi.cprintf(other, level, "%s\n", string);

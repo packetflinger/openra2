@@ -129,11 +129,21 @@ static void Cmd_Ready_f(edict_t *ent) {
 	
 	if (!ent->client->pers.ready) {
 		ent->client->pers.ready = qtrue;
-		// arena_bprintf
+		Arena_bprintf(
+			ent->client->pers.arena_p,
+			PRINT_HIGH,
+			"%s is ready\n",
+			ent->client->pers.netname
+		);
 		return;
 	} else {
 		ent->client->pers.ready = qfalse;
-		// arena_bprintf
+		Arena_bprintf(
+			ent->client->pers.arena_p,
+			PRINT_HIGH,
+			"%s is not ready\n",
+			ent->client->pers.netname
+		);
 		return;
 	}
 }

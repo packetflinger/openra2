@@ -931,6 +931,7 @@ int G_UpdateRanks(void);
 void change_arena(edict_t *self);
 void Arena_JoinTeam(edict_t *ent, arena_team_type_t type);
 void Arena_PartTeam(edict_t *ent);
+void Arena_bprintf(arena_t *arena, int level, const char *fmt, ...);
 
 //
 // g_player.c
