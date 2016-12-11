@@ -758,19 +758,30 @@ static void Cmd_Wave_f(edict_t *ent)
 
 typedef enum {
     CHAT_MISC,
-    CHAT_ALL,
-    CHAT_TEAM
+    CHAT_ALL,	// send to everyone on server`
+	CHAT_ARENA,	// only people in sender's arena
+    CHAT_TEAM,	// only members of sender's team
 } chat_t;
 
-static size_t build_chat(const char *name, chat_t chat, int start, char *buffer)
+static size_t build_chat(edict_t *ent, chat_t chat, int start, char *buffer)
 {
     size_t len, total;
     int i;
     char *p;
+	char *name = ent->client->pers.netname;
+	int arena = ent->client->pers.arena_p->number;
 
-    total = Q_scnprintf(buffer, MAX_CHAT,
-                        (chat == CHAT_TEAM) ? "(%s): " : "%s: ", name);
-
+	switch (chat){
+		case CHAT_TEAM:
+			total = Q_scnprintf(buffer, MAX_CHAT, "(%s): ", name);
+			break;
+		case CHAT_ALL:
+			total = Q_scnprintf(buffer, MAX_CHAT, "%s (arena %d): ", name, arena);
+			break;
+		default:
+			total = Q_scnprintf(buffer, MAX_CHAT, "%s: ", name);
+	}
+	
     for (i = start; i < gi.argc(); i++) {
         p = gi.argv(i);
         len = strlen(p);
@@ -803,6 +814,7 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
     edict_t *other;
     char    text[MAX_CHAT];
     gclient_t *cl = ent->client;
+	arena_t *arena = ent->client->pers.arena_p;
 
     start = (chat == CHAT_MISC) ? 0 : 1;
     if (gi.argc() <= start)
@@ -810,7 +822,7 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
 
     // don't flood protect team chat to self
     if (chat == CHAT_TEAM && (int)g_team_chat->value == 0 && PLAYER_SPAWNED(ent)) {
-        build_chat(cl->pers.netname, chat, start, text);
+        build_chat(ent, chat, start, text);
         gi.cprintf(ent, PRINT_CHAT, "%s\n", text);
         return;
     }
@@ -839,7 +851,7 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
         return;
     }
 
-    build_chat(cl->pers.netname, chat, start, text);
+    build_chat(ent, chat, start, text);
 
     if ((int)dedicated->value)
         gi.cprintf(NULL, PRINT_CHAT, "%s\n", text);
@@ -850,9 +862,10 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
             continue;
         if (!other->client)
             continue;
-        if (chat == CHAT_TEAM && PLAYER_SPAWNED(ent) != PLAYER_SPAWNED(other)) {
+        if (chat == CHAT_TEAM && PLAYER_SPAWNED(ent) != PLAYER_SPAWNED(other))
             continue;
-        }
+		if (chat == CHAT_ARENA && other->client->pers.arena_p != arena)
+			continue;
         gi.cprintf(other, PRINT_CHAT, "%s\n", text);
     }
 }
@@ -1671,8 +1684,12 @@ void ClientCommand(edict_t *ent)
         }
     }
 
-    if (Q_stricmp(cmd, "say") == 0) {
+    if (Q_stricmp(cmd, "say_all") == 0) {
         Cmd_Say_f(ent, CHAT_ALL);
+        return;
+    }
+	if (Q_stricmp(cmd, "say") == 0 || Q_stricmp(cmd, "say_arena") == 0) {
+        Cmd_Say_f(ent, CHAT_ARENA);
         return;
     }
     if (Q_stricmp(cmd, "say_team") == 0) {
