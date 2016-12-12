@@ -352,7 +352,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     }
 
     // do the damage
-    if (take) {
+    if (take && (targ != attacker)) {
         if (client)
             if (targ == attacker)
                 SpawnDamage(TE_BLOOD, targ->s.origin, normal);
