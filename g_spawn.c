@@ -570,7 +570,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 {
     edict_t     *ent;
     gclient_t   *client;
-    int         i;
+    int         i, j;
     client_persistant_t pers;
     char        *token;
     char        playerskin[MAX_QPATH];
@@ -637,39 +637,37 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 	// find arenas
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
+		
 		if (!ent->arena) {
 			continue;
 		}
 		
-		if (level.arena_count == MAX_ARENAS) {
-            break;
+		j = ent->arena;
+		
+		if (j >= MAX_ARENAS) {
+            continue;
         }
 		
-		memset(&(level.arenas[level.arena_count]), 0, sizeof(arena_t));
+		memset(&(level.arenas[j]), 0, sizeof(arena_t));
 		
-        level.arenas[level.arena_count].number = ent->arena;
-		Q_strlcpy(
-			level.arenas[level.arena_count].name, 
-			ent->message, 
-			sizeof(level.arenas[level.arena_count].name)
-		);
+        level.arenas[j].number = ent->arena;
+		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
 		// setup the teams
-		G_InitArenaTeams(&(level.arenas[level.arena_count]));
+		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;
     }
 	
 	// not an ra2 map, make the map arena #1
 	if (level.arena_count == 0) {
+		j = 1;
 		notra2map = qtrue;
-		gi.dprintf("Not native RA2 map, forcing arena 1\n");
-		level.arenas[level.arena_count].number = 1;
-		Q_strlcpy(
-			level.arenas[level.arena_count].name, 
-			mapname, 
-			sizeof(level.arenas[level.arena_count].name)
-		);
-		G_InitArenaTeams(&(level.arenas[level.arena_count]));
+		
+		gi.dprintf("Not native RA2 map, forcing arena #1\n");
+		level.arenas[j].number = j;
+		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
+		
+		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;
 	}
 	
@@ -687,6 +685,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
             break;
         }
     }
+	
     gi.dprintf("%d spawn points\n", level.numspawns);
 }
 

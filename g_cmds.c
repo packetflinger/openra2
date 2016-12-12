@@ -178,10 +178,16 @@ static void Cmd_Arena_f(edict_t *ent) {
 		return;
 	}
 	
+	// already on a team, remove first
+	if (ent->client->pers.team) {
+		Arena_PartTeam(ent);
+		ent->client->pers.connected = CONN_PREGAME;
+	}
+	
 	uint8_t newarena = atoi(gi.argv(1));
 	
 	ent->client->pers.arena = newarena;
-	ent->client->pers.arena_p = FindArena(ent);
+	ent->client->pers.arena_p = &(level.arenas[newarena]);
 	
 	change_arena(ent);
 }

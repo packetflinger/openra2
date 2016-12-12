@@ -112,29 +112,17 @@ void Arena_GiveItems(edict_t *ent) {
 }
 
 arena_t *FindArena(edict_t *ent) {
-	int i, a;
-	if (!ent->client)
-		return NULL;
-	
-	a = ent->client->pers.arena;
-	
-	if (a < 1)
-		return NULL;
 
-	for (i=0; i<MAX_ARENAS; i++) {
-		
-		if (level.arenas[i].number == a) {
-			return &(level.arenas[i]); 
-		}
-	}
+	if (!ent->client)  
+		return NULL;
 	
-	return NULL;
+	return ent->client->pers.arena_p;
 }
 
 static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
-	arena_t *a;
 	
-	a = FindArena(ent);
+	arena_t *a = FindArena(ent);
+	
 	if (!a) {
 		return NULL;
 	}
@@ -164,6 +152,16 @@ void Arena_SetSkin(edict_t *ent, const char *skin) {
 		gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
 		gi.WriteString(va("%s\\%s", ent->client->pers.netname, skin));
 		gi.unicast(e, true);
+	}
+}
+
+// switches the player's gun-in-hand after spawning
+void Arena_StartingWeapon(edict_t *ent, int gun) {
+	if (!ent->client)
+		return;
+	
+	if (ent->client->inventory[gun]) {
+		
 	}
 }
 
@@ -1598,7 +1596,7 @@ void ClientBegin(edict_t *ent)
 		
 		// set the default arena to 1
 		ent->client->pers.arena = 1;
-		ent->client->pers.arena_p = FindArena(ent);
+		ent->client->pers.arena_p = &(level.arenas[1]);
     }
 
     // make sure all view stuff is valid
