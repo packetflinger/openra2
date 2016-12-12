@@ -1424,6 +1424,7 @@ struct edict_s {
     vec3_t      old_origin;
 	
 	int			arena;
+	int			override;
 };
 
 //

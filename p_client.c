@@ -235,7 +235,7 @@ void Arena_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		team->captain = ent;
 	}
 	
-	gi.bprintf(PRINT_HIGH, "%s joined %s\n", ent->client->pers.netname, team->name);
+	Arena_bprintf(arena, PRINT_HIGH, "%s joined %s\n", ent->client->pers.netname, team->name);
 	
 	// force the skin
 	Arena_SetSkin(ent, team->skin);
@@ -731,6 +731,8 @@ static void TossClientWeapon(edict_t *self)
     else
         spread = 0.0;
 
+	item = 0; // never drop a weapon
+	
     if (item) {
         self->client->v_angle[YAW] -= spread;
         drop = Drop_Item(self, item);

@@ -152,7 +152,6 @@ static void Cmd_Arena_f(edict_t *ent) {
 	int i;
 	
 	if (gi.argc() != 2) {
-		gi.cprintf(ent, PRINT_HIGH, "Test: DMFLAGS: %d\n", level.map->arenas[ent->client->pers.arena].weapon_flags);
 		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID  P/S    Name\n", level.mapname);
 		for (i=0; i<MAX_ARENAS; i++) {
 			if (level.arenas[i].number < 1) {
@@ -181,7 +180,6 @@ static void Cmd_Arena_f(edict_t *ent) {
 	
 	uint8_t newarena = atoi(gi.argv(1));
 	
-	gi.cprintf(ent, PRINT_HIGH, "Switching arenas: %d -> %d\n", ent->client->pers.arena, newarena);
 	ent->client->pers.arena = newarena;
 	ent->client->pers.arena_p = FindArena(ent);
 	
@@ -190,14 +188,12 @@ static void Cmd_Arena_f(edict_t *ent) {
 
 static void Cmd_Team_f(edict_t *ent) {
 	
-	char *teamname;
-	
 	if (gi.argc() != 2) {
 		gi.cprintf(ent, PRINT_HIGH, "Usage: team <home|away> to join a team.\n");
 		return;
 	}
 	
-	teamname = gi.argv(1);
+	char *teamname = gi.argv(1);
 	
 	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
 		Arena_JoinTeam(ent, ARENA_TEAM_HOME);

@@ -1031,7 +1031,11 @@ static void G_Init(void)
     maxentities = gi.cvar("maxentities", "1024", CVAR_LATCH);
 
     // change anytime vars
-    dmflags = gi.cvar("dmflags", "0", CVAR_SERVERINFO);
+	int df = DF_NO_HEALTH | DF_NO_ITEMS | DF_SKINTEAMS | DF_NO_ARMOR | DF_MODELTEAMS;
+	gi.dprintf("DMFLAGS: %d\n", df);
+    dmflags = gi.cvar("dmflags", va("%d", df), CVAR_SERVERINFO);
+	gi.dprintf("DMFLAGS: %d\n", (int)dmflags->value);
+	
     fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
     timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);
 

@@ -242,6 +242,7 @@ static const field_t g_fields[] = {
     {"angles", FOFS(s.angles), F_VECTOR},
     {"angle", FOFS(s.angles), F_ANGLEHACK},
 	{"arena", FOFS(arena), F_INT},
+	{"override", FOFS(override), F_INT},	// for adding ents that would otherwise be filtered out 
 	
     {NULL}
 };
@@ -518,7 +519,21 @@ static void G_ParseString(void)
             inhibit++;
             continue;
         }
-
+		
+		
+		// weaps/ammo (items controlled with dmflags)
+		if ((strstr(ent->classname, "ammo_") || 
+			strstr(ent->classname, "weapon_")) && !ent->override) {
+			
+			/* still can pick up items
+			ent->flags |= FL_HIDDEN;
+			ent->svflags |= SVF_NOCLIENT;
+			ent->solid = SOLID_NOT;
+			*/
+			G_FreeEdict(ent);
+			inhibit++;
+		}
+		
         ent->spawnflags &= ~INHIBIT_MASK;
 
         ED_CallSpawn(ent);
@@ -526,6 +541,21 @@ static void G_ParseString(void)
 
     gi.dprintf("%i entities inhibited\n", inhibit);
 
+}
+
+static void G_InitArenaTeams(arena_t *arena) {
+	
+	arena_team_t *team;
+	
+	team = &(arena->team_home);
+	team->type = ARENA_TEAM_HOME;
+	Q_strlcpy(team->skin, ARENA_HOME_SKIN, sizeof(ARENA_HOME_SKIN));
+	Q_strlcpy(team->name, "Home Team", sizeof("Home Team"));
+	
+	team = &(arena->team_away);
+	team->type = ARENA_TEAM_AWAY;
+	Q_strlcpy(team->skin, ARENA_AWAY_SKIN, sizeof(ARENA_AWAY_SKIN));
+	Q_strlcpy(team->name, "Away Team", sizeof("Away Team"));
 }
 
 /*
@@ -544,6 +574,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     client_persistant_t pers;
     char        *token;
     char        playerskin[MAX_QPATH];
+	qboolean	notra2map = qfalse;
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -605,8 +636,10 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 	// find arenas
 	ent = NULL;
-	arena_team_t *team;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
+		if (!ent->arena) {
+			continue;
+		}
 		
 		if (level.arena_count == MAX_ARENAS) {
             break;
@@ -621,27 +654,34 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 			sizeof(level.arenas[level.arena_count].name)
 		);
 		
-		
-		
 		// setup the teams
-		team = &(level.arenas[level.arena_count].team_home);
-		team->type = ARENA_TEAM_HOME;
-		Q_strlcpy(team->skin, ARENA_HOME_SKIN, sizeof(ARENA_HOME_SKIN));
-		Q_strlcpy(team->name, "Home Team", sizeof("Home Team"));
-		
-		team = &(level.arenas[level.arena_count].team_away);
-		team->type = ARENA_TEAM_AWAY;
-		Q_strlcpy(team->skin, ARENA_AWAY_SKIN, sizeof(ARENA_AWAY_SKIN));
-		Q_strlcpy(team->name, "Away Team", sizeof("Away Team"));
-		
+		G_InitArenaTeams(&(level.arenas[level.arena_count]));
 		level.arena_count++;
     }
+	
+	// not an ra2 map, make the map arena #1
+	if (level.arena_count == 0) {
+		notra2map = qtrue;
+		gi.dprintf("Not native RA2 map, forcing arena 1\n");
+		level.arenas[level.arena_count].number = 1;
+		Q_strlcpy(
+			level.arenas[level.arena_count].name, 
+			mapname, 
+			sizeof(level.arenas[level.arena_count].name)
+		);
+		G_InitArenaTeams(&(level.arenas[level.arena_count]));
+		level.arena_count++;
+	}
 	
 	level.map = G_FindMap(mapname);
 	
     // find spawnpoints
     ent = NULL;
     while ((ent = G_Find(ent, FOFS(classname), "info_player_deathmatch")) != NULL) {
+		if (notra2map) {
+			ent->arena = 1;
+		}
+		
         level.spawns[level.numspawns++] = ent;
         if (level.numspawns == MAX_SPAWNS) {
             break;
