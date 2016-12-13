@@ -1633,6 +1633,32 @@ static void Cmd_OldScore_f(edict_t *ent)
     gi.unicast(ent, qtrue);
 }
 
+
+// prevent players from joining
+void Cmd_LockTeam_f(edict_t *ent) {
+	
+	if (!ent->client)
+		return;
+	
+	if (!ent->client->pers.team)
+		return;
+	
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (ent != team->captain) {
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can lock/unlock their team\n");
+		return;
+	}
+	
+	if (!team->locked) {
+		team->locked = true;
+		gi.cprintf(ent, PRINT_HIGH, "Team '%s' now locked\n", team->name);
+	} else {
+		team->locked = false;
+		gi.cprintf(ent, PRINT_HIGH, "Team '%s' now unlocked\n", team->name);
+	}
+}
+
 /*
 =================
 ClientCommand
@@ -1808,7 +1834,9 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "team") == 0)
 		Cmd_Team_f(ent);
 	else if (Q_stricmp(cmd, "ready") == 0)
-		Cmd_Ready_f(ent);	
+		Cmd_Ready_f(ent);
+	else if (Q_stricmp(cmd, "lock") == 0 || Q_stricmp(cmd, "lockteam"))
+		Cmd_LockTeam_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }
