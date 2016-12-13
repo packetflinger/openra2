@@ -684,13 +684,16 @@ static void G_SetTimeVar(int remaining)
 
 static void CheckArenaRules(void) {
 	int i;
-	arena_t arena;
+	arena_t *arena;
 	
 	// check for all arenas in the map
 	for (i=0; i<level.arena_count; i++) {
-		arena = level.arenas[i];
+		arena = &(level.arenas[i]);
 		
 		// do stuff here
+		if (G_CheckReady(arena)){
+			gi.dprintf("All players ready\n");
+		}
 	}
 }
 

@@ -93,6 +93,37 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
     }
 }
 
+// see if all players are ready
+qboolean G_CheckReady(arena_t *a) {
+	qboolean ready_home = false;
+	qboolean ready_away = false;
+	
+	int i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			if (!a->team_home.players[i]->client->pers.ready) {
+				ready_home = false;
+				break;
+			} else {
+				ready_home = true;
+			}
+		}
+	}
+	
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_away.players[i]) {
+			if (!a->team_away.players[i]->client->pers.ready) {
+				ready_away = false;
+				break;
+			} else {
+				ready_away = true;
+			}
+		}
+	}
+	
+	return ready_home && ready_away;
+}
+
 // give the player all the items/weapons they need
 void G_GiveItems(edict_t *ent) {
 	

@@ -60,8 +60,11 @@ typedef struct {
 	uint32_t 	round_timelimit;
 } arena_entry_t;
 
+
+
 void change_arena(edict_t *self);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
+qboolean G_CheckReady(arena_t *a);
 void G_GiveItems(edict_t *ent);
 void G_JoinTeam(edict_t *ent, arena_team_type_t type);
 void G_PartTeam(edict_t *ent);
