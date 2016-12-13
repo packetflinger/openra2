@@ -129,7 +129,7 @@ static void Cmd_Ready_f(edict_t *ent) {
 	
 	if (!ent->client->pers.ready) {
 		ent->client->pers.ready = qtrue;
-		Arena_bprintf(
+		G_bprintf(
 			ent->client->pers.arena_p,
 			PRINT_HIGH,
 			"%s is ready\n",
@@ -138,7 +138,7 @@ static void Cmd_Ready_f(edict_t *ent) {
 		return;
 	} else {
 		ent->client->pers.ready = qfalse;
-		Arena_bprintf(
+		G_bprintf(
 			ent->client->pers.arena_p,
 			PRINT_HIGH,
 			"%s is not ready\n",
@@ -180,7 +180,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	
 	// already on a team, remove first
 	if (ent->client->pers.team) {
-		Arena_PartTeam(ent);
+		G_PartTeam(ent);
 		ent->client->pers.connected = CONN_PREGAME;
 	}
 	
@@ -202,12 +202,12 @@ static void Cmd_Team_f(edict_t *ent) {
 	char *teamname = gi.argv(1);
 	
 	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
-		Arena_JoinTeam(ent, ARENA_TEAM_HOME);
+		G_JoinTeam(ent, ARENA_TEAM_HOME);
 		return;
 	}
 	
 	if (str_equal(teamname, "away") || str_equal(teamname, "2")) {
-		Arena_JoinTeam(ent, ARENA_TEAM_AWAY);
+		G_JoinTeam(ent, ARENA_TEAM_AWAY);
 		return;
 	}
 }
@@ -1071,7 +1071,7 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 
 static void Cmd_Observe_f(edict_t *ent)
 {
-	Arena_PartTeam(ent);
+	G_PartTeam(ent);
 	
     if (ent->client->pers.connected == CONN_PREGAME) {
         ent->client->pers.connected = CONN_SPECTATOR;
