@@ -1,4 +1,22 @@
+/*
+Copyright (C) 2016 Packetflinger.com
 
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
 #define MAX_ARENAS				9
 #define MAX_ARENA_TEAM_PLAYERS	10
 #define ARENA_HOME_SKIN			"female/jezebel"
@@ -6,6 +24,15 @@
 
 #define str_equal(x, y)		(Q_stricmp((x), (y)) == 0)
 
+#define SECS_TO_FRAMES(seconds)     (int)((seconds) * HZ)
+#define FRAMES_TO_SECS(frames)      (int)((frames) * FRAMETIME)
+
+typedef enum {
+	WINNER_NONE,
+	WINNER_HOME,
+	WINNER_AWAY,
+	WINNER_TIE,
+} round_winner_t;
 
 typedef enum {
 	ARENA_TEAM_NONE,
@@ -33,7 +60,9 @@ typedef struct {
 	edict_t				*captain;
 	arena_team_type_t 	type;
 	int					player_count;
+	int					players_alive;
 	qboolean			locked;
+	int					score;
 } arena_team_t;
 
 
@@ -44,6 +73,10 @@ typedef struct {
 	arena_state_t	state;
 	int				player_count;
 	int				spectator_count;
+	int				round_limit;
+	int				current_round;
+	int				round_start_frame;
+	int				round_end_frame;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
 } arena_t;
@@ -63,10 +96,19 @@ typedef struct {
 
 
 void change_arena(edict_t *self);
+void G_ArenaThink(arena_t *a);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
 qboolean G_CheckReady(arena_t *a);
+void G_CheckTime(arena_t *a);
+void G_EndMatch(arena_t *a);
+void G_EndRound(arena_t *a, arena_team_t *winner);
+void G_ForceReady(arena_team_t *team, qboolean ready);
 void G_GiveItems(edict_t *ent);
 void G_JoinTeam(edict_t *ent, arena_team_type_t type);
 void G_PartTeam(edict_t *ent);
+void G_RefillInventory(edict_t *ent);
+void G_RespawnPlayers(arena_t *a);
 void G_SetSkin(edict_t *ent, const char *skin);
-void G_StartingWeapon(edict_t *ent, int gun);
+void G_StartRound(arena_t *a);
+void G_StartingWeapon(edict_t *ent);
+arena_team_t *G_GetWinningTeam(arena_t *a);

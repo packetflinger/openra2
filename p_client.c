@@ -573,7 +573,7 @@ static void LookAtKiller(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
 /*
 ==================
-player_die
+player_die...
 ==================
 */
 void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
@@ -599,6 +599,9 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     self->svflags |= SVF_DEADMONSTER;
 
     if (!self->deadflag) {
+		// note the death
+		self->client->pers.team->players_alive--;
+		
         self->client->respawn_framenum = level.framenum + 1 * HZ;
         LookAtKiller(self, inflictor, attacker);
         self->client->ps.pmove.pm_type = PM_DEAD;

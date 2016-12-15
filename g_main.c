@@ -681,22 +681,6 @@ static void G_SetTimeVar(int remaining)
     gi.cvar_set("time_remaining", va("%d:%02d", min, sec));
 }
 
-
-static void CheckArenaRules(void) {
-	int i;
-	arena_t *arena;
-	
-	// check for all arenas in the map
-	for (i=0; i<level.arena_count; i++) {
-		arena = &(level.arenas[i]);
-		
-		// do stuff here
-		if (G_CheckReady(arena)){
-			gi.dprintf("All players ready\n");
-		}
-	}
-}
-
 /*
 =================
 CheckDMRules
@@ -931,7 +915,13 @@ void G_RunFrame(void)
         {
             // see if it is time to end a deathmatch
             CheckDMRules();
-			CheckArenaRules();
+			
+			arena_t *a;
+			// Let each arena think
+			for (i=1; i<=level.arena_count; i++) {
+				a = &(level.arenas[i]);
+				G_ArenaThink(a);
+			}
         }
 
         // check vote timeout

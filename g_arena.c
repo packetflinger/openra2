@@ -60,6 +60,63 @@ void change_arena(edict_t *self) {
     self->client->respawn_framenum = level.framenum;
 }
 
+// check for things like state changes, start/end of rounds, countdown clocks, etc
+void G_ArenaThink(arena_t *a) {
+	static qboolean foundwinner = false;
+	
+	if (!a)
+		return;
+
+	// end of round
+	if (a->state == ARENA_STATE_PLAY) {
+
+		arena_team_t *winner = G_GetWinningTeam(a);
+		
+		if (winner && !foundwinner) {
+			a->round_end_frame = level.framenum + SECS_TO_FRAMES(2);
+			foundwinner = true;
+		}
+		
+		if (a->round_end_frame == level.framenum) {
+			foundwinner = false;
+			G_EndRound(a, winner);
+			return;
+		}
+	}
+	
+	if (a->state == ARENA_STATE_COUNTDOWN) {
+		//gi.dprintf("(A%d) Round %d starting in %s\n", a->number, a->current_round, "never");
+		// refill health ammo
+		// prevent firing
+	}
+	
+	// start a round
+	if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
+		int framesleft = a->round_start_frame - level.framenum;
+		
+		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
+			
+			G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
+			
+		} else if (framesleft == 0) {
+			
+			G_StartRound(a);
+			return;
+		}
+	}
+	
+	// pregame
+	if (a->state == ARENA_STATE_WARMUP) {
+		if (G_CheckReady(a)) {	// is everyone ready?
+			a->state = ARENA_STATE_COUNTDOWN;
+			a->current_round = 1;
+			a->round_start_frame = level.framenum + SECS_TO_FRAMES(10);
+			
+			G_RespawnPlayers(a);
+		}
+	}
+}
+
 // broadcast print to only members of specified arena
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
 	va_list     argptr;
@@ -89,7 +146,7 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
         if (arena != other->client->pers.arena_p)
 			continue;
 		
-        gi.cprintf(other, level, "%s\n", string);
+        gi.cprintf(other, level, "%s", string);
     }
 }
 
@@ -123,6 +180,50 @@ qboolean G_CheckReady(arena_t *a) {
 	
 	return ready_home && ready_away;
 }
+
+// match countdowns...
+void G_CheckTime(arena_t *a) {
+	
+	
+}
+
+void G_ForceReady(arena_team_t *team, qboolean ready) {
+	
+	int i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (team->players[i]) {
+			team->players[i]->client->pers.ready = ready;
+		}
+	}
+}
+
+void G_EndMatch(arena_t *a) {
+	G_bprintf(a, PRINT_HIGH, "Match finished\n", a->current_round);
+	
+	a->state = ARENA_STATE_WARMUP;
+	
+	G_ForceReady(&a->team_home, false);
+	G_ForceReady(&a->team_away, false);
+}
+
+void G_EndRound(arena_t *a, arena_team_t *winner) {
+	a->round_start_frame = 0;
+	G_bprintf(a, PRINT_HIGH, "%s won round %d/%d!\n", winner->name, a->current_round, a->round_limit);
+	
+	if (a->current_round == a->round_limit) {
+		G_EndMatch(a);
+		return;
+	}
+	
+	a->current_round++;
+	
+	a->state = ARENA_STATE_COUNTDOWN;
+	a->round_start_frame = level.framenum + SECS_TO_FRAMES(10);
+	
+	a->round_end_frame = 0;
+	G_RespawnPlayers(a);
+}
+
 
 // give the player all the items/weapons they need
 void G_GiveItems(edict_t *ent) {
@@ -264,6 +365,50 @@ void G_PartTeam(edict_t *ent) {
 	ent->client->pers.team = 0;
 }
 
+// give back all the ammo, health and armor for start of a round
+void G_RefillInventory(edict_t *ent) {
+	// ammo
+	ent->client->inventory[ITEM_SLUGS] = 25;
+	ent->client->inventory[ITEM_ROCKETS] = 30;
+	ent->client->inventory[ITEM_CELLS] = 150;
+	ent->client->inventory[ITEM_GRENADES] = 20;
+	ent->client->inventory[ITEM_BULLETS] = 200;
+	ent->client->inventory[ITEM_SHELLS] = 50;
+	
+	// armor
+	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
+	
+	// health
+	ent->health = 100;
+}
+
+// respawn all players resetting their inventory
+void G_RespawnPlayers(arena_t *a) {
+	
+	int i;
+	edict_t *ent;
+	
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		
+		ent = a->team_home.players[i];
+		if (ent && ent->inuse) {
+			G_RefillInventory(ent);
+			spectator_respawn(ent, CONN_SPAWNED);
+			G_StartingWeapon(ent);
+		}
+		
+		ent = a->team_away.players[i];
+		if (ent && ent->inuse) {
+			G_RefillInventory(ent);
+			spectator_respawn(ent, CONN_SPAWNED);
+			G_StartingWeapon(ent);
+		}
+		
+		a->team_home.players_alive = a->team_home.player_count;
+		a->team_away.players_alive = a->team_away.player_count;
+	}
+}
+
 void G_SetSkin(edict_t *ent, const char *skin) {
 	
 	if (!ent->client) {
@@ -283,12 +428,45 @@ void G_SetSkin(edict_t *ent, const char *skin) {
 	}
 }
 
+void G_StartRound(arena_t *a) {
+	
+	a->team_home.players_alive = a->team_home.player_count;
+	a->team_away.players_alive = a->team_away.player_count;
+	
+	a->state = ARENA_STATE_PLAY;
+	G_bprintf(a, PRINT_HIGH, "Fight!\n");
+}
+
 // switches the player's gun-in-hand after spawning
-void G_StartingWeapon(edict_t *ent, int gun) {
+void G_StartingWeapon(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (ent->client->inventory[gun]) {
-		
-	}
+	ent->client->newweapon = FindItem("rocket launcher");
+	ChangeWeapon(ent);
 }
+
+// find the team this guy is on and record the death
+void G_TeamMemberDeath(edict_t *ent) {
+	
+	int i = 0;
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (i && team)
+		return;
+
+}
+
+arena_team_t *G_GetWinningTeam(arena_t *a) {
+	
+	if (!a)
+		return NULL;
+	
+	if (a->team_home.players_alive == 0)
+		return &(a->team_away);
+	
+	if (a->team_away.players_alive == 0)
+		return &(a->team_home);
+	
+	return NULL;
+}	

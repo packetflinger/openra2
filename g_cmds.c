@@ -1835,7 +1835,7 @@ void ClientCommand(edict_t *ent)
 		Cmd_Team_f(ent);
 	else if (Q_stricmp(cmd, "ready") == 0)
 		Cmd_Ready_f(ent);
-	else if (Q_stricmp(cmd, "lock") == 0 || Q_stricmp(cmd, "lockteam"))
+	else if (Q_stricmp(cmd, "lock") == 0 || Q_stricmp(cmd, "lockteam") == 0)
 		Cmd_LockTeam_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);

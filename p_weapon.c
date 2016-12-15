@@ -301,6 +301,10 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
 {
     int     n;
 
+	// stop any firing in countdown
+	if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN)
+		return;
+		
     if (ent->deadflag || ent->s.modelindex != 255) { // VWep animations screw up corpses
         return;
     }

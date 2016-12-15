@@ -575,6 +575,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        *token;
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
+	map_entry_t	*map;
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -635,6 +636,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     //G_UpdateItemBans();
 
 	// find arenas
+	map = G_FindMap(mapname);
+	
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
 		
@@ -652,6 +655,10 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		
         level.arenas[j].number = ent->arena;
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
+		
+		if (&(map->arenas[j])){
+			level.arenas[j].round_limit = map->arenas[j].rounds;
+		}
 		
 		// setup the teams
 		G_InitArenaTeams(&(level.arenas[j]));
