@@ -212,7 +212,18 @@ void Think_Weapon(edict_t *ent)
         ent->client->newweapon = NULL;
         ChangeWeapon(ent);
     }
+	
+	// No attacks in timeouts
+	if (ent->client->pers.arena_p->state == ARENA_STATE_TIMEOUT) {
+		return;
+	}
 
+	// No firing during countdown
+	if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN) {
+		ent->client->buttons &= ~BUTTON_ATTACK;
+		ent->client->latched_buttons &= ~BUTTON_ATTACK;
+	}
+	
     // call active weapon think routine
     if (ent->client->weapon && ent->client->weapon->weaponthink) {
         is_quad = (ent->client->quad_framenum > level.framenum);
@@ -300,10 +311,6 @@ A generic function to handle the basics of weapon thinking
 static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE_LAST, int FRAME_IDLE_LAST, int FRAME_DEACTIVATE_LAST, const int *pause_frames, const int *fire_frames, void (*fire)(edict_t *ent))
 {
     int     n;
-
-	// stop any firing in countdown
-	if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN)
-		return;
 		
     if (ent->deadflag || ent->s.modelindex != 255) { // VWep animations screw up corpses
         return;
