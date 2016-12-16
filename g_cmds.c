@@ -414,6 +414,39 @@ static void Cmd_Noclip_f(edict_t *ent)
 
 
 /*
+A player called timeout
+*/
+static void Cmd_Timeout_f(edict_t *ent) {
+	
+	arena_t *a = ent->client->pers.arena_p;
+	
+	if (a->state < ARENA_STATE_PLAY)
+		return;
+	
+	if (a->timeout_frame) {
+		if (ent == a->timeout_caller || ent->client->pers.arena_admin == a->number) {
+			//a->timeout_frame = 0;
+			a->timein_frame = level.framenum;
+			
+			G_FreezePlayers(a, false);
+		} else {
+			gi.cprintf(ent, PRINT_HIGH, "Only %s or an admin can call time-in before time expires\n", a->timeout_caller->client->pers.netname);
+		}
+		
+		return;
+	}
+	
+	a->state = ARENA_STATE_TIMEOUT;
+	a->timeout_frame = level.framenum;
+	a->timein_frame = level.framenum + SECS_TO_FRAMES(120);	// 2 minutes
+	a->timeout_caller = ent;
+	
+	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", ent->client->pers.netname);
+	
+	G_FreezePlayers(a, true);
+}
+
+/*
 ==================
 Cmd_Use_f
 
@@ -1553,16 +1586,16 @@ static void select_test(edict_t *ent)
 }
 
 static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
-    { "OpenFFA - Main", PMENU_ALIGN_CENTER },
+    { "OpenRA2 - Main Main", PMENU_ALIGN_CENTER },
     { NULL },
     { NULL },
     { NULL, PMENU_ALIGN_LEFT, select_test },
     { NULL },
     { "*Enter freefloat mode", PMENU_ALIGN_LEFT, select_test },
     { "*Enter chasecam mode", PMENU_ALIGN_LEFT, select_test },
-    { "*Autocam - Frag Leader", PMENU_ALIGN_LEFT, select_test },
-    { "*Autocam - Quad Runner", PMENU_ALIGN_LEFT, select_test },
-    { "*Autocam - Pent Runner", PMENU_ALIGN_LEFT, select_test },
+//    { "*Autocam - Frag Leader", PMENU_ALIGN_LEFT, select_test },
+//    { "*Autocam - Quad Runner", PMENU_ALIGN_LEFT, select_test },
+//    { "*Autocam - Pent Runner", PMENU_ALIGN_LEFT, select_test },
     { NULL },
     { "*Exit menu", PMENU_ALIGN_LEFT, select_test },
 //  { "*Voting menu", PMENU_ALIGN_LEFT, select_test },
@@ -1837,6 +1870,8 @@ void ClientCommand(edict_t *ent)
 		Cmd_Ready_f(ent);
 	else if (Q_stricmp(cmd, "lock") == 0 || Q_stricmp(cmd, "lockteam") == 0)
 		Cmd_LockTeam_f(ent);
+	else if (Q_stricmp(cmd, "time") == 0 || Q_stricmp(cmd, "timeout") == 0 || Q_stricmp(cmd, "timein") == 0)
+		Cmd_Timeout_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }

@@ -77,6 +77,9 @@ typedef struct {
 	int				current_round;
 	int				round_start_frame;
 	int				round_end_frame;
+	int				timeout_frame;
+	int				timein_frame;
+	edict_t			*timeout_caller;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
 } arena_t;
@@ -103,6 +106,7 @@ void G_CheckTime(arena_t *a);
 void G_EndMatch(arena_t *a);
 void G_EndRound(arena_t *a, arena_team_t *winner);
 void G_ForceReady(arena_team_t *team, qboolean ready);
+void G_FreezePlayers(arena_t *a, qboolean freeze);
 void G_GiveItems(edict_t *ent);
 void G_JoinTeam(edict_t *ent, arena_team_type_t type);
 void G_PartTeam(edict_t *ent);

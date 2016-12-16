@@ -67,6 +67,12 @@ void G_ArenaThink(arena_t *a) {
 	if (!a)
 		return;
 
+	// are we in a time-out?
+	if (a->timeout_frame) {
+		
+		return;
+	}
+	
 	// end of round
 	if (a->state == ARENA_STATE_PLAY) {
 
@@ -224,6 +230,30 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	G_RespawnPlayers(a);
 }
 
+
+void G_FreezePlayers(arena_t *a, qboolean freeze) {
+	
+	if (!a)
+		return;
+	
+	pmtype_t type;
+	if (freeze) {
+		type = PM_FREEZE;
+	} else {
+		type = PM_NORMAL;
+	}
+		
+	int i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			a->team_home.players[i]->client->ps.pmove.pm_type = type;
+		}
+		
+		if (a->team_away.players[i]) {
+			a->team_away.players[i]->client->ps.pmove.pm_type = type;
+		}
+	}
+}
 
 // give the player all the items/weapons they need
 void G_GiveItems(edict_t *ent) {

@@ -972,7 +972,7 @@ void G_ResetLevel(void);
 #define PLAYER_SPAWNED(e) \
     ((e)->client->pers.connected == CONN_SPAWNED)
 
-#define MAX_MENU_ENTRIES    18
+#define MAX_MENU_ENTRIES    15
 
 typedef enum {
     PMENU_ALIGN_LEFT,
@@ -1091,6 +1091,7 @@ typedef struct {
 	int				arena;
 	arena_t			*arena_p;
 	arena_team_t	*team;
+	int				arena_admin;		// the arena number we're an admin for
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,
