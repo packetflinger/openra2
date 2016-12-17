@@ -1775,6 +1775,11 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         client->ps.pmove.pm_type = PM_FREEZE;
         return;
     }
+	
+	if (client->pers.arena_p->state == ARENA_STATE_TIMEOUT) {
+		client->ps.pmove.pm_type = PM_FREEZE;
+		return;
+	}
 
     if (!ent->client->chase_target) {
         // set up for pmove

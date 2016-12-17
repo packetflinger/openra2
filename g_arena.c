@@ -67,9 +67,8 @@ void G_ArenaThink(arena_t *a) {
 	if (!a)
 		return;
 
-	// are we in a time-out?
-	if (a->timeout_frame) {
-		
+	if (a->state == ARENA_STATE_TIMEOUT) {
+		G_TimeoutFrame(a);
 		return;
 	}
 	
@@ -487,6 +486,29 @@ void G_TeamMemberDeath(edict_t *ent) {
 
 }
 
+// do stuff if this arena is currently in a timeout
+void G_TimeoutFrame(arena_t *a) {
+	
+	// expired
+	if (a->timein_frame == level.framenum) {
+		a->state = ARENA_STATE_PLAY;
+		a->timeout_frame = 0;
+		a->timein_frame = 0;
+		a->timeout_caller = NULL;
+		return;
+	}
+	
+	// countdown
+	if (a->timein_frame <= level.framenum + SECS_TO_FRAMES(5)) {
+		int framesleft = a->timein_frame - level.framenum;
+		
+		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
+			G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
+		}
+	}
+}
+
+// 
 arena_team_t *G_GetWinningTeam(arena_t *a) {
 	
 	if (!a)

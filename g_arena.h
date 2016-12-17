@@ -115,4 +115,5 @@ void G_RespawnPlayers(arena_t *a);
 void G_SetSkin(edict_t *ent, const char *skin);
 void G_StartRound(arena_t *a);
 void G_StartingWeapon(edict_t *ent);
+void G_TimeoutFrame(arena_t *a);
 arena_team_t *G_GetWinningTeam(arena_t *a);

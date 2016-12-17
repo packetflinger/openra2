@@ -425,10 +425,7 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	
 	if (a->timeout_frame) {
 		if (ent == a->timeout_caller || ent->client->pers.arena_admin == a->number) {
-			//a->timeout_frame = 0;
-			a->timein_frame = level.framenum;
-			
-			G_FreezePlayers(a, false);
+			a->timein_frame = level.framenum;	
 		} else {
 			gi.cprintf(ent, PRINT_HIGH, "Only %s or an admin can call time-in before time expires\n", a->timeout_caller->client->pers.netname);
 		}
@@ -438,12 +435,10 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	
 	a->state = ARENA_STATE_TIMEOUT;
 	a->timeout_frame = level.framenum;
-	a->timein_frame = level.framenum + SECS_TO_FRAMES(120);	// 2 minutes
+	a->timein_frame = level.framenum + SECS_TO_FRAMES(10);	// 2 minutes
 	a->timeout_caller = ent;
 	
 	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", ent->client->pers.netname);
-	
-	G_FreezePlayers(a, true);
 }
 
 /*
