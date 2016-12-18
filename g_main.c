@@ -46,6 +46,7 @@ cvar_t  *g_vote_limit;
 cvar_t  *g_vote_flags;
 cvar_t  *g_intermission_time;
 cvar_t  *g_admin_password;
+cvar_t	*g_round_limit;
 cvar_t  *g_maps_random;
 cvar_t  *g_maps_file;
 cvar_t  *g_defaults_file;
@@ -1059,6 +1060,7 @@ static void G_Init(void)
     g_mute_chat = gi.cvar("g_mute_chat", "0", 0);
     g_protection_time = gi.cvar("g_protection_time", "0", 0);
 	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
+	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
 #if USE_SQLITE
     g_sql_database = gi.cvar("g_sql_database", "", 0);
     g_sql_async = gi.cvar("g_sql_async", "0", 0);

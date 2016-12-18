@@ -687,6 +687,11 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 			ent->arena = 1;
 		}
 		
+		// hide it
+		ent->flags |= FL_HIDDEN;
+		ent->svflags |= SVF_NOCLIENT;
+		ent->solid = SOLID_NOT;
+			
         level.spawns[level.numspawns++] = ent;
         if (level.numspawns == MAX_SPAWNS) {
             break;

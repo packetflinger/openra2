@@ -738,6 +738,7 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
 	edict_t *spot = NULL;
 	edict_t *spawns[MAX_SPAWNS];
 	int i;
+	float range;
 	
 	for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
@@ -747,13 +748,19 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
 	
 	for (i = 0; i < level.numspawns; i++) {
         spot = spawns[i];
-
+		
+		// the spawn is in players's current arena...
         if (spot->arena == player->client->pers.arena) {
-			return spot;
+			
+			range = PlayersRangeFromSpot(spot);
+			if (range > 64) {
+				return spot;
+			}
 		}
     }
 	
-	return world;
+	// we couldn't find a clear spawn, just return the last one and telefrag
+	return spot;
 }
 
 static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
