@@ -1290,7 +1290,7 @@ void SP_misc_teleporter(edict_t *ent)
     edict_t     *trig;
 
     if (!ent->target) {
-        gi.dprintf("teleporter without a target.\n");
+        //gi.dprintf("teleporter without a target.\n");
         G_FreeEdict(ent);
         return;
     }
