@@ -765,10 +765,21 @@ void G_SetStats(edict_t *ent)
             ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_FRAGS;
             ent->client->ps.stats[STAT_DELTA_STRING] = CS_PRIVATE + PCS_DELTA;
             ent->client->ps.stats[STAT_RANK_STRING] = CS_PRIVATE + PCS_RANK;
+			ent->client->ps.stats[STAT_ROUNDS] = CS_ARENA_ROUNDS + ent->client->pers.arena_p->number;
+			
+			// test
+			if (ent->client->pers.arena_p->state == ARENA_STATE_TIMEOUT) {
+				ent->client->ps.stats[STAT_TIMEOUT] = CS_ARENA_TIMEOUT + ent->client->pers.arena_p->number;
+			} else {
+				ent->client->ps.stats[STAT_TIMEOUT] = 0;
+			}
+			// end
+			
         } else {
             ent->client->ps.stats[STAT_FRAGS_STRING] = CS_OBSERVE;
             ent->client->ps.stats[STAT_DELTA_STRING] = 0;
             ent->client->ps.stats[STAT_RANK_STRING] = 0;
+			ent->client->ps.stats[STAT_ROUNDS] = 0;
             if (ent->client->pers.connected == CONN_SPECTATOR) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
             } else {

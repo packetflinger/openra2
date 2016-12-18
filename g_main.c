@@ -54,6 +54,7 @@ cvar_t  *g_bugs;
 cvar_t  *g_teleporter_nofreeze;
 cvar_t  *g_spawn_mode;
 cvar_t  *g_team_chat;
+cvar_t	*g_timeout_time;
 cvar_t  *g_mute_chat;
 cvar_t  *g_protection_time;
 cvar_t  *g_log_stats;
@@ -1057,6 +1058,7 @@ static void G_Init(void)
     g_team_chat = gi.cvar("g_team_chat", "0", 0);
     g_mute_chat = gi.cvar("g_mute_chat", "0", 0);
     g_protection_time = gi.cvar("g_protection_time", "0", 0);
+	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
 #if USE_SQLITE
     g_sql_database = gi.cvar("g_sql_database", "", 0);
     g_sql_async = gi.cvar("g_sql_async", "0", 0);

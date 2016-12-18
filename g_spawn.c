@@ -854,17 +854,26 @@ static const char dm_statusbar[] =
 "endif "
 
 // delta frags
-"if 19 "
-  "yt 18 "
-  "stat_string 19 "
-"endif "
+//"if 19 "
+//  "yt 18 "
+//  "stat_string 19 "
+//"endif "
 
 // rank
-"if 20 "
+//"if 20 "
+//  "yt 34 "
+//  "string2 \" Rank\" "
+//  "yt 42 "
+//  "stat_string 20 "
+//"endif "
+
+// rounds
+"if 28 "
   "yt 34 "
-  "string2 \" Rank\" "
+  "string2 \"Round\" "
   "yt 42 "
-  "stat_string 20 "
+  "xr -44 "
+  "stat_string 28 "
 "endif "
 
 // time
@@ -907,6 +916,14 @@ static const char dm_statusbar[] =
   "stat_string 25 "
   "yb -180 "
   "stat_string 26 "
+"endif "
+
+// timeout
+"if 27 "
+  "xr -110 "
+  "yt 72 "
+  "color 5 " // cyan
+  "stat_string 27 "
 "endif "
 ;
 

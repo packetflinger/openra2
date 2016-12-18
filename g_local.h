@@ -685,6 +685,7 @@ extern  cvar_t  *g_vote_treshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
+extern	cvar_t	*g_timeout_time;
 extern  cvar_t  *g_intermission_time;
 extern  cvar_t  *g_admin_password;
 extern  cvar_t  *g_item_ban;
@@ -948,6 +949,8 @@ void G_ResetLevel(void);
 #define CS_VOTE_PROPOSAL    (CS_GENERAL + 5)
 #define CS_VOTE_COUNT       (CS_GENERAL + 6 )
 #define CS_PLAYERNAMES      (CS_GENERAL + 10)
+#define CS_ARENA_TIMEOUT	(CS_GENERAL + MAX_CLIENTS)
+#define CS_ARENA_ROUNDS		(CS_ARENA_TIMEOUT + MAX_ARENAS)
 #define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
 
 #define STAT_FRAGS_STRING           18
@@ -959,6 +962,8 @@ void G_ResetLevel(void);
 #define STAT_VIEWID                 24
 #define STAT_VOTE_PROPOSAL          25
 #define STAT_VOTE_COUNT             26
+#define STAT_TIMEOUT				27
+#define STAT_ROUNDS					28
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
@@ -1091,7 +1096,6 @@ typedef struct {
 	int				arena;
 	arena_t			*arena_p;
 	arena_team_t	*team;
-	int				arena_admin;		// the arena number we're an admin for
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,

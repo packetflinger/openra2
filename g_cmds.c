@@ -424,8 +424,8 @@ static void Cmd_Timeout_f(edict_t *ent) {
 		return;
 	
 	if (a->timeout_frame) {
-		if (ent == a->timeout_caller || ent->client->pers.arena_admin == a->number) {
-			a->timein_frame = level.framenum;	
+		if (ent == a->timeout_caller || ent->client->pers.admin) {
+			a->timein_frame = level.framenum + SECS_TO_FRAMES(10);	
 		} else {
 			gi.cprintf(ent, PRINT_HIGH, "Only %s or an admin can call time-in before time expires\n", a->timeout_caller->client->pers.netname);
 		}
@@ -435,7 +435,7 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	
 	a->state = ARENA_STATE_TIMEOUT;
 	a->timeout_frame = level.framenum;
-	a->timein_frame = level.framenum + SECS_TO_FRAMES(10);	// 2 minutes
+	a->timein_frame = level.framenum + SECS_TO_FRAMES(g_timeout_time->value);
 	a->timeout_caller = ent;
 	
 	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", ent->client->pers.netname);
@@ -1385,6 +1385,11 @@ static void Cmd_Admin_f(edict_t *ent)
 {
     char *p;
 
+	if (!g_admin_password->string[0]) {
+		gi.cprintf(ent, PRINT_HIGH, "admin is disabled on this server\n");
+		return;
+	}
+	
     if (ent->client->pers.admin) {
         gi.bprintf(PRINT_HIGH, "%s is no longer an admin.\n",
                    ent->client->pers.netname);
@@ -1396,7 +1401,7 @@ static void Cmd_Admin_f(edict_t *ent)
         return;
     }
     p = gi.argv(1);
-    if (!g_admin_password->string[0] || strcmp(g_admin_password->string, p)) {
+    if (strcmp(g_admin_password->string, p)) {
         gi.cprintf(ent, PRINT_HIGH, "Bad admin password.\n");
         if ((int)dedicated->value) {
             gi.dprintf("%s[%s] failed to become an admin.\n",
@@ -1406,8 +1411,7 @@ static void Cmd_Admin_f(edict_t *ent)
     }
 
     ent->client->pers.admin = qtrue;
-    gi.bprintf(PRINT_HIGH, "%s became an admin.\n",
-               ent->client->pers.netname);
+    gi.bprintf(PRINT_HIGH, "%s is now an admin.\n", ent->client->pers.netname);
 
     G_CheckVote();
 }

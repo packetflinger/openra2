@@ -60,7 +60,7 @@ void change_arena(edict_t *self) {
     self->client->respawn_framenum = level.framenum;
 }
 
-// check for things like state changes, start/end of rounds, countdown clocks, etc
+// check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
 void G_ArenaThink(arena_t *a) {
 	static qboolean foundwinner = false;
 	
@@ -90,9 +90,7 @@ void G_ArenaThink(arena_t *a) {
 	}
 	
 	if (a->state == ARENA_STATE_COUNTDOWN) {
-		//gi.dprintf("(A%d) Round %d starting in %s\n", a->number, a->current_round, "never");
-		// refill health ammo
-		// prevent firing
+		
 	}
 	
 	// start a round
@@ -102,6 +100,7 @@ void G_ArenaThink(arena_t *a) {
 		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
 			
 			G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
+			gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
 			
 		} else if (framesleft == 0) {
 			
@@ -438,6 +437,14 @@ void G_RespawnPlayers(arena_t *a) {
 	}
 }
 
+char *G_RoundToString(arena_t *a) {
+	
+	static char     round_buffer[32];
+	sprintf (round_buffer, "%d/%d", a->current_round, a->round_limit);
+
+	return round_buffer;
+}
+
 void G_SetSkin(edict_t *ent, const char *skin) {
 	
 	if (!ent->client) {
@@ -498,14 +505,26 @@ void G_TimeoutFrame(arena_t *a) {
 		return;
 	}
 	
-	// countdown
-	if (a->timein_frame <= level.framenum + SECS_TO_FRAMES(5)) {
-		int framesleft = a->timein_frame - level.framenum;
-		
-		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-			G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
-		}
+	// countdown timer
+	int framesleft = a->timein_frame - level.framenum;
+	if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
+		gi.configstring(
+			CS_ARENA_TIMEOUT + a->number, 
+			va("Timeout: %s", G_SecsToString(FRAMES_TO_SECS(framesleft)))
+		);
 	}
+}
+
+const char *G_SecsToString (int seconds){
+	static char     time_buffer[32];
+	int				mins;
+
+	mins = seconds / 60;
+	seconds -= (mins * 60);
+
+	sprintf (time_buffer, "%d:%.2d", mins, seconds);
+
+	return time_buffer;
 }
 
 // 
