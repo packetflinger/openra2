@@ -314,13 +314,15 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
         if ((int)dedicated->value) {
             gi.dprintf("%s %s.\n", self->client->pers.netname, message);
         }
-        frag = mod_to_frag[mod];
-        self->client->resp.score--;
-        self->client->resp.frags[frag].suicides++;
-        self->enemy = NULL;
-        G_ScoreChanged(self);
-        G_UpdateRanks();
-        return;
+		if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+			frag = mod_to_frag[mod];
+			self->client->resp.score--;
+			self->client->resp.frags[frag].suicides++;
+			self->enemy = NULL;
+			G_ScoreChanged(self);
+			G_UpdateRanks();
+		}
+		return;
     }
 
     self->enemy = attacker;
@@ -426,12 +428,14 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
             if (ff) {
                 attacker->client->resp.score--;
             } else {
-                frag = mod_to_frag[mod];
-                attacker->client->resp.score++;
-                attacker->client->resp.frags[frag].kills++;
-                self->client->resp.deaths++;
-                self->client->resp.frags[frag].deaths++;
-                AccountItemKills(attacker);
+				if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+					frag = mod_to_frag[mod];
+					attacker->client->resp.score++;
+					attacker->client->resp.frags[frag].kills++;
+					self->client->resp.deaths++;
+					self->client->resp.frags[frag].deaths++;
+					AccountItemKills(attacker);
+				}
             }
             G_ScoreChanged(attacker);
             G_UpdateRanks();
@@ -441,8 +445,10 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
     gi.bprintf(PRINT_MEDIUM, "%s died.\n", self->client->pers.netname);
     frag = mod_to_frag[mod];
-    self->client->resp.score--;
-    self->client->resp.frags[frag].suicides++;
+	if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+		self->client->resp.score--;
+		self->client->resp.frags[frag].suicides++;
+	}
 
     G_ScoreChanged(self);
     G_UpdateRanks();
