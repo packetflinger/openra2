@@ -34,12 +34,18 @@ typedef enum {
 	WINNER_TIE,
 } round_winner_t;
 
+
 typedef enum {
 	ARENA_TEAM_NONE,
 	ARENA_TEAM_HOME,
 	ARENA_TEAM_AWAY,
 } arena_team_type_t;
 
+
+typedef struct {
+	int		num;
+	char	name[20];
+} pmenu_arena_t;
 
 
 typedef enum {
@@ -101,6 +107,7 @@ typedef struct {
 void change_arena(edict_t *self);
 void G_ArenaThink(arena_t *a);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
+void G_BuildMenu(void);
 qboolean G_CheckReady(arena_t *a);
 void G_CheckTime(arena_t *a);
 void G_EndMatch(arena_t *a);

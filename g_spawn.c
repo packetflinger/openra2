@@ -635,6 +635,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     G_FindTeams();
     //G_UpdateItemBans();
 
+	
 	// find arenas
 	map = G_FindMap(mapname);
 	
@@ -651,12 +652,12 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
             continue;
         }
 		
-		memset(&(level.arenas[j]), 0, sizeof(arena_t));
+		memset(&level.arenas[j], 0, sizeof(arena_t));
 		
         level.arenas[j].number = ent->arena;
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
-		if (&(map->arenas[j])){
+		if (&map->arenas[j] != NULL){
 			level.arenas[j].round_limit = map->arenas[j].rounds;
 		}
 		
@@ -677,6 +678,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;
 	}
+	
+	G_BuildMenu();
 	
 	level.map = G_FindMap(mapname);
 	

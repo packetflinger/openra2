@@ -154,6 +154,19 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
     }
 }
 
+// build the arena menu structure
+void G_BuildMenu(void) {
+	
+	int i, j;
+	for (i=0, j=0; i<MAX_ARENAS; i++) {
+		if (level.arenas[i].number) {
+			menu_lookup[j].num = level.arenas[i].number;
+			Q_strlcpy(menu_lookup[j].name, level.arenas[i].name, sizeof(menu_lookup[j].name));
+			j++;
+		}
+	}
+}
+
 // see if all players are ready
 qboolean G_CheckReady(arena_t *a) {
 	qboolean ready_home = false;

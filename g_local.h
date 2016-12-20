@@ -620,6 +620,8 @@ extern  game_import_t   gi;
 extern  game_export_t   globals;
 extern  spawn_temp_t    st;
 
+extern	pmenu_arena_t	menu_lookup[MAX_ARENAS];
+
 // means of death
 #define MOD_UNKNOWN         0
 #define MOD_BLASTER         1
@@ -766,6 +768,7 @@ edict_t *G_SetVictim(edict_t *ent, int start);
 void ValidateSelectedItem(edict_t *ent);
 qboolean G_FloodProtect(edict_t *ent, struct flood_s *flood,
                         const char *what, int msgs, float persecond, float delay);
+void Cmd_ArenaMenu_f(edict_t *ent);
 
 //
 // g_items.c

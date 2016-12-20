@@ -1504,6 +1504,7 @@ static void Cmd_Commands_f(edict_t *ent)
               );
 }
 
+/*
 static qboolean become_spectator(edict_t *ent)
 {
     switch (ent->client->pers.connected) {
@@ -1525,6 +1526,25 @@ static qboolean become_spectator(edict_t *ent)
     gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
     return qtrue;
 }
+*/
+
+static void select_arena(edict_t *ent) {
+	switch (ent->client->menu.cur) {
+		case 12:
+			PMenu_Close(ent);
+			break;
+		
+	}
+	
+	int selected = ent->client->menu.cur;
+	
+	if (selected >= 2 && selected < 12) {
+		
+		ent->client->pers.arena = selected;
+		ent->client->pers.arena_p = &(level.arenas[selected]);
+		change_arena(ent);
+	}
+}
 
 static void select_test(edict_t *ent)
 {
@@ -1544,6 +1564,7 @@ static void select_test(edict_t *ent)
         }
         spectator_respawn(ent, CONN_SPAWNED);
         break;
+	/*
     case 5:
         if (become_spectator(ent)) {
             if (ent->client->chase_target) {
@@ -1560,25 +1581,24 @@ static void select_test(edict_t *ent)
             PMenu_Close(ent);
         }
         break;
+	*/
+	case 5:
+		G_JoinTeam(ent, ARENA_TEAM_HOME);
+		PMenu_Close(ent);
+        break;
+    case 6:
+        G_JoinTeam(ent, ARENA_TEAM_AWAY);
+		PMenu_Close(ent);
+        break;
     case 7:
-        if (become_spectator(ent)) {
-            GetChaseTarget(ent, CHASE_LEADER);
-            PMenu_Close(ent);
-        }
         break;
     case 8:
-        if (become_spectator(ent)) {
-            GetChaseTarget(ent, CHASE_QUAD);
-            PMenu_Close(ent);
-        }
+        // show arena change menu
+		Cmd_ArenaMenu_f(ent);
         break;
     case 9:
-        if (become_spectator(ent)) {
-            GetChaseTarget(ent, CHASE_INVU);
-            PMenu_Close(ent);
-        }
         break;
-    case 11:
+    case 10:
         PMenu_Close(ent);
         break;
     }
@@ -1590,19 +1610,33 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { NULL },
     { NULL, PMENU_ALIGN_LEFT, select_test },
     { NULL },
-    { "*Enter freefloat mode", PMENU_ALIGN_LEFT, select_test },
-    { "*Enter chasecam mode", PMENU_ALIGN_LEFT, select_test },
-//    { "*Autocam - Frag Leader", PMENU_ALIGN_LEFT, select_test },
-//    { "*Autocam - Quad Runner", PMENU_ALIGN_LEFT, select_test },
-//    { "*Autocam - Pent Runner", PMENU_ALIGN_LEFT, select_test },
+	{ "*Join HOME team", PMENU_ALIGN_LEFT, select_test },
+	{ "*Join AWAY team", PMENU_ALIGN_LEFT, select_test },	
     { NULL },
+	{ "*Change ARENA", PMENU_ALIGN_LEFT, select_test },
+	{ NULL },
     { "*Exit menu", PMENU_ALIGN_LEFT, select_test },
-//  { "*Voting menu", PMENU_ALIGN_LEFT, select_test },
-    { NULL },
-    { NULL },
     { NULL },
     { "Use [ and ] to move cursor", PMENU_ALIGN_CENTER },
     { "Press Enter to select", PMENU_ALIGN_CENTER },
+    { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
+};
+
+static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
+    { "OpenRA2 - Select Arena", PMENU_ALIGN_CENTER },
+    { NULL },
+    { NULL },
+    { NULL },
+    { NULL },
+	{ NULL },
+	{ NULL },	
+    { NULL },
+	{ NULL },
+	{ NULL },
+    { NULL },
+    { NULL },
+	{ "*Exit menu", PMENU_ALIGN_LEFT, select_arena },
+    { NULL },
     { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
@@ -1626,6 +1660,24 @@ void Cmd_Menu_f(edict_t *ent)
     default:
         return;
     }
+}
+
+void Cmd_ArenaMenu_f(edict_t *ent) {
+	if (ent->client->layout == LAYOUT_MENU) {
+        PMenu_Close(ent);
+    }
+
+    PMenu_Open(ent, arena_menu);
+
+	int i, k;
+	for (i=0, k=2; i<MAX_ARENAS; i++) {
+		if (menu_lookup[i].num) {
+			ent->client->menu.entries[k].text = menu_lookup[i].name;
+			ent->client->menu.entries[k].align = PMENU_ALIGN_LEFT;
+			ent->client->menu.entries[k].select = select_arena;
+			k++;
+		}
+	}
 }
 
 /*

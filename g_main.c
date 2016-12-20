@@ -31,6 +31,8 @@ int             meansOfDeath;
 
 edict_t         *g_edicts;
 
+pmenu_arena_t	menu_lookup[MAX_ARENAS];
+
 cvar_t  *dmflags;
 cvar_t  *skill;
 cvar_t  *fraglimit;
@@ -455,6 +457,7 @@ static void G_LoadMapList(void)
     int linenum, nummaps;
 	int8_t arena_num;
 	_Bool inarena;
+	int8_t acount = 0;
 	
     if (!game.dir[0]) {
         return;
@@ -534,6 +537,7 @@ static void G_LoadMapList(void)
 				
 				if (g_strcmp0(arena_token, "arena") == 0 && inarena) {
 					arena_num = atoi(COM_Parse(&arena_data));
+					acount++;
 				}
 				
 				if (g_strcmp0(arena_token, "damage") == 0 && inarena) {
@@ -550,13 +554,13 @@ static void G_LoadMapList(void)
 			}
 			fclose(afp);
 		}
-
+			
         List_Append(&g_map_list, &map->list);
         nummaps++;
     }
 
     fclose(fp);
-
+	
     gi.dprintf("Loaded %d maps and %d arenas from '%s'\n",
                nummaps, arena_num + 1, path);
 }
