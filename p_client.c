@@ -1179,13 +1179,13 @@ void PutClientInServer(edict_t *ent)
     // find a spawn point
     // do it before setting health back up, so farthest
     // ranging doesn't count this client
-    if (client->pers.connected == CONN_SPECTATOR) {
-        VectorScale(client->ps.pmove.origin, 0.125f, spawn_origin);
-        VectorCopy(client->ps.viewangles, spawn_angles);
-    } else {
+    //if (client->pers.connected == CONN_SPECTATOR) {
+    //    VectorScale(client->ps.pmove.origin, 0.125f, spawn_origin);
+    //    VectorCopy(client->ps.viewangles, spawn_angles);
+    //} else {
         ent->health = 0;
         SelectSpawnPoint(ent, spawn_origin, spawn_angles);
-    }
+    //}
 
     PMenu_Close(ent);
 

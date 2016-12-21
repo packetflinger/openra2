@@ -1540,8 +1540,10 @@ static void select_arena(edict_t *ent) {
 	
 	if (selected >= 2 && selected < 12) {
 		
-		ent->client->pers.arena = selected;
-		ent->client->pers.arena_p = &(level.arenas[selected]);
+		G_PartTeam(ent);
+		
+		ent->client->pers.arena = selected-1;
+		ent->client->pers.arena_p = &level.arenas[ent->client->pers.arena];
 		change_arena(ent);
 	}
 }

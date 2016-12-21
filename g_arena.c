@@ -404,6 +404,7 @@ void G_PartTeam(edict_t *ent) {
 	}
 	
 	ent->client->pers.team = 0;
+	//spectator_respawn(ent, CONN_SPECTATOR);
 }
 
 // give back all the ammo, health and armor for start of a round
