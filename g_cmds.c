@@ -1541,7 +1541,7 @@ static void select_arena(edict_t *ent) {
 	if (selected >= 2 && selected < 12) {
 		
 		G_PartTeam(ent);
-		
+		ent->client->pers.connected = CONN_SPECTATOR;
 		ent->client->pers.arena = selected-1;
 		ent->client->pers.arena_p = &level.arenas[ent->client->pers.arena];
 		change_arena(ent);
@@ -1551,7 +1551,7 @@ static void select_arena(edict_t *ent) {
 static void select_test(edict_t *ent)
 {
     switch (ent->client->menu.cur) {
-    case 3:
+    /*case 3:
         if (ent->client->pers.connected == CONN_SPAWNED) {
             if (G_SpecRateLimited(ent)) {
                 break;
@@ -1566,6 +1566,7 @@ static void select_test(edict_t *ent)
         }
         spectator_respawn(ent, CONN_SPAWNED);
         break;
+	*/
 	/*
     case 5:
         if (become_spectator(ent)) {
@@ -1594,7 +1595,7 @@ static void select_test(edict_t *ent)
         break;
     case 7:
         break;
-    case 8:
+    case 3:
         // show arena change menu
 		Cmd_ArenaMenu_f(ent);
         break;
@@ -1610,12 +1611,12 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { "OpenRA2 - Main Main", PMENU_ALIGN_CENTER },
     { NULL },
     { NULL },
-    { NULL, PMENU_ALIGN_LEFT, select_test },
+    { "*Change ARENA", PMENU_ALIGN_LEFT, select_test },
     { NULL },
 	{ "*Join HOME team", PMENU_ALIGN_LEFT, select_test },
 	{ "*Join AWAY team", PMENU_ALIGN_LEFT, select_test },	
     { NULL },
-	{ "*Change ARENA", PMENU_ALIGN_LEFT, select_test },
+	{ NULL },
 	{ NULL },
     { "*Exit menu", PMENU_ALIGN_LEFT, select_test },
     { NULL },
@@ -1651,6 +1652,7 @@ void Cmd_Menu_f(edict_t *ent)
 
     PMenu_Open(ent, main_menu);
 
+	/*
     switch (ent->client->pers.connected) {
     case CONN_PREGAME:
     case CONN_SPECTATOR:
@@ -1662,6 +1664,7 @@ void Cmd_Menu_f(edict_t *ent)
     default:
         return;
     }
+	*/
 }
 
 void Cmd_ArenaMenu_f(edict_t *ent) {
