@@ -1972,7 +1972,7 @@ void ClientBeginServerFrame(edict_t *ent)
 
         if (ent->deadflag) {
             // wait for any button just going down
-            if (level.framenum > client->respawn_framenum) {
+            if (level.framenum > client->respawn_framenum && client->pers.arena_p->state < ARENA_STATE_PLAY) {
                 // in deathmatch, only wait for attack button
                 if ((client->latched_buttons & BUTTON_ATTACK) ||
                     (DF(FORCE_RESPAWN) && level.framenum - client->respawn_framenum > 2 * HZ)) {
