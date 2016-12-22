@@ -116,7 +116,7 @@ void G_ForceReady(arena_team_t *team, qboolean ready);
 void G_FreezePlayers(arena_t *a, qboolean freeze);
 void G_GiveItems(edict_t *ent);
 void G_JoinTeam(edict_t *ent, arena_team_type_t type);
-void G_PartTeam(edict_t *ent);
+void G_PartTeam(edict_t *ent, qboolean silent);
 void G_RefillInventory(edict_t *ent);
 void G_RespawnPlayers(arena_t *a);
 char *G_RoundToString(arena_t *a);

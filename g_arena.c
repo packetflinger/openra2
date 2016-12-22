@@ -347,7 +347,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 			return;
 		}
 		
-		G_PartTeam(ent);
+		G_PartTeam(ent, true);
 	}
 	
 	// add player to the team
@@ -376,7 +376,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 }
 
 // remove this player from whatever team they're on
-void G_PartTeam(edict_t *ent) {
+void G_PartTeam(edict_t *ent, qboolean silent) {
 	
 	arena_team_t *oldteam;
 	
@@ -387,8 +387,6 @@ void G_PartTeam(edict_t *ent) {
 	
 	if (!oldteam)
 		return;
-	
-	gi.cprintf(ent, PRINT_HIGH, "Removing you from %s\n", oldteam->name);
 	
 	oldteam->player_count--;
 	if (oldteam->captain == ent) {
@@ -405,6 +403,10 @@ void G_PartTeam(edict_t *ent) {
 	
 	ent->client->pers.team = 0;
 	//spectator_respawn(ent, CONN_SPECTATOR);
+
+	if (!silent) {
+		G_bprintf(ent->client->pers.arena_p, PRINT_HIGH, "%s left %s\n", ent->client->pers.netname, oldteam->name);
+	}
 }
 
 // give back all the ammo, health and armor for start of a round

@@ -444,6 +444,7 @@ typedef struct map_entry_s {
     int     num_hits, num_in, num_out; // for statistics
     char    name[1];
 	arena_entry_t arenas[MAX_ARENAS];
+	char	extra_ents[MAX_STRING_CHARS];	// additional entities from <mapname>.ent file
 } map_entry_t;
 
 //

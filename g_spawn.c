@@ -576,6 +576,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
 	map_entry_t	*map;
+	char 		*newents;	// map entities + user specified one
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -591,6 +592,16 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
     G_LoadScores();
 
+	map = G_FindMap(mapname);
+	
+	// if we have extra ents, append them
+	if (map->extra_ents) {
+		newents = va("%s %s", entities, map->extra_ents);
+		//gi.dprintf("%s\n", newents);
+	} else {
+		newents = va("%s", entities);
+	}
+	
     // set client fields on player ents
     for (i = 0; i < game.maxclients; i++) {
         ent = &g_edicts[i + 1];
@@ -636,9 +647,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     //G_UpdateItemBans();
 
 	
+	// find maps was here
 	// find arenas
-	map = G_FindMap(mapname);
-	
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
 		

@@ -180,7 +180,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	
 	// already on a team, remove first
 	if (ent->client->pers.team) {
-		G_PartTeam(ent);
+		G_PartTeam(ent, true);
 		ent->client->pers.connected = CONN_PREGAME;
 	}
 	
@@ -1099,7 +1099,7 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 
 static void Cmd_Observe_f(edict_t *ent)
 {
-	G_PartTeam(ent);
+	G_PartTeam(ent, false);
 	
     if (ent->client->pers.connected == CONN_PREGAME) {
         ent->client->pers.connected = CONN_SPECTATOR;
@@ -1540,7 +1540,7 @@ static void select_arena(edict_t *ent) {
 	
 	if (selected >= 2 && selected < 12) {
 		
-		G_PartTeam(ent);
+		G_PartTeam(ent, true);
 		ent->client->pers.connected = CONN_SPECTATOR;
 		ent->client->pers.arena = selected-1;
 		ent->client->pers.arena_p = &level.arenas[ent->client->pers.arena];

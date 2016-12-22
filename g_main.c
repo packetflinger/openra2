@@ -447,12 +447,14 @@ static void G_LoadMapList(void)
 {
     char path[MAX_OSPATH];
 	char apath[MAX_OSPATH];
+	char extrapath[MAX_OSPATH];
     char buffer[MAX_STRING_CHARS];
 	char abuffer[MAX_STRING_CHARS];
+	char extra_ents[MAX_STRING_CHARS];
     char *token, *arena_token;
-    const char *data, *arena_data;
+    const char *data, *arena_data, *ent_data;
     map_entry_t *map;
-    FILE *fp, *afp;
+    FILE *fp, *afp, *efp;
     size_t len;
     int linenum, nummaps;
 	int8_t arena_num;
@@ -557,6 +559,16 @@ static void G_LoadMapList(void)
 			
         List_Append(&g_map_list, &map->list);
         nummaps++;
+		
+		// look for extra entities file
+		len = Q_concat(extrapath, sizeof(extrapath), game.dir, "/mapcfg/", token, ".ent", NULL);
+		efp = fopen(extrapath, "r");
+		if (efp) {
+			ent_data = fgets(extra_ents, sizeof(extra_ents), efp);
+			if (ent_data) {
+				strncpy(map->extra_ents, ent_data, MAX_STRING_CHARS);
+			}
+		}
     }
 
     fclose(fp);

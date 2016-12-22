@@ -1096,8 +1096,8 @@ void spectator_respawn(edict_t *ent, int connected)
 
     // notify others
     if (connected == CONN_SPAWNED) {
-        gi.bprintf(PRINT_HIGH, "%s entered the game (%d player%s)\n",
-                   ent->client->pers.netname, total, total == 1 ? "" : "s");
+        //gi.bprintf(PRINT_HIGH, "%s entered the game (%d player%s)\n",
+        //           ent->client->pers.netname, total, total == 1 ? "" : "s");
 
         PutClientInServer(ent);
 
@@ -1110,8 +1110,8 @@ void spectator_respawn(edict_t *ent, int connected)
         ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
         ent->client->ps.pmove.pm_time = 14;
     } else {
-        gi.bprintf(PRINT_HIGH, "%s moved to the sidelines (%d player%s)\n",
-                   ent->client->pers.netname, total, total == 1 ? "" : "s");
+        //gi.bprintf(PRINT_HIGH, "%s moved to the sidelines (%d player%s)\n",
+        //           ent->client->pers.netname, total, total == 1 ? "" : "s");
 
         TossClientWeapon(ent);
 
