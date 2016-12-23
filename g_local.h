@@ -688,6 +688,7 @@ extern  cvar_t  *g_vote_treshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
+extern	cvar_t	*g_round_end_time;
 extern	cvar_t	*g_round_limit;
 extern	cvar_t	*g_timeout_time;
 extern  cvar_t  *g_intermission_time;

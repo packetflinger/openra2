@@ -78,8 +78,9 @@ void G_ArenaThink(arena_t *a) {
 		arena_team_t *winner = G_GetWinningTeam(a);
 		
 		if (winner && !foundwinner) {
-			a->round_end_frame = level.framenum + SECS_TO_FRAMES(2);
+			a->round_end_frame = level.framenum + SECS_TO_FRAMES((int)g_round_end_time->value);
 			foundwinner = true;
+			G_ShowScores(a);
 		}
 		
 		if (a->round_end_frame == level.framenum) {
@@ -238,6 +239,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->round_start_frame = level.framenum + SECS_TO_FRAMES(10);
 	
 	a->round_end_frame = 0;
+	G_HideScores(a);
 	G_RespawnPlayers(a);
 }
 
@@ -477,6 +479,34 @@ void G_SetSkin(edict_t *ent, const char *skin) {
 		gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
 		gi.WriteString(va("%s\\%s", ent->client->pers.netname, skin));
 		gi.unicast(e, true);
+	}
+}
+
+void G_ShowScores(arena_t *a) {
+	int i;
+	
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			a->team_home.players[i]->client->layout = LAYOUT_SCORES;
+		}
+		
+		if (a->team_away.players[i]) {
+			a->team_away.players[i]->client->layout = LAYOUT_SCORES;
+		}
+	}
+}
+
+void G_HideScores(arena_t *a) {
+	int i;
+	
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			a->team_home.players[i]->client->layout = 0;
+		}
+		
+		if (a->team_away.players[i]) {
+			a->team_away.players[i]->client->layout = 0;
+		}
 	}
 }
 

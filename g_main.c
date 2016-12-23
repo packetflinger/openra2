@@ -102,6 +102,7 @@ cvar_t  *flood_infodelay;
 cvar_t	*g_arena_weapflags;
 cvar_t	*g_arena_dmgflags;
 cvar_t	*g_arena_numrounds;
+cvar_t	*g_round_end_time;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1108,6 +1109,7 @@ static void G_Init(void)
 	g_arena_weapflags = gi.cvar("g_arena_weapflags", "512", 0);
 	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
 	g_arena_numrounds = gi.cvar("g_arena_runrounds", "9", 0);
+	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
 	
     // force deathmatch
     //gi.cvar_set( "coop", "0" ); //atu
