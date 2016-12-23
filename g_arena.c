@@ -344,12 +344,11 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	
 	//already on that team
 	if (ent->client->pers.team) {
-		if (ent->client->pers.team == team) {
-			gi.cprintf(ent, PRINT_HIGH, "You're already on that team dumbass!\n");
+		if (ent->client->pers.team->type == type) {
+			//gi.cprintf(ent, PRINT_HIGH, "You're already on that team dumbass!\n");
+			G_PartTeam(ent, false);
 			return;
 		}
-		
-		G_PartTeam(ent, true);
 	}
 	
 	// add player to the team
@@ -368,7 +367,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		team->captain = ent;
 	}
 	
-	G_bprintf(arena, PRINT_HIGH, "%s joined %s\n", ent->client->pers.netname, team->name);
+	G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", ent->client->pers.netname, team->name);
 	
 	// force the skin
 	G_SetSkin(ent, team->skin);
@@ -404,11 +403,12 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	}
 	
 	ent->client->pers.team = 0;
-	//spectator_respawn(ent, CONN_SPECTATOR);
 
 	if (!silent) {
-		G_bprintf(ent->client->pers.arena_p, PRINT_HIGH, "%s left %s\n", ent->client->pers.netname, oldteam->name);
+		G_bprintf(ent->client->pers.arena_p, PRINT_HIGH, "%s left team %s\n", ent->client->pers.netname, oldteam->name);
 	}
+	
+	spectator_respawn(ent, CONN_SPECTATOR);
 }
 
 // give back all the ammo, health and armor for start of a round

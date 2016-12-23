@@ -1643,6 +1643,7 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
     { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
+
 void Cmd_Menu_f(edict_t *ent)
 {
     if (ent->client->layout == LAYOUT_MENU) {
@@ -1652,20 +1653,25 @@ void Cmd_Menu_f(edict_t *ent)
 
     PMenu_Open(ent, main_menu);
 
-	/*
-    switch (ent->client->pers.connected) {
-    case CONN_PREGAME:
-    case CONN_SPECTATOR:
-        ent->client->menu.entries[3].text = "*Enter the game";
-        break;
-    case CONN_SPAWNED:
-        ent->client->menu.entries[3].text = "*Leave the game";
-        break;
-    default:
-        return;
-    }
-	*/
+	if (ent->client->pers.team) {
+		if (ent->client->pers.team->type == ARENA_TEAM_HOME) {
+			ent->client->menu.entries[5].text = va("*Leave team %s", ent->client->pers.team->name);
+		} else {
+			ent->client->menu.entries[5].text = va("*Join team %s", ent->client->pers.arena_p->team_home.name);
+		}
+		
+		if (ent->client->pers.team->type == ARENA_TEAM_AWAY) {
+			ent->client->menu.entries[6].text = va("*Leave team %s", ent->client->pers.team->name);
+		} else {
+			ent->client->menu.entries[6].text = va("*Join team %s", ent->client->pers.arena_p->team_away.name);
+		}
+	} else {
+		ent->client->menu.entries[5].text = va("*Join team %s", ent->client->pers.arena_p->team_home.name);
+		ent->client->menu.entries[6].text = va("*Join team %s", ent->client->pers.arena_p->team_away.name);
+	}
 }
+
+
 
 void Cmd_ArenaMenu_f(edict_t *ent) {
 	if (ent->client->layout == LAYOUT_MENU) {

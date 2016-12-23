@@ -103,6 +103,8 @@ cvar_t	*g_arena_weapflags;
 cvar_t	*g_arena_dmgflags;
 cvar_t	*g_arena_numrounds;
 cvar_t	*g_round_end_time;
+cvar_t	*g_hometeam_name;
+cvar_t	*g_awayteam_name;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1110,6 +1112,8 @@ static void G_Init(void)
 	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
 	g_arena_numrounds = gi.cvar("g_arena_runrounds", "9", 0);
 	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
+	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
+	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	
     // force deathmatch
     //gi.cvar_set( "coop", "0" ); //atu
