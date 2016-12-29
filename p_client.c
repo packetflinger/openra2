@@ -617,7 +617,7 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
         // show scores
         if (!self->client->layout) {
             self->client->layout = LAYOUT_SCORES;
-            DeathmatchScoreboardMessage(self, qfalse);
+			G_ArenaScoreboardMessage(self, false);
         }
 
         // clear inventory

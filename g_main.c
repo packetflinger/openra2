@@ -157,7 +157,7 @@ static void ClientEndServerFrames(void)
 
         // if the scoreboard is up, update it
         if (c->layout == LAYOUT_SCORES && !(level.framenum % (3 * HZ))) {
-            DeathmatchScoreboardMessage(c->edict, qfalse);
+			G_ArenaScoreboardMessage(c->edict, false);
         }
 
         PMenu_Update(c->edict);

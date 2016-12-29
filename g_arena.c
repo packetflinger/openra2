@@ -60,6 +60,16 @@ void change_arena(edict_t *self) {
     self->client->respawn_framenum = level.framenum;
 }
 
+void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
+    char buffer[MAX_STRING_CHARS];
+
+	G_BuildScoreboard(buffer, ent->client, ent->client->pers.arena_p);
+
+    gi.WriteByte(svc_layout);
+    gi.WriteString(buffer);
+    gi.unicast(ent, reliable);
+}
+
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
 void G_ArenaThink(arena_t *a) {
 	static qboolean foundwinner = false;
@@ -168,6 +178,237 @@ void G_BuildMenu(void) {
 	}
 }
 
+
+/*
+==================
+Used to update per-client scoreboard and build
+global oldscores (client is NULL in the latter case).
+==================
+*/
+size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
+{
+    char    entry[MAX_STRING_CHARS];
+    char    status[MAX_QPATH];
+    char    timebuf[16];
+    size_t  total, len;
+    int     i, j, numranks;
+    int     y, sec, eff;
+    gclient_t   *ranks[MAX_CLIENTS];
+    gclient_t   *c;
+    time_t      t;
+    struct tm   *tm;
+
+	y = 20;		// starting point down from top of screen
+	
+	t = time(NULL);
+    tm = localtime(&t);
+	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+	
+	if (len < 1)
+        strcpy(status, "???");
+	
+    if (!client) {
+        Q_snprintf(entry, sizeof(entry),
+                   "yt %d cstring2 \"Old scoreboard from %s\"", y, level.mapname);
+    } else {
+		Q_snprintf(entry, sizeof(entry), "yt %d cstring2 \"%s - %s\"", y, status, arena->name);
+    }
+
+	y += LAYOUT_LINE_HEIGHT * 2;
+	
+    total = Q_scnprintf(buffer, MAX_STRING_CHARS,
+                        "xv 0 %s"
+                        "yt %d "
+                        "cstring \"Team %s\""
+                        "yt %d "
+                        "cstring2 \"Player          Frg Rnd Mch FPH Time Ping\"", 
+						entry, y, arena->team_home.name, y + LAYOUT_LINE_HEIGHT
+	);
+
+    numranks = G_CalcArenaRanks(ranks, &arena->team_home);
+
+    // hometeam first, add the clients sorted by rank
+    y += LAYOUT_LINE_HEIGHT * 2;
+    for (i = 0; i < numranks; i++) {
+        c = ranks[i];
+
+        sec = (level.framenum - c->resp.enter_framenum) / HZ;
+		
+        if (!sec) {
+            sec = 1;
+        }
+
+        if (c->resp.score > 0) {
+            j = c->resp.score + c->resp.deaths;
+            eff = j ? c->resp.score * 100 / j : 100;
+        } else {
+            eff = 0;
+        }
+
+        if (level.framenum < 10 * 60 * HZ) {
+            sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
+        } else {
+            sprintf(timebuf, "%d", sec / 60);
+        }
+
+        len = Q_snprintf(entry, sizeof(entry),
+                         "yt %d cstring%s \"%-15s %3d %3d %3d %3d %4s %4d\"",
+                         y, c == client ? "" : "2",
+                         c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
+                         c->resp.score * 3600 / sec, timebuf, c->ping);
+						 
+        if (len >= sizeof(entry))
+            continue;
+		
+        if (total + len >= MAX_STRING_CHARS)
+            break;
+		
+        memcpy(buffer + total, entry, len);
+		
+        total += len;
+        y += LAYOUT_LINE_HEIGHT;
+    }
+	
+	y = LAYOUT_LINE_HEIGHT * 4;
+	
+	total += Q_scnprintf(buffer + total , MAX_STRING_CHARS,
+                        "xv 0 %s"
+                        "yv %d "
+                        "cstring \"Team %s\""
+                        "xv -16 "
+                        "yv %d "
+                        "cstring2 \"Player          Frg Rnd Mch FPH Time Ping\"", 
+						entry, y, arena->team_away.name, y + LAYOUT_LINE_HEIGHT);
+	
+	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
+
+	y += LAYOUT_LINE_HEIGHT * 2;
+	
+    // away team second, add the clients sorted by rank
+    for (i = 0; i < numranks; i++) {
+        c = ranks[i];
+
+        sec = (level.framenum - c->resp.enter_framenum) / HZ;
+        if (!sec) {
+            sec = 1;
+        }
+
+        if (c->resp.score > 0) {
+            j = c->resp.score + c->resp.deaths;
+            eff = j ? c->resp.score * 100 / j : 100;
+        } else {
+            eff = 0;
+        }
+
+        if (level.framenum < 10 * 60 * HZ) {
+            sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
+        } else {
+            sprintf(timebuf, "%d", sec / 60);
+        }
+
+        len = Q_snprintf(entry, sizeof(entry),
+                         "yv %d cstring%s \"%-15s %3d %3d %3d %3d %4s %4d\"",
+                         y, c == client ? "" : "2",
+                         c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
+                         c->resp.score * 3600 / sec, timebuf, c->ping);
+						 
+        if (len >= sizeof(entry))
+            continue;
+
+        if (total + len >= MAX_STRING_CHARS)
+            break;
+		
+        memcpy(buffer + total, entry, len);
+		
+        total += len;
+        y += LAYOUT_LINE_HEIGHT;
+    }
+
+	y = LAYOUT_LINE_HEIGHT * ((MAX_ARENA_TEAM_PLAYERS + 4) * 2);
+	
+    // add spectators in fixed order
+    for (i = 0, j = 0; i < game.maxclients; i++) {
+        c = &game.clients[i];
+		
+        if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR)
+            continue;
+		
+		if (c->pers.arena_p != arena)
+			continue;
+		
+        if (c->pers.mvdspec)
+            continue;
+
+        sec = (level.framenum - c->resp.enter_framenum) / HZ;
+        if (!sec) {
+            sec = 1;
+        }
+
+        if (c->chase_target) {
+            Q_snprintf(status, sizeof(status), "(-> %.13s)",
+                       c->chase_target->client->pers.netname);
+        } else {
+            //strcpy(status, "(observing)");
+			status[0] = 0;
+        }
+
+        len = Q_snprintf(entry, sizeof(entry),
+                         "yv %d string%s \"   %-15s %-18s%3d %4d\"",
+                         y, c == client ? "" : "2",
+                         c->pers.netname, status, sec / 60, c->ping);
+        if (len >= sizeof(entry))
+            continue;
+		
+        if (total + len >= MAX_STRING_CHARS)
+            break;
+		
+        memcpy(buffer + total, entry, len);
+		
+        total += len;
+        y += LAYOUT_LINE_HEIGHT;
+        j++;
+    }
+
+    // add server info
+    if (sv_hostname && sv_hostname->string[0]) {
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+                          sv_hostname->string);
+						  
+        if (total + len < MAX_STRING_CHARS) {
+            memcpy(buffer + total, entry, len);
+            total += len;
+        }
+    }
+
+    buffer[total] = 0;
+
+    return total;
+}
+
+int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
+    int i, total;
+
+    // sort the clients by score, then by eff
+    total = 0;
+    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!team->players[i])
+			continue;
+		
+		if (team->players[i]->client->pers.connected == CONN_SPAWNED) {
+			if (ranks) {
+				ranks[total] = team->players[i]->client;
+			}
+			total++;
+		}
+    }
+
+    if (ranks) {
+        qsort(ranks, total, sizeof(gclient_t *), G_PlayerCmp);
+    }
+
+    return total;
+}
+
 // see if all players are ready
 qboolean G_CheckReady(arena_t *a) {
 	qboolean ready_home = false;
@@ -215,7 +456,16 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 	}
 }
 
-void G_EndMatch(arena_t *a) {
+void G_EndMatch(arena_t *a, arena_team_t *winner) {
+	
+	int i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!winner->players[i])
+			continue;
+		
+		winner->players[i]->client->resp.match_score++;
+	}
+	
 	G_bprintf(a, PRINT_HIGH, "Match finished\n", a->current_round);
 	
 	a->state = ARENA_STATE_WARMUP;
@@ -228,8 +478,16 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->round_start_frame = 0;
 	G_bprintf(a, PRINT_HIGH, "%s won round %d/%d!\n", winner->name, a->current_round, a->round_limit);
 	
+	int i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!winner->players[i])
+			continue;
+		
+		winner->players[i]->client->resp.round_score++;
+	}
+	
 	if (a->current_round == a->round_limit) {
-		G_EndMatch(a);
+		G_EndMatch(a, winner);
 		return;
 	}
 	
@@ -342,12 +600,12 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 	
-	//already on that team
 	if (ent->client->pers.team) {
 		if (ent->client->pers.team->type == type) {
-			//gi.cprintf(ent, PRINT_HIGH, "You're already on that team dumbass!\n");
 			G_PartTeam(ent, false);
 			return;
+		} else {
+			G_PartTeam(ent, false);
 		}
 	}
 	

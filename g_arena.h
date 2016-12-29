@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SECS_TO_FRAMES(seconds)     (int)((seconds) * HZ)
 #define FRAMES_TO_SECS(frames)      (int)((frames) * FRAMETIME)
 
+#define LAYOUT_LINE_HEIGHT		8
+
 typedef enum {
 	WINNER_NONE,
 	WINNER_HOME,
@@ -105,12 +107,15 @@ typedef struct {
 
 
 void change_arena(edict_t *self);
+void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaThink(arena_t *a);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
 void G_BuildMenu(void);
+size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
+int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 qboolean G_CheckReady(arena_t *a);
 void G_CheckTime(arena_t *a);
-void G_EndMatch(arena_t *a);
+void G_EndMatch(arena_t *a, arena_team_t *winner);
 void G_EndRound(arena_t *a, arena_team_t *winner);
 void G_ForceReady(arena_team_t *team, qboolean ready);
 void G_FreezePlayers(arena_t *a, qboolean freeze);
@@ -118,6 +123,7 @@ void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
 void G_JoinTeam(edict_t *ent, arena_team_type_t type);
 void G_PartTeam(edict_t *ent, qboolean silent);
+int G_PlayerCmp(const void *p1, const void *p2);
 void G_RefillInventory(edict_t *ent);
 void G_RespawnPlayers(arena_t *a);
 char *G_RoundToString(arena_t *a);

@@ -27,8 +27,7 @@ RANKING / SCOREBOARD
 ======================================================================
 */
 
-static int G_PlayerCmp(const void *p1, const void *p2)
-{
+int G_PlayerCmp(const void *p1, const void *p2) {
     gclient_t *a = *(gclient_t * const *)p1;
     gclient_t *b = *(gclient_t * const *)p2;
 

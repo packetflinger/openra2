@@ -1706,7 +1706,8 @@ static void Cmd_Score_f(edict_t *ent)
     }
 
     ent->client->layout = LAYOUT_SCORES;
-    DeathmatchScoreboardMessage(ent, qtrue);
+    //DeathmatchScoreboardMessage(ent, qtrue);
+	G_ArenaScoreboardMessage(ent, true);
 }
 
 static void Cmd_OldScore_f(edict_t *ent)
@@ -1728,6 +1729,14 @@ static void Cmd_OldScore_f(edict_t *ent)
     gi.unicast(ent, qtrue);
 }
 
+static void Cmd_Layout_f(edict_t *ent) {
+	
+	ent->client->layout = LAYOUT_SCORES;
+	
+	gi.WriteByte(svc_layout);
+    gi.WriteString(gi.args());
+    gi.unicast(ent, qtrue);
+}
 
 // prevent players from joining
 void Cmd_LockTeam_f(edict_t *ent) {
@@ -1751,6 +1760,30 @@ void Cmd_LockTeam_f(edict_t *ent) {
 	} else {
 		team->locked = false;
 		gi.cprintf(ent, PRINT_HIGH, "Team '%s' now unlocked\n", team->name);
+	}
+}
+
+static void Cmd_Teams_f(edict_t *ent) {
+	
+	arena_t *a = ent->client->pers.arena_p;
+	arena_team_t *home = &a->team_home;
+	arena_team_t *away = &a->team_away;
+	
+	int i;
+	gi.cprintf(ent, PRINT_HIGH, "Home Team\n");
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!home->players[i])
+			continue;
+		
+		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (home->players[i] == home->captain) ? "*" : " ", home->players[i]->client->pers.netname);
+	}
+	
+	gi.cprintf(ent, PRINT_HIGH, "Away Team\n");
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!away->players[i])
+			continue;
+		
+		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (away->players[i] == away->captain) ? "*" : " ", away->players[i]->client->pers.netname);
 	}
 }
 
@@ -1934,6 +1967,10 @@ void ClientCommand(edict_t *ent)
 		Cmd_LockTeam_f(ent);
 	else if (Q_stricmp(cmd, "time") == 0 || Q_stricmp(cmd, "timeout") == 0 || Q_stricmp(cmd, "timein") == 0)
 		Cmd_Timeout_f(ent);
+	else if (Q_stricmp(cmd, "layout") == 0) // test
+		Cmd_Layout_f(ent);
+	else if (Q_stricmp(cmd, "teams") == 0) // test
+		Cmd_Teams_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }

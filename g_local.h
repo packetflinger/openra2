@@ -1112,6 +1112,8 @@ typedef struct {
     int         enter_framenum;     // level.framenum the client entered the game
     int         activity_framenum;  // level.framenum last activity was seen
     int         score;              // frags, etc
+	int			round_score;		// rounds won
+	int			match_score;		// matches won
     int         deaths;
     fragstat_t  frags[FRAG_TOTAL];
     itemstat_t  items[ITEM_TOTAL];
