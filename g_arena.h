@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FRAMES_TO_SECS(frames)      (int)((frames) * FRAMETIME)
 
 #define LAYOUT_LINE_HEIGHT		8
+#define LAYOUT_CHAR_WIDTH		8
 
 typedef enum {
 	WINNER_NONE,
@@ -112,6 +113,7 @@ void G_ArenaThink(arena_t *a);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
 void G_BuildMenu(void);
 size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
+size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 qboolean G_CheckReady(arena_t *a);
 void G_CheckTime(arena_t *a);
