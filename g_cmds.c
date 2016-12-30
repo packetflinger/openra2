@@ -1107,11 +1107,13 @@ static void Cmd_Observe_f(edict_t *ent)
         return;
     }
 
+	/*
     if (ent->client->pers.connected == CONN_SPECTATOR) {
         spectator_respawn(ent, CONN_SPAWNED);
     } else {
         spectator_respawn(ent, CONN_SPECTATOR);
     }
+	*/
 }
 
 static void Cmd_Chase_f(edict_t *ent)

@@ -959,6 +959,7 @@ void G_ResetLevel(void);
 #define CS_PLAYERNAMES      (CS_GENERAL + 10)
 #define CS_ARENA_TIMEOUT	(CS_GENERAL + MAX_CLIENTS)
 #define CS_ARENA_ROUNDS		(CS_ARENA_TIMEOUT + MAX_ARENAS)
+#define CS_ARENA_COUNTDOWN	(CS_ARENA_ROUNDS + MAX_ARENAS)
 #define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
 
 #define STAT_FRAGS_STRING           18
@@ -972,6 +973,7 @@ void G_ResetLevel(void);
 #define STAT_VOTE_COUNT             26
 #define STAT_TIMEOUT				27
 #define STAT_ROUNDS					28
+#define STAT_COUNTDOWN				29
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run

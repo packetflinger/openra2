@@ -937,11 +937,9 @@ void G_RunFrame(void)
             // see if it is time to end a deathmatch
             CheckDMRules();
 			
-			arena_t *a;
 			// Let each arena think
 			for (i=1; i<=level.arena_count; i++) {
-				a = &(level.arenas[i]);
-				G_ArenaThink(a);
+				G_ArenaThink(&level.arenas[i]);
 			}
         }
 
@@ -1018,7 +1016,7 @@ static void G_Init(void)
 
     //srand(time(NULL));
 
-    gi.dprintf("==== InitGame ====\n");
+    gi.dprintf("\n==== Game Init - %s %s ====\n", GAMEVERSION, OPENRA2_VERSION);
 
     gun_x = gi.cvar("gun_x", "0", 0);
     gun_y = gi.cvar("gun_y", "0", 0);
@@ -1046,9 +1044,7 @@ static void G_Init(void)
 
     // change anytime vars
 	int df = DF_NO_HEALTH | DF_NO_ITEMS | DF_SKINTEAMS | DF_NO_ARMOR | DF_MODELTEAMS;
-	gi.dprintf("DMFLAGS: %d\n", df);
     dmflags = gi.cvar("dmflags", va("%d", df), CVAR_SERVERINFO);
-	gi.dprintf("DMFLAGS: %d\n", (int)dmflags->value);
 	
     fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
     timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);
@@ -1200,6 +1196,8 @@ static void G_Init(void)
 
     // export our own features
     gi.cvar_forceset("g_features", va("%d", G_FEATURES));
+	
+	gi.dprintf("==== Game Initialized ====\n\n");
 }
 
 static void G_WriteGame(const char *filename, qboolean autosave)

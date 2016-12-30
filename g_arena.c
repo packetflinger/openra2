@@ -110,8 +110,12 @@ void G_ArenaThink(arena_t *a) {
 		
 		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
 			
-			G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
+			//G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
 			gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
+			gi.configstring(
+				CS_ARENA_COUNTDOWN + a->number, 
+				va("%s", G_SecsToString(FRAMES_TO_SECS(framesleft)))
+			);
 			
 		} else if (framesleft == 0) {
 			
@@ -226,8 +230,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 						"xv 0 yt %d cstring \"VS.\" "
 						"xv %d "
                         "yt %d "
-                        "cstring2 \"Player          Frg Rnd Mch FPH Time Ping\" ", 
-						entry, x, y, arena->team_home.name, y, x, y + LAYOUT_LINE_HEIGHT
+                        "cstring2 \"Player          Frg Rnd Mch  FPH Time Ping\" ", 
+						entry, x, y, arena->team_home.name, y, x, y + LAYOUT_LINE_HEIGHT * 2
 	);
 
     numranks = G_CalcArenaRanks(ranks, &arena->team_home);
@@ -235,7 +239,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	
 	
     // hometeam first, add the clients sorted by rank
-    y += LAYOUT_LINE_HEIGHT * 2;
+    y += LAYOUT_LINE_HEIGHT * 3;
     for (i = 0; i < numranks; i++) {
         c = ranks[i];
 
@@ -259,7 +263,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
         }
 
         len = Q_snprintf(entry, sizeof(entry),
-                         "yt %d cstring%s \"%-15s %3d %3d %3d %3d %4s %4d\"",
+                         "yt %d cstring%s \"%-15s %3d %3d %3d %4d %4s %4d\"",
                          y, c == client ? "" : "2",
                          c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
                          c->resp.score * 3600 / sec, timebuf, c->ping);
@@ -283,12 +287,12 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
                         "yt %d "
                         "cstring \"Team %s\""
                         "yt %d "
-                        "cstring2 \"Player          Frg Rnd Mch FPH Time Ping\"", 
-						x, y, arena->team_away.name, y + LAYOUT_LINE_HEIGHT);
+                        "cstring2 \"Player          Frg Rnd Mch  FPH Time Ping\"", 
+						x, y, arena->team_away.name, y + LAYOUT_LINE_HEIGHT *2);
 	
 	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
 
-	y += LAYOUT_LINE_HEIGHT * 2;
+	y += LAYOUT_LINE_HEIGHT * 3;
 	
     // away team second, add the clients sorted by rank
     for (i = 0; i < numranks; i++) {
@@ -313,7 +317,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
         }
 
         len = Q_snprintf(entry, sizeof(entry),
-                         "yt %d cstring%s \"%-15s %3d %3d %3d %3d %4s %4d\"",
+                         "yt %d cstring%s \"%-15s %3d %3d %3d %4d %4s %4d\"",
                          y, c == client ? "" : "2",
                          c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
                          c->resp.score * 3600 / sec, timebuf, c->ping);
