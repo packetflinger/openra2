@@ -100,23 +100,14 @@ void G_ArenaThink(arena_t *a) {
 		}
 	}
 	
-	if (a->state == ARENA_STATE_COUNTDOWN) {
-		
-	}
-	
 	// start a round
 	if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
 		int framesleft = a->round_start_frame - level.framenum;
 		
 		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
 			
-			//G_bprintf(a, PRINT_HIGH, "%d\n", (int)(framesleft / HZ));
 			gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
-			gi.configstring(
-				CS_ARENA_COUNTDOWN + a->number, 
-				va("%s", G_SecsToString(FRAMES_TO_SECS(framesleft)))
-			);
-			
+			a->countdown = FRAMES_TO_SECS(framesleft);
 		} else if (framesleft == 0) {
 			
 			G_StartRound(a);
@@ -129,7 +120,7 @@ void G_ArenaThink(arena_t *a) {
 		if (G_CheckReady(a)) {	// is everyone ready?
 			a->state = ARENA_STATE_COUNTDOWN;
 			a->current_round = 1;
-			a->round_start_frame = level.framenum + SECS_TO_FRAMES(10);
+			a->round_start_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
 			
 			G_RespawnPlayers(a);
 		}
@@ -717,7 +708,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->current_round++;
 	
 	a->state = ARENA_STATE_COUNTDOWN;
-	a->round_start_frame = level.framenum + SECS_TO_FRAMES(10);
+	a->round_start_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
 	
 	a->round_end_frame = 0;
 	G_HideScores(a);
@@ -861,10 +852,13 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 void G_PartTeam(edict_t *ent, qboolean silent) {
 	
 	arena_team_t *oldteam;
+	arena_team_t *otherteam;
+	arena_t *arena;
 	
 	if (!ent->client)
 		return;
 	
+	arena = ent->client->pers.arena_p;
 	oldteam = ent->client->pers.team;
 	
 	if (!oldteam)
@@ -887,6 +881,12 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 
 	if (!silent) {
 		G_bprintf(ent->client->pers.arena_p, PRINT_HIGH, "%s left team %s\n", ent->client->pers.netname, oldteam->name);
+	}
+	
+	// last team member, end the match
+	if (oldteam->player_count == 0) {
+		otherteam = (oldteam == &arena->team_home) ? &arena->team_away : &arena->team_home;
+		G_EndMatch(arena, otherteam);
 	}
 	
 	spectator_respawn(ent, CONN_SPECTATOR);

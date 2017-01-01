@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ARENA_HOME_SKIN			"female/jezebel"
 #define ARENA_AWAY_SKIN			"male/cypher"
 
-#define str_equal(x, y)		(Q_stricmp((x), (y)) == 0)
+#define str_equal(x, y)			(Q_stricmp((x), (y)) == 0)
 
-#define SECS_TO_FRAMES(seconds)     (int)((seconds) * HZ)
-#define FRAMES_TO_SECS(frames)      (int)((frames) * FRAMETIME)
+#define SECS_TO_FRAMES(seconds)	(int)((seconds) * HZ)
+#define FRAMES_TO_SECS(frames)	(int)((frames) * FRAMETIME)
 
 #define LAYOUT_LINE_HEIGHT		8
 #define LAYOUT_CHAR_WIDTH		8
@@ -80,6 +80,7 @@ typedef struct {
 	int				number;
 	char			name[50];
 	arena_state_t	state;
+	int				countdown;
 	int				player_count;
 	int				spectator_count;
 	int				round_limit;

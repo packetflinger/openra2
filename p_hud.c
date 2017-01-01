@@ -775,7 +775,7 @@ void G_SetStats(edict_t *ent)
 			
 			// countdown
 			if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN) {
-				ent->client->ps.stats[STAT_COUNTDOWN] = CS_ARENA_COUNTDOWN + ent->client->pers.arena_p->number;
+				ent->client->ps.stats[STAT_COUNTDOWN] = ent->client->pers.arena_p->countdown;
 			} else {
 				ent->client->ps.stats[STAT_COUNTDOWN] = 0;
 			}

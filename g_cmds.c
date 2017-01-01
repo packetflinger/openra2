@@ -138,6 +138,17 @@ static void Cmd_Ready_f(edict_t *ent) {
 		return;
 	} else {
 		ent->client->pers.ready = qfalse;
+		if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN) {
+			ent->client->pers.arena_p->round_start_frame = 0;
+			ent->client->pers.arena_p->state = ARENA_STATE_WARMUP;
+			G_bprintf(
+				ent->client->pers.arena_p,
+				PRINT_HIGH,
+				"Countdown aborted, ",
+				ent->client->pers.netname
+			);
+		}
+		
 		G_bprintf(
 			ent->client->pers.arena_p,
 			PRINT_HIGH,
