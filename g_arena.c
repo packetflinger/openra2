@@ -624,10 +624,17 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
     return total;
 }
 
-void G_Centerprintf(arena_t *a, const char *string) {
+void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 	
+	va_list     argptr;
+    char        string[MAX_STRING_CHARS];
+    size_t      len;
 	int i;
 	edict_t *ent;
+	
+	va_start(argptr, fmt);
+    len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
+    va_end(argptr);
 	
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (a->team_home.players[i]) {

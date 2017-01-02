@@ -116,7 +116,7 @@ void G_BuildMenu(void);
 size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
 size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
-void G_Centerprintf(arena_t *a, const char *string);
+void G_Centerprintf(arena_t *a, const char *fmt, ...);
 qboolean G_CheckReady(arena_t *a);
 void G_CheckTime(arena_t *a);
 void G_EndMatch(arena_t *a, arena_team_t *winner);
