@@ -121,6 +121,7 @@ void G_ArenaThink(arena_t *a) {
 			a->state = ARENA_STATE_COUNTDOWN;
 			a->current_round = 1;
 			a->round_start_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
+			a->countdown = (int)g_round_countdown->value;
 			
 			G_RespawnPlayers(a);
 		}
@@ -623,6 +624,28 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
     return total;
 }
 
+void G_Centerprintf(arena_t *a, const char *string) {
+	
+	int i;
+	edict_t *ent;
+	
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			ent = a->team_home.players[i];
+			gi.WriteByte(svc_centerprint);
+			gi.WriteString(string);
+			gi.unicast(ent, true);
+		}
+		
+		if (a->team_away.players[i]) {
+			ent = a->team_away.players[i];
+			gi.WriteByte(svc_centerprint);
+			gi.WriteString(string);
+			gi.unicast(ent, true);
+		}
+	}
+}
+
 // see if all players are ready
 qboolean G_CheckReady(arena_t *a) {
 	qboolean ready_home = false;
@@ -690,7 +713,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
 void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->round_start_frame = 0;
-	G_bprintf(a, PRINT_HIGH, "%s won round %d/%d!\n", winner->name, a->current_round, a->round_limit);
+	G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name, a->current_round, a->round_limit);
 	
 	int i;
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -708,7 +731,9 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->current_round++;
 	
 	a->state = ARENA_STATE_COUNTDOWN;
-	a->round_start_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
+	a->countdown = (int)g_round_countdown->value;
+	a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
+	
 	
 	a->round_end_frame = 0;
 	G_HideScores(a);
@@ -997,7 +1022,8 @@ void G_StartRound(arena_t *a) {
 	a->team_away.players_alive = a->team_away.player_count;
 	
 	a->state = ARENA_STATE_PLAY;
-	G_bprintf(a, PRINT_HIGH, "Fight!\n");
+	//G_bprintf(a, PRINT_HIGH, "Fight!\n");
+	G_Centerprintf(a, "Fight!");
 }
 
 // switches the player's gun-in-hand after spawning

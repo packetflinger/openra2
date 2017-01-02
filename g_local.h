@@ -59,6 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define svc_sound           9
 #define svc_stufftext       11
 #define svc_configstring    13
+#define svc_centerprint		15
 
 //==================================================================
 // for setting which weapons are allowed in arenas - all weaps == 2046

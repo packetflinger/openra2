@@ -895,12 +895,6 @@ static const char dm_statusbar[] =
 "endif "
 
 // countdown
-//"if 29 "
-//  "yb -100 "
-//  "xv 150 "
-//  "color 3 "
-//  "stat_string 29 "
-//"endif "
 "if 29 "
   "yv 100 "
   "xv 150 "
