@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "m_player.h"
 
-//static void Cmd_Menu_f(edict_t *ent);
-
 static void SelectNextItem(edict_t *ent, int itflags)
 {
     gclient_t   *cl;

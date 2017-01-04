@@ -547,6 +547,7 @@ typedef struct {
 	
 	arena_t		arenas[MAX_ARENAS];
 	int			arena_count;
+	int			default_arena;
 	map_entry_t	*map;
 } level_locals_t;
 

@@ -676,6 +676,15 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		level.arena_count++;
     }
 	
+	// find the default arena
+	ent = NULL;
+	while ((ent = G_Find(ent, FOFS(classname), "worldspawn")) != NULL) {
+		if (ent->arena) {
+			level.default_arena = ent->arena;
+			break;
+		}
+	}
+	
 	// not an ra2 map, make the map arena #1
 	if (level.arena_count == 0) {
 		j = 1;

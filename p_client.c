@@ -1359,6 +1359,15 @@ void ClientBegin(edict_t *ent)
     ent->client->pers.connected = (level.intermission_framenum ||
                                    ent->client->pers.mvdspec) ? CONN_SPECTATOR : CONN_PREGAME;
 
+	// set the default arena
+	if (level.default_arena) {
+		ent->client->pers.arena = level.default_arena;
+		ent->client->pers.arena_p = &level.arenas[level.default_arena];
+	} else {
+		ent->client->pers.arena = 1;
+		ent->client->pers.arena_p = &level.arenas[1];
+	}
+		
     // locate ent at a spawn point
     PutClientInServer(ent);
 
@@ -1385,9 +1394,7 @@ void ClientBegin(edict_t *ent)
 
         ent->client->level.first_time = qfalse;
 		
-		// set the default arena to 1
-		ent->client->pers.arena = 1;
-		ent->client->pers.arena_p = &level.arenas[1];
+		
 		
 		// Show the menu
 		Cmd_Menu_f(ent);
