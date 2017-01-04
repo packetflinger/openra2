@@ -775,6 +775,7 @@ void ValidateSelectedItem(edict_t *ent);
 qboolean G_FloodProtect(edict_t *ent, struct flood_s *flood,
                         const char *what, int msgs, float persecond, float delay);
 void Cmd_ArenaMenu_f(edict_t *ent);
+void Cmd_Menu_f(edict_t *ent);
 
 //
 // g_items.c

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "m_player.h"
 
-static void Cmd_Menu_f(edict_t *ent);
+//static void Cmd_Menu_f(edict_t *ent);
 
 static void SelectNextItem(edict_t *ent, int itflags)
 {
@@ -1657,8 +1657,10 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
 };
 
 
-void Cmd_Menu_f(edict_t *ent)
-{
+void Cmd_Menu_f(edict_t *ent) {
+	
+	arena_t *a = ent->client->pers.arena_p;
+	
     if (ent->client->layout == LAYOUT_MENU) {
         PMenu_Close(ent);
         return;
@@ -1670,17 +1672,17 @@ void Cmd_Menu_f(edict_t *ent)
 		if (ent->client->pers.team->type == ARENA_TEAM_HOME) {
 			ent->client->menu.entries[5].text = va("*Leave team %s", ent->client->pers.team->name);
 		} else {
-			ent->client->menu.entries[5].text = va("*Join team %s", ent->client->pers.arena_p->team_home.name);
+			ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
 		}
 		
 		if (ent->client->pers.team->type == ARENA_TEAM_AWAY) {
 			ent->client->menu.entries[6].text = va("*Leave team %s", ent->client->pers.team->name);
 		} else {
-			ent->client->menu.entries[6].text = va("*Join team %s", ent->client->pers.arena_p->team_away.name);
+			ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
 		}
 	} else {
-		ent->client->menu.entries[5].text = va("*Join team %s", ent->client->pers.arena_p->team_home.name);
-		ent->client->menu.entries[6].text = va("*Join team %s", ent->client->pers.arena_p->team_away.name);
+		ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
+		ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
 	}
 }
 

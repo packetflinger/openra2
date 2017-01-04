@@ -1387,7 +1387,10 @@ void ClientBegin(edict_t *ent)
 		
 		// set the default arena to 1
 		ent->client->pers.arena = 1;
-		ent->client->pers.arena_p = &(level.arenas[1]);
+		ent->client->pers.arena_p = &level.arenas[1];
+		
+		// Show the menu
+		Cmd_Menu_f(ent);
     }
 
     // make sure all view stuff is valid
