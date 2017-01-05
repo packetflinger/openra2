@@ -980,7 +980,7 @@ void Cmd_Players_f(edict_t *ent)
 					teamname = "away";
 			}
 			
-			if (team->captain == ent) {
+			if (team->captain == c->edict) {
 				capt = "*";
 			}
 		}
