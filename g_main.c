@@ -685,7 +685,8 @@ void EndDMLevel(void)
 
 void G_StartSound(int index)
 {
-    gi.sound(world, CHAN_RELIABLE, index, 1, ATTN_NONE, 0);
+    //gi.sound(world, CHAN_RELIABLE, index, 1, ATTN_NONE, 0);
+	//gi.sound(world, CHAN_AUTO, index, 1, ATTN_NORM, 0);	// doesn't work
 }
 
 void G_StuffText(edict_t *ent, const char *text)
@@ -1107,11 +1108,15 @@ static void G_Init(void)
 	// arena defaults
 	g_arena_weapflags = gi.cvar("g_arena_weapflags", "512", 0);
 	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
-	g_arena_numrounds = gi.cvar("g_arena_runrounds", "9", 0);
+	g_arena_numrounds = gi.cvar("g_arena_numrounds", "9", 0);
 	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
 	g_round_countdown = gi.cvar("g_round_countdown", "8", 0);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
+	
+	clamp(g_round_countdown->value, 3, 30);
+	clamp(g_arena_numrounds->value, 1, 15);
+	clamp(g_round_end_time->value, 1, 15);
 	
     // force deathmatch
     //gi.cvar_set( "coop", "0" ); //atu
@@ -1202,20 +1207,16 @@ static void G_Init(void)
 	gi.dprintf("==== Game Initialized ====\n\n");
 }
 
-static void G_WriteGame(const char *filename, qboolean autosave)
-{
+static void G_WriteGame(const char *filename, qboolean autosave) {
 }
 
-static void G_ReadGame(const char *filename)
-{
+static void G_ReadGame(const char *filename) {
 }
 
-static void G_WriteLevel(const char *filename)
-{
+static void G_WriteLevel(const char *filename) {
 }
 
-static void G_ReadLevel(const char *filename)
-{
+static void G_ReadLevel(const char *filename) {
 }
 
 //======================================================================

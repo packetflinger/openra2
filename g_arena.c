@@ -53,7 +53,7 @@ static void update_playercounts(arena_t *a) {
 	int count = 0;
 	gclient_t *cl;
 	
-	for (i=0; i<(int)maxclients->value; i++) {
+	for (i=0; i<game.maxclients; i++) {
 		cl = &game.clients[i];
 		if (cl && cl->pers.arena == a) {
 			count++;
@@ -88,6 +88,50 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
     gi.WriteByte(svc_layout);
     gi.WriteString(buffer);
     gi.unicast(ent, reliable);
+}
+
+// start a sound for all arena members, people in other arenas shouldn't hear it
+void G_ArenaSound(arena_t *a, int index) {
+	
+	if (!a)
+		return;
+	
+	int i;
+	gclient_t *cl;
+	
+	for (i=0; i<game.maxclients; i++) {
+		
+		cl = &game.clients[i];
+		if (!cl)
+			continue;
+		
+		if (cl->pers.arena == a) {
+			gi.sound(cl->edict, CHAN_AUTO, index, 1, ATTN_NORM, 0);
+		}
+	}
+}
+
+
+void G_ArenaStuff(arena_t *a, const char *command) {
+	
+	if (!a)
+		return;
+	
+	int i;
+	gclient_t *cl;
+	
+	for (i=0; i<game.maxclients; i++) {
+		
+		cl = &game.clients[i];
+		if (!cl)
+			continue;
+		
+		if (cl->pers.arena == a) {
+			gi.WriteByte(svc_stufftext);
+			gi.WriteString(command);
+			gi.unicast(cl->edict, qtrue);
+		}
+	}
 }
 
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
@@ -151,7 +195,7 @@ void G_ArenaThink(arena_t *a) {
 		}
 	}
 	
-	
+	G_CheckTimers(a);
 }
 
 // broadcast print to only members of specified arena
@@ -711,9 +755,29 @@ qboolean G_CheckReady(arena_t *a) {
 }
 
 // match countdowns...
-void G_CheckTime(arena_t *a) {
+void G_CheckTimers(arena_t *a) {
 	
-	
+	// only look once per second
+	if (level.framenum % HZ == 0) {
+		
+		if (a->state == ARENA_STATE_COUNTDOWN) {
+			int remaining = (a->round_start_frame - level.framenum) / HZ;
+			switch (remaining) {
+				case 10:
+					G_ArenaSound(a, level.sounds.count);
+					break;
+			}
+		}
+		
+		if (a->state == ARENA_STATE_TIMEOUT) {
+			int remaining = (a->timein_frame - level.framenum) / HZ;
+			switch (remaining) {
+				case 10:
+					G_ArenaSound(a, level.sounds.count);
+					break;
+			}
+		}
+	}
 }
 
 void G_ForceReady(arena_team_t *team, qboolean ready) {
@@ -1057,8 +1121,9 @@ void G_StartRound(arena_t *a) {
 	a->team_away.players_alive = a->team_away.player_count;
 	
 	a->state = ARENA_STATE_PLAY;
-	//G_bprintf(a, PRINT_HIGH, "Fight!\n");
+
 	G_Centerprintf(a, "Fight!");
+	G_ArenaSound(a, level.sounds.secret);
 }
 
 // switches the player's gun-in-hand after spawning

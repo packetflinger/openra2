@@ -110,6 +110,8 @@ typedef struct {
 
 void change_arena(edict_t *self);
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
+void G_ArenaSound(arena_t *a, int index);
+void G_ArenaStuff(arena_t *a, const char *command);
 void G_ArenaThink(arena_t *a);
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
 void G_BuildMenu(void);
@@ -118,7 +120,7 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
 qboolean G_CheckReady(arena_t *a);
-void G_CheckTime(arena_t *a);
+void G_CheckTimers(arena_t *a);
 void G_EndMatch(arena_t *a, arena_team_t *winner);
 void G_EndRound(arena_t *a, arena_team_t *winner);
 void G_ForceReady(arena_team_t *team, qboolean ready);

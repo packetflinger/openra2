@@ -145,6 +145,8 @@ static void Cmd_Ready_f(edict_t *ent) {
 				"Countdown aborted, ",
 				ent->client->pers.netname
 			);
+			
+			G_ArenaStuff(ent->client->pers.arena, "stopsound");
 		}
 		
 		G_bprintf(
@@ -932,8 +934,8 @@ void Cmd_Players_f(edict_t *ent)
     gi.cprintf(ent, PRINT_HIGH,
                "id score ping time name            idle arena team capt%s\n"
                "-- ----- ---- ---- --------------- ---- ----- ---- ----%s\n",
-               show_ips ? "address" : "",
-               show_ips ? "-------" : "");
+               show_ips ? " address" : "",
+               show_ips ? " -------" : "");
 
     for (i = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
@@ -985,8 +987,8 @@ void Cmd_Players_f(edict_t *ent)
 		
         gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %4s %5s %4s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
-				   va("%d", arena->number), teamname,
-                   show_ips ? c->pers.ip : "", capt);
+				   va("%d", arena->number), teamname, capt,
+                   show_ips ? c->pers.ip : "");
     }
 }
 
@@ -1220,6 +1222,22 @@ static const char weapnames[WEAP_TOTAL][12] = {
     "Machinegun",   "Chaingun",     "Grenades",     "G.Launcher",
     "R.Launcher",   "H.Blaster",    "Railgun",      "BFG10K"
 };
+
+
+// for testing sounds, remove later
+static void Cmd_Sound_f(edict_t *ent) {
+	
+	// ex: world/10_0.wav
+	int index = gi.soundindex(gi.args());
+	if (!index) {
+		gi.cprintf(ent, PRINT_HIGH, "Unknown Sound: %s\n", gi.args());
+		return;
+	}
+	
+	G_ArenaSound(ent->client->pers.arena, index);
+	//G_StartSound(index);
+}
+
 
 void Cmd_Stats_f(edict_t *ent, qboolean check_other)
 {
@@ -1557,7 +1575,6 @@ static void select_arena(edict_t *ent) {
 		G_PartTeam(ent, true);
 		ent->client->pers.arena->player_count--;
 		ent->client->pers.connected = CONN_SPECTATOR;
-		//ent->client->pers.arena = selected-1;
 		ent->client->pers.arena = &level.arenas[selected-1];
 		ent->client->pers.arena->player_count++;
 		change_arena(ent);
@@ -1989,6 +2006,8 @@ void ClientCommand(edict_t *ent)
 		Cmd_Layout_f(ent);
 	else if (Q_stricmp(cmd, "teams") == 0) // test
 		Cmd_Teams_f(ent);
+	else if (Q_stricmp(cmd, "sound") == 0) // test
+		Cmd_Sound_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }

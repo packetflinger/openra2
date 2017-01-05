@@ -1361,10 +1361,8 @@ void ClientBegin(edict_t *ent)
 
 	// set the default arena
 	if (level.default_arena) {
-		//ent->client->pers.arena = level.default_arena;
 		ent->client->pers.arena = &level.arenas[level.default_arena];
 	} else {
-		//ent->client->pers.arena = 1;
 		ent->client->pers.arena = &level.arenas[1];
 	}
 	
