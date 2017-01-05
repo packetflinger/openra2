@@ -314,7 +314,7 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
         if ((int)dedicated->value) {
             gi.dprintf("%s %s.\n", self->client->pers.netname, message);
         }
-		if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+		if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
 			frag = mod_to_frag[mod];
 			self->client->resp.score--;
 			self->client->resp.frags[frag].suicides++;
@@ -428,7 +428,7 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
             if (ff) {
                 attacker->client->resp.score--;
             } else {
-				if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+				if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
 					frag = mod_to_frag[mod];
 					attacker->client->resp.score++;
 					attacker->client->resp.frags[frag].kills++;
@@ -445,7 +445,7 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
     gi.bprintf(PRINT_MEDIUM, "%s died.\n", self->client->pers.netname);
     frag = mod_to_frag[mod];
-	if (self->client->pers.arena_p->state == ARENA_STATE_PLAY) {
+	if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
 		self->client->resp.score--;
 		self->client->resp.frags[frag].suicides++;
 	}
@@ -756,7 +756,7 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
         spot = spawns[i];
 		
 		// the spawn is in players's current arena...
-        if (spot->arena == player->client->pers.arena) {
+        if (spot->arena == player->client->pers.arena->number) {
 			
 			range = PlayersRangeFromSpot(spot);
 			if (range > 64) {
@@ -1361,13 +1361,15 @@ void ClientBegin(edict_t *ent)
 
 	// set the default arena
 	if (level.default_arena) {
-		ent->client->pers.arena = level.default_arena;
-		ent->client->pers.arena_p = &level.arenas[level.default_arena];
+		//ent->client->pers.arena = level.default_arena;
+		ent->client->pers.arena = &level.arenas[level.default_arena];
 	} else {
-		ent->client->pers.arena = 1;
-		ent->client->pers.arena_p = &level.arenas[1];
+		//ent->client->pers.arena = 1;
+		ent->client->pers.arena = &level.arenas[1];
 	}
-		
+	
+	ent->client->pers.arena->player_count++;
+	
     // locate ent at a spawn point
     PutClientInServer(ent);
 
@@ -1628,7 +1630,7 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
     ent->client->level.first_time = qtrue;
     ent->client->pers.loopback = !strcmp(s, "loopback");
     ent->client->pers.muted = action == IPA_MUTE;
-	ent->client->pers.arena = 1;
+	//ent->client->pers.arena = 1;
 
     // save ip
     Q_strlcpy(ent->client->pers.ip, s, sizeof(ent->client->pers.ip));
@@ -1708,6 +1710,8 @@ void ClientDisconnect(edict_t *ent)
     ent->inuse = qfalse;
     ent->classname = "disconnected";
     ent->svflags = SVF_NOCLIENT;
+	
+	ent->client->pers.arena->player_count--;
 
     // FIXME: don't break skins on corpses, etc
     //playernum = ent-g_edicts-1;
@@ -1799,7 +1803,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         return;
     }
 	
-	if (client->pers.arena_p->state == ARENA_STATE_TIMEOUT) {
+	if (client->pers.arena->state == ARENA_STATE_TIMEOUT) {
 		client->ps.pmove.pm_type = PM_FREEZE;
 		return;
 	}
@@ -1982,7 +1986,7 @@ void ClientBeginServerFrame(edict_t *ent)
 
         if (ent->deadflag) {
             // wait for any button just going down
-            if (level.framenum > client->respawn_framenum && client->pers.arena_p->state < ARENA_STATE_PLAY) {
+            if (level.framenum > client->respawn_framenum && client->pers.arena->state < ARENA_STATE_PLAY) {
                 // in deathmatch, only wait for attack button
                 if ((client->latched_buttons & BUTTON_ATTACK) ||
                     (DF(FORCE_RESPAWN) && level.framenum - client->respawn_framenum > 2 * HZ)) {

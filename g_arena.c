@@ -26,7 +26,7 @@ arena_t *FindArena(edict_t *ent) {
 	if (!ent->client)  
 		return NULL;
 	
-	return ent->client->pers.arena_p;
+	return ent->client->pers.arena;
 }
 
 static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
@@ -46,9 +46,27 @@ static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 	return NULL;
 }
 
+// periodically count players to make sure none got lost
+static void update_playercounts(arena_t *a) {
+	
+	int i;
+	int count = 0;
+	gclient_t *cl;
+	
+	for (i=0; i<(int)maxclients->value; i++) {
+		cl = &game.clients[i];
+		if (cl && cl->pers.arena == a) {
+			count++;
+		}
+	}
+
+	a->player_count = count;
+}
+
 void change_arena(edict_t *self) {
 	
 	PutClientInServer(self);
+	
 	
 	// add a teleportation effect
     self->s.event = EV_PLAYER_TELEPORT;
@@ -58,12 +76,14 @@ void change_arena(edict_t *self) {
     self->client->ps.pmove.pm_time = 14;
 
     self->client->respawn_framenum = level.framenum;
+	
+	
 }
 
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
 
-	G_BuildScoreboard(buffer, ent->client, ent->client->pers.arena_p);
+	G_BuildScoreboard(buffer, ent->client, ent->client->pers.arena);
 
     gi.WriteByte(svc_layout);
     gi.WriteString(buffer);
@@ -75,6 +95,10 @@ void G_ArenaThink(arena_t *a) {
 	static qboolean foundwinner = false;
 	
 	if (!a)
+		return;
+	
+	// don't waste cpu if nobody is in this arena
+	if (a->player_count == 0)
 		return;
 
 	if (a->state == ARENA_STATE_TIMEOUT) {
@@ -126,6 +150,8 @@ void G_ArenaThink(arena_t *a) {
 			G_RespawnPlayers(a);
 		}
 	}
+	
+	
 }
 
 // broadcast print to only members of specified arena
@@ -154,7 +180,7 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
         if (!other->client)
             continue;
 		
-        if (arena != other->client->pers.arena_p)
+        if (arena != other->client->pers.arena)
 			continue;
 		
         gi.cprintf(other, level, "%s", string);
@@ -337,7 +363,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
         if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR)
             continue;
 		
-		if (c->pers.arena_p != arena)
+		if (c->pers.arena != arena)
 			continue;
 		
         if (c->pers.mvdspec)
@@ -548,7 +574,7 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena)
         if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR)
             continue;
 		
-		if (c->pers.arena_p != arena)
+		if (c->pers.arena != arena)
 			continue;
 		
         if (c->pers.mvdspec)
@@ -722,6 +748,8 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->round_start_frame = 0;
 	G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name, a->current_round, a->round_limit);
 	
+	update_playercounts(a);	// for sanity
+	
 	int i;
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (!winner->players[i])
@@ -776,7 +804,7 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
 void G_GiveItems(edict_t *ent) {
 	
 	int flags;
-	flags = level.map->arenas[ent->client->pers.arena].weapon_flags;
+	flags = level.map->arenas[ent->client->pers.arena->number].weapon_flags;
 	
 	if (flags < 2)
 		flags = ARENAWEAPON_ALL;
@@ -827,7 +855,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	if (!ent->client)
 		return;
 	
-	arena_t *arena = ent->client->pers.arena_p;
+	arena_t *arena = ent->client->pers.arena;
 	arena_team_t *team = FindTeam(ent, type);
 	
 	if (!arena) {
@@ -890,7 +918,7 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	if (!ent->client)
 		return;
 	
-	arena = ent->client->pers.arena_p;
+	arena = ent->client->pers.arena;
 	oldteam = ent->client->pers.team;
 	
 	if (!oldteam)
@@ -912,7 +940,7 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	ent->client->pers.team = 0;
 
 	if (!silent) {
-		G_bprintf(ent->client->pers.arena_p, PRINT_HIGH, "%s left team %s\n", ent->client->pers.netname, oldteam->name);
+		G_bprintf(ent->client->pers.arena, PRINT_HIGH, "%s left team %s\n", ent->client->pers.netname, oldteam->name);
 	}
 	
 	// last team member, end the match

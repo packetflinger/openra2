@@ -128,7 +128,7 @@ static void Cmd_Ready_f(edict_t *ent) {
 	if (!ent->client->pers.ready) {
 		ent->client->pers.ready = qtrue;
 		G_bprintf(
-			ent->client->pers.arena_p,
+			ent->client->pers.arena,
 			PRINT_HIGH,
 			"%s is ready\n",
 			ent->client->pers.netname
@@ -136,11 +136,11 @@ static void Cmd_Ready_f(edict_t *ent) {
 		return;
 	} else {
 		ent->client->pers.ready = qfalse;
-		if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN) {
-			ent->client->pers.arena_p->round_start_frame = 0;
-			ent->client->pers.arena_p->state = ARENA_STATE_WARMUP;
+		if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
+			ent->client->pers.arena->round_start_frame = 0;
+			ent->client->pers.arena->state = ARENA_STATE_WARMUP;
 			G_bprintf(
-				ent->client->pers.arena_p,
+				ent->client->pers.arena,
 				PRINT_HIGH,
 				"Countdown aborted, ",
 				ent->client->pers.netname
@@ -148,7 +148,7 @@ static void Cmd_Ready_f(edict_t *ent) {
 		}
 		
 		G_bprintf(
-			ent->client->pers.arena_p,
+			ent->client->pers.arena,
 			PRINT_HIGH,
 			"%s is not ready\n",
 			ent->client->pers.netname
@@ -167,7 +167,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 				continue;
 			}
 			
-			if (ent->client->pers.arena == level.arenas[i].number) {
+			if (ent->client->pers.arena->number == level.arenas[i].number) {
 				
 				gi.cprintf(ent, PRINT_HIGH, "-> %d   %02d/%02d  %s <-\n", 
 					level.arenas[i].number, 
@@ -187,6 +187,8 @@ static void Cmd_Arena_f(edict_t *ent) {
 		return;
 	}
 	
+	ent->client->pers.arena->player_count--;
+	
 	// already on a team, remove first
 	if (ent->client->pers.team) {
 		G_PartTeam(ent, true);
@@ -195,8 +197,9 @@ static void Cmd_Arena_f(edict_t *ent) {
 	
 	uint8_t newarena = atoi(gi.argv(1));
 	
-	ent->client->pers.arena = newarena;
-	ent->client->pers.arena_p = &(level.arenas[newarena]);
+	//ent->client->pers.arena = newarena;
+	ent->client->pers.arena = &(level.arenas[newarena]);
+	ent->client->pers.arena->player_count++;
 	
 	change_arena(ent);
 }
@@ -427,7 +430,7 @@ A player called timeout
 */
 static void Cmd_Timeout_f(edict_t *ent) {
 	
-	arena_t *a = ent->client->pers.arena_p;
+	arena_t *a = ent->client->pers.arena;
 	
 	if (a->state < ARENA_STATE_PLAY)
 		return;
@@ -818,7 +821,7 @@ static size_t build_chat(edict_t *ent, chat_t chat, int start, char *buffer)
     int i;
     char *p;
 	char *name = ent->client->pers.netname;
-	int arena = ent->client->pers.arena_p->number;
+	int arena = ent->client->pers.arena->number;
 
 	switch (chat){
 		case CHAT_TEAM:
@@ -863,7 +866,7 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
     edict_t *other;
     char    text[MAX_CHAT];
     gclient_t *cl = ent->client;
-	arena_t *arena = ent->client->pers.arena_p;
+	arena_t *arena = ent->client->pers.arena;
 
     start = (chat == CHAT_MISC) ? 0 : 1;
     if (gi.argc() <= start)
@@ -913,7 +916,7 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
             continue;
         if (chat == CHAT_TEAM && PLAYER_SPAWNED(ent) != PLAYER_SPAWNED(other))
             continue;
-		if (chat == CHAT_ARENA && other->client->pers.arena_p != arena)
+		if (chat == CHAT_ARENA && other->client->pers.arena != arena)
 			continue;
         gi.cprintf(other, PRINT_CHAT, "%s\n", text);
     }
@@ -1552,9 +1555,11 @@ static void select_arena(edict_t *ent) {
 	if (selected >= 2 && selected < 12) {
 		
 		G_PartTeam(ent, true);
+		ent->client->pers.arena->player_count--;
 		ent->client->pers.connected = CONN_SPECTATOR;
-		ent->client->pers.arena = selected-1;
-		ent->client->pers.arena_p = &level.arenas[ent->client->pers.arena];
+		//ent->client->pers.arena = selected-1;
+		ent->client->pers.arena = &level.arenas[selected-1];
+		ent->client->pers.arena->player_count++;
 		change_arena(ent);
 	}
 }
@@ -1657,7 +1662,7 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
 
 void Cmd_Menu_f(edict_t *ent) {
 	
-	arena_t *a = ent->client->pers.arena_p;
+	arena_t *a = ent->client->pers.arena;
 	
     if (ent->client->layout == LAYOUT_MENU) {
         PMenu_Close(ent);
@@ -1778,7 +1783,7 @@ void Cmd_LockTeam_f(edict_t *ent) {
 
 static void Cmd_Teams_f(edict_t *ent) {
 	
-	arena_t *a = ent->client->pers.arena_p;
+	arena_t *a = ent->client->pers.arena;
 	arena_team_t *home = &a->team_home;
 	arena_team_t *away = &a->team_away;
 	

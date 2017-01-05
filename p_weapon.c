@@ -214,12 +214,12 @@ void Think_Weapon(edict_t *ent)
     }
 	
 	// No attacks in timeouts
-	if (ent->client->pers.arena_p->state == ARENA_STATE_TIMEOUT) {
+	if (ent->client->pers.arena->state == ARENA_STATE_TIMEOUT) {
 		return;
 	}
 
 	// No firing during countdown
-	if (ent->client->pers.arena_p->state == ARENA_STATE_COUNTDOWN) {
+	if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
 		ent->client->buttons &= ~BUTTON_ATTACK;
 		ent->client->latched_buttons &= ~BUTTON_ATTACK;
 	}
