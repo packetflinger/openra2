@@ -20,6 +20,30 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
+static int arena_find_cl_index(gclient_t *cl, arena_t *a) {
+	
+	int i;
+	for (i=0; i<a->client_count; i++) {
+		if (&a->clients[i] == &cl->edict) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+// find the next open slot in the clients array
+static int arena_find_cl_slot(arena_t *a) {
+	
+	int i;
+	for (i=0; i<MAX_CLIENTS; i++) {
+		if (!&a->clients[i]) {
+			return i;
+		}
+	}
+	
+	return -1;
+}
 
 arena_t *FindArena(edict_t *ent) {
 
@@ -723,6 +747,42 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 	}
 }
 
+// move client to a different arena
+void G_ChangeArena(gclient_t *cl, arena_t *arena) {
+ 
+	int index;
+	
+	if (cl->pers.arena) {
+		index = arena_find_cl_index(cl, arena);
+		
+		cl->pers.arena->clients[index] = NULL;
+		cl->pers.arena->client_count--;
+		
+		G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n", cl->pers.netname);
+	}
+	
+	index = arena_find_cl_slot(arena);
+	
+	if (!index)
+		gi.error("Something went terribly wrong, can't find empty slot in arena client list\n");
+	
+	arena->client_count++;
+	arena->clients[index] = cl->edict;
+	cl->pers.arena = arena;
+	
+	PutClientInServer(cl->edict);
+	
+	G_ArenaSound(arena, level.sounds.teleport);
+	
+	G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
+	
+    // hold in place briefly
+    cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    cl->ps.pmove.pm_time = 14;
+
+    cl->respawn_framenum = level.framenum;
+}
+	
 // see if all players are ready
 qboolean G_CheckReady(arena_t *a) {
 	qboolean ready_home = false;

@@ -90,6 +90,8 @@ typedef struct {
 	int				timeout_frame;
 	int				timein_frame;
 	edict_t			*timeout_caller;
+	edict_t			*clients[MAX_CLIENTS];
+	int				client_count;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
 } arena_t;

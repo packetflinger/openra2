@@ -522,6 +522,7 @@ typedef struct {
         int     count;
         int     xian;
         int     makron;
+		int		teleport;
     } sounds;
 
     struct {

@@ -1057,7 +1057,7 @@ void SP_worldspawn(edict_t *ent)
     gi.soundindex("misc/talk1.wav");
     level.sounds.secret = gi.soundindex("misc/secret.wav");
     level.sounds.count = gi.soundindex("world/10_0.wav");
-
+	level.sounds.teleport = gi.soundindex("misc/tele1.wav");
     level.sounds.udeath = gi.soundindex("misc/udeath.wav");
 
     gi.soundindex("items/respawn1.wav");
