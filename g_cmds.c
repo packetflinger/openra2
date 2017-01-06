@@ -163,7 +163,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	int i;
 	
 	if (gi.argc() != 2) {
-		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID  P/S    Name\n", level.mapname);
+		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID   Cl    Name\n", level.mapname);
 		for (i=0; i<MAX_ARENAS; i++) {
 			if (level.arenas[i].number < 1) {
 				continue;
@@ -171,17 +171,15 @@ static void Cmd_Arena_f(edict_t *ent) {
 			
 			if (ent->client->pers.arena->number == level.arenas[i].number) {
 				
-				gi.cprintf(ent, PRINT_HIGH, "-> %d   %02d/%02d  %s <-\n", 
+				gi.cprintf(ent, PRINT_HIGH, "-> %d    %02d    %s <-\n", 
 					level.arenas[i].number, 
-					level.arenas[i].player_count, 
-					level.arenas[i].spectator_count, 
+					level.arenas[i].client_count, 
 					level.arenas[i].name
 				);
 			} else {
-				gi.cprintf(ent, PRINT_HIGH, "   %d   %02d/%02d  %s\n", 
+				gi.cprintf(ent, PRINT_HIGH, "   %d    %02d    %s\n", 
 					level.arenas[i].number, 
-					level.arenas[i].player_count, 
-					level.arenas[i].spectator_count, 
+					level.arenas[i].client_count, 
 					level.arenas[i].name
 				);
 			}
@@ -189,21 +187,9 @@ static void Cmd_Arena_f(edict_t *ent) {
 		return;
 	}
 	
-	ent->client->pers.arena->player_count--;
-	
-	// already on a team, remove first
-	if (ent->client->pers.team) {
-		G_PartTeam(ent, true);
-		ent->client->pers.connected = CONN_PREGAME;
-	}
-	
 	uint8_t newarena = atoi(gi.argv(1));
 	
-	//ent->client->pers.arena = newarena;
-	ent->client->pers.arena = &(level.arenas[newarena]);
-	ent->client->pers.arena->player_count++;
-	
-	change_arena(ent);
+	G_ChangeArena(ent->client, &level.arenas[newarena]);
 }
 
 static void Cmd_Team_f(edict_t *ent) {
@@ -1571,13 +1557,7 @@ static void select_arena(edict_t *ent) {
 	int selected = ent->client->menu.cur;
 	
 	if (selected >= 2 && selected < 12) {
-		
-		G_PartTeam(ent, true);
-		ent->client->pers.arena->player_count--;
-		ent->client->pers.connected = CONN_SPECTATOR;
-		ent->client->pers.arena = &level.arenas[selected-1];
-		ent->client->pers.arena->player_count++;
-		change_arena(ent);
+		G_ChangeArena(ent->client, &level.arenas[selected-1]);
 	}
 }
 
@@ -1703,7 +1683,10 @@ void Cmd_Menu_f(edict_t *ent) {
 	} else {
 		ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
 		ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
+	
 	}
+	
+	ent->client->menu.cur = 3;
 }
 
 
@@ -1724,6 +1707,8 @@ void Cmd_ArenaMenu_f(edict_t *ent) {
 			k++;
 		}
 	}
+	
+	ent->client->menu.cur = ent->client->pers.arena->number + 1;
 }
 
 /*

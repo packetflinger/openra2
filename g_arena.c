@@ -42,7 +42,7 @@ static int arena_find_cl_slot(arena_t *a) {
 		}
 	}
 	
-	return -1;
+	return 0;
 }
 
 arena_t *FindArena(edict_t *ent) {
@@ -166,9 +166,9 @@ void G_ArenaThink(arena_t *a) {
 		return;
 	
 	// don't waste cpu if nobody is in this arena
-	if (a->player_count == 0)
+	if (a->client_count == 0)
 		return;
-
+	
 	if (a->state == ARENA_STATE_TIMEOUT) {
 		G_TimeoutFrame(a);
 		return;
@@ -316,7 +316,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 						"xv 0 yt %d cstring \"VS.\" "
 						"xv %d "
                         "yt %d "
-                        "cstring2 \"Player          Frg Rnd Mch  FPH Time Ping\" ", 
+                        "cstring2 \"Player          Frg Rnd Mch  Rdy Time Ping\" ", 
 						entry, x, y, arena->team_home.name, y, x, y + LAYOUT_LINE_HEIGHT * 2
 	);
 
@@ -349,10 +349,10 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
         }
 
         len = Q_snprintf(entry, sizeof(entry),
-                         "yt %d cstring%s \"%-15s %3d %3d %3d %4d %4s %4d\"",
-                         y, c == client ? "" : "2",
+                         "yt %d cstring \"%-15s %3d %3d %3d %4s %4s %4d\"",
+                         y,
                          c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
-                         c->resp.score * 3600 / sec, timebuf, c->ping);
+                         c->pers.ready ? "*" : " ", timebuf, c->ping);
 						 
         if (len >= sizeof(entry))
             continue;
@@ -373,7 +373,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
                         "yt %d "
                         "cstring \"Team %s\""
                         "yt %d "
-                        "cstring2 \"Player          Frg Rnd Mch  FPH Time Ping\"", 
+                        "cstring2 \"Player          Frg Rnd Mch  Rdy Time Ping\"", 
 						x, y, arena->team_away.name, y + LAYOUT_LINE_HEIGHT *2);
 	
 	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
@@ -403,10 +403,10 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
         }
 
         len = Q_snprintf(entry, sizeof(entry),
-                         "yt %d cstring%s \"%-15s %3d %3d %3d %4d %4s %4d\"",
-                         y, c == client ? "" : "2",
+                         "yt %d cstring \"%-15s %3d %3d %3d %4s %4s %4d\"",
+                         y,
                          c->pers.netname, c->resp.score, c->resp.round_score, c->resp.match_score,
-                         c->resp.score * 3600 / sec, timebuf, c->ping);
+                         c->pers.ready ? "*" : " ", timebuf, c->ping);
 						 
         if (len >= sizeof(entry))
             continue;
@@ -750,28 +750,34 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 // move client to a different arena
 void G_ChangeArena(gclient_t *cl, arena_t *arena) {
  
-	int index;
+	int index = 0;
 	
+	// leave the old arena
 	if (cl->pers.arena) {
 		index = arena_find_cl_index(cl, arena);
 		
 		cl->pers.arena->clients[index] = NULL;
 		cl->pers.arena->client_count--;
 		
+		G_PartTeam(cl->edict, true);
+		
 		G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n", cl->pers.netname);
 	}
 	
-	index = arena_find_cl_slot(arena);
+	if (!arena) {
+		return;
+	}
 	
-	if (!index)
-		gi.error("Something went terribly wrong, can't find empty slot in arena client list\n");
+	index = arena_find_cl_slot(arena);
 	
 	arena->client_count++;
 	arena->clients[index] = cl->edict;
 	cl->pers.arena = arena;
 	
-	PutClientInServer(cl->edict);
+	cl->pers.connected = CONN_SPECTATOR;
+	cl->pers.ready = false;
 	
+	PutClientInServer(cl->edict);
 	G_ArenaSound(arena, level.sounds.teleport);
 	
 	G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
@@ -779,7 +785,7 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
     // hold in place briefly
     cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
     cl->ps.pmove.pm_time = 14;
-
+	
     cl->respawn_framenum = level.framenum;
 }
 	
@@ -1067,8 +1073,10 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 		G_bprintf(ent->client->pers.arena, PRINT_HIGH, "%s left team %s\n", ent->client->pers.netname, oldteam->name);
 	}
 	
+	ent->client->pers.ready = false;
+	
 	// last team member, end the match
-	if (oldteam->player_count == 0) {
+	if (oldteam->player_count == 0 && arena->state == ARENA_STATE_PLAY) {
 		otherteam = (oldteam == &arena->team_home) ? &arena->team_away : &arena->team_home;
 		G_EndMatch(arena, otherteam);
 	}

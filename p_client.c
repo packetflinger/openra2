@@ -1347,6 +1347,8 @@ to be placed into the game.  This will happen every level load.
 */
 void ClientBegin(edict_t *ent)
 {
+	arena_t *arena;
+	
     ent->client = game.clients + (ent - g_edicts - 1);
     ent->client->edict = ent;
 
@@ -1361,15 +1363,17 @@ void ClientBegin(edict_t *ent)
 
 	// set the default arena
 	if (level.default_arena) {
-		ent->client->pers.arena = &level.arenas[level.default_arena];
+		arena = &level.arenas[level.default_arena];
 	} else {
-		ent->client->pers.arena = &level.arenas[1];
+		arena = &level.arenas[1];
 	}
 	
-	ent->client->pers.arena->player_count++;
+	G_ChangeArena(ent->client, arena);
+	
+	//ent->client->pers.arena->player_count++;
 	
     // locate ent at a spawn point
-    PutClientInServer(ent);
+    //PutClientInServer(ent);
 
     if (level.intermission_framenum) {
         MoveClientToIntermission(ent);
@@ -1393,8 +1397,6 @@ void ClientBegin(edict_t *ent)
         gi.unicast(ent, qfalse);
 
         ent->client->level.first_time = qfalse;
-		
-		
 		
 		// Show the menu
 		Cmd_Menu_f(ent);
