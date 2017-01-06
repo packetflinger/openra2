@@ -1369,11 +1369,6 @@ void ClientBegin(edict_t *ent)
 	}
 	
 	G_ChangeArena(ent->client, arena);
-	
-	//ent->client->pers.arena->player_count++;
-	
-    // locate ent at a spawn point
-    //PutClientInServer(ent);
 
     if (level.intermission_framenum) {
         MoveClientToIntermission(ent);
@@ -1662,6 +1657,8 @@ void ClientDisconnect(edict_t *ent)
     if (!ent->client)
         return;
 
+	G_ChangeArena(ent->client, NULL);
+	
     connected = ent->client->pers.connected;
     ent->client->pers.connected = CONN_DISCONNECTED;
     ent->client->ps.stats[STAT_FRAGS] = 0;
@@ -1710,8 +1707,6 @@ void ClientDisconnect(edict_t *ent)
     ent->inuse = qfalse;
     ent->classname = "disconnected";
     ent->svflags = SVF_NOCLIENT;
-	
-	ent->client->pers.arena->player_count--;
 
     // FIXME: don't break skins on corpses, etc
     //playernum = ent-g_edicts-1;

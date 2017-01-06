@@ -20,11 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-static int arena_find_cl_index(gclient_t *cl, arena_t *a) {
+static int arena_find_cl_index(gclient_t *cl) {
 	
 	int i;
-	for (i=0; i<a->client_count; i++) {
-		if (&a->clients[i] == &cl->edict) {
+	for (i=0; i<cl->pers.arena->client_count; i++) {
+		if (&cl->pers.arena->clients[i] == &cl->edict) {
 			return i;
 		}
 	}
@@ -754,14 +754,16 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 	
 	// leave the old arena
 	if (cl->pers.arena) {
-		index = arena_find_cl_index(cl, arena);
+		index = arena_find_cl_index(cl);
 		
 		cl->pers.arena->clients[index] = NULL;
 		cl->pers.arena->client_count--;
 		
 		G_PartTeam(cl->edict, true);
 		
-		G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n", cl->pers.netname);
+		if (arena) {
+			G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n", cl->pers.netname);
+		}
 	}
 	
 	if (!arena) {
