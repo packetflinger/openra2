@@ -466,8 +466,7 @@ static void G_LoadMapList(void) {
 
 	fp = fopen(path, "r");
 	if (!fp) {
-		gi.dprintf("Couldn't load '%s'\n", path);
-		return;
+		gi.error("Couldn't load '%s'\n", path);
 	}
 
 	linenum = nummaps = 0;
