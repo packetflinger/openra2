@@ -1654,10 +1654,11 @@ void ClientDisconnect(edict_t *ent)
     int     total;
     conn_t  connected;
 
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
 
-	G_ChangeArena(ent->client, NULL);
+    G_ChangeArena(ent->client, NULL);
 	
     connected = ent->client->pers.connected;
     ent->client->pers.connected = CONN_DISCONNECTED;
