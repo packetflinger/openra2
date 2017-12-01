@@ -787,12 +787,17 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 	cl->respawn_framenum = level.framenum;
 }
 
-// see if all players are ready
+/**
+ * Check if all players are ready
+ *
+ */
 qboolean G_CheckReady(arena_t *a) {
-	qboolean ready_home = false;
-	qboolean ready_away = false;
-
 	int i;
+
+	if (a->team_home.player_count == 0 || a->team_away.player_count == 0) {
+		return false;
+	}
+
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (a->team_home.players[i]) {
 			if (!a->team_home.players[i]->client->pers.ready) {
@@ -836,6 +841,11 @@ void G_CheckTimers(arena_t *a) {
 	}
 }
 
+
+/**
+ * Force the ready state for all players in an arena
+ *
+ */
 void G_ForceReady(arena_team_t *team, qboolean ready) {
 
 	int i;
@@ -846,6 +856,11 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 	}
 }
 
+
+/**
+ * Reset after match is finished
+ *
+ */
 void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
 	int i;
@@ -864,14 +879,20 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_ForceReady(&a->team_away, false);
 }
 
+
+/**
+ * All players on a particular team have been fragged
+ *
+ */
 void G_EndRound(arena_t *a, arena_team_t *winner) {
+
+	int i;
 	a->round_start_frame = 0;
 	G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
 			a->current_round, a->round_limit);
 
 	update_playercounts(a);	// for sanity
 
-	int i;
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (!winner->players[i])
 			continue;
@@ -885,29 +906,34 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	}
 
 	a->current_round++;
-
 	a->state = ARENA_STATE_COUNTDOWN;
 	a->countdown = (int) g_round_countdown->value;
 	a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-
 	a->round_end_frame = 0;
+
 	G_HideScores(a);
 	G_RespawnPlayers(a);
 }
 
+
+/**
+ * Lock players in place during timeouts
+ *
+ */
 void G_FreezePlayers(arena_t *a, qboolean freeze) {
 
 	if (!a)
 		return;
 
+	int i;
 	pmtype_t type;
+
 	if (freeze) {
 		type = PM_FREEZE;
 	} else {
 		type = PM_NORMAL;
 	}
 
-	int i;
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (a->team_home.players[i]) {
 			a->team_home.players[i]->client->ps.pmove.pm_type = type;
@@ -919,7 +945,10 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
 	}
 }
 
-// give the player all the items/weapons they need
+/**
+ * Give the player all the items/weapons they need
+ *
+ */
 void G_GiveItems(edict_t *ent) {
 
 	int flags;
@@ -968,6 +997,11 @@ void G_GiveItems(edict_t *ent) {
 	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
 }
 
+
+/**
+ * Add player to a team
+ *
+ */
 void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 
 	if (!ent->client)
@@ -986,7 +1020,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 
-	// match has started, cant join
+	// match has started, can't join
 	if (arena->state >= ARENA_STATE_PLAY) {
 		gi.cprintf(ent, PRINT_HIGH, "Match in progress, you can't join now\n");
 		return;
@@ -1027,12 +1061,17 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 	spectator_respawn(ent, CONN_SPAWNED);
 }
 
-// remove this player from whatever team they're on
+
+/**
+ * Remove this player from whatever team they're on
+ *
+ */
 void G_PartTeam(edict_t *ent, qboolean silent) {
 
 	arena_team_t *oldteam;
 	arena_team_t *otherteam;
 	arena_t *arena;
+	int i;
 
 	if (!ent->client)
 		return;
@@ -1048,7 +1087,6 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 		oldteam->captain = 0;
 	}
 
-	int i;
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (oldteam->players[i] == ent) {
 			oldteam->players[i] = NULL;
@@ -1076,7 +1114,11 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	spectator_respawn(ent, CONN_SPECTATOR);
 }
 
-// give back all the ammo, health and armor for start of a round
+
+/**
+ * Give back all the ammo, health and armor for start of a round
+ *
+ */
 void G_RefillInventory(edict_t *ent) {
 	// ammo
 	ent->client->inventory[ITEM_SLUGS] = 25;
@@ -1093,14 +1135,16 @@ void G_RefillInventory(edict_t *ent) {
 	ent->health = 100;
 }
 
-// respawn all players resetting their inventory
+/**
+ * Respawn all players resetting their inventory
+ *
+ */
 void G_RespawnPlayers(arena_t *a) {
 
 	int i;
 	edict_t *ent;
 
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-
 		ent = a->team_home.players[i];
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
@@ -1128,6 +1172,11 @@ char *G_RoundToString(arena_t *a) {
 	return round_buffer;
 }
 
+
+/**
+ * Force a particular skin on a player
+ *
+ */
 void G_SetSkin(edict_t *ent, const char *skin) {
 
 	if (!ent->client) {
@@ -1147,6 +1196,11 @@ void G_SetSkin(edict_t *ent, const char *skin) {
 	}
 }
 
+
+/**
+ * Display scores layout to all arena players
+ *
+ */
 void G_ShowScores(arena_t *a) {
 	int i;
 
@@ -1161,6 +1215,11 @@ void G_ShowScores(arena_t *a) {
 	}
 }
 
+
+/**
+ * Hide scores layout from players
+ *
+ */
 void G_HideScores(arena_t *a) {
 	int i;
 
@@ -1175,6 +1234,11 @@ void G_HideScores(arena_t *a) {
 	}
 }
 
+
+/**
+ * Begin a round
+ *
+ */
 void G_StartRound(arena_t *a) {
 
 	a->team_home.players_alive = a->team_home.player_count;
@@ -1186,7 +1250,11 @@ void G_StartRound(arena_t *a) {
 	G_ArenaSound(a, level.sounds.secret);
 }
 
-// switches the player's gun-in-hand after spawning
+
+/**
+ * Switches the player's gun-in-hand after spawning
+ *
+ */
 void G_StartingWeapon(edict_t *ent) {
 	if (!ent->client)
 		return;
@@ -1194,6 +1262,7 @@ void G_StartingWeapon(edict_t *ent) {
 	ent->client->newweapon = FindItem("rocket launcher");
 	ChangeWeapon(ent);
 }
+
 
 // find the team this guy is on and record the death
 void G_TeamMemberDeath(edict_t *ent) {
@@ -1227,6 +1296,11 @@ void G_TimeoutFrame(arena_t *a) {
 	}
 }
 
+
+/**
+ * Get time string (mm:ss) from seconds
+ *
+ */
 const char *G_SecsToString(int seconds) {
 	static char time_buffer[32];
 	int mins;
