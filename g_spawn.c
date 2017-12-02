@@ -576,7 +576,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
 	map_entry_t	*map;
-	char 		*newents;	// map entities + user specified one
+	//char 		*newents;	// map entities + user specified one
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -594,13 +594,31 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 	map = G_FindMap(mapname);
 	
-	// if we have extra ents, append them
-	if (map->extra_ents) {
-		newents = va("%s %s", entities, map->extra_ents);
-		//gi.dprintf("%s\n", newents);
-	} else {
-		newents = va("%s", entities);
+	// make a default map entry
+	if (!map) {
+		map_entry_t *map;
+		int namelen;
+
+		namelen = strlen(mapname);
+		map = G_Malloc(sizeof(*map) + namelen);
+		memcpy(map->name, mapname, namelen + 1);
+
+		map->arenas[1].damage_flags = ARENADAMAGE_ALL;
+		map->arenas[1].weapon_flags = ARENAWEAPON_ALL & ~ARENAWEAPON_BFG;
+		map->arenas[1].rounds = 7;
+
+		List_Append(&g_map_list, &map->list);
+
+		map = G_FindMap(mapname);
 	}
+
+	// if we have extra ents, append them
+	//if (map->extra_ents) {
+	//	newents = va("%s %s", entities, map->extra_ents);
+		//gi.dprintf("%s\n", newents);
+	//} else {
+	//	newents = va("%s", entities);
+	//}
 	
     // set client fields on player ents
     for (i = 0; i < game.maxclients; i++) {

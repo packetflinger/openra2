@@ -280,7 +280,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	char timebuf[16];
 	size_t total, len;
 	int i, j, numranks;
-	int x, y, sec, eff;
+	int x, y, sec;
+	//int eff;
 	gclient_t *ranks[MAX_CLIENTS];
 	gclient_t *c;
 	time_t t;
@@ -331,9 +332,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 		if (c->resp.score > 0) {
 			j = c->resp.score + c->resp.deaths;
-			eff = j ? c->resp.score * 100 / j : 100;
+			//eff = j ? c->resp.score * 100 / j : 100;
 		} else {
-			eff = 0;
+			//eff = 0;
 		}
 
 		if (level.framenum < 10 * 60 * HZ) {
@@ -384,9 +385,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 		if (c->resp.score > 0) {
 			j = c->resp.score + c->resp.deaths;
-			eff = j ? c->resp.score * 100 / j : 100;
+			//eff = j ? c->resp.score * 100 / j : 100;
 		} else {
-			eff = 0;
+			//eff = 0;
 		}
 
 		if (level.framenum < 10 * 60 * HZ) {
@@ -491,7 +492,8 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 	char timebuf[16];
 	size_t total, len;
 	int i, j, numranks;
-	int y, sec, eff;
+	int y, sec;
+	//int eff;
 	gclient_t *ranks[MAX_CLIENTS];
 	gclient_t *c;
 	time_t t;
@@ -538,9 +540,9 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 
 		if (c->resp.score > 0) {
 			j = c->resp.score + c->resp.deaths;
-			eff = j ? c->resp.score * 100 / j : 100;
+			//eff = j ? c->resp.score * 100 / j : 100;
 		} else {
-			eff = 0;
+			//eff = 0;
 		}
 
 		if (level.framenum < 10 * 60 * HZ) {
@@ -591,9 +593,9 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 
 		if (c->resp.score > 0) {
 			j = c->resp.score + c->resp.deaths;
-			eff = j ? c->resp.score * 100 / j : 100;
+			//eff = j ? c->resp.score * 100 / j : 100;
 		} else {
-			eff = 0;
+			//eff = 0;
 		}
 
 		if (level.framenum < 10 * 60 * HZ) {
@@ -951,8 +953,10 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
  */
 void G_GiveItems(edict_t *ent) {
 
-	int flags;
-	flags = level.map->arenas[ent->client->pers.arena->number].weapon_flags;
+	int flags, arena_idx;
+
+	arena_idx = ent->client->pers.arena->number;
+	flags = level.map->arenas[arena_idx].weapon_flags;
 
 	if (flags < 2)
 		flags = ARENAWEAPON_ALL;
@@ -1327,3 +1331,4 @@ arena_team_t *G_GetWinningTeam(arena_t *a) {
 
 	return NULL;
 }
+

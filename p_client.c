@@ -517,10 +517,12 @@ static void TossClientWeapon(edict_t *self)
     else
         quad = (self->client->quad_framenum > (level.framenum + 1 * HZ));
 
-    if (item && quad)
+    spread = (item && quad) ? 22.5 : 0.0;
+    /*if (item && quad) {
         spread = 22.5;
-    else
+    } else {
         spread = 0.0;
+    }*/
 
 	item = 0; // never drop a weapon
 	
@@ -1093,6 +1095,7 @@ void spectator_respawn(edict_t *ent, int connected)
 
     ent->client->pers.connected = connected;
     total = G_UpdateRanks();
+    if (total) {} // temp - silense compiler warning
 
     // notify others
     if (connected == CONN_SPAWNED) {
