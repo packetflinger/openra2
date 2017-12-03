@@ -420,15 +420,10 @@ typedef struct {
 } game_locals_t;
 
 // vote proposals
-#define VOTE_TIMELIMIT  1
-#define VOTE_FRAGLIMIT  2
-#define VOTE_ITEMS      4
-#define VOTE_KICK       8
-#define VOTE_MUTE       16
-#define VOTE_MAP        32
-#define VOTE_WEAPONSTAY 64
-#define VOTE_PROTECTION 128
-#define VOTE_TELEMODE   256
+#define VOTE_KICK       1
+#define VOTE_MUTE       2
+#define VOTE_MAP        4
+#define VOTE_TELEMODE   8
 
 // vote flags
 #define VF_ANNOUNCE 1
