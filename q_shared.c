@@ -141,7 +141,7 @@ vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
 
 //====================================================================================
 
-static const char hexchars[] = "0123456789ABCDEF";
+//static const char hexchars[] = "0123456789ABCDEF";
 
 /*
 ============

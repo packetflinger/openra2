@@ -37,6 +37,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_public.h"
 #include "g_arena.h"
 
+// should be set at build-time in Makefile
+#ifndef OPENRA2_VERSION
+#define OPENRA2_VERSION "0000000"
+#endif
+
+// should be set at build-time in Makefile
+#ifndef OPENRA2_REVISION
+#define OPENRA2_REVISION "r00"
+#endif
+
 #if USE_FPS
 #define G_GMF_VARIABLE_FPS GMF_VARIABLE_FPS
 #else

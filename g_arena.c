@@ -796,6 +796,7 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 qboolean G_CheckReady(arena_t *a) {
 	int i;
 
+	// need players on both teams
 	if (a->team_home.player_count == 0 || a->team_away.player_count == 0) {
 		return false;
 	}

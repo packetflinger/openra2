@@ -604,7 +604,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		memcpy(map->name, mapname, namelen + 1);
 
 		map->arenas[1].damage_flags = ARENADAMAGE_ALL;
-		map->arenas[1].weapon_flags = ARENAWEAPON_ALL & ~ARENAWEAPON_BFG;
+		map->arenas[1].weapon_flags = ARENAWEAPON_ALL & ~ARENAWEAPON_BFG; // everything sans bfg
 		map->arenas[1].rounds = 7;
 
 		List_Append(&g_map_list, &map->list);
@@ -708,7 +708,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		j = 1;
 		notra2map = qtrue;
 		
-		gi.dprintf("Not native RA2 map, forcing arena #1\n");
+		gi.dprintf("%s is not a native arena map, forcing arena #1\n", mapname);
 		level.arenas[j].number = j;
 		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
 		
