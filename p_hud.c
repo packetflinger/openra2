@@ -334,7 +334,8 @@ void MoveClientToIntermission(edict_t *ent)
     }
 
     // add the layout
-    DeathmatchScoreboardMessage(ent, qtrue);
+    //DeathmatchScoreboardMessage(ent, qtrue);
+    G_ArenaScoreboardMessage(ent, qtrue);
 
     if (ent->client->pers.uf & UF_AUTOSCREENSHOT) {
         G_StuffText(ent, "wait; screenshot\n");
@@ -353,7 +354,7 @@ void BeginIntermission(void)
 
     G_FinishVote();
 
-    BuildDeathmatchScoreboard(game.oldscores, NULL);
+    //BuildDeathmatchScoreboard(game.oldscores, NULL);
 
     // respawn any dead clients
     for (i = 0; i < game.maxclients; i++) {

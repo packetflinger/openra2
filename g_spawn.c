@@ -1,3 +1,4 @@
+
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
 
@@ -613,12 +614,12 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 	}
 
 	// if we have extra ents, append them
-	//if (map->extra_ents) {
+	if (map->extra_ents) {
 	//	newents = va("%s %s", entities, map->extra_ents);
 		//gi.dprintf("%s\n", newents);
-	//} else {
-	//	newents = va("%s", entities);
-	//}
+	} else {
+		//newents = va("%s", entities);
+	}
 	
     // set client fields on player ents
     for (i = 0; i < game.maxclients; i++) {
@@ -708,7 +709,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		j = 1;
 		notra2map = qtrue;
 		
-		gi.dprintf("%s is not a native arena map, forcing arena #1\n", mapname);
+		gi.dprintf("%s is not a native arena map, emulating a single arena...\n", mapname);
 		level.arenas[j].number = j;
 		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
 		

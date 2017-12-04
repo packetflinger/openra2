@@ -466,7 +466,8 @@ static void G_LoadMapList(void) {
 
 	fp = fopen(path, "r");
 	if (!fp) {
-		gi.error("Couldn't load '%s'\n", path);
+		gi.dprintf("Couldn't load '%s'...\n", path);
+		return;
 	}
 
 	linenum = nummaps = 0;
@@ -505,7 +506,7 @@ static void G_LoadMapList(void) {
 		afp = fopen(apath, "r");
 		if (afp) {
 			arena_num = -1;
-			gi.dprintf("Parsing %s\n", apath);
+			//gi.dprintf("Parsing %s\n", apath);
 			while (1) {
 				arena_data = fgets(abuffer, sizeof(abuffer), afp);
 				if (!arena_data) {
@@ -569,8 +570,8 @@ static void G_LoadMapList(void) {
 
 	fclose(fp);
 
-	gi.dprintf("Loaded %d maps and %d arenas from '%s'\n", nummaps,
-			arena_num + 1, path);
+	//gi.dprintf("Loaded %d maps and %d arenas from '%s'\n", nummaps,
+	//		arena_num + 1, path);
 }
 
 static void G_LoadSkinList(void) {
