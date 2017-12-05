@@ -256,6 +256,9 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
 void G_BuildMenu(void) {
 
 	int i, j;
+
+	memset(&menu_lookup, 0, sizeof(pmenu_arena_t) * MAX_ARENAS);
+
 	for (i = 0, j = 0; i < MAX_ARENAS; i++) {
 		if (level.arenas[i].number) {
 			menu_lookup[j].num = level.arenas[i].number;

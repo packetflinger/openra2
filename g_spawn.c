@@ -524,7 +524,8 @@ static void G_ParseString(void)
 		
 		// weaps/ammo (items controlled with dmflags)
 		if ((strstr(ent->classname, "ammo_") || 
-			strstr(ent->classname, "weapon_")) && !ent->override) {
+			strstr(ent->classname, "weapon_") ||
+			strstr(ent->classname, "item_")) && !ent->override) {
 			
 			/* still can pick up items
 			ent->flags |= FL_HIDDEN;
@@ -684,10 +685,11 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		memset(&level.arenas[j], 0, sizeof(arena_t));
 		
         level.arenas[j].number = ent->arena;
+        level.arenas[j].round_limit = g_round_limit->value;
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
 		if (&map->arenas[j] != NULL){
-			level.arenas[j].round_limit = map->arenas[j].rounds;
+			//level.arenas[j].round_limit = (map->arenas[j].rounds) ? map->arenas[j].rounds : g_round_limit->value;
 		}
 		
 		// setup the teams
@@ -740,6 +742,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     }
 	
     gi.dprintf("%d spawn points\n", level.numspawns);
+    gi.dprintf("%d arena%s\n", level.arena_count, (level.arena_count > 1) ? "s":"");
 }
 
 void G_ResetLevel(void)
