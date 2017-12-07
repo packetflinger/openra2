@@ -106,6 +106,7 @@ cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
 cvar_t *g_hometeam_name;
 cvar_t *g_awayteam_name;
+cvar_t *g_default_arena;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -441,14 +442,14 @@ static void G_PickNextMap(void) {
 static void G_LoadMapList(void) {
 	char path[MAX_OSPATH];
 	char apath[MAX_OSPATH];
-	char extrapath[MAX_OSPATH];
+	//char extrapath[MAX_OSPATH];
 	char buffer[MAX_STRING_CHARS];
 	char abuffer[MAX_STRING_CHARS];
-	char extra_ents[MAX_STRING_CHARS];
+	//char extra_ents[MAX_STRING_CHARS];
 	char *token, *arena_token;
-	const char *data, *arena_data, *ent_data;
+	const char *data, *arena_data;
 	map_entry_t *map;
-	FILE *fp, *afp, *efp;
+	FILE *fp, *afp;
 	size_t len;
 	int linenum, nummaps;
 	int8_t arena_num;
@@ -501,8 +502,7 @@ static void G_LoadMapList(void) {
 		memcpy(map->name, token, len + 1);
 
 		// loop for arena settings
-		len = Q_concat(apath, sizeof(apath), game.dir, "/mapcfg/", token,
-				".cfg", NULL);
+		len = Q_concat(apath, sizeof(apath), game.dir, "/mapcfg/", token, ".cfg", NULL);
 		afp = fopen(apath, "r");
 		if (afp) {
 			arena_num = -1;
@@ -556,18 +556,24 @@ static void G_LoadMapList(void) {
 		List_Append(&g_map_list, &map->list);
 		nummaps++;
 
+/*
 		// look for extra entities file
 		len = Q_concat(extrapath, sizeof(extrapath), game.dir, "/mapcfg/",
 				token, ".ent", NULL);
+		gi.dprintf("looking for extra entities...%s", extrapath);
 		efp = fopen(extrapath, "r");
 		if (efp) {
+			gi.dprintf("found!\n");
 			ent_data = fgets(extra_ents, sizeof(extra_ents), efp);
 			if (ent_data) {
+				gi.dprintf("Extra entities:\t%s\n", ent_data);
 				strncpy(map->extra_ents, ent_data, MAX_STRING_CHARS);
 			}
+		} else {
+			gi.dprintf("\n");
 		}
+*/
 	}
-
 	fclose(fp);
 
 	//gi.dprintf("Loaded %d maps and %d arenas from '%s'\n", nummaps,
@@ -1096,6 +1102,7 @@ static void G_Init(void) {
 	g_round_countdown = gi.cvar("g_round_countdown", "8", 0);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
+	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_arena_numrounds->value, 1, 15);

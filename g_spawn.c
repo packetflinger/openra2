@@ -522,16 +522,11 @@ static void G_ParseString(void)
         }
 		
 		
-		// weaps/ammo (items controlled with dmflags)
+		// Inhibit most if not all entities from spawning
 		if ((strstr(ent->classname, "ammo_") || 
 			strstr(ent->classname, "weapon_") ||
 			strstr(ent->classname, "item_")) && !ent->override) {
-			
-			/* still can pick up items
-			ent->flags |= FL_HIDDEN;
-			ent->svflags |= SVF_NOCLIENT;
-			ent->solid = SOLID_NOT;
-			*/
+
 			G_FreeEdict(ent);
 			inhibit++;
 		}
@@ -578,6 +573,14 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
 	map_entry_t	*map;
+	/*
+	FILE *efp;
+	char extrapath[MAX_OSPATH];
+	char buffer[MAX_STRING_CHARS];
+	char extra_ents[MAX_STRING_CHARS];
+	*/
+	//const char *entities;
+
 	//char 		*newents;	// map entities + user specified one
 
 #if USE_SQLITE
@@ -593,6 +596,29 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     Q_strlcpy(level.mapname, mapname, sizeof(level.mapname));
 
     G_LoadScores();
+
+    // load any extra entities
+    /*
+	len = Q_concat(extrapath, sizeof(extrapath), game.dir, "/mapcfg/", mapname, ".ent", NULL);
+	if (len) {
+		efp = fopen(extrapath, "r");
+		if (efp) {
+			gi.dprintf("loading extra entities from %s\n", extrapath);
+			while (1) {
+				if (!fgets(extra_ents, sizeof(extra_ents), efp))
+					break;
+
+				len = Q_concat(buffer, sizeof(buffer), extra_ents, NULL);
+				//gi.dprintf("%s\n", buffer);
+			}
+			fclose(efp);
+
+			//len = Q_concat(buffer, sizeof(buffer), entities_orig, extra_ents, NULL);
+			//entities = &buffer[0];
+			//gi.dprintf("ents: %s\n", entities_orig);
+		}
+	}
+	*/
 
 	map = G_FindMap(mapname);
 	

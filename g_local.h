@@ -708,6 +708,7 @@ extern  cvar_t  *g_vote_flags;
 extern	cvar_t	*g_hometeam_name;
 extern	cvar_t	*g_awayteam_name;
 extern	cvar_t	*g_round_end_time;
+extern	cvar_t	*g_default_arena;
 extern	cvar_t	*g_round_limit;
 extern	cvar_t	*g_timeout_time;
 extern  cvar_t  *g_intermission_time;

@@ -1339,6 +1339,19 @@ void G_WriteTime(int remaining)
     gi.WriteString(buffer);
 }
 
+// get the arena with the most current players
+static int arena_num_popular(void) {
+	int i, winner;
+
+	winner = 1;
+	for (i=1; i<MAX_ARENAS; i++) {
+		if (level.arenas[i].client_count > level.arenas[winner].client_count) {
+			winner = level.arenas[i].number;
+		}
+	}
+
+	return winner;
+}
 
 /*
 ===========
@@ -1364,13 +1377,21 @@ void ClientBegin(edict_t *ent)
     ent->client->pers.connected = (level.intermission_framenum ||
                                    ent->client->pers.mvdspec) ? CONN_SPECTATOR : CONN_PREGAME;
 
-	// set the default arena
-	if (level.default_arena) {
-		arena = &level.arenas[level.default_arena];
-	} else {
-		arena = &level.arenas[1];
+    int anum = level.default_arena;
+    switch ((int)g_default_arena->value) {
+	case ARENA_DEFAULT_FIRST:
+		anum = 1;
+		break;
+	case ARENA_DEFAULT_POPULAR:
+		anum = arena_num_popular();
+		break;
+	case ARENA_DEFAULT_RANDOM:
+		anum = (int)((random() * level.arena_count) + 1);
+		break;
 	}
-	
+
+    arena = &level.arenas[anum];
+
 	G_ChangeArena(ent->client, arena);
 
     if (level.intermission_framenum) {

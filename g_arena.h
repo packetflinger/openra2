@@ -61,6 +61,13 @@ typedef enum {
 } arena_state_t;
 
 
+// the arena to join on connect by default
+typedef enum {
+	ARENA_DEFAULT_FIRST,		// always #1
+	ARENA_DEFAULT_POPULAR,	// which ever has the most players
+	ARENA_DEFAULT_RANDOM,		// random one
+} arena_default_t;
+
 
 typedef struct {
 	char 				name[20];
