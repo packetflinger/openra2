@@ -421,7 +421,7 @@ void Cmd_Vote_f(edict_t *ent)
         return;
     }
 
-    if (level.framenum - level.vote.framenum < 5 * HZ) {
+    if (level.framenum - level.vote.framenum < 2 * HZ) {
         gi.cprintf(ent, PRINT_HIGH, "You may not initiate votes too soon.\n");
         return;
     }
