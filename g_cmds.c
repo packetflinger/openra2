@@ -918,8 +918,8 @@ void Cmd_Players_f(edict_t *ent)
     qboolean show_ips = !ent || ent->client->pers.admin;
 
     gi.cprintf(ent, PRINT_HIGH,
-               "id score ping time name            idle arena team capt%s\n"
-               "-- ----- ---- ---- --------------- ---- ----- ---- ----%s\n",
+               "id score ping time name            idle arena team            capt%s\n"
+               "-- ----- ---- ---- --------------- ---- ----- --------------- ----%s\n",
                show_ips ? " address" : "",
                show_ips ? " -------" : "");
 
@@ -964,6 +964,7 @@ void Cmd_Players_f(edict_t *ent)
 					break;
 				case ARENA_TEAM_AWAY:
 					teamname = g_awayteam_name->string;
+
 			}
 			
 			if (team->captain == c->edict) {
@@ -971,7 +972,7 @@ void Cmd_Players_f(edict_t *ent)
 			}
 		}
 		
-        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %4s %5s %4s %4s\n",
+        gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %5s %-15s %4s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
 				   va("%d", arena->number), teamname, capt,
                    show_ips ? c->pers.ip : "");

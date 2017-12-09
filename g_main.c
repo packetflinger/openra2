@@ -1106,6 +1106,10 @@ static void G_Init(void) {
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 
+	// trim team names to 15 characters
+	(g_hometeam_name->string)[15] = '\0';
+	(g_awayteam_name->string)[15] = '\0';
+
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_arena_numrounds->value, 1, 15);
 	clamp(g_round_end_time->value, 1, 15);
