@@ -960,10 +960,10 @@ void Cmd_Players_f(edict_t *ent)
 					teamname = "";
 					break;
 				case ARENA_TEAM_HOME:
-					teamname = "home";
+					teamname = g_hometeam_name->string;
 					break;
 				case ARENA_TEAM_AWAY:
-					teamname = "away";
+					teamname = g_awayteam_name->string;
 			}
 			
 			if (team->captain == c->edict) {
