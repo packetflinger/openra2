@@ -154,6 +154,26 @@ void G_ArenaStuff(arena_t *a, const char *command) {
 	}
 }
 
+/**
+ * Check for things like players dropping from teams
+ */
+void G_CheckArenaRules(arena_t *a) {
+
+	if (!a)
+		return;
+
+	// teams are now uneven, check if we should abort
+	if (a->team_away.player_count != a->team_home.player_count && a->state > ARENA_STATE_WARMUP) {
+		if (g_team_balance->value > 0 ||
+			a->team_away.player_count == 0 ||
+			a->team_home.player_count == 0) {
+
+			a->current_round = a->round_limit;
+			G_EndRound(a, NULL);
+		}
+	}
+}
+
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
 void G_ArenaThink(arena_t *a) {
 	static qboolean foundwinner = false;
@@ -210,7 +230,7 @@ void G_ArenaThink(arena_t *a) {
 			a->state = ARENA_STATE_COUNTDOWN;
 			a->current_round = 1;
 			a->round_start_frame = level.framenum
-					+ SECS_TO_FRAMES((int )g_round_countdown->value);
+					+ SECS_TO_FRAMES((int) g_round_countdown->value);
 			a->countdown = (int) g_round_countdown->value;
 
 			G_RespawnPlayers(a);
@@ -218,6 +238,7 @@ void G_ArenaThink(arena_t *a) {
 	}
 
 	G_CheckTimers(a);
+	G_CheckArenaRules(a);
 }
 
 // broadcast print to only members of specified arena
@@ -277,7 +298,7 @@ void G_BuildMenu(void) {
  Build horizontally
  ==================
  */
-size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
+size_t G_BuildScoreboard_H(char *buffer, gclient_t *client, arena_t *arena) {
 	char entry[MAX_STRING_CHARS];
 	char status[MAX_QPATH];
 	char timebuf[16];
@@ -489,7 +510,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
  Build Vertically
  ==================
  */
-size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
+size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	char entry[MAX_STRING_CHARS];
 	char status[MAX_QPATH];
 	char timebuf[16];
@@ -502,8 +523,10 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 	time_t t;
 	struct tm *tm;
 
-	y = 20;		// starting point down from top of screen
+	// starting point down from top of screen
+	y = 20;
 
+	// Build time string
 	t = time(NULL);
 	tm = localtime(&t);
 	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
@@ -519,13 +542,14 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 				status, arena->name);
 	}
 
-	y += LAYOUT_LINE_HEIGHT * 2;
+	// move down 6 lines
+	y += LAYOUT_LINE_HEIGHT * 6;
 
 	total = Q_scnprintf(buffer, MAX_STRING_CHARS, "xv 0 %s "
 			"yt %d "
 			"cstring \"Team %s\" "
 			"yt %d "
-			"cstring2 \"Player          Frg Rnd Mch FPH Time Ping\" ", entry, y,
+			"cstring2 \" Name           Frg Rnd Mch FPH Time Ping\" ", entry, y,
 			arena->team_home.name, y + LAYOUT_LINE_HEIGHT);
 
 	numranks = G_CalcArenaRanks(ranks, &arena->team_home);
@@ -572,13 +596,14 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 		y += LAYOUT_LINE_HEIGHT;
 	}
 
+	// skip 4 lines
 	y += LAYOUT_LINE_HEIGHT * 4;
 
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s"
 			"yt %d "
 			"cstring \"Team %s\""
 			"yt %d "
-			"cstring2 \"Player          Frg Rnd Mch FPH Time Ping\"", entry, y,
+			"cstring2 \" Name           Frg Rnd Mch FPH Time Ping\"", entry, y,
 			arena->team_away.name, y + LAYOUT_LINE_HEIGHT);
 
 	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
@@ -629,7 +654,7 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 
 	// add spectators in fixed order
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
-			"yt %d cstring \"-------------- Spectators ------------\"", y);
+			"yt %d cstring \"         ---- Spectators ----         \"", y);
 	y += LAYOUT_LINE_HEIGHT;
 	for (i = 0, j = 0; i < game.maxclients; i++) {
 		c = &game.clients[i];
@@ -649,11 +674,11 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 			sec = 1;
 		}
 
+		// spec is following someone, show who
 		if (c->chase_target) {
 			Q_snprintf(status, sizeof(status), "-> %.13s",
 					c->chase_target->client->pers.netname);
 		} else {
-			//strcpy(status, "(observing)");
 			status[0] = 0;
 		}
 
@@ -676,8 +701,11 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena) {
 
 	// add server info
 	if (sv_hostname && sv_hostname->string[0]) {
-		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
-				sv_hostname->string);
+		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
+				sv_hostname->string,
+				GAMEVERSION,
+				OPENRA2_VERSION
+		);
 
 		if (total + len < MAX_STRING_CHARS) {
 			memcpy(buffer + total, entry, len);
@@ -818,6 +846,10 @@ qboolean G_CheckReady(arena_t *a) {
 		}
 	}
 
+	if (g_team_balance->value > 0 && a->team_home.player_count != a->team_away.player_count) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -870,14 +902,16 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
 	int i;
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (!winner->players[i])
-			continue;
+	if (winner) {
+		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+			if (!winner->players[i])
+				continue;
 
-		winner->players[i]->client->resp.match_score++;
+			winner->players[i]->client->resp.match_score++;
+		}
 	}
 
-	G_bprintf(a, PRINT_HIGH, "Match finished\n", a->current_round);
+	G_bprintf(a, PRINT_HIGH, "Match finished\n");
 
 	a->state = ARENA_STATE_WARMUP;
 
@@ -894,16 +928,19 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 
 	int i;
 	a->round_start_frame = 0;
-	G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
-			a->current_round, a->round_limit);
 
-	update_playercounts(a);	// for sanity
+	if (winner) {
+		G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
+				a->current_round, a->round_limit);
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (!winner->players[i])
-			continue;
+		update_playercounts(a);	// for sanity
 
-		winner->players[i]->client->resp.round_score++;
+		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+			if (!winner->players[i])
+				continue;
+
+			winner->players[i]->client->resp.round_score++;
+		}
 	}
 
 	if (a->current_round == a->round_limit) {

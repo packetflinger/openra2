@@ -150,3 +150,4 @@ void G_StartingWeapon(edict_t *ent);
 void G_TimeoutFrame(arena_t *a);
 const char *G_SecsToString (int seconds);
 arena_team_t *G_GetWinningTeam(arena_t *a);
+void G_CheckArenaRules(arena_t *a);

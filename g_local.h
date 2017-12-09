@@ -705,6 +705,7 @@ extern  cvar_t  *g_vote_treshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
+extern	cvar_t	*g_team_balance;
 extern	cvar_t	*g_hometeam_name;
 extern	cvar_t	*g_awayteam_name;
 extern	cvar_t	*g_round_end_time;

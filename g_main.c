@@ -49,6 +49,7 @@ cvar_t *g_vote_flags;
 cvar_t *g_intermission_time;
 cvar_t *g_admin_password;
 cvar_t *g_round_limit;
+cvar_t *g_team_balance;
 cvar_t *g_maps_random;
 cvar_t *g_maps_file;
 cvar_t *g_defaults_file;
@@ -660,7 +661,7 @@ static void G_LoadSkinList(void) {
  The timelimit or fraglimit has been exceeded
  =================
  */
-void EndDMLevel(void) {
+void G_EndLevel(void) {
 	G_RegisterScore();
 
 	BeginIntermission();
@@ -702,7 +703,7 @@ static void G_SetTimeVar(int remaining) {
  CheckDMRules
  =================
  */
-static void CheckDMRules(void) {
+static void G_CheckRules(void) {
 	int i;
 	gclient_t *c;
 
@@ -724,7 +725,7 @@ static void CheckDMRules(void) {
 		if (level.time >= timelimit->value * 60) {
 			gi.bprintf(PRINT_HIGH, "Timelimit hit.\n");
 			G_SetTimeVar(0);
-			EndDMLevel();
+			G_EndLevel();
 			return;
 		}
 		if (timelimit->modified || (level.framenum % HZ) == 0) {
@@ -766,7 +767,7 @@ static void CheckDMRules(void) {
 			}
 			if (c->resp.score >= fraglimit->value) {
 				gi.bprintf(PRINT_HIGH, "Fraglimit hit.\n");
-				EndDMLevel();
+				G_EndLevel();
 				return;
 			}
 		}
@@ -899,7 +900,7 @@ void G_RunFrame(void) {
 				for (i = 0, ent = &g_edicts[1]; i < game.maxclients;
 						i++, ent++) {
 					if (ent->client->pers.connected > CONN_CONNECTED) {
-						DeathmatchScoreboardMessage(ent, qtrue);
+						G_ArenaScoreboardMessage(ent, qtrue);
 					}
 				}
 			}
@@ -928,7 +929,7 @@ void G_RunFrame(void) {
 #endif
 		{
 			// see if it is time to end a deathmatch
-			CheckDMRules();
+			G_CheckRules();
 
 			// Let each arena think
 			for (i = 1; i <= level.arena_count; i++) {
@@ -1067,6 +1068,7 @@ static void G_Init(void) {
 	g_protection_time = gi.cvar("g_protection_time", "0", 0);
 	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
 	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
+	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_LATCH);
 #if USE_SQLITE
 	g_sql_database = gi.cvar("g_sql_database", "", 0);
 	g_sql_async = gi.cvar("g_sql_async", "0", 0);
@@ -1097,9 +1099,9 @@ static void G_Init(void) {
 	// arena defaults
 	g_arena_weapflags = gi.cvar("g_arena_weapflags", "512", 0);
 	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
-	g_arena_numrounds = gi.cvar("g_arena_numrounds", "9", 0);
+	g_arena_numrounds = gi.cvar("g_arena_numrounds", "7", 0);
 	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
-	g_round_countdown = gi.cvar("g_round_countdown", "8", 0);
+	g_round_countdown = gi.cvar("g_round_countdown", "12", 0);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
