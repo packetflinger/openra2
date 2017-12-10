@@ -1061,7 +1061,8 @@ typedef enum {
     LAYOUT_NONE,
     LAYOUT_SCORES,
     LAYOUT_OLDSCORES,
-    LAYOUT_MENU
+    LAYOUT_MENU,
+	LAYOUT_PLAYERS
 } layout_t;
 
 typedef enum {

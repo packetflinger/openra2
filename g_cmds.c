@@ -1721,14 +1721,41 @@ Display the scoreboard
 */
 static void Cmd_Score_f(edict_t *ent)
 {
+	if (ent->client->layout == LAYOUT_PLAYERS) {
+		ent->client->layout = 0;
+
+		return;
+	}
+
+	// don't toggle playerboard if playing a match
+	if (ent->client->layout == LAYOUT_SCORES && ent->client->pers.arena->state == ARENA_STATE_PLAY) {
+		ent->client->layout = 0;
+
+		return;
+	}
+
     if (ent->client->layout == LAYOUT_SCORES) {
-        ent->client->layout = 0;
+    	ent->client->layout = LAYOUT_PLAYERS;
+
+    	G_ArenaPlayerboardMessage(ent, true);
         return;
     }
 
     ent->client->layout = LAYOUT_SCORES;
-    //DeathmatchScoreboardMessage(ent, qtrue);
+
 	G_ArenaScoreboardMessage(ent, true);
+}
+
+static void Cmd_Playerboard_f(edict_t *ent)
+{
+    if (ent->client->layout == LAYOUT_PLAYERS) {
+        ent->client->layout = 0;
+        return;
+    }
+
+    ent->client->layout = LAYOUT_PLAYERS;
+
+	G_ArenaPlayerboardMessage(ent, true);
 }
 
 static void Cmd_OldScore_f(edict_t *ent)
@@ -1920,6 +1947,8 @@ void ClientCommand(edict_t *ent)
     else if (Q_stricmp(cmd, "oldscore") == 0 || Q_stricmp(cmd, "oldscores") == 0 ||
              Q_stricmp(cmd, "lastscore") == 0 || Q_stricmp(cmd, "lastscores") == 0)
         Cmd_OldScore_f(ent);
+    else if (Q_stricmp(cmd, "playerboard") == 0)
+            Cmd_Playerboard_f(ent);
     else if (Q_stricmp(cmd, "use") == 0)
         Cmd_Use_f(ent);
     else if (Q_stricmp(cmd, "drop") == 0)

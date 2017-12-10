@@ -111,6 +111,16 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
 	gi.unicast(ent, reliable);
 }
 
+void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
+	char buffer[MAX_STRING_CHARS];
+
+	G_BuildPlayerboard(buffer, ent->client, ent->client->pers.arena);
+
+	gi.WriteByte(svc_layout);
+	gi.WriteString(buffer);
+	gi.unicast(ent, reliable);
+}
+
 // start a sound for all arena members, people in other arenas shouldn't hear it
 void G_ArenaSound(arena_t *a, int index) {
 
@@ -697,6 +707,96 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		total += len;
 		y += LAYOUT_LINE_HEIGHT;
 		j++;
+	}
+
+	// add server info
+	if (sv_hostname && sv_hostname->string[0]) {
+		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
+				sv_hostname->string,
+				GAMEVERSION,
+				OPENRA2_VERSION
+		);
+
+		if (total + len < MAX_STRING_CHARS) {
+			memcpy(buffer + total, entry, len);
+			total += len;
+		}
+	}
+
+	buffer[total] = 0;
+
+	return total;
+}
+
+/**
+ * Show all players connected.
+ */
+size_t G_BuildPlayerboard(char *buffer, gclient_t *client, arena_t *arena) {
+	char entry[MAX_STRING_CHARS];
+	char status[MAX_QPATH];
+	size_t total, len;
+	int i;
+	int y;
+	gclient_t *c;
+	time_t t;
+	struct tm *tm;
+	arena_t *a;
+
+	// starting point down from top of screen
+	y = 20;
+
+	// Build time string
+	t = time(NULL);
+	tm = localtime(&t);
+	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+
+	if (len < 1)
+		strcpy(status, "???");
+
+	if (!client) {
+		Q_snprintf(entry, sizeof(entry),
+				"yt %d cstring2 \"Old scoreboard from %s\"", y, level.mapname);
+	} else {
+		Q_snprintf(entry, sizeof(entry), "yt %d cstring2 \"%s - %s\"", y,
+				status, arena->name);
+	}
+
+	// move down 6 lines
+	y += LAYOUT_LINE_HEIGHT * 6;
+
+	total = Q_scnprintf(buffer, MAX_STRING_CHARS, "xv 0 %s "
+			"yt %d "
+			"cstring \"Connected Players\" "
+			"yt %d "
+			"cstring2 \" Name           Arena                Ping\" ", entry, y,
+			 y + LAYOUT_LINE_HEIGHT);
+
+	y += LAYOUT_LINE_HEIGHT * 2;
+	for (i = 0; i < game.maxclients; i++) {
+		c = &game.clients[i];
+
+		if (!c)
+			continue;
+
+		if (c->pers.connected <= CONN_CONNECTED)
+			continue;
+
+		a = c->pers.arena;
+
+		len = Q_snprintf(entry, sizeof(entry),
+				"yt %d cstring \"%-15s %-20s %4d\"", y,
+				c->pers.netname, va("%d:%s", a->number, a->name), c->ping);
+
+		if (len >= sizeof(entry))
+			continue;
+
+		if (total + len >= MAX_STRING_CHARS)
+			break;
+
+		memcpy(buffer + total, entry, len);
+
+		total += len;
+		y += LAYOUT_LINE_HEIGHT;
 	}
 
 	// add server info
