@@ -114,7 +114,7 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
 	char buffer[MAX_STRING_CHARS];
 
-	G_BuildPlayerboard(buffer, ent->client, ent->client->pers.arena);
+	G_BuildPlayerboard(buffer, ent->client->pers.arena);
 
 	gi.WriteByte(svc_layout);
 	gi.WriteString(buffer);
@@ -731,15 +731,12 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 /**
  * Show all players connected.
  */
-size_t G_BuildPlayerboard(char *buffer, gclient_t *client, arena_t *arena) {
-	char entry[MAX_STRING_CHARS];
-	char status[MAX_QPATH];
+size_t G_BuildPlayerboard(char *buffer, arena_t *arena) {
+	char entry[MAX_STRING_CHARS], status[MAX_QPATH];
 	size_t total, len;
-	int i;
-	int y;
+	int i, y;
 	gclient_t *c;
 	time_t t;
-	struct tm *tm;
 	arena_t *a;
 
 	// starting point down from top of screen
@@ -747,19 +744,14 @@ size_t G_BuildPlayerboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	// Build time string
 	t = time(NULL);
-	tm = localtime(&t);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", (struct tm *) localtime(&t));
 
-	if (len < 1)
-		strcpy(status, "???");
-
-	if (!client) {
-		Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring2 \"Old scoreboard from %s\"", y, level.mapname);
-	} else {
-		Q_snprintf(entry, sizeof(entry), "yt %d cstring2 \"%s - %s\"", y,
-				status, arena->name);
+	if (len < 1) {
+		strcpy(status, "Beer O'Clock");
 	}
+
+	Q_snprintf(entry, sizeof(entry), "yt %d cstring2 \"%s - %s\"", y,
+			status, arena->name);
 
 	// move down 6 lines
 	y += LAYOUT_LINE_HEIGHT * 6;
@@ -769,16 +761,14 @@ size_t G_BuildPlayerboard(char *buffer, gclient_t *client, arena_t *arena) {
 			"cstring \"Connected Players\" "
 			"yt %d "
 			"cstring2 \" Name           Arena                Ping\" ", entry, y,
-			 y + LAYOUT_LINE_HEIGHT);
+			 y + LAYOUT_LINE_HEIGHT * 2);
 
-	y += LAYOUT_LINE_HEIGHT * 2;
+	y += LAYOUT_LINE_HEIGHT * 4;
+
 	for (i = 0; i < game.maxclients; i++) {
 		c = &game.clients[i];
 
-		if (!c)
-			continue;
-
-		if (c->pers.connected <= CONN_CONNECTED)
+		if (!c || c->pers.connected <= CONN_CONNECTED)
 			continue;
 
 		a = c->pers.arena;

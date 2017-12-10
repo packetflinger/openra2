@@ -127,7 +127,7 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...);
 void G_BuildMenu(void);
 size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
 size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
-size_t G_BuildPlayerboard(char *buffer, gclient_t *client, arena_t *arena);
+size_t G_BuildPlayerboard(char *buffer, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
 void G_ChangeArena(gclient_t *cl, arena_t *arena);
