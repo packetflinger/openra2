@@ -654,7 +654,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	// add spectators in fixed order
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
-			"yt %d cstring \"         ---- Spectators ----         \"", y);
+			"yt %d cstring2 \"---- Spectators ----\"", y);
 	y += LAYOUT_LINE_HEIGHT;
 	for (i = 0, j = 0; i < game.maxclients; i++) {
 		c = &game.clients[i];
@@ -683,8 +683,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		}
 
 		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-31s %4d %4d\"", y,
-				va("%s %s", c->pers.netname, status), sec / 60, c->ping);
+				"yt %d cstring \"%s\"", y,
+				va("%s:%d %s", c->pers.netname, c->ping, status));
 
 		if (len >= sizeof(entry))
 			continue;
