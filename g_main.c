@@ -108,6 +108,8 @@ cvar_t *g_round_countdown;
 cvar_t *g_hometeam_name;
 cvar_t *g_awayteam_name;
 cvar_t *g_default_arena;
+cvar_t *g_weapon_flags;
+cvar_t *g_damage_flags;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1105,6 +1107,8 @@ static void G_Init(void) {
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
+	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);
+	g_damage_flags = gi.cvar("g_damage_flags", "31", CVAR_LATCH);
 
 	// trim team names to 15 characters
 	(g_hometeam_name->string)[15] = '\0';

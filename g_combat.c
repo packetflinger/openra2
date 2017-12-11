@@ -262,6 +262,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     int         asave;
     int         psave;
     int         te_sparks;
+    int			adf;
 
     if (!targ->takedamage)
         return;
@@ -282,6 +283,8 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     meansOfDeath = mod;
 
     client = targ->client;
+
+    adf = client->pers.arena->damage_flags;
 
     if (dflags & DAMAGE_BULLET)
         te_sparks = TE_BULLET_SPARKS;
@@ -337,6 +340,15 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     take -= psave;
 
     asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+    /*
+    if (targ != attacker && !G_Teammates(targ, attacker) && !(adf & ARENADAMAGE_TEAM_ARMOR)) {
+    	asave = 0;
+    }
+
+	if (targ == attacker && !(adf & ARENADAMAGE_SELF_ARMOR)) {
+		asave = 0;
+	}
+	*/
     take -= asave;
 
     //treat cheat/powerup savings the same as armor
@@ -352,7 +364,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     }
 
     // do the damage
-    if (take && (targ != attacker)) {
+    if (take) {
         if (client)
             if (targ == attacker)
                 SpawnDamage(TE_BLOOD, targ->s.origin, normal);
@@ -363,7 +375,20 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         else
             SpawnDamage(TE_SPARKS, point, normal);
 
-        targ->health -= take;
+        // hurting someone else
+        if (targ != attacker) {
+        	if (!G_Teammates(targ, attacker)) {
+        		targ->health -= take;
+        	} else {
+        		if (targ->client->pers.arena->damage_flags & ARENADAMAGE_TEAM) {
+        			targ->health -= take;
+        		}
+        	}
+        } else {
+        	if (targ->client->pers.arena->damage_flags & ARENADAMAGE_SELF) {
+        		targ->health -= take;
+        	}
+        }
 
         if (targ->health <= 0) {
             if (client)

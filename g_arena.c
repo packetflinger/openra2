@@ -1084,10 +1084,10 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
  */
 void G_GiveItems(edict_t *ent) {
 
-	int flags, arena_idx;
+	int flags, idx;
 
-	arena_idx = ent->client->pers.arena->number;
-	flags = level.map->arenas[arena_idx].weapon_flags;
+	idx = ent->client->pers.arena->number;
+	flags = level.arenas[idx].weapon_flags;
 
 	if (flags < 2)
 		flags = ARENAWEAPON_ALL;
@@ -1461,5 +1461,34 @@ arena_team_t *G_GetWinningTeam(arena_t *a) {
 		return &(a->team_home);
 
 	return NULL;
+}
+
+/**
+ * Arena settings can be overridden by files in the mapcfg folder. Those settings (if present)
+ * get applied to the level structure here.
+ *
+ */
+void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
+	if (!(m && a))
+		return;
+
+	if (m->damage_flags) {
+		a->damage_flags = m->damage_flags;
+	}
+
+	if (m->weapon_flags) {
+		a->weapon_flags = m->weapon_flags;
+	}
+
+	if (m->rounds) {
+		a->round_limit = m->rounds;
+	}
+}
+
+qboolean G_Teammates(edict_t *p1, edict_t *p2) {
+	if (!(p1->client && p2->client)) {
+		return qfalse;
+	}
+	return p1->client->pers.team == p2->client->pers.team;
 }
 

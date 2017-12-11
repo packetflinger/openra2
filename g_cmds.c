@@ -1319,6 +1319,13 @@ static void Cmd_Id_f(edict_t *ent)
 
 void Cmd_Settings_f(edict_t *ent)
 {
+	int a_num = ent->client->pers.arena->number;
+	gi.dprintf("settings command in arena %d\n", ent->client->pers.arena->number);
+	gi.cprintf(ent, PRINT_HIGH, "Weapon Flags:  %d\n", level.arenas[a_num].weapon_flags);
+	gi.cprintf(ent, PRINT_HIGH, "Damage Flags:  %d\n", level.arenas[a_num].damage_flags);
+	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", level.arenas[a_num].round_limit);
+
+	/*
     char buffer[MAX_QPATH], *s;
     int v;
 
@@ -1343,7 +1350,7 @@ void Cmd_Settings_f(edict_t *ent)
     v = (int)g_item_ban->value;
     if (v & (ITB_QUAD | ITB_INVUL | ITB_BFG)) {
         buffer[0] = 0;
-        if (v & ITB_QUAD) {
+        if (v & ITB_QUAD) {`
             strcat(buffer, "quad ");
         }
         if (v & ITB_INVUL) {
@@ -1398,6 +1405,7 @@ void Cmd_Settings_f(edict_t *ent)
         s = "random";
     }
     gi.cprintf(ent, PRINT_HIGH, "Respawn mode:       %s\n", s);
+    */
 }
 
 static void Cmd_Admin_f(edict_t *ent)

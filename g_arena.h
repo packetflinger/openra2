@@ -92,6 +92,8 @@ typedef struct {
 	int				spectator_count;
 	int				round_limit;
 	int				current_round;
+	int				weapon_flags;
+	int				damage_flags;
 	int				round_start_frame;
 	int				round_end_frame;
 	int				timeout_frame;
@@ -153,3 +155,5 @@ void G_TimeoutFrame(arena_t *a);
 const char *G_SecsToString (int seconds);
 arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_CheckArenaRules(arena_t *a);
+void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
+qboolean G_Teammates(edict_t *p1, edict_t *p2);
