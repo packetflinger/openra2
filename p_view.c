@@ -488,6 +488,9 @@ static void P_FallingDamage(edict_t *ent)
     float   delta;
     int     damage;
     vec3_t  dir;
+    int 	adf;
+
+    adf = ent->client->pers.arena->damage_flags;
 
     if (ent->s.modelindex != 255)
         return;     // not in the player model
@@ -542,8 +545,9 @@ static void P_FallingDamage(edict_t *ent)
             damage = 1;
         VectorSet(dir, 0, 0, 1);
 
-        if (!DF(NO_FALLING))
+        if (!(adf & ARENADAMAGE_FALL)) {
             T_Damage(ent, world, world, dir, ent->s.origin, vec3_origin, damage, 0, 0, MOD_FALLING);
+        }
     } else {
         ent->s.event = EV_FALLSHORT;
         return;

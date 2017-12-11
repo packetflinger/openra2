@@ -339,17 +339,25 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     psave = CheckPowerArmor(targ, point, normal, take, dflags);
     take -= psave;
 
-    asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-    /*
-    if (targ != attacker && !G_Teammates(targ, attacker) && !(adf & ARENADAMAGE_TEAM_ARMOR)) {
-    	asave = 0;
+    asave = 0;
+
+    // check if self damage should take armor away
+    if (targ == attacker && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+    	take -= asave;
     }
 
-	if (targ == attacker && !(adf & ARENADAMAGE_SELF_ARMOR)) {
-		asave = 0;
-	}
-	*/
-    take -= asave;
+    // check if team damage should take armor away
+    if (targ != attacker && G_Teammates(targ, attacker) && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+    	take -= asave;
+    }
+
+    // enemy hit, should affect armor
+    if (targ != attacker && !G_Teammates(targ, attacker)) {
+    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+    	take -= asave;
+    }
 
     //treat cheat/powerup savings the same as armor
     asave += save;
@@ -380,12 +388,12 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         	if (!G_Teammates(targ, attacker)) {
         		targ->health -= take;
         	} else {
-        		if (targ->client->pers.arena->damage_flags & ARENADAMAGE_TEAM) {
+        		if (!(adf & ARENADAMAGE_TEAM)) {
         			targ->health -= take;
         		}
         	}
         } else {
-        	if (targ->client->pers.arena->damage_flags & ARENADAMAGE_SELF) {
+        	if (!(adf & ARENADAMAGE_SELF)) {
         		targ->health -= take;
         	}
         }

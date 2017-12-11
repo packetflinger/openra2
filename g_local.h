@@ -85,12 +85,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ARENAWEAPON_BFG				1024
 #define ARENAWEAPON_ALL				2046
 
-// how players take damage
-#define ARENADAMAGE_SELF			1	// can self harm
-#define ARENADAMAGE_SELF_ARMOR		2	// just self armor
-#define ARENADAMAGE_TEAM			4	// can team harm
-#define ARENADAMAGE_TEAM_ARMOR		8	// just team armor
-#define ARENADAMAGE_FALL			16	// falling damage applies
+// All damage apples by default except when below flags are applied
+#define ARENADAMAGE_SELF			1	// no self health damage
+#define ARENADAMAGE_SELF_ARMOR		2	// no self armor dmg (requires health protection)
+#define ARENADAMAGE_TEAM			4	// no team damage
+#define ARENADAMAGE_TEAM_ARMOR		8	// no team armor
+#define ARENADAMAGE_FALL			16	// no falling damage
 #define ARENADAMAGE_ALL				31
 
 
