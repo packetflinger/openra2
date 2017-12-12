@@ -1132,7 +1132,7 @@ void G_GiveItems(edict_t *ent) {
 	ent->client->inventory[ITEM_SHELLS] = 50;
 
 	// armor
-	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
+	ent->client->inventory[ITEM_ARMOR_BODY] = ent->client->pers.arena->armor;
 }
 
 
@@ -1472,8 +1472,20 @@ arena_team_t *G_GetWinningTeam(arena_t *a) {
  *
  */
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
-	if (!(m && a))
+	if (!a)
 		return;
+
+	// for maps not in the list, there will be no arenas listed
+	// just inject cvar defaults
+	if (!m) {
+		gi.dprintf("No arena_entry_t found\n");
+		a->damage_flags = (int) g_damage_flags->value;
+		a->weapon_flags = (int) g_weapon_flags->value;
+		a->round_limit = (int) g_round_limit->value;
+		a->health = (int) g_health_start->value;
+		a->armor = (int) g_armor_start->value;
+		return;
+	}
 
 	if (m->damage_flags) {
 		a->damage_flags = m->damage_flags;
@@ -1485,6 +1497,14 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 
 	if (m->rounds) {
 		a->round_limit = m->rounds;
+	}
+
+	if (m->health) {
+		a->health = m->health;
+	}
+
+	if (m->armor) {
+		a->armor = m->armor;
 	}
 }
 

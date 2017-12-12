@@ -94,6 +94,8 @@ typedef struct {
 	int				current_round;
 	int				weapon_flags;
 	int				damage_flags;
+	int				health;
+	int				armor;
 	int				round_start_frame;
 	int				round_end_frame;
 	int				timeout_frame;
@@ -115,6 +117,8 @@ typedef struct {
 	uint32_t	damage_flags;
 	uint8_t 	rounds;
 	uint32_t 	round_timelimit;
+	uint32_t	health;
+	uint32_t	armor;
 } arena_entry_t;
 
 

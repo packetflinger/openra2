@@ -1216,8 +1216,8 @@ void PutClientInServer(edict_t *ent)
     client->max_cells       = 200;
     client->max_slugs       = 50;
 
-    ent->health             = 100;
-    ent->max_health         = 100;
+    ent->health             = ent->client->pers.arena->health;
+    ent->max_health         = ent->client->pers.arena->health;
 
     // clear entity values
     ent->groundentity = NULL;
