@@ -1129,7 +1129,7 @@ void G_GiveItems(edict_t *ent) {
 	ent->client->inventory[ITEM_SHELLS] = 50;
 
 	// armor
-	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
+	ent->client->inventory[ITEM_ARMOR_BODY] = ent->client->pers.arena->armor;
 }
 
 
@@ -1482,6 +1482,14 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 
 	if (m->rounds) {
 		a->round_limit = m->rounds;
+	}
+
+	if (m->health) {
+		a->health = m->health;
+	}
+
+	if (m->armor) {
+		a->armor = m->armor;
 	}
 }
 
