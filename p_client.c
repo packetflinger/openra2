@@ -1179,8 +1179,16 @@ void PutClientInServer(edict_t *ent)
     index = ent - g_edicts - 1;
     client = ent->client;
 
-	ent->health = 0;
-	SelectSpawnPoint(ent, spawn_origin, spawn_angles);
+    // find a spawn point
+    // do it before setting health back up, so farthest
+    // ranging doesn't count this client
+    //if (client->pers.connected == CONN_SPECTATOR) {
+    //    VectorScale(client->ps.pmove.origin, 0.125f, spawn_origin);
+    //    VectorCopy(client->ps.viewangles, spawn_angles);
+    //} else {
+        ent->health = 0;
+        SelectSpawnPoint(ent, spawn_origin, spawn_angles);
+    //}
 
     PMenu_Close(ent);
 
@@ -1208,8 +1216,8 @@ void PutClientInServer(edict_t *ent)
     client->max_cells       = 200;
     client->max_slugs       = 50;
 
-    ent->health             = ent->client->pers.arena->health;
-    ent->max_health         = ent->health;
+    ent->health             = 100;
+    ent->max_health         = 100;
 
     // clear entity values
     ent->groundentity = NULL;

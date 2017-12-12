@@ -764,8 +764,6 @@ extern	cvar_t	*g_arena_numrounds;
 extern	cvar_t	*g_round_countdown;
 extern	cvar_t	*g_weapon_flags;
 extern	cvar_t	*g_damage_flags;
-extern	cvar_t	*g_health_start;
-extern	cvar_t	*g_armor_start;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;

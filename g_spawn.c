@@ -599,9 +599,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 		map->arenas[1].damage_flags = ARENADAMAGE_ALL;
 		map->arenas[1].weapon_flags = ARENAWEAPON_ALL & ~ARENAWEAPON_BFG; // everything sans bfg
-		map->arenas[1].rounds = (int) g_round_limit->value;
-		map->arenas[1].health = (int) g_health_start->value;
-		map->arenas[1].armor = (int) g_armor_start->value;
+		map->arenas[1].rounds = 7;
 
 		List_Append(&g_map_list, &map->list);
 
@@ -669,9 +667,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         level.arenas[j].round_limit = (int) g_round_limit->value;
         level.arenas[j].weapon_flags = (int) g_weapon_flags->value;
         level.arenas[j].damage_flags = (int) g_damage_flags->value;
-        level.arenas[j].health = (int) g_health_start->value;
-        level.arenas[j].armor = (int) g_armor_start->value;
-
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
 		// setup the teams

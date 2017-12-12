@@ -63,8 +63,6 @@ cvar_t *g_mute_chat;
 cvar_t *g_protection_time;
 cvar_t *g_log_stats;
 cvar_t *g_skins_file;
-cvar_t *g_health_start;
-cvar_t *g_armor_start;
 cvar_t *dedicated;
 
 #if USE_SQLITE
@@ -447,8 +445,10 @@ static void G_PickNextMap(void) {
 static void G_LoadMapList(void) {
 	char path[MAX_OSPATH];
 	char apath[MAX_OSPATH];
+	//char extrapath[MAX_OSPATH];
 	char buffer[MAX_STRING_CHARS];
 	char abuffer[MAX_STRING_CHARS];
+	//char extra_ents[MAX_STRING_CHARS];
 	char *token, *arena_token;
 	const char *data, *arena_data;
 	map_entry_t *map;
@@ -550,16 +550,6 @@ static void G_LoadMapList(void) {
 
 				if (g_strcmp0(arena_token, "rounds") == 0 && inarena) {
 					map->arenas[arena_num].rounds = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "health") == 0 && inarena) {
-					map->arenas[arena_num].health = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "armor") == 0 && inarena) {
-					map->arenas[arena_num].armor = atoi(
 							COM_Parse(&arena_data));
 				}
 			}
@@ -1081,9 +1071,6 @@ static void G_Init(void) {
 	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
 	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
 	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_LATCH);
-	g_health_start = gi.cvar("g_health_start", "100", CVAR_LATCH);
-	g_armor_start = gi.cvar("g_armor_start", "5", CVAR_LATCH);
-
 #if USE_SQLITE
 	g_sql_database = gi.cvar("g_sql_database", "", 0);
 	g_sql_async = gi.cvar("g_sql_async", "0", 0);
