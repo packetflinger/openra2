@@ -1086,6 +1086,9 @@ void G_GiveItems(edict_t *ent) {
 
 	int flags, idx;
 
+	if (!ent->client)
+		return;
+
 	idx = ent->client->pers.arena->number;
 	flags = level.arenas[idx].weapon_flags;
 

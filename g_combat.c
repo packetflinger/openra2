@@ -284,8 +284,6 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
 
     client = targ->client;
 
-    adf = client->pers.arena->damage_flags;
-
     if (dflags & DAMAGE_BULLET)
         te_sparks = TE_BULLET_SPARKS;
     else
@@ -341,22 +339,26 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
 
     asave = 0;
 
-    // check if self damage should take armor away
-    if (targ == attacker && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
-    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-    	take -= asave;
-    }
+    if (client) {
+    	adf = client->pers.arena->damage_flags;
 
-    // check if team damage should take armor away
-    if (targ != attacker && G_Teammates(targ, attacker) && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
-    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-    	take -= asave;
-    }
+		// check if self damage should take armor away
+		if (targ == attacker && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+			take -= asave;
+		}
 
-    // enemy hit, should affect armor
-    if (targ != attacker && !G_Teammates(targ, attacker)) {
-    	asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-    	take -= asave;
+		// check if team damage should take armor away
+		if (targ != attacker && G_Teammates(targ, attacker) && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+			take -= asave;
+		}
+
+		// enemy hit, should affect armor
+		if (targ != attacker && !G_Teammates(targ, attacker)) {
+			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+			take -= asave;
+		}
     }
 
     //treat cheat/powerup savings the same as armor

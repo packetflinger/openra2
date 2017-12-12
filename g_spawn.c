@@ -619,7 +619,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
             continue;
         }
 
-        // clear everything but the persistant data
+        // clear everything but the persistent data
         pers = client->pers;
         memset(client, 0, sizeof(*client));
         client->pers = pers;
@@ -701,6 +701,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		level.arenas[j].number = j;
 		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
 		
+		G_MergeArenaSettings(&level.arenas[j], &map->arenas[j]);
+
 		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;
 	}
