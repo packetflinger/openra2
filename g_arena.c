@@ -1478,7 +1478,6 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 	// for maps not in the list, there will be no arenas listed
 	// just inject cvar defaults
 	if (!m) {
-		gi.dprintf("No arena_entry_t found\n");
 		a->damage_flags = (int) g_damage_flags->value;
 		a->weapon_flags = (int) g_weapon_flags->value;
 		a->round_limit = (int) g_round_limit->value;
@@ -1513,5 +1512,93 @@ qboolean G_Teammates(edict_t *p1, edict_t *p2) {
 		return qfalse;
 	}
 	return p1->client->pers.team == p2->client->pers.team;
+}
+
+/**
+ * Read in the per-arena map config file and fill in the arena_entry structure
+ *
+ * return the number of arenas found in the file.
+ */
+size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
+	size_t len;
+	int count;
+	char path[MAX_OSPATH];
+	char buffer[MAX_STRING_CHARS];
+	FILE *fp;
+	int arena_num;
+	const char *fp_data;
+	char *token;
+	qboolean inarena;
+
+	count = 0;
+
+	len = Q_concat(path, sizeof(path), game.dir, "/mapcfg/", mapname, ".cfg", NULL);
+
+	if (len == 0) {
+		return 0;
+	}
+
+	fp = fopen(path, "r");
+
+	if (fp) {
+		arena_num = -1;
+
+		while (qtrue) {
+			fp_data = fgets(buffer, sizeof(buffer), fp);
+			if (!fp_data) {
+				break;
+			}
+
+			if (fp_data[0] == '#' || fp_data[0] == '/') {
+				continue;
+			}
+
+			token = COM_Parse(&fp_data);
+			if (!*token) {
+				continue;
+			}
+
+			if (g_strcmp0(token, "{") == 0) {
+				inarena = true;
+			}
+
+			if (g_strcmp0(token, "}") == 0) {
+				inarena = false;
+			}
+
+			if (g_strcmp0(token, "arena") == 0 && inarena) {
+				arena_num = atoi(COM_Parse(&fp_data));
+				if (arena_num >= MAX_ARENAS) {
+					continue;
+				}
+
+				count++;
+			}
+
+			if (g_strcmp0(token, "damage") == 0 && inarena) {
+				entry[arena_num].damage_flags = atoi(COM_Parse(&fp_data));
+			}
+
+			if (g_strcmp0(token, "weapons") == 0 && inarena) {
+				entry[arena_num].weapon_flags = atoi(COM_Parse(&fp_data));
+			}
+
+			if (g_strcmp0(token, "rounds") == 0 && inarena) {
+				entry[arena_num].rounds = atoi(COM_Parse(&fp_data));
+			}
+
+			if (g_strcmp0(token, "health") == 0 && inarena) {
+				entry[arena_num].health = atoi(COM_Parse(&fp_data));
+			}
+
+			if (g_strcmp0(token, "armor") == 0 && inarena) {
+				entry[arena_num].armor = atoi(COM_Parse(&fp_data));
+			}
+		}
+
+		fclose(fp);
+	}
+
+	return count;
 }
 

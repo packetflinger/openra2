@@ -572,7 +572,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        *token;
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
-	map_entry_t	*map;
+	arena_entry_t arena_settings[MAX_ARENAS];
+	size_t		parsed_arenas;
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -585,29 +586,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     memset(g_edicts, 0, game.maxentities * sizeof(g_edicts[0]));
 
     Q_strlcpy(level.mapname, mapname, sizeof(level.mapname));
-
-	map = G_FindMap(mapname);
-	
-	// make a default map entry
-	if (!map) {
-		gi.dprintf("Map entry not found, creating one...\n");
-		map_entry_t *map;
-		int namelen;
-
-		namelen = strlen(mapname);
-		map = G_Malloc(sizeof(*map) + namelen);
-		memcpy(map->name, mapname, namelen + 1);
-
-		map->arenas[1].damage_flags = ARENADAMAGE_ALL;
-		map->arenas[1].weapon_flags = ARENAWEAPON_ALL & ~ARENAWEAPON_BFG; // everything sans bfg
-		map->arenas[1].rounds = 7;
-		map->arenas[1].armor = (int) g_armor_start->value;
-		map->arenas[1].health = (int) g_health_start->value;
-
-		List_Append(&g_map_list, &map->list);
-
-		map = G_FindMap(mapname);
-	}
 
     // set client fields on player ents
     for (i = 0; i < game.maxclients; i++) {
@@ -652,8 +630,9 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     G_ParseString();
     G_FindTeams();
 
-	
-	// find maps was here
+    memset(&arena_settings, 0, sizeof(arena_entry_t) * MAX_ARENAS);
+    parsed_arenas = G_ParseMapSettings(arena_settings, mapname);
+
 	// find arenas
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
@@ -679,7 +658,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		G_InitArenaTeams(&(level.arenas[j]));
 
 		// apply overrides for default flags
-		G_MergeArenaSettings(&level.arenas[j], &map->arenas[j]);
+		G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
 
 		level.arena_count++;
     }
@@ -702,7 +681,11 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		level.arenas[j].number = j;
 		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
 		
-		G_MergeArenaSettings(&level.arenas[j], NULL);
+		if (parsed_arenas > 0) {
+			G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
+		} else {
+			G_MergeArenaSettings(&level.arenas[j], NULL);
+		}
 
 		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;

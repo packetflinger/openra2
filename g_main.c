@@ -444,28 +444,24 @@ static void G_PickNextMap(void) {
 	strcpy(level.nextmap, map->name);
 }
 
+/**
+ * Read the map list file. These maps will be voteable in-game.
+ */
 static void G_LoadMapList(void) {
 	char path[MAX_OSPATH];
-	char apath[MAX_OSPATH];
-	//char extrapath[MAX_OSPATH];
 	char buffer[MAX_STRING_CHARS];
-	char abuffer[MAX_STRING_CHARS];
-	//char extra_ents[MAX_STRING_CHARS];
-	char *token, *arena_token;
-	const char *data, *arena_data;
+	char *token;
+	const char *data;
 	map_entry_t *map;
-	FILE *fp, *afp;
+	FILE *fp;
 	size_t len;
 	int linenum, nummaps;
-	int8_t arena_num;
-	_Bool inarena;
-	int8_t acount = 0;
 
 	if (!game.dir[0]) {
 		return;
 	}
-	len = Q_concat(path, sizeof(path), game.dir, "/mapcfg/",
-			g_maps_file->string, NULL);
+
+	len = Q_concat(path, sizeof(path), game.dir, "/mapcfg/", g_maps_file->string, NULL);
 	if (len >= sizeof(path)) {
 		return;
 	}
@@ -477,10 +473,8 @@ static void G_LoadMapList(void) {
 	}
 
 	linenum = nummaps = 0;
-	arena_num = 0;
-	inarena = false;
 
-	while (1) {
+	while (qtrue) {
 		data = fgets(buffer, sizeof(buffer), fp);
 		if (!data) {
 			break;
@@ -506,93 +500,11 @@ static void G_LoadMapList(void) {
 		map = G_Malloc(sizeof(*map) + len);
 		memcpy(map->name, token, len + 1);
 
-		// loop for arena settings
-		len = Q_concat(apath, sizeof(apath), game.dir, "/mapcfg/", token, ".cfg", NULL);
-		afp = fopen(apath, "r");
-		if (afp) {
-			arena_num = -1;
-			gi.dprintf("Parsing %s\n", apath);
-			while (1) {
-				arena_data = fgets(abuffer, sizeof(abuffer), afp);
-				if (!arena_data) {
-					break;
-				}
-
-				if (arena_data[0] == '#' || arena_data[0] == '/') {
-					continue;
-				}
-
-				arena_token = COM_Parse(&arena_data);
-				if (!*arena_token) {
-					continue;
-				}
-
-				if (g_strcmp0(arena_token, "{") == 0) {
-					inarena = true;
-				}
-
-				if (g_strcmp0(arena_token, "}") == 0) {
-					inarena = false;
-				}
-
-				if (g_strcmp0(arena_token, "arena") == 0 && inarena) {
-					arena_num = atoi(COM_Parse(&arena_data));
-					acount++;
-				}
-
-				if (g_strcmp0(arena_token, "damage") == 0 && inarena) {
-					map->arenas[arena_num].damage_flags = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "weapons") == 0 && inarena) {
-					map->arenas[arena_num].weapon_flags = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "rounds") == 0 && inarena) {
-					map->arenas[arena_num].rounds = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "health") == 0 && inarena) {
-					map->arenas[arena_num].health = atoi(
-							COM_Parse(&arena_data));
-				}
-
-				if (g_strcmp0(arena_token, "armor") == 0 && inarena) {
-					map->arenas[arena_num].armor = atoi(
-							COM_Parse(&arena_data));
-				}
-			}
-			fclose(afp);
-		}
-
 		List_Append(&g_map_list, &map->list);
 		nummaps++;
-
-/*
-		// look for extra entities file
-		len = Q_concat(extrapath, sizeof(extrapath), game.dir, "/mapcfg/",
-				token, ".ent", NULL);
-		gi.dprintf("looking for extra entities...%s", extrapath);
-		efp = fopen(extrapath, "r");
-		if (efp) {
-			gi.dprintf("found!\n");
-			ent_data = fgets(extra_ents, sizeof(extra_ents), efp);
-			if (ent_data) {
-				gi.dprintf("Extra entities:\t%s\n", ent_data);
-				strncpy(map->extra_ents, ent_data, MAX_STRING_CHARS);
-			}
-		} else {
-			gi.dprintf("\n");
-		}
-*/
 	}
-	fclose(fp);
 
-	//gi.dprintf("Loaded %d maps and %d arenas from '%s'\n", nummaps,
-	//		arena_num + 1, path);
+	fclose(fp);
 }
 
 static void G_LoadSkinList(void) {
