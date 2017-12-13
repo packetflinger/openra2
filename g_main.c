@@ -110,6 +110,7 @@ cvar_t *g_awayteam_name;
 cvar_t *g_default_arena;
 cvar_t *g_weapon_flags;
 cvar_t *g_damage_flags;
+cvar_t *g_drop_allowed;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1031,6 +1032,7 @@ static void G_Init(void) {
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);
 	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
+	g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
 
 	// trim team names to 15 characters
 	(g_hometeam_name->string)[15] = '\0';
@@ -1046,7 +1048,7 @@ static void G_Init(void) {
 
 	// initialize all entities for this game
 	game.maxentities = maxentities->value;
-	clamp(game.maxentities, (int )maxclients->value + 1, MAX_EDICTS);
+	clamp(game.maxentities, (int) maxclients->value + 1, MAX_EDICTS);
 	g_edicts = G_Malloc(game.maxentities * sizeof(g_edicts[0]));
 	globals.edicts = g_edicts;
 	globals.max_edicts = game.maxentities;

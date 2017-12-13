@@ -487,6 +487,11 @@ static void Cmd_Drop_f(edict_t *ent)
     gitem_t     *it;
     char        *s;
 
+    if (!g_drop_allowed->value) {
+    	gi.cprintf(ent, PRINT_HIGH, "Dropping items is prohibited.\n");
+    	return;
+    }
+
     s = gi.args();
     it = FindItem(s);
     if (!it) {
