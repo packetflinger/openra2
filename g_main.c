@@ -102,8 +102,6 @@ cvar_t *flood_infos;
 cvar_t *flood_perinfo;
 cvar_t *flood_infodelay;
 
-cvar_t *g_arena_weapflags;
-cvar_t *g_arena_dmgflags;
 cvar_t *g_arena_numrounds;
 cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
@@ -1025,8 +1023,6 @@ static void G_Init(void) {
 	flood_infodelay = gi.cvar("flood_infodelay", "60", 0);
 
 	// arena defaults
-	g_arena_weapflags = gi.cvar("g_arena_weapflags", "512", 0);
-	g_arena_dmgflags = gi.cvar("g_arena_dmgflags", "8", 0);
 	g_arena_numrounds = gi.cvar("g_arena_numrounds", "7", 0);
 	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
 	g_round_countdown = gi.cvar("g_round_countdown", "12", 0);
@@ -1034,7 +1030,7 @@ static void G_Init(void) {
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);
-	g_damage_flags = gi.cvar("g_damage_flags", "31", CVAR_LATCH);
+	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
 
 	// trim team names to 15 characters
 	(g_hometeam_name->string)[15] = '\0';

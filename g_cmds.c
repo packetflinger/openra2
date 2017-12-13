@@ -1320,92 +1320,12 @@ static void Cmd_Id_f(edict_t *ent)
 void Cmd_Settings_f(edict_t *ent)
 {
 	int a_num = ent->client->pers.arena->number;
-	gi.dprintf("settings command in arena %d\n", ent->client->pers.arena->number);
+
 	gi.cprintf(ent, PRINT_HIGH, "Weapon Flags:  %d\n", level.arenas[a_num].weapon_flags);
 	gi.cprintf(ent, PRINT_HIGH, "Damage Flags:  %d\n", level.arenas[a_num].damage_flags);
 	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", level.arenas[a_num].round_limit);
-
-	/*
-    char buffer[MAX_QPATH], *s;
-    int v;
-
-    if (timelimit->value > 0) {
-        v = (int)timelimit->value;
-        sprintf(buffer, "%d minute%s", v, v == 1 ? "" : "s");
-        s = buffer;
-    } else {
-        s = "none";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Timelimit:          %s\n", s);
-
-    v = (int)fraglimit->value;
-    if (v > 0) {
-        sprintf(buffer, "%d frag%s", v, v == 1 ? "" : "s");
-        s = buffer;
-    } else {
-        s = "none";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Fraglimit:          %s\n", s);
-
-    v = (int)g_item_ban->value;
-    if (v & (ITB_QUAD | ITB_INVUL | ITB_BFG)) {
-        buffer[0] = 0;
-        if (v & ITB_QUAD) {`
-            strcat(buffer, "quad ");
-        }
-        if (v & ITB_INVUL) {
-            strcat(buffer, "invul ");
-        }
-        if (v & ITB_BFG) {
-            strcat(buffer, "bfg ");
-        }
-        if (v & ITB_PS) {
-            strcat(buffer, "ps ");
-        }
-        s = buffer;
-    } else {
-        s = "none";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Removed items:      %s\n", s);
-
-    gi.cprintf(ent, PRINT_HIGH, "Weapons stay:       %s\n",
-               DF(WEAPONS_STAY) ? "on" : "off");
-
-    if (g_protection_time->value > 0) {
-        if (g_protection_time->value == 1) {
-            sprintf(buffer, "1 second");
-        } else {
-            sprintf(buffer, "%.1f seconds", g_protection_time->value);
-        }
-        s = buffer;
-    } else {
-        s = "off";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Respawn protection: %s\n", s);
-
-    s = (int)g_teleporter_nofreeze->value ? "no freeze" : "normal";
-    gi.cprintf(ent, PRINT_HIGH, "Teleporter mode:    %s\n", s);
-
-    if ((int)g_bugs->value < 1) {
-        s = "all bugs fixed";
-    } else if ((int)g_bugs->value < 2) {
-        s = "serious bugs fixed";
-    } else {
-        s = "default Q2 behaviour";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Gameplay bugs:      %s\n", s);
-
-    if (DF(SPAWN_FARTHEST)) {
-        s = "farthest";
-    } else if ((int)g_spawn_mode->value == 0) {
-        s = "avoid closest (bugged)";
-    } else if ((int)g_spawn_mode->value == 1) {
-        s = "avoid closest";
-    } else {
-        s = "random";
-    }
-    gi.cprintf(ent, PRINT_HIGH, "Respawn mode:       %s\n", s);
-    */
+	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", level.arenas[a_num].health);
+	gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", level.arenas[a_num].armor);
 }
 
 static void Cmd_Admin_f(edict_t *ent)
