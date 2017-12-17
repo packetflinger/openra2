@@ -546,7 +546,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	if (!client) {
 		Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring2 \"Old scoreboard from %s\"", y, level.mapname);
+				"yt %d cstring2 \"Old scoreboard from %s on %s\"", y, arena->name, status);
 	} else {
 		Q_snprintf(entry, sizeof(entry), "yt %d cstring2 \"%s - %s\"", y,
 				status, arena->name);
@@ -1001,10 +1001,14 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 		}
 	}
 
+	// save the current scoreboard as an oldscore
+	G_BuildScoreboard(a->oldscores, NULL, a);
+
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
 
 	a->state = ARENA_STATE_WARMUP;
 
+	// un-ready everyone
 	G_ForceReady(&a->team_home, false);
 	G_ForceReady(&a->team_away, false);
 }

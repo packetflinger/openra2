@@ -1693,20 +1693,22 @@ static void Cmd_Playerboard_f(edict_t *ent)
 
 static void Cmd_OldScore_f(edict_t *ent)
 {
+	arena_t *a = ent->client->pers.arena;
+
     if (ent->client->layout == LAYOUT_OLDSCORES) {
         ent->client->layout = 0;
         return;
     }
 
-    if (!game.oldscores[0]) {
-        gi.cprintf(ent, PRINT_HIGH, "There is no old scoreboard yet.\n");
+    if (!a->oldscores[0]) {
+        gi.cprintf(ent, PRINT_HIGH, "There is no old scoreboard yet for this arena.\n");
         return;
     }
 
     ent->client->layout = LAYOUT_OLDSCORES;
 
     gi.WriteByte(svc_layout);
-    gi.WriteString(game.oldscores);
+    gi.WriteString(a->oldscores);
     gi.unicast(ent, qtrue);
 }
 

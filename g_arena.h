@@ -100,6 +100,7 @@ typedef struct {
 	int				round_end_frame;
 	int				timeout_frame;
 	int				timein_frame;
+	char        	oldscores[MAX_STRING_CHARS];
 	edict_t			*timeout_caller;
 	edict_t			*clients[MAX_CLIENTS];
 	int				client_count;
