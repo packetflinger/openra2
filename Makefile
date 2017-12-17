@@ -19,11 +19,10 @@ WINDRES ?= windres
 STRIP ?= strip
 RM ?= rm -f
 
-INCLUDES += $(shell pkg-config --cflags glib-2.0)
-#CFLAGS ?= -O2 -fno-strict-aliasing -g -Wall -MMD $(INCLUDES)
+INCLUDES ?= $(shell pkg-config --cflags glib-2.0)
 CFLAGS ?= -O0 -fno-strict-aliasing -g -Wall -MMD $(INCLUDES)
 LDFLAGS ?= -shared
-LIBS ?= -lglib-2.0 -lphysfs
+LIBS ?= -lglib-2.0
 
 ifdef CONFIG_WINDOWS
     LDFLAGS += -mconsole
