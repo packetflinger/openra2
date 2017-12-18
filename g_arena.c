@@ -1562,15 +1562,15 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 				continue;
 			}
 
-			if (g_strcmp0(token, "{") == 0) {
+			if (Q_strcasecmp(token, "{") == 0) {
 				inarena = true;
 			}
 
-			if (g_strcmp0(token, "}") == 0) {
+			if (Q_strcasecmp(token, "}") == 0) {
 				inarena = false;
 			}
 
-			if (g_strcmp0(token, "arena") == 0 && inarena) {
+			if (Q_strcasecmp(token, "arena") == 0 && inarena) {
 				arena_num = atoi(COM_Parse(&fp_data));
 				if (arena_num >= MAX_ARENAS) {
 					continue;
@@ -1579,23 +1579,23 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 				count++;
 			}
 
-			if (g_strcmp0(token, "damage") == 0 && inarena) {
+			if (Q_strcasecmp(token, "damage") == 0 && inarena) {
 				entry[arena_num].damage_flags = atoi(COM_Parse(&fp_data));
 			}
 
-			if (g_strcmp0(token, "weapons") == 0 && inarena) {
+			if (Q_strcasecmp(token, "weapons") == 0 && inarena) {
 				entry[arena_num].weapon_flags = atoi(COM_Parse(&fp_data));
 			}
 
-			if (g_strcmp0(token, "rounds") == 0 && inarena) {
+			if (Q_strcasecmp(token, "rounds") == 0 && inarena) {
 				entry[arena_num].rounds = atoi(COM_Parse(&fp_data));
 			}
 
-			if (g_strcmp0(token, "health") == 0 && inarena) {
+			if (Q_strcasecmp(token, "health") == 0 && inarena) {
 				entry[arena_num].health = atoi(COM_Parse(&fp_data));
 			}
 
-			if (g_strcmp0(token, "armor") == 0 && inarena) {
+			if (Q_strcasecmp(token, "armor") == 0 && inarena) {
 				entry[arena_num].armor = atoi(COM_Parse(&fp_data));
 			}
 		}
