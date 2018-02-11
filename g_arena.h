@@ -163,3 +163,4 @@ void G_CheckArenaRules(arena_t *a);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
+void G_SelectBestWeapon(edict_t *ent);

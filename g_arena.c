@@ -1201,6 +1201,8 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 
 	// throw them into the game
 	spectator_respawn(ent, CONN_SPAWNED);
+
+	G_SelectBestWeapon(ent);
 }
 
 
@@ -1291,14 +1293,14 @@ void G_RespawnPlayers(arena_t *a) {
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
-			G_StartingWeapon(ent);
+			G_SelectBestWeapon(ent);
 		}
 
 		ent = a->team_away.players[i];
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
-			G_StartingWeapon(ent);
+			G_SelectBestWeapon(ent);
 		}
 
 		a->team_home.players_alive = a->team_home.player_count;
@@ -1606,3 +1608,44 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 	return count;
 }
 
+/**
+ * Set the best weapon available as current
+ */
+void G_SelectBestWeapon(edict_t *ent) {
+
+	if (!ent)
+		return;
+
+	if (!ent->client)
+		return;
+
+	if (ent->client->inventory[ITEM_RAILGUN] > 0) {
+		ent->client->newweapon = FindItem("railgun");
+
+	} else if (ent->client->inventory[ITEM_ROCKETLAUNCHER] > 0) {
+		ent->client->newweapon = FindItem("rocket launcher");
+
+	} else if (ent->client->inventory[ITEM_HYPERBLASTER] > 0) {
+		ent->client->newweapon = FindItem("hyperblaster");
+
+	} else if (ent->client->inventory[ITEM_CHAINGUN] > 0) {
+		ent->client->newweapon = FindItem("chaingun");
+
+	} else if (ent->client->inventory[ITEM_SUPERSHOTGUN] > 0) {
+		ent->client->newweapon = FindItem("super shotgun");
+
+	} else if (ent->client->inventory[ITEM_GRENADELAUNCHER] > 0) {
+		ent->client->newweapon = FindItem("grenade launcher");
+
+	} else if (ent->client->inventory[ITEM_MACHINEGUN] > 0) {
+		ent->client->newweapon = FindItem("machinegun");
+
+	} else if (ent->client->inventory[ITEM_SHOTGUN] > 0) {
+		ent->client->newweapon = FindItem("shotgun");
+
+	} else {
+		ent->client->newweapon = FindItem("blaster");
+	}
+
+	ChangeWeapon(ent);
+}
