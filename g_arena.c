@@ -1201,8 +1201,6 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 
 	// throw them into the game
 	spectator_respawn(ent, CONN_SPAWNED);
-
-	G_SelectBestWeapon(ent);
 }
 
 
@@ -1293,14 +1291,12 @@ void G_RespawnPlayers(arena_t *a) {
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
-			G_SelectBestWeapon(ent);
 		}
 
 		ent = a->team_away.players[i];
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
-			G_SelectBestWeapon(ent);
 		}
 
 		a->team_home.players_alive = a->team_home.player_count;

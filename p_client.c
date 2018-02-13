@@ -587,6 +587,8 @@ player_die...
 void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
     int     n;
+    arena_t *arena = self->client->pers.arena;
+    arena_team_t *team = self->client->pers.team;
 
     VectorClear(self->avelocity);
 
@@ -607,8 +609,9 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     self->svflags |= SVF_DEADMONSTER;
 
     if (!self->deadflag) {
-		// note the death
-		self->client->pers.team->players_alive--;
+		if (arena && team && arena->state >= ARENA_STATE_PLAY) {
+			self->client->pers.team->players_alive--;
+		}
 		
         self->client->respawn_framenum = level.framenum + 1 * HZ;
         LookAtKiller(self, inflictor, attacker);
@@ -1142,6 +1145,7 @@ void spectator_respawn(edict_t *ent, int connected)
     ent->client->respawn_framenum = level.framenum;
 
     G_CheckVote();
+    G_SelectBestWeapon(ent);
 }
 
 //==============================================================
@@ -1179,17 +1183,8 @@ void PutClientInServer(edict_t *ent)
     index = ent - g_edicts - 1;
     client = ent->client;
 
-    // find a spawn point
-    // do it before setting health back up, so farthest
-    // ranging doesn't count this client
-    //if (client->pers.connected == CONN_SPECTATOR) {
-    //    VectorScale(client->ps.pmove.origin, 0.125f, spawn_origin);
-    //    VectorCopy(client->ps.viewangles, spawn_angles);
-    //} else {
-        ent->health = 0;
-        SelectSpawnPoint(ent, spawn_origin, spawn_angles);
-    //}
-
+	ent->health = 0;
+	SelectSpawnPoint(ent, spawn_origin, spawn_angles);
     PMenu_Close(ent);
 
     // deathmatch wipes most client data every spawn
@@ -1311,7 +1306,9 @@ void PutClientInServer(edict_t *ent)
 	G_GiveItems(ent);
 	
     // force the current weapon up
-    client->newweapon = client->weapon;
+	if (!client->newweapon) {
+		client->newweapon = client->weapon;
+	}
     ChangeWeapon(ent);
 
     if (g_protection_time->value > 0) {
