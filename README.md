@@ -6,42 +6,85 @@ An open source remake of the Rocket Arena mod for Quake 2
 ### Rocket Arena?
 Rocket Arena 2 is a team-based mod for Quake 2. Games are arranged into rounds 
 where each player spawns with all allowed items/weapons and they battle until 
-everyone from one team is fragged.
+everyone from one team is dead.
 
 ### Why?
 Yes, there is an existing RA2 mod that is available, but it dates back to the 
 20th century and the source code is not available (or at least I'm unable to
-locate it). 
+locate it). There also don't seem to be any 64 bit binaries. 
  
 Client commands
 ---------------
-OpenFFA supports a number of custom client commands, some of them are
-reproduced below.
 
-commands:: Show custom client commands list
+**accuracy**
+    See your current accuracy statistics
+	
+**admin**
+    Enter admin mode, elevating your privileges
+	
+**arena** *<arena number>* 
+    Join a specific arena. If the argument is missing a list of all arenas will be displayed
+	
+**commands**
+    Show client commands list
+	
+**highscores**
+    Show highscores for your arena
+	
+**id**
+    Toggle player IDs
+	
+**join** *<teamname>*
+    Join a team
+	
+**matchinfo**
+    Show arena settings
+	
+**menu** 
+    Show the GUI game menu
 
+**obs**
+    Alias for **observer**
+	
+**observe**
+    Part your current team and enter spectator mode
+	
+**oldscore**
+    Show the scores from the last match
+
+**players**
+    List all players connected to the server	
+
+**ready**
+    Toggles your ready status. Once all team players are ready the match will start.
+	
+**settings**
+    Alias for **matchinfo**
+
+**stats**
+    Alias for **accuracy**
+
+**team**
+	Alias for **join**
+	
+**vote** *<xxx|yes|no>*
+    Call a vote or cast your vote
+
+	
+	
 Admin commands
 --------------
 
 Administrators are granted access to a number of privileged client
 commands.
 
-admin [password]::
+**acommands**
+    Show administrator commands list.
+	
+**admin [password]**
     Toggle administrator status.
 
-mute <player>::
-    Disallow _player_ to talk during the match.
-
-unmute <player>::
-    Allow _player_ to talk during the match.
-
-muteall::
-    Globally disable chat during the match.
-
-unmuteall::
-    Globally enable chat during the match.
-
-ban <ip-mask> [duration] [action]::
+**ban <ip-mask> [duration] [action]**
     Add IP address specified by _ip-mask_ into the ban list.  Optional
     _duration_ parameter specifies how long this address should stay in the
     list. Default duration is 1 hour.  Maximum duration is 12 hours. Default
@@ -50,26 +93,39 @@ ban <ip-mask> [duration] [action]::
     parameter specifies ban type. It can be _ban_ (prevent player from
     connecting) or _mute_ (allow player to connect and enter the game, but
     disallow chat during the match). Default action is _ban_.
-
-unban <ip-mask>::
-    Remove IP address specified by _ip-mask_ from the ban list. Permanent bans
-    added by server operator can't be removed.
-
-bans::
+	
+**bans**
     Show the current ban list.
 
-kick <player>::
+**kick <player>**
     Kick _player_ from the server.
 
-kickban::
+**kickban**
     Kick _player_ from the server and ban his IP address for 1 hour.
+	
+**mute <player>**
+    Disallow _player_ to talk during the match.
 
-acommands::
-    Show administrator commands list.
+**muteall**
+    Globally disable chat during the match.
 
+**unban <ip-mask>**
+    Remove IP address specified by _ip-mask_ from the ban list. Permanent bans
+    added by server operator can't be removed.
+	
+**unmute <player>**
+    Allow _player_ to talk during the match.
+	
+**unmuteall**
+    Globally enable chat during the match.
+
+
+	
 Server configuration
 --------------------
 
+Under Construction
+<!---
 g_idle_time::
     Time, in seconds, after which inactive players are automatically put into
     spectator mode. Default value is 0 (don't remove inactive players).
@@ -186,3 +242,4 @@ flood_perinfo::
 flood_infodelay::
     Time, in seconds, for name or skin changes to be disabled once flood
 protection is triggered. Default value is 60.
+-->

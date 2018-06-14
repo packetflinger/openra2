@@ -1442,17 +1442,19 @@ static void Cmd_AdminCommands_f(edict_t *ent)
 static void Cmd_Commands_f(edict_t *ent)
 {
     gi.cprintf(ent, PRINT_HIGH,
-               "menu       Show OpenFFA menu\n"
-               "join       Enter the game\n"
-               "observe    Leave the game\n"
-               "chase      Enter chasecam mode\n"
-               "settings   Show match settings\n"
-               "oldscore   Show previous scoreboard\n"
-               "vote       Propose new settings\n"
-               "stats      Show accuracy stats\n"
-               "players    Show players on server\n"
-               "highscores Show the best results on map\n"
-               "id         Toggle player ID display\n"
+               "menu       	     Show the main menu\n"
+			   "arena            List available arenas or change your current arena\n"
+               "join|team        Join a team\n"
+               "observe|obs      Leave your team\n"
+			   "ready            Ready-up to start the match\n"
+               "chase            Enter chasecam mode\n"
+               "settings         Show arena settings\n"
+               "oldscore         Show previous scoreboard\n"
+               "vote             Propose new settings\n"
+               "stats            Show accuracy stats\n"
+               "players          Show players on server and what arenas they're in\n"
+               "highscores       Show the best results on map\n"
+               "id               Toggle player ID display\n"
               );
 }
 
