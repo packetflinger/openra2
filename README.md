@@ -1,5 +1,5 @@
 # OpenRA2
-Joe Reid <claire@packetflinger.com>
+Joe Reid `<claire@packetflinger.com>`
 
 An open source remake of the Rocket Arena mod for Quake 2
 
@@ -16,58 +16,58 @@ locate it). There also don't seem to be any 64 bit binaries.
 Client commands
 ---------------
 
-**accuracy**
+**accuracy**  
     See your current accuracy statistics
 	
-**admin**
+**admin**  
     Enter admin mode, elevating your privileges
 	
-**arena** *<arena number>* 
+**arena** *<arena number>*  
     Join a specific arena. If the argument is missing a list of all arenas will be displayed
 	
-**commands**
+**commands**  
     Show client commands list
 	
-**highscores**
+**highscores**  
     Show highscores for your arena
 	
-**id**
+**id**  
     Toggle player IDs
 	
-**join** *<teamname>*
+**join** *<teamname>*  
     Join a team
 	
-**matchinfo**
+**matchinfo**  
     Show arena settings
 	
-**menu** 
+**menu**  
     Show the GUI game menu
 
-**obs**
+**obs**  
     Alias for **observer**
 	
-**observe**
+**observe**  
     Part your current team and enter spectator mode
 	
-**oldscore**
+**oldscore**  
     Show the scores from the last match
 
-**players**
+**players**  
     List all players connected to the server	
 
-**ready**
+**ready**  
     Toggles your ready status. Once all team players are ready the match will start.
 	
-**settings**
+**settings**  
     Alias for **matchinfo**
 
-**stats**
+**stats**  
     Alias for **accuracy**
 
-**team**
+**team**  
 	Alias for **join**
 	
-**vote** *<xxx|yes|no>*
+**vote** *<xxx|yes|no>*  
     Call a vote or cast your vote
 
 	
@@ -78,13 +78,13 @@ Admin commands
 Administrators are granted access to a number of privileged client
 commands.
 
-**acommands**
+**acommands**  
     Show administrator commands list.
 	
-**admin [password]**
+**admin [password]**  
     Toggle administrator status.
 
-**ban <ip-mask> [duration] [action]**
+**ban <ip-mask> [duration] [action]**  
     Add IP address specified by _ip-mask_ into the ban list.  Optional
     _duration_ parameter specifies how long this address should stay in the
     list. Default duration is 1 hour.  Maximum duration is 12 hours. Default
@@ -94,29 +94,29 @@ commands.
     connecting) or _mute_ (allow player to connect and enter the game, but
     disallow chat during the match). Default action is _ban_.
 	
-**bans**
+**bans**  
     Show the current ban list.
 
-**kick <player>**
+**kick <player>**  
     Kick _player_ from the server.
 
-**kickban**
+**kickban**  
     Kick _player_ from the server and ban his IP address for 1 hour.
 	
-**mute <player>**
+**mute <player>**  
     Disallow _player_ to talk during the match.
 
-**muteall**
+**muteall**  
     Globally disable chat during the match.
 
-**unban <ip-mask>**
+**unban <ip-mask>**  
     Remove IP address specified by _ip-mask_ from the ban list. Permanent bans
     added by server operator can't be removed.
 	
-**unmute <player>**
+**unmute <player>**  
     Allow _player_ to talk during the match.
 	
-**unmuteall**
+**unmuteall**  
     Globally enable chat during the match.
 
 
