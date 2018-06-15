@@ -1191,6 +1191,7 @@ static void Cmd_Chase_f(edict_t *ent)
     }
 }
 
+/*
 static void Cmd_Join_f(edict_t *ent)
 {
     switch (ent->client->pers.connected) {
@@ -1208,6 +1209,7 @@ static void Cmd_Join_f(edict_t *ent)
         break;
     }
 }
+*/
 
 static const char weapnames[WEAP_TOTAL][12] = {
     "None",         "Blaster",      "Shotgun",      "S.Shotgun",
@@ -1772,6 +1774,33 @@ static void Cmd_Teams_f(edict_t *ent) {
 	}
 }
 
+static void Cmd_ReadyTeam_f(edict_t *ent) {
+	if (!ent->client)
+		return;
+	
+	if (!ent->client->pers.team)
+		return;
+	
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (team->captain != ent) {
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can force their team ready\n");
+		return;
+	}
+	uint8_t i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!team->players[i])
+			continue;
+		
+		team->players[i]->client->pers.ready = qtrue;
+	}
+}
+
+// placeholder for logic that hasn't been written yet
+static void Cmd_NotImplYet_f(edict_t *ent) {
+	gi.cprintf(ent, PRINT_HIGH, "command not implimented yet...\n");
+}
+
 /*
 =================
 ClientCommand
@@ -1935,7 +1964,8 @@ void ClientCommand(edict_t *ent)
     else if (Q_stricmp(cmd, "chase") == 0)
         Cmd_Chase_f(ent);
     else if (Q_stricmp(cmd, "join") == 0)
-        Cmd_Join_f(ent);
+        //Cmd_Join_f(ent);
+		Cmd_Team_f(ent);
     else if (Q_stricmp(cmd, "vote") == 0 || Q_stricmp(cmd, "callvote") == 0)
         Cmd_Vote_f(ent);
     else if (Q_stricmp(cmd, "yes") == 0 && level.vote.proposal)
@@ -1954,6 +1984,10 @@ void ClientCommand(edict_t *ent)
 		Cmd_LockTeam_f(ent);
 	else if (Q_stricmp(cmd, "time") == 0 || Q_stricmp(cmd, "timeout") == 0 || Q_stricmp(cmd, "timein") == 0)
 		Cmd_Timeout_f(ent);
+	else if (Q_stricmp(cmd, "readyteam") == 0 || Q_stricmp(cmd, "readyall") == 0 || Q_stricmp(cmd, "forceready") == 0) // captain cmd
+		Cmd_ReadyTeam_f(ent);
+	else if (Q_stricmp(cmd, "kickplayer") == 0 || Q_stricmp(cmd, "remove") == 0)	// captain cmd, remove player from team
+		Cmd_NotImplYet_f(ent);
 	else if (Q_stricmp(cmd, "layout") == 0) // test
 		Cmd_Layout_f(ent);
 	else if (Q_stricmp(cmd, "teams") == 0) // test
