@@ -605,28 +605,19 @@ int ArenaIndex(int arena_num) {
 	return 0;
 }
 
-// compare strings with wildcards
+// compare strings with wildcards 
 qboolean match(char *pattern, char *haystack) {
-	// If we reach at the end of both strings, we are done
     if (*pattern == '\0' && *haystack == '\0')
         return true;
 
-    // Make sure that the characters after '*' are present
-    // in second string. This function assumes that the first
-    // string will not contain two consecutive '*'
     if (*pattern == '*' && *(pattern+1) != '\0' && *haystack == '\0')
         return false;
 
-    // If the first string contains '?', or current characters
-    // of both strings match
     if (*pattern == '?' || *pattern == *haystack)
         return match(pattern+1, haystack+1);
 
-    // If there is *, then there are two possibilities
-    // a) We consider current character of second string
-    // b) We ignore current character of second string.
     if (*pattern == '*')
         return match(pattern+1, haystack) || match(pattern, haystack+1);
+	
     return false;
-
 }

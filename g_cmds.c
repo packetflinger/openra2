@@ -1796,8 +1796,7 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 	}
 }
 
-// remove a player from a team
-static void Cmd_RemovePlayer_f(edict_t *ent) {
+static void Cmd_RemoveTeammate_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
@@ -1811,7 +1810,44 @@ static void Cmd_RemovePlayer_f(edict_t *ent) {
 		return;
 	}
 	
-	// find player by name and remove him
+	if (gi.argc() < 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Usage: %s <playername>\n\tYou can use wildcards like * and ?\n", gi.argv(0));
+		return;
+	}
+	
+	char *namepattern = gi.argv(1);
+	uint8_t matches = 0;
+	edict_t *playermatch;
+	uint8_t i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!team->players[i])
+			continue;
+		
+		// don't kick yourself
+		if (team->players[i] == ent)
+			continue;
+		
+		if (match(namepattern, team->players[i]->client->pers.netname)) {
+			matches++;
+			playermatch = team->players[i];
+		}
+	}
+	
+	if (matches == 0) {
+		gi.cprintf(ent, PRINT_HIGH, "No players matched '%s'\n", namepattern);
+		return;
+	}
+	
+	if (matches > 1) {
+		gi.cprintf(ent, PRINT_HIGH, "'%s' matched %d players, try again to narrow down to a single player\n", namepattern, matches);
+		return;
+	}
+	
+	gi.cprintf(ent, PRINT_HIGH, "Removing %s from your team...\n", playermatch->client->pers.netname);
+	
+	gi.cprintf(playermatch, PRINT_HIGH, "%s removed you from team %s\n", ent->client->pers.netname, team->name);
+	G_PartTeam(playermatch, false);
+	
 }
 
 // placeholder for logic that hasn't been written yet
@@ -2005,7 +2041,7 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "readyteam") == 0 || Q_stricmp(cmd, "readyall") == 0 || Q_stricmp(cmd, "forceready") == 0) // captain cmd
 		Cmd_ReadyTeam_f(ent);
 	else if (Q_stricmp(cmd, "kickplayer") == 0 || Q_stricmp(cmd, "remove") == 0)	// captain cmd, remove player from team
-		Cmd_NotImplYet_f(ent);
+		Cmd_RemoveTeammate_f(ent);
 	else if (Q_stricmp(cmd, "layout") == 0) // test
 		Cmd_Layout_f(ent);
 	else if (Q_stricmp(cmd, "teams") == 0) // test
