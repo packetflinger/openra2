@@ -1784,7 +1784,7 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 	arena_team_t *team = ent->client->pers.team;
 	
 	if (team->captain != ent) {
-		gi.cprintf(ent, PRINT_HIGH, "Only team captains can force their team ready\n");
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can force ready the team\n");
 		return;
 	}
 	uint8_t i;
@@ -1794,6 +1794,24 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 		
 		team->players[i]->client->pers.ready = qtrue;
 	}
+}
+
+// remove a player from a team
+static void Cmd_RemovePlayer_f(edict_t *ent) {
+	if (!ent->client)
+		return;
+	
+	if (!ent->client->pers.team)
+		return;
+	
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (team->captain != ent) {
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can remove players\n");
+		return;
+	}
+	
+	// find player by name and remove him
 }
 
 // placeholder for logic that hasn't been written yet
