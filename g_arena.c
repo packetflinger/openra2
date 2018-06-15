@@ -1161,6 +1161,11 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		gi.cprintf(ent, PRINT_HIGH, "Unknown team, can't join it\n");
 		return;
 	}
+	
+	if (team->locked) {
+		gi.cprintf(ent, PRINT_HIGH, "Team locked, can't join it\n");
+		return;
+	}
 
 	// match has started, can't join
 	if (arena->state >= ARENA_STATE_PLAY) {
