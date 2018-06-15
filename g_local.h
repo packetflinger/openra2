@@ -850,6 +850,8 @@ char    *vtos(vec3_t v);
 float vectoyaw(vec3_t vec);
 void vectoangles(vec3_t vec, vec3_t angles);
 arena_t *FindArena(edict_t *ent);
+qboolean match(char *pattern, char *haystack);
+
 //
 // g_combat.c
 //
