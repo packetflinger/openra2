@@ -1144,7 +1144,7 @@ void G_GiveItems(edict_t *ent) {
  * Add player to a team
  *
  */
-void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
+void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 
 	if (!ent->client)
 		return;
@@ -1162,13 +1162,13 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type) {
 		return;
 	}
 	
-	if (team->locked) {
+	if (team->locked && !forced) {
 		gi.cprintf(ent, PRINT_HIGH, "Team locked, can't join it\n");
 		return;
 	}
 
 	// match has started, can't join
-	if (arena->state >= ARENA_STATE_PLAY) {
+	if (arena->state >= ARENA_STATE_PLAY && !forced) {
 		gi.cprintf(ent, PRINT_HIGH, "Match in progress, you can't join now\n");
 		return;
 	}

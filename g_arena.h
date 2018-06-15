@@ -146,7 +146,7 @@ void G_ForceReady(arena_team_t *team, qboolean ready);
 void G_FreezePlayers(arena_t *a, qboolean freeze);
 void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
-void G_JoinTeam(edict_t *ent, arena_team_type_t type);
+void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_PartTeam(edict_t *ent, qboolean silent);
 int G_PlayerCmp(const void *p1, const void *p2);
 void G_RefillInventory(edict_t *ent);

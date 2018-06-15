@@ -202,12 +202,12 @@ static void Cmd_Team_f(edict_t *ent) {
 	char *teamname = gi.argv(1);
 	
 	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
-		G_JoinTeam(ent, ARENA_TEAM_HOME);
+		G_JoinTeam(ent, ARENA_TEAM_HOME, false);
 		return;
 	}
 	
 	if (str_equal(teamname, "away") || str_equal(teamname, "2")) {
-		G_JoinTeam(ent, ARENA_TEAM_AWAY);
+		G_JoinTeam(ent, ARENA_TEAM_AWAY, false);
 		return;
 	}
 }
@@ -1537,11 +1537,11 @@ static void select_test(edict_t *ent)
         break;
 	*/
 	case 5:
-		G_JoinTeam(ent, ARENA_TEAM_HOME);
+		G_JoinTeam(ent, ARENA_TEAM_HOME, false);
 		PMenu_Close(ent);
         break;
     case 6:
-        G_JoinTeam(ent, ARENA_TEAM_AWAY);
+        G_JoinTeam(ent, ARENA_TEAM_AWAY, false);
 		PMenu_Close(ent);
         break;
     case 7:
@@ -1817,8 +1817,9 @@ static void Cmd_RemoveTeammate_f(edict_t *ent) {
 	
 	char *namepattern = gi.argv(1);
 	uint8_t matches = 0;
-	edict_t *playermatch;
+	edict_t *playermatch = NULL;
 	uint8_t i;
+	
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (!team->players[i])
 			continue;
@@ -1843,11 +1844,76 @@ static void Cmd_RemoveTeammate_f(edict_t *ent) {
 		return;
 	}
 	
-	gi.cprintf(ent, PRINT_HIGH, "Removing %s from your team...\n", playermatch->client->pers.netname);
+	if (playermatch) {
+		gi.cprintf(ent, PRINT_HIGH, "Removing %s from your team...\n", playermatch->client->pers.netname);
 	
-	gi.cprintf(playermatch, PRINT_HIGH, "%s removed you from team %s\n", ent->client->pers.netname, team->name);
-	G_PartTeam(playermatch, false);
+		gi.cprintf(playermatch, PRINT_HIGH, "%s removed you from team %s\n", ent->client->pers.netname, team->name);
+		G_PartTeam(playermatch, false);
+	}
+}
+
+static void Cmd_PickTeammate_f(edict_t *ent) {
+	if (!ent->client)
+		return;
 	
+	if (!ent->client->pers.team)
+		return;
+	
+	arena_t *arena = ent->client->pers.arena;
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (team->captain != ent) {
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can add players\n");
+		return;
+	}
+	
+	if (gi.argc() < 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Usage: %s <playername>\n\tYou can use wildcards like * and ?\n", gi.argv(0));
+		return;
+	}
+	
+	char *namepattern = gi.argv(1);
+	uint8_t matches = 0;
+	edict_t *playermatch = NULL;
+	uint8_t i;
+	
+	gclient_t *c;
+	
+	for (i=0; i<game.maxclients; i++) {
+		c = &game.clients[i];
+		
+		if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR)
+			continue;
+		
+		if (c->pers.arena != arena)
+			continue;
+		
+		// ignore caller
+		if (c == ent->client)
+			continue;
+		
+		if (match(namepattern, c->pers.netname)) {
+			matches++;
+			playermatch = c->edict;
+		}
+	}
+	
+	if (matches == 0) {
+		gi.cprintf(ent, PRINT_HIGH, "No players matched '%s'\n", namepattern);
+		return;
+	}
+	
+	if (matches > 1) {
+		gi.cprintf(ent, PRINT_HIGH, "'%s' matched %d players, try again to narrow down to a single player\n", namepattern, matches);
+		return;
+	}
+	
+	if (playermatch) {
+		gi.cprintf(ent, PRINT_HIGH, "Adding %s to your team...\n", playermatch->client->pers.netname);
+	
+		gi.cprintf(playermatch, PRINT_HIGH, "%s added you to team %s\n", ent->client->pers.netname, team->name);
+		G_JoinTeam(playermatch, team->type, true);
+	}
 }
 
 // placeholder for logic that hasn't been written yet
@@ -2042,12 +2108,16 @@ void ClientCommand(edict_t *ent)
 		Cmd_ReadyTeam_f(ent);
 	else if (Q_stricmp(cmd, "kickplayer") == 0 || Q_stricmp(cmd, "remove") == 0)	// captain cmd, remove player from team
 		Cmd_RemoveTeammate_f(ent);
+	else if (Q_stricmp(cmd, "pickplayer") == 0 || Q_stricmp(cmd, "pick") == 0)	// captain cmd, pick player for a team
+		Cmd_PickTeammate_f(ent);	
 	else if (Q_stricmp(cmd, "layout") == 0) // test
 		Cmd_Layout_f(ent);
 	else if (Q_stricmp(cmd, "teams") == 0) // test
 		Cmd_Teams_f(ent);
 	else if (Q_stricmp(cmd, "sound") == 0) // test
 		Cmd_Sound_f(ent);
+	else if (Q_stricmp(cmd, "test") == 0)
+		Cmd_NotImplYet_f(ent);
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
 }
