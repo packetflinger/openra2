@@ -1129,7 +1129,6 @@ typedef struct {
 					noviewid: 1,
 					muted: 1;
 	qboolean		ready;
-	//int				arena;
 	arena_t			*arena;
 	arena_team_t	*team;
 } client_persistant_t;
