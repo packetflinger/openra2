@@ -700,7 +700,7 @@ extern  cvar_t  *g_idle_time;
 
 extern  cvar_t  *g_vote_mask;
 extern  cvar_t  *g_vote_time;
-extern  cvar_t  *g_vote_treshold;
+extern  cvar_t  *g_vote_threshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 

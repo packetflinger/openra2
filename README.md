@@ -172,9 +172,9 @@ g_vote_time::
     Time, in seconds, after which undecided vote times out. Default value is
     60.
 
-g_vote_treshold::
+g_vote_threshold::
     Vote passes or fails when percentage of players who voted either ‘yes’ or
-    ‘no’ becomes greater than this value. Default value is 50.
+    ‘no’ becomes greater than this value. DefaultS value is 50.
 
 g_vote_limit::
     Maximum number of votes each player can initiate. Default value is 3.  0

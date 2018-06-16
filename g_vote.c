@@ -61,10 +61,10 @@ static int G_CalcVote(int *votes)
 
 static int _G_CalcVote(int *votes)
 {
-    int treshold = (int)g_vote_treshold->value;
+    int threshold = (int)g_vote_threshold->value;
     int total = G_CalcVote(votes);
 
-    total = total * treshold / 100 + 1;
+    total = total * threshold / 100 + 1;
 
     return total;
 }
@@ -118,7 +118,7 @@ void G_UpdateVote(void)
 
 qboolean G_CheckVote(void)
 {
-    int treshold = (int)g_vote_treshold->value;
+    int threshold = (int)g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
 
@@ -148,7 +148,7 @@ qboolean G_CheckVote(void)
     rej = votes[0] * 100 / total;
     acc = votes[1] * 100 / total;
 
-    if (acc > treshold) {
+    if (acc > threshold) {
         switch (level.vote.proposal) {
 
         case VOTE_KICK:
@@ -177,7 +177,7 @@ qboolean G_CheckVote(void)
         goto finish;
     }
 
-    if (rej > treshold) {
+    if (rej > threshold) {
         gi.bprintf(PRINT_HIGH, "Vote failed.\n");
         goto finish;
     }

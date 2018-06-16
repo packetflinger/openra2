@@ -43,7 +43,7 @@ cvar_t *g_select_empty;
 cvar_t *g_idle_time;
 cvar_t *g_vote_mask;
 cvar_t *g_vote_time;
-cvar_t *g_vote_treshold;
+cvar_t *g_vote_threshold;
 cvar_t *g_vote_limit;
 cvar_t *g_vote_flags;
 cvar_t *g_intermission_time;
@@ -636,9 +636,9 @@ static void G_CheckRules(void) {
 		G_UpdateItemBans();
 	}
 
-	if (g_vote_treshold->modified) {
+	if (g_vote_threshold->modified) {
 		G_CheckVote();
-		g_vote_treshold->modified = qfalse;
+		g_vote_threshold->modified = qfalse;
 	}
 
 	if (g_vote_flags->modified) {
@@ -976,7 +976,7 @@ static void G_Init(void) {
 	g_idle_time = gi.cvar("g_idle_time", "0", 0);
 	g_vote_mask = gi.cvar("g_vote_mask", "0", 0);
 	g_vote_time = gi.cvar("g_vote_time", "60", 0);
-	g_vote_treshold = gi.cvar("g_vote_treshold", "50", 0);
+	g_vote_threshold = gi.cvar("g_vote_threshold", "50", 0);
 	g_vote_limit = gi.cvar("g_vote_limit", "3", 0);
 	g_vote_flags = gi.cvar("g_vote_flags", "11", 0);
 	g_intermission_time = gi.cvar("g_intermission_time", "10", 0);
