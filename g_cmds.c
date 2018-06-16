@@ -1863,12 +1863,17 @@ static void Cmd_PickTeammate_f(edict_t *ent) {
 	arena_team_t *team = ent->client->pers.team;
 	
 	if (team->captain != ent) {
-		gi.cprintf(ent, PRINT_HIGH, "Only team captains can add players\n");
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can pick players\n");
 		return;
 	}
 	
 	if (gi.argc() < 2) {
 		gi.cprintf(ent, PRINT_HIGH, "Usage: %s <playername>\n\tYou can use wildcards like * and ?\n", gi.argv(0));
+		return;
+	}
+	
+	if (team->player_count == MAX_ARENA_TEAM_PLAYERS) {
+		gi.cprintf(ent, PRINT_HIGH, "Too many players, remove someone first\n");
 		return;
 	}
 	

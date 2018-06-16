@@ -1162,14 +1162,19 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 		return;
 	}
 	
-	if (team->locked && !forced) {
-		gi.cprintf(ent, PRINT_HIGH, "Team locked, can't join it\n");
-		return;
-	}
-
 	// match has started, can't join
 	if (arena->state >= ARENA_STATE_PLAY && !forced) {
 		gi.cprintf(ent, PRINT_HIGH, "Match in progress, you can't join now\n");
+		return;
+	}
+	
+	if (team->locked && !forced) {
+		gi.cprintf(ent, PRINT_HIGH, "Team %s is locked\n", team->name);
+		return;
+	}
+	
+	if (team->player_count == MAX_ARENA_TEAM_PLAYERS) {
+		gi.cprintf(ent, PRINT_HIGH, "Team %s is full\n", team->name);
 		return;
 	}
 
