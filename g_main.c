@@ -975,8 +975,8 @@ static void G_Init(void) {
 	g_select_empty = gi.cvar("g_select_empty", "0", CVAR_ARCHIVE);
 	g_idle_time = gi.cvar("g_idle_time", "0", 0);
 	g_vote_mask = gi.cvar("g_vote_mask", "0", 0);
-	g_vote_time = gi.cvar("g_vote_time", "60", 0);
-	g_vote_threshold = gi.cvar("g_vote_threshold", "50", 0);
+	g_vote_time = gi.cvar("g_vote_time", "30", 0);
+	g_vote_threshold = gi.cvar("g_vote_threshold", "51", 0);
 	g_vote_limit = gi.cvar("g_vote_limit", "3", 0);
 	g_vote_flags = gi.cvar("g_vote_flags", "11", 0);
 	g_intermission_time = gi.cvar("g_intermission_time", "10", 0);
