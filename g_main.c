@@ -974,24 +974,24 @@ static void G_Init(void) {
 	gi.cvar_set("revision", va("%d", OPENRA2_REVISION));
 
 	g_select_empty = gi.cvar("g_select_empty", "0", CVAR_ARCHIVE);
-	g_idle_time = gi.cvar("g_idle_time", "0", 0);
-	g_vote_mask = gi.cvar("g_vote_mask", "0", 0);
-	g_vote_time = gi.cvar("g_vote_time", "30", 0);
-	g_vote_threshold = gi.cvar("g_vote_threshold", "51", 0);
-	g_vote_limit = gi.cvar("g_vote_limit", "3", 0);
-	g_vote_flags = gi.cvar("g_vote_flags", "11", 0);
-	g_intermission_time = gi.cvar("g_intermission_time", "10", 0);
-	g_admin_password = gi.cvar("g_admin_password", "", 0);
-	g_maps_random = gi.cvar("g_maps_random", "2", 0);
+	g_idle_time = gi.cvar("g_idle_time", "0", CVAR_GENERAL);
+	g_vote_mask = gi.cvar("g_vote_mask", "0", CVAR_GENERAL);
+	g_vote_time = gi.cvar("g_vote_time", "30", CVAR_GENERAL);
+	g_vote_threshold = gi.cvar("g_vote_threshold", "51", CVAR_GENERAL);
+	g_vote_limit = gi.cvar("g_vote_limit", "3", CVAR_GENERAL);
+	g_vote_flags = gi.cvar("g_vote_flags", "11", CVAR_GENERAL);
+	g_intermission_time = gi.cvar("g_intermission_time", "10", CVAR_GENERAL);
+	g_admin_password = gi.cvar("g_admin_password", "", CVAR_GENERAL);
+	g_maps_random = gi.cvar("g_maps_random", "2", CVAR_GENERAL);
 	g_maps_file = gi.cvar("g_maps_file", "maps.txt", CVAR_LATCH);
 	g_defaults_file = gi.cvar("g_defaults_file", "", CVAR_LATCH);
-	g_item_ban = gi.cvar("g_item_ban", "0", 0);
-	g_bugs = gi.cvar("g_bugs", "0", 0);
-	g_teleporter_nofreeze = gi.cvar("g_teleporter_nofreeze", "0", 0);
-	g_spawn_mode = gi.cvar("g_spawn_mode", "1", 0);
-	g_team_chat = gi.cvar("g_team_chat", "0", 0);
-	g_mute_chat = gi.cvar("g_mute_chat", "0", 0);
-	g_protection_time = gi.cvar("g_protection_time", "0", 0);
+	g_item_ban = gi.cvar("g_item_ban", "0", CVAR_GENERAL);
+	g_bugs = gi.cvar("g_bugs", "0", CVAR_GENERAL);
+	g_teleporter_nofreeze = gi.cvar("g_teleporter_nofreeze", "0", CVAR_GENERAL);
+	g_spawn_mode = gi.cvar("g_spawn_mode", "1", CVAR_GENERAL);
+	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
+	g_mute_chat = gi.cvar("g_mute_chat", "0", CVAR_GENERAL);
+	g_protection_time = gi.cvar("g_protection_time", "0", CVAR_GENERAL);
 	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
 	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
 	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_LATCH);
@@ -1003,38 +1003,38 @@ static void G_Init(void) {
 #endif
 	g_skins_file = gi.cvar("g_skins_file", "", CVAR_LATCH);
 
-	run_pitch = gi.cvar("run_pitch", "0.002", 0);
-	run_roll = gi.cvar("run_roll", "0.005", 0);
-	bob_up = gi.cvar("bob_up", "0.005", 0);
-	bob_pitch = gi.cvar("bob_pitch", "0.002", 0);
-	bob_roll = gi.cvar("bob_roll", "0.002", 0);
+	run_pitch = gi.cvar("run_pitch", "0.002", CVAR_GENERAL);
+	run_roll = gi.cvar("run_roll", "0.005", CVAR_GENERAL);
+	bob_up = gi.cvar("bob_up", "0.005", CVAR_GENERAL);
+	bob_pitch = gi.cvar("bob_pitch", "0.002", CVAR_GENERAL);
+	bob_roll = gi.cvar("bob_roll", "0.002", CVAR_GENERAL);
 
 	// chat flood control
-	flood_msgs = gi.cvar("flood_msgs", "4", 0);
-	flood_persecond = gi.cvar("flood_persecond", "4", 0);
-	flood_waitdelay = gi.cvar("flood_waitdelay", "10", 0);
+	flood_msgs = gi.cvar("flood_msgs", "4", CVAR_GENERAL);
+	flood_persecond = gi.cvar("flood_persecond", "4", CVAR_GENERAL);
+	flood_waitdelay = gi.cvar("flood_waitdelay", "10", CVAR_GENERAL);
 
 	// wave flood control
-	flood_waves = gi.cvar("flood_waves", "4", 0);
-	flood_perwave = gi.cvar("flood_perwave", "30", 0);
-	flood_wavedelay = gi.cvar("flood_wavedelay", "60", 0);
+	flood_waves = gi.cvar("flood_waves", "4", CVAR_GENERAL);
+	flood_perwave = gi.cvar("flood_perwave", "30", CVAR_GENERAL);
+	flood_wavedelay = gi.cvar("flood_wavedelay", "60", CVAR_GENERAL);
 
 	// userinfo flood control
-	flood_infos = gi.cvar("flood_infos", "4", 0);
-	flood_perinfo = gi.cvar("flood_perinfo", "30", 0);
-	flood_infodelay = gi.cvar("flood_infodelay", "60", 0);
+	flood_infos = gi.cvar("flood_infos", "4", CVAR_GENERAL);
+	flood_perinfo = gi.cvar("flood_perinfo", "30", CVAR_GENERAL);
+	flood_infodelay = gi.cvar("flood_infodelay", "60", CVAR_GENERAL);
 
 	// arena defaults
-	g_arena_numrounds = gi.cvar("g_arena_numrounds", "7", 0);
-	g_round_end_time = gi.cvar("g_round_end_time", "5", 0);
-	g_round_countdown = gi.cvar("g_round_countdown", "12", 0);
+	g_arena_numrounds = gi.cvar("g_arena_numrounds", "7", CVAR_GENERAL);
+	g_round_end_time = gi.cvar("g_round_end_time", "5", CVAR_GENERAL);
+	g_round_countdown = gi.cvar("g_round_countdown", "12", CVAR_GENERAL);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);
 	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
 	g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
-	g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_LATCH);
+	g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_GENERAL);
 	
 	// trim team names to 15 characters
 	(g_hometeam_name->string)[15] = '\0';
