@@ -111,6 +111,7 @@ cvar_t *g_default_arena;
 cvar_t *g_weapon_flags;
 cvar_t *g_damage_flags;
 cvar_t *g_drop_allowed;
+cvar_t *g_skin_lock;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1033,7 +1034,8 @@ static void G_Init(void) {
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);
 	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
 	g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
-
+	g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_LATCH);
+	
 	// trim team names to 15 characters
 	(g_hometeam_name->string)[15] = '\0';
 	(g_awayteam_name->string)[15] = '\0';
