@@ -1921,6 +1921,47 @@ static void Cmd_PickTeammate_f(edict_t *ent) {
 	}
 }
 
+static void Cmd_TeamSkin_f(edict_t *ent) {
+	if (!ent->client)
+		return;
+	
+	if (!ent->client->pers.team)
+		return;
+	
+	arena_team_t *team = ent->client->pers.team;
+	
+	if (team->captain != ent) {
+		gi.cprintf(ent, PRINT_HIGH, "Only team captains can change team skins\n");
+		return;
+	}
+	
+	if (g_skin_lock->value) {
+		gi.cprintf(ent, PRINT_HIGH, "Skins are locked\n");
+		return;
+	}
+	
+	if (gi.argc() < 2) {
+		gi.cprintf(ent, PRINT_HIGH, "Usage: %s <skin>\n", gi.argv(0));
+		return;
+	}
+	
+	char *skin = gi.argv(1);
+	
+	if (match(skin, team->skin)) {	// already that skin
+		return;
+	}
+	
+	Q_strlcpy(team->skin, skin, sizeof(team->skin));
+	
+	uint8_t i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!team->players[i])
+			continue;
+		
+		G_SetSkin(team->players[i], skin);
+	}
+}
+
 // placeholder for logic that hasn't been written yet
 static void Cmd_NotImplYet_f(edict_t *ent) {
 	gi.cprintf(ent, PRINT_HIGH, "command not implimented yet...\n");
@@ -2114,7 +2155,9 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "kickplayer") == 0 || Q_stricmp(cmd, "remove") == 0)	// captain cmd, remove player from team
 		Cmd_RemoveTeammate_f(ent);
 	else if (Q_stricmp(cmd, "pickplayer") == 0 || Q_stricmp(cmd, "pick") == 0)	// captain cmd, pick player for a team
-		Cmd_PickTeammate_f(ent);	
+		Cmd_PickTeammate_f(ent);
+	else if (Q_stricmp(cmd, "teamskin") == 0)	// captain cmd
+		Cmd_TeamSkin_f(ent);
 	else if (Q_stricmp(cmd, "layout") == 0) // test
 		Cmd_Layout_f(ent);
 	else if (Q_stricmp(cmd, "teams") == 0) // test
