@@ -1333,17 +1333,22 @@ void G_SetSkin(edict_t *ent, const char *skin) {
 		return;
 	}
 
+	/*
 	edict_t *e;
 
 	for (e = g_edicts + 1; e <= g_edicts + game.maxclients; e++) {
 		if (!e->inuse)
 			continue;
-
-		gi.WriteByte(svc_configstring);
-		gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
-		gi.WriteString(va("%s\\%s", ent->client->pers.netname, skin));
-		gi.unicast(e, true);
+		
+		gi.configstring(
+			CS_PLAYERSKINS + (ent - g_edicts) - 1, 
+			va("%s\\%s", ent->client->pers.netname, skin)
+		);
 	}
+	*/
+	
+	// cheating :)
+	G_StuffText(ent, va("set skin %s", skin));
 }
 
 
