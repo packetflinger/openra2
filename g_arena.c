@@ -20,6 +20,17 @@
 
 #include "g_local.h"
 
+// convert normal ascii string to console characters
+void G_AsciiToConsole(char *out, char *in) {
+	uint32_t i;
+	
+	for (i=0; in[i] != '\0'; i++) {
+		out[i] = (char)(in[i] | 0x80);
+	}
+	
+	out[i] = '\0';
+}
+
 static int arena_find_cl_index(gclient_t *cl) {
 
 	int i;
