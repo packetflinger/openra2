@@ -1781,19 +1781,14 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 	if (!ent->client->pers.team)
 		return;
 	
-	arena_team_t *team = ent->client->pers.team;
+	arena_team_t *team = TEAM(ent);
 	
 	if (team->captain != ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can force ready the team\n");
 		return;
 	}
-	uint8_t i;
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (!team->players[i])
-			continue;
-		
-		team->players[i]->client->pers.ready = qtrue;
-	}
+	
+	G_ForceReady(team, qtrue);
 }
 
 static void Cmd_RemoveTeammate_f(edict_t *ent) {
@@ -1983,8 +1978,6 @@ void ClientCommand(edict_t *ent)
         return;
     }
 
-    //ent->client->resp.activity_framenum = level.framenum;
-
     cmd = gi.argv(0);
 
     if (ent->client->pers.admin) {
@@ -2130,7 +2123,6 @@ void ClientCommand(edict_t *ent)
     else if (Q_stricmp(cmd, "chase") == 0)
         Cmd_Chase_f(ent);
     else if (Q_stricmp(cmd, "join") == 0)
-        //Cmd_Join_f(ent);
 		Cmd_Team_f(ent);
     else if (Q_stricmp(cmd, "vote") == 0 || Q_stricmp(cmd, "callvote") == 0)
         Cmd_Vote_f(ent);
@@ -2167,6 +2159,6 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "test") == 0)
 		Cmd_NotImplYet_f(ent);
     else    // anything that doesn't match a command will be a chat
-        Cmd_Say_f(ent, CHAT_MISC);
+        Cmd_Say_f(ent, CHAT_ARENA);
 }
 
