@@ -125,15 +125,22 @@ static void Cmd_Ready_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (!ent->client->pers.ready) {
-		ent->client->pers.ready = qtrue;
+	if (!TEAM(ent)) {
+		return;
+	}
+	
+	client_persistant_t *p;
+	p = &ent->client->pers;
+	
+	if (!p->ready) {
+		p->ready = qtrue;
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
 		return;
 	} else {
-		ent->client->pers.ready = qfalse;
-		if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
-			ent->client->pers.arena->round_start_frame = 0;
-			ent->client->pers.arena->state = ARENA_STATE_WARMUP;
+		p->ready = qfalse;
+		if (p->arena->state == ARENA_STATE_COUNTDOWN) {
+			p->arena->round_start_frame = 0;
+			p->arena->state = ARENA_STATE_WARMUP;
 			G_bprintf(ARENA(ent), PRINT_HIGH, "Countdown aborted, ", NAME(ent));
 			G_ArenaStuff(ARENA(ent), "stopsound");
 		}
