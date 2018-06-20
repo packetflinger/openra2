@@ -1408,8 +1408,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 		team->captain = ent;
 	}
 
-	G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n",
-			ent->client->pers.netname, team->name);
+	G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", NAME(ent), team->name);
 
 	// force the skin
 	G_SetSkin(ent, team->skin);
@@ -1454,8 +1453,8 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	ent->client->pers.team = 0;
 
 	if (!silent) {
-		G_bprintf(ent->client->pers.arena, PRINT_HIGH, "%s left team %s\n",
-				ent->client->pers.netname, oldteam->name);
+		G_bprintf(ARENA(ent), PRINT_HIGH, "%s left team %s\n",
+				NAME(ent), oldteam->name);
 	}
 
 	ent->client->pers.ready = false;
