@@ -1486,10 +1486,10 @@ void G_RefillInventory(edict_t *ent) {
 	ent->client->inventory[ITEM_SHELLS] = 50;
 
 	// armor
-	ent->client->inventory[ITEM_ARMOR_BODY] = 110;
+	ent->client->inventory[ITEM_ARMOR_BODY] = 200;
 
 	// health
-	ent->health = 100;
+	ent->health = 200;
 }
 
 /**
@@ -1538,21 +1538,6 @@ void G_SetSkin(edict_t *ent, const char *skin) {
 		return;
 	}
 
-	/*
-	edict_t *e;
-
-	for (e = g_edicts + 1; e <= g_edicts + game.maxclients; e++) {
-		if (!e->inuse)
-			continue;
-		
-		gi.configstring(
-			CS_PLAYERSKINS + (ent - g_edicts) - 1, 
-			va("%s\\%s", ent->client->pers.netname, skin)
-		);
-	}
-	*/
-	
-	// cheating :)
 	G_StuffText(ent, va("set skin %s", skin));
 }
 
