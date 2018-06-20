@@ -127,34 +127,18 @@ static void Cmd_Ready_f(edict_t *ent) {
 	
 	if (!ent->client->pers.ready) {
 		ent->client->pers.ready = qtrue;
-		G_bprintf(
-			ent->client->pers.arena,
-			PRINT_HIGH,
-			"%s is ready\n",
-			ent->client->pers.netname
-		);
+		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
 		return;
 	} else {
 		ent->client->pers.ready = qfalse;
 		if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
 			ent->client->pers.arena->round_start_frame = 0;
 			ent->client->pers.arena->state = ARENA_STATE_WARMUP;
-			G_bprintf(
-				ent->client->pers.arena,
-				PRINT_HIGH,
-				"Countdown aborted, ",
-				ent->client->pers.netname
-			);
-			
-			G_ArenaStuff(ent->client->pers.arena, "stopsound");
+			G_bprintf(ARENA(ent), PRINT_HIGH, "Countdown aborted, ", NAME(ent));
+			G_ArenaStuff(ARENA(ent), "stopsound");
 		}
 		
-		G_bprintf(
-			ent->client->pers.arena,
-			PRINT_HIGH,
-			"%s is not ready\n",
-			ent->client->pers.netname
-		);
+		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is not ready\n", NAME(ent));
 		return;
 	}
 }
@@ -438,7 +422,7 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	a->timein_frame = level.framenum + SECS_TO_FRAMES(g_timeout_time->value);
 	a->timeout_caller = ent;
 	
-	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", ent->client->pers.netname);
+	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", NAME(ent));
 }
 
 /*
@@ -925,8 +909,8 @@ void Cmd_Players_f(edict_t *ent)
     gi.cprintf(ent, PRINT_HIGH,
                "id score ping time name            idle arena team            capt%s\n"
                "-- ----- ---- ---- --------------- ---- ----- --------------- ----%s\n",
-               show_ips ? " address" : "",
-               show_ips ? " -------" : "");
+               show_ips ? " address               " : "",
+               show_ips ? " ----------------------" : "");
 
     for (i = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
@@ -1112,14 +1096,6 @@ static void Cmd_Observe_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
         return;
     }
-
-	/*
-    if (ent->client->pers.connected == CONN_SPECTATOR) {
-        spectator_respawn(ent, CONN_SPAWNED);
-    } else {
-        spectator_respawn(ent, CONN_SPECTATOR);
-    }
-	*/
 }
 
 static void Cmd_Chase_f(edict_t *ent)
@@ -1191,26 +1167,6 @@ static void Cmd_Chase_f(edict_t *ent)
     }
 }
 
-/*
-static void Cmd_Join_f(edict_t *ent)
-{
-    switch (ent->client->pers.connected) {
-    case CONN_PREGAME:
-    case CONN_SPECTATOR:
-        if (G_SpecRateLimited(ent)) {
-            return;
-        }
-        spectator_respawn(ent, CONN_SPAWNED);
-        break;
-    case CONN_SPAWNED:
-        gi.cprintf(ent, PRINT_HIGH, "You are already in the game.\n");
-        break;
-    default:
-        break;
-    }
-}
-*/
-
 static const char weapnames[WEAP_TOTAL][12] = {
     "None",         "Blaster",      "Shotgun",      "S.Shotgun",
     "Machinegun",   "Chaingun",     "Grenades",     "G.Launcher",
@@ -1228,8 +1184,7 @@ static void Cmd_Sound_f(edict_t *ent) {
 		return;
 	}
 	
-	G_ArenaSound(ent->client->pers.arena, index);
-	//G_StartSound(index);
+	G_ArenaSound(ARENA(ent), index);
 }
 
 
@@ -1460,30 +1415,6 @@ static void Cmd_Commands_f(edict_t *ent)
               );
 }
 
-/*
-static qboolean become_spectator(edict_t *ent)
-{
-    switch (ent->client->pers.connected) {
-    case CONN_PREGAME:
-        ent->client->pers.connected = CONN_SPECTATOR;
-        break;
-    case CONN_SPAWNED:
-        if (G_SpecRateLimited(ent)) {
-            return qfalse;
-        }
-        spectator_respawn(ent, CONN_SPECTATOR);
-        break;
-    case CONN_SPECTATOR:
-        return qtrue;
-    default:
-        return qfalse;
-    }
-
-    gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
-    return qtrue;
-}
-*/
-
 static void select_arena(edict_t *ent) {
 	switch (ent->client->menu.cur) {
 		case 12:
@@ -1502,40 +1433,6 @@ static void select_arena(edict_t *ent) {
 static void select_test(edict_t *ent)
 {
     switch (ent->client->menu.cur) {
-    /*case 3:
-        if (ent->client->pers.connected == CONN_SPAWNED) {
-            if (G_SpecRateLimited(ent)) {
-                break;
-            }
-            spectator_respawn(ent, CONN_SPECTATOR);
-            break;
-        }
-        if (ent->client->pers.connected != CONN_PREGAME) {
-            if (G_SpecRateLimited(ent)) {
-                break;
-            }
-        }
-        spectator_respawn(ent, CONN_SPAWNED);
-        break;
-	*/
-	/*
-    case 5:
-        if (become_spectator(ent)) {
-            if (ent->client->chase_target) {
-                SetChaseTarget(ent, NULL);
-            }
-            PMenu_Close(ent);
-        }
-        break;
-    case 6:
-        if (become_spectator(ent)) {
-            if (!ent->client->chase_target) {
-                GetChaseTarget(ent, CHASE_NONE);
-            }
-            PMenu_Close(ent);
-        }
-        break;
-	*/
 	case 5:
 		G_JoinTeam(ent, ARENA_TEAM_HOME, false);
 		PMenu_Close(ent);
