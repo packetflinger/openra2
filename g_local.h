@@ -765,6 +765,12 @@ extern	cvar_t	*g_health_start;
 extern	cvar_t	*g_armor_start;
 extern	cvar_t	*g_drop_allowed;
 extern	cvar_t	*g_skin_lock;
+extern	cvar_t	*g_ammo_slugs;
+extern	cvar_t	*g_ammo_rockets;
+extern	cvar_t	*g_ammo_cells;
+extern	cvar_t	*g_ammo_grenades;
+extern	cvar_t	*g_ammo_bullets;
+extern	cvar_t	*g_ammo_shells;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;

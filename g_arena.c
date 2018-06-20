@@ -1307,18 +1307,19 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
 }
 
 /**
- * Give the player all the items/weapons they need
+ * Give the player all the items/weapons they need. Called in PutClientInServer()
  *
  */
 void G_GiveItems(edict_t *ent) {
 
-	int flags, idx;
-
 	if (!ent->client)
 		return;
-
-	idx = ent->client->pers.arena->number;
-	flags = level.arenas[idx].weapon_flags;
+	
+	int flags;
+	arena_t *a;
+	a = ARENA(ent);
+	
+	flags = a->weapon_flags;
 
 	if (flags < 2)
 		flags = ARENAWEAPON_ALL;
@@ -1352,15 +1353,18 @@ void G_GiveItems(edict_t *ent) {
 		ent->client->inventory[ITEM_BFG] = 1;
 
 	// ammo
-	ent->client->inventory[ITEM_SLUGS] = 25;
-	ent->client->inventory[ITEM_ROCKETS] = 30;
-	ent->client->inventory[ITEM_CELLS] = 150;
-	ent->client->inventory[ITEM_GRENADES] = 20;
-	ent->client->inventory[ITEM_BULLETS] = 200;
-	ent->client->inventory[ITEM_SHELLS] = 50;
+	ent->client->inventory[ITEM_SLUGS] = a->slugs;
+	ent->client->inventory[ITEM_ROCKETS] = a->rockets;
+	ent->client->inventory[ITEM_CELLS] = a->cells;
+	ent->client->inventory[ITEM_GRENADES] = a->grenades;
+	ent->client->inventory[ITEM_BULLETS] = a->bullets;
+	ent->client->inventory[ITEM_SHELLS] = a->shells;
 
 	// armor
-	ent->client->inventory[ITEM_ARMOR_BODY] = ent->client->pers.arena->armor;
+	ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
+	
+	// health
+	ent->health = a->health;
 }
 
 
@@ -1495,19 +1499,23 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
  *
  */
 void G_RefillInventory(edict_t *ent) {
+	
+	arena_t *a;
+	a = ARENA(ent);
+	
 	// ammo
-	ent->client->inventory[ITEM_SLUGS] = 25;
-	ent->client->inventory[ITEM_ROCKETS] = 30;
-	ent->client->inventory[ITEM_CELLS] = 150;
-	ent->client->inventory[ITEM_GRENADES] = 20;
-	ent->client->inventory[ITEM_BULLETS] = 200;
-	ent->client->inventory[ITEM_SHELLS] = 50;
+	ent->client->inventory[ITEM_SLUGS] = a->slugs;
+	ent->client->inventory[ITEM_ROCKETS] = a->rockets;
+	ent->client->inventory[ITEM_CELLS] = a->cells;
+	ent->client->inventory[ITEM_GRENADES] = a->grenades;
+	ent->client->inventory[ITEM_BULLETS] = a->bullets;
+	ent->client->inventory[ITEM_SHELLS] = a->shells;
 
 	// armor
-	ent->client->inventory[ITEM_ARMOR_BODY] = 200;
+	ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
 
 	// health
-	ent->health = 200;
+	ent->health = a->health;
 }
 
 /**
@@ -1708,27 +1716,79 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->round_limit = (int) g_round_limit->value;
 		a->health = (int) g_health_start->value;
 		a->armor = (int) g_armor_start->value;
+		a->slugs = (int) g_ammo_slugs->value;
+		a->rockets = (int) g_ammo_rockets->value;
+		a->cells = (int) g_ammo_cells->value;
+		a->grenades = (int) g_ammo_grenades->value;
+		a->bullets = (int) g_ammo_bullets->value;
+		a->shells = (int) g_ammo_shells->value;
 		return;
 	}
 
 	if (m->damage_flags) {
 		a->damage_flags = m->damage_flags;
+	} else {
+		a->damage_flags = (int) g_damage_flags->value;
 	}
 
 	if (m->weapon_flags) {
 		a->weapon_flags = m->weapon_flags;
+	} else {
+		a->weapon_flags = (int) g_weapon_flags->value;
 	}
-
+	
 	if (m->rounds) {
 		a->round_limit = m->rounds;
+	} else {
+		a->round_limit = (int) g_round_limit->value;
 	}
 
 	if (m->health) {
 		a->health = m->health;
+	} else {
+		a->health = (int) g_health_start->value;
 	}
 
 	if (m->armor) {
 		a->armor = m->armor;
+	} else {
+		a->armor = (int) g_armor_start->value;
+	}
+	
+	if (m->slugs) {
+		a->slugs = m->slugs;
+	} else {
+		a->slugs = (int) g_ammo_slugs->value;
+	}
+	
+	if (m->rockets) {
+		a->rockets = m->rockets;
+	} else {
+		a->rockets = (int) g_ammo_rockets->value;
+	}
+	
+	if (m->cells) {
+		a->cells = m->cells;
+	} else {
+		a->cells = (int) g_ammo_cells->value;
+	}
+	
+	if (m->grenades) {
+		a->grenades = m->grenades;
+	} else {
+		a->grenades = (int) g_ammo_grenades->value;
+	}
+	
+	if (m->bullets) {
+		a->bullets = m->bullets;
+	} else {
+		a->bullets = (int) g_ammo_bullets->value;
+	}
+	
+	if (m->shells) {
+		a->shells = m->shells;
+	} else {
+		a->shells = (int) g_ammo_shells->value;
 	}
 }
 
@@ -1818,6 +1878,30 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 
 			if (Q_strcasecmp(token, "armor") == 0 && inarena) {
 				entry[arena_num].armor = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "slugs") == 0 && inarena) {
+				entry[arena_num].slugs = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "rockets") == 0 && inarena) {
+				entry[arena_num].rockets = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "cells") == 0 && inarena) {
+				entry[arena_num].cells = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "grenades") == 0 && inarena) {
+				entry[arena_num].grenades = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "bullets") == 0 && inarena) {
+				entry[arena_num].bullets = atoi(COM_Parse(&fp_data));
+			}
+			
+			if (Q_strcasecmp(token, "shells") == 0 && inarena) {
+				entry[arena_num].shells = atoi(COM_Parse(&fp_data));
 			}
 		}
 

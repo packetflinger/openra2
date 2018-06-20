@@ -110,6 +110,12 @@ typedef struct {
 	int				client_count;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
+	int				slugs;
+	int				rockets;
+	int				cells;
+	int				grenades;
+	int				bullets;
+	int				shells;
 } arena_t;
 
 
@@ -124,6 +130,13 @@ typedef struct {
 	uint32_t 	round_timelimit;
 	uint32_t	health;
 	uint32_t	armor;
+	// ammo
+	uint32_t	slugs;
+	uint32_t	rockets;
+	uint32_t	cells;
+	uint32_t	grenades;
+	uint32_t	bullets;
+	uint32_t	shells;
 } arena_entry_t;
 
 
