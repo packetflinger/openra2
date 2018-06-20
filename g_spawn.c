@@ -546,12 +546,12 @@ static void G_InitArenaTeams(arena_t *arena) {
 	
 	team = &arena->team_home;
 	team->type = ARENA_TEAM_HOME;
-	Q_strlcpy(team->skin, ARENA_HOME_SKIN, sizeof(ARENA_HOME_SKIN));
+	Q_strlcpy(team->skin, g_hometeam_skin->string, sizeof(team->skin));
 	Q_strlcpy(team->name, g_hometeam_name->string, sizeof(team->name));
 	
 	team = &arena->team_away;
 	team->type = ARENA_TEAM_AWAY;
-	Q_strlcpy(team->skin, ARENA_AWAY_SKIN, sizeof(ARENA_AWAY_SKIN));
+	Q_strlcpy(team->skin, g_awayteam_skin->string, sizeof(team->skin));
 	Q_strlcpy(team->name, g_awayteam_name->string, sizeof(team->name));
 }
 

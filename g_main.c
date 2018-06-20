@@ -107,6 +107,8 @@ cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
 cvar_t *g_hometeam_name;
 cvar_t *g_awayteam_name;
+cvar_t *g_hometeam_skin;
+cvar_t *g_awayteam_skin;
 cvar_t *g_default_arena;
 cvar_t *g_weapon_flags;
 cvar_t *g_damage_flags;
@@ -1036,6 +1038,8 @@ static void G_Init(void) {
 	g_round_countdown = gi.cvar("g_round_countdown", "12", CVAR_GENERAL);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
 	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
+	g_hometeam_skin = gi.cvar("g_hometeam_skin", "female/jezebel", CVAR_GENERAL);
+	g_awayteam_skin = gi.cvar("g_awayteam_skin", "male/cypher", CVAR_GENERAL);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "65535", CVAR_LATCH);
 	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
@@ -1047,10 +1051,6 @@ static void G_Init(void) {
 	g_ammo_grenades = gi.cvar("g_ammo_grenades", "20", CVAR_LATCH);
 	g_ammo_bullets = gi.cvar("g_ammo_bullets", "100", CVAR_LATCH);
 	g_ammo_shells = gi.cvar("g_ammo_shells", "14", CVAR_LATCH);
-	
-	// trim team names to 15 characters
-	(g_hometeam_name->string)[15] = '\0';
-	(g_awayteam_name->string)[15] = '\0';
 
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_arena_numrounds->value, 1, 15);
