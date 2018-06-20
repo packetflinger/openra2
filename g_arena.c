@@ -753,6 +753,12 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	time_t t;
 	struct tm *tm;
 
+	char bracketopen[2];
+	char bracketclosed[2];
+	
+	G_AsciiToConsole(bracketopen, "[");
+	G_AsciiToConsole(bracketclosed, "]");
+	
 	// starting point down from top of screen
 	y = 20;
 
@@ -810,7 +816,8 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
 		len = Q_snprintf(entry, sizeof(entry),
 				"yt %d cstring \"%-15s %-15s %4s %4d\"", y, c->pers.netname, 
-				(c->pers.ready) ? "[ready]" : "", timebuf, c->ping);
+				(c->pers.ready) ? va("%sready%s", bracketopen, bracketclosed) : "", 
+				timebuf, c->ping);
 
 		if (len >= sizeof(entry))
 			continue;
@@ -862,7 +869,8 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
 		len = Q_snprintf(entry, sizeof(entry),
 				"yt %d cstring \"%-15s %-15s %4s %4d\"", y, c->pers.netname, 
-				(c->pers.ready) ? "[ready]" : "", timebuf, c->ping);
+				(c->pers.ready) ? va("%sready%s", bracketopen, bracketclosed) : "", 
+				timebuf, c->ping);
 
 		if (len >= sizeof(entry))
 			continue;
