@@ -1477,6 +1477,9 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { NULL },
     { "Use [ and ] to move cursor", PMENU_ALIGN_CENTER },
     { "Press Enter to select", PMENU_ALIGN_CENTER },
+	{ NULL },
+	{ NULL },
+	{ NULL },
     { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
@@ -1495,6 +1498,9 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
     { NULL },
 	{ "*Exit menu", PMENU_ALIGN_LEFT, select_arena },
     { NULL },
+	{ NULL },
+	{ NULL },
+	{ NULL },
     { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 

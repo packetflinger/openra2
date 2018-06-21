@@ -1021,7 +1021,7 @@ void G_ResetLevel(void);
 #define PLAYER_SPAWNED(e) \
     ((e)->client->pers.connected == CONN_SPAWNED)
 
-#define MAX_MENU_ENTRIES    15
+#define MAX_MENU_ENTRIES    18
 
 typedef enum {
     PMENU_ALIGN_LEFT,
