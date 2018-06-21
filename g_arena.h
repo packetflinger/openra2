@@ -116,6 +116,9 @@ typedef struct {
 	int				grenades;
 	int				bullets;
 	int				shells;
+	int32_t			ready_think_frame;
+	int32_t			ready_notify_frame;
+	qboolean		ready;
 } arena_t;
 
 
@@ -156,7 +159,7 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
 void G_ChangeArena(gclient_t *cl, arena_t *arena);
-qboolean G_CheckReady(arena_t *a);
+void G_CheckReady(arena_t *a);
 void G_CheckTimers(arena_t *a);
 void G_EndMatch(arena_t *a, arena_team_t *winner);
 void G_EndRound(arena_t *a, arena_team_t *winner);

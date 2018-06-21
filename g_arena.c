@@ -250,7 +250,8 @@ void G_ArenaThink(arena_t *a) {
 
 	// pregame
 	if (a->state == ARENA_STATE_WARMUP) {
-		if (G_CheckReady(a)) {	// is everyone ready?
+		G_CheckReady(a);
+		if (a->ready) {	// is everyone ready?
 			a->state = ARENA_STATE_COUNTDOWN;
 			a->current_round = 1;
 			a->round_start_frame = level.framenum
@@ -1135,36 +1136,46 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 }
 
 /**
- * Check if all players are ready
+ * Check if all players are ready and set the next time we should check
  *
  */
-qboolean G_CheckReady(arena_t *a) {
+void G_CheckReady(arena_t *a) {
 	int i;
-
+	
+	if (level.framenum != a->ready_think_frame) {
+		return;
+	}
+	
+	a->ready_think_frame = SECS_TO_FRAMES(2) + level.framenum;
+	
 	// need players on both teams
 	if (a->team_home.player_count == 0 || a->team_away.player_count == 0) {
-		return false;
+		a->ready = false;
+		return;
 	}
-
+	
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (a->team_home.players[i]) {
 			if (!a->team_home.players[i]->client->pers.ready) {
-				return false;
+				a->ready = false;
+				return;
 			}
 		}
 
 		if (a->team_away.players[i]) {
 			if (!a->team_away.players[i]->client->pers.ready) {
-				return false;
+				a->ready = false;
+				return;
 			}
 		}
 	}
 
 	if (g_team_balance->value > 0 && a->team_home.player_count != a->team_away.player_count) {
-		return false;
+		a->ready = false;
+		return;
 	}
 
-	return true;
+	a->ready = true;
 }
 
 // match countdowns...
@@ -1231,6 +1242,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
 
 	a->state = ARENA_STATE_WARMUP;
+	a->ready = false;
 
 	// un-ready everyone
 	G_ForceReady(&a->team_home, false);

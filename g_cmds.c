@@ -132,6 +132,8 @@ static void Cmd_Ready_f(edict_t *ent) {
 	client_persistant_t *p;
 	p = &ent->client->pers;
 	
+	ARENA(ent)->ready_think_frame = level.framenum;
+	
 	if (!p->ready) {
 		p->ready = qtrue;
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
@@ -1697,6 +1699,8 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can force ready the team\n");
 		return;
 	}
+	
+	ARENA(ent)->ready_think_frame = level.framenum;
 	
 	G_ForceReady(team, qtrue);
 }
