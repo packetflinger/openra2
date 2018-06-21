@@ -1392,6 +1392,8 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 	arena_t *arena = ent->client->pers.arena;
 	arena_team_t *team = FindTeam(ent, type);
 
+	PMenu_Close(ent);
+	
 	if (!arena) {
 		gi.cprintf(ent, PRINT_HIGH, "Unknown arena\n");
 		return;
@@ -1540,6 +1542,7 @@ void G_RespawnPlayers(arena_t *a) {
 	edict_t *ent;
 
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+		
 		ent = a->team_home.players[i];
 		if (ent && ent->inuse) {
 			G_RefillInventory(ent);
