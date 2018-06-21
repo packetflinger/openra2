@@ -806,5 +806,11 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_VOTE_PROPOSAL] = 0;
         ent->client->ps.stats[STAT_VOTE_COUNT] = 0;
     }
+	
+	if (TEAM(ent) && !ent->client->pers.ready) {
+		ent->client->ps.stats[STAT_READY] = CS_READY;
+	} else {
+		ent->client->ps.stats[STAT_READY] = 0;
+	}
 }
 

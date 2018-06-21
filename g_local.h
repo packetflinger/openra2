@@ -989,7 +989,8 @@ void G_ResetLevel(void);
 #define CS_SPECMODE         (CS_GENERAL + 3)
 #define CS_PREGAME          (CS_GENERAL + 4)
 #define CS_VOTE_PROPOSAL    (CS_GENERAL + 5)
-#define CS_VOTE_COUNT       (CS_GENERAL + 6 )
+#define CS_VOTE_COUNT       (CS_GENERAL + 6)
+#define CS_READY			(CS_GENERAL + 7)
 #define CS_PLAYERNAMES      (CS_GENERAL + 10)
 #define CS_ARENA_TIMEOUT	(CS_GENERAL + MAX_CLIENTS)
 #define CS_ARENA_ROUNDS		(CS_ARENA_TIMEOUT + MAX_ARENAS)
@@ -1008,6 +1009,7 @@ void G_ResetLevel(void);
 #define STAT_TIMEOUT				27
 #define STAT_ROUNDS					28
 #define STAT_COUNTDOWN				29
+#define STAT_READY					30
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run

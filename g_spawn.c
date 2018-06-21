@@ -953,6 +953,13 @@ static const char dm_statusbar[] =
   "color 5 " // cyan
   "stat_string 27 "
 "endif "
+
+// ready reminder
+"if 30 "
+  "yb -60 "
+  "xv 0 "
+  "stat_string 30 "
+"endif"
 ;
 
 /*QUAKED worldspawn (0 0 0) ?
@@ -1173,5 +1180,9 @@ void SP_worldspawn(edict_t *ent)
 
     // 63 testing
     gi.configstring(CS_LIGHTS + 63, "a");
+	
+	char ready[6];
+	G_AsciiToConsole(ready, "ready");
+	gi.configstring(CS_READY, va("Type %s in console to begin", ready));
 }
 
