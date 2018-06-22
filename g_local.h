@@ -773,6 +773,7 @@ extern	cvar_t	*g_ammo_cells;
 extern	cvar_t	*g_ammo_grenades;
 extern	cvar_t	*g_ammo_bullets;
 extern	cvar_t	*g_ammo_shells;
+extern	cvar_t	*g_timein_time;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;

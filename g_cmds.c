@@ -411,24 +411,22 @@ A player called timeout
 */
 static void Cmd_Timeout_f(edict_t *ent) {
 	
-	arena_t *a = ent->client->pers.arena;
+	arena_t *a = ARENA(ent);
 	
 	if (a->state < ARENA_STATE_PLAY)
 		return;
 	
 	if (a->timeout_frame) {
 		if (ent == a->timeout_caller || ent->client->pers.admin) {
-			a->timein_frame = level.framenum + SECS_TO_FRAMES(10);	
-		} else {
-			gi.cprintf(ent, PRINT_HIGH, "Only %s or an admin can call time-in before time expires\n", a->timeout_caller->client->pers.netname);
-		}
+			a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timein_time->value);	
+		} 
 		
 		return;
 	}
 	
 	a->state = ARENA_STATE_TIMEOUT;
 	a->timeout_frame = level.framenum;
-	a->timein_frame = level.framenum + SECS_TO_FRAMES(g_timeout_time->value);
+	a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timeout_time->value);
 	a->timeout_caller = ent;
 	
 	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", NAME(ent));

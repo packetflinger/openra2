@@ -120,6 +120,7 @@ cvar_t *g_ammo_cells;
 cvar_t *g_ammo_grenades;
 cvar_t *g_ammo_bullets;
 cvar_t *g_ammo_shells;
+cvar_t *g_timein_time;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1051,6 +1052,7 @@ static void G_Init(void) {
 	g_ammo_grenades = gi.cvar("g_ammo_grenades", "20", CVAR_LATCH);
 	g_ammo_bullets = gi.cvar("g_ammo_bullets", "100", CVAR_LATCH);
 	g_ammo_shells = gi.cvar("g_ammo_shells", "14", CVAR_LATCH);
+	g_timein_time = gi.cvar("g_timein_time", "11", CVAR_GENERAL);
 
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_arena_numrounds->value, 1, 15);
