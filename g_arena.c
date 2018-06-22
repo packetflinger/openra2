@@ -1180,26 +1180,29 @@ void G_CheckReady(arena_t *a) {
 
 // match countdowns...
 void G_CheckTimers(arena_t *a) {
-
-	// only look once per second
-	if (level.framenum % HZ == 0) {
-
-		if (a->state == ARENA_STATE_COUNTDOWN) {
-			int remaining = (a->round_start_frame - level.framenum) / HZ;
-			switch (remaining) {
-			case 10:
-				G_ArenaSound(a, level.sounds.count);
-				break;
-			}
+	
+	if (!(a->timer_last_frame + SECS_TO_FRAMES(1) <= level.framenum)) {
+		return;
+	}
+	
+	a->timer_last_frame = level.framenum;
+	
+	uint32_t remaining;
+	if (a->state == ARENA_STATE_COUNTDOWN) {
+		remaining = (a->round_start_frame - level.framenum) / HZ;
+		switch (remaining) {
+		case 10:
+			G_ArenaSound(a, level.sounds.count);
+			break;
 		}
+	}
 
-		if (a->state == ARENA_STATE_TIMEOUT) {
-			int remaining = (a->timein_frame - level.framenum) / HZ;
-			switch (remaining) {
-			case 10:
-				G_ArenaSound(a, level.sounds.count);
-				break;
-			}
+	if (a->state == ARENA_STATE_TIMEOUT) {
+		remaining = (a->timein_frame - level.framenum) / HZ;
+		switch (remaining) {
+		case 10:
+			G_ArenaSound(a, level.sounds.count);
+			break;
 		}
 	}
 }

@@ -119,6 +119,7 @@ typedef struct {
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;
+	int32_t			timer_last_frame;		// the frame we last ran timers
 } arena_t;
 
 
