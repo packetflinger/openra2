@@ -416,6 +416,10 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	if (a->state < ARENA_STATE_PLAY)
 		return;
 	
+	if (!TEAM(ent)) {
+		return;
+	}
+	
 	if (a->timeout_frame) {
 		if (ent == a->timeout_caller || ent->client->pers.admin) {
 			a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timein_time->value);	
