@@ -1184,5 +1184,7 @@ void SP_worldspawn(edict_t *ent)
 	char ready[6];
 	G_AsciiToConsole(ready, "ready");
 	gi.configstring(CS_READY, va("Type %s in console to begin", ready));
+	gi.configstring(CS_READY_WAIT, "Waiting for all players to ready-up");
+	gi.configstring(CS_READY_BALANCED, "Teams need to be balanced before starting");
 }
 
