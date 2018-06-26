@@ -807,14 +807,18 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_VOTE_COUNT] = 0;
     }
 	
-	if (TEAM(ent) && !ent->client->pers.ready) {
-		ent->client->ps.stats[STAT_READY] = CS_READY;
-	} else {
-		if (g_team_balance->value && (ARENA(ent)->team_home.player_count != ARENA(ent)->team_away.player_count)) {
-			ent->client->ps.stats[STAT_READY] = CS_READY_BALANCED;
+	if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
+		if (TEAM(ent) && !ent->client->pers.ready) {
+			ent->client->ps.stats[STAT_READY] = CS_READY;
 		} else {
-			ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
+			if (g_team_balance->value && (ARENA(ent)->team_home.player_count != ARENA(ent)->team_away.player_count)) {
+				ent->client->ps.stats[STAT_READY] = CS_READY_BALANCED;
+			} else {
+				ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
+			}
 		}
+	} else {
+		ent->client->ps.stats[STAT_READY] = 0;
 	}
 }
 
