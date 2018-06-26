@@ -1001,11 +1001,6 @@ static void G_Init(void) {
 	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
 	g_mute_chat = gi.cvar("g_mute_chat", "0", CVAR_GENERAL);
 	g_protection_time = gi.cvar("g_protection_time", "0", CVAR_GENERAL);
-	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
-	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
-	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_LATCH);
-	g_health_start = gi.cvar("g_health_start", "100", CVAR_LATCH);
-	g_armor_start = gi.cvar("g_armor_start", "100", CVAR_LATCH);
 #if USE_SQLITE
 	g_sql_database = gi.cvar("g_sql_database", "", 0);
 	g_sql_async = gi.cvar("g_sql_async", "0", 0);
@@ -1042,8 +1037,8 @@ static void G_Init(void) {
 	g_hometeam_skin = gi.cvar("g_hometeam_skin", "female/jezebel", CVAR_GENERAL);
 	g_awayteam_skin = gi.cvar("g_awayteam_skin", "male/cypher", CVAR_GENERAL);
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
-	g_weapon_flags = gi.cvar("g_weapon_flags", "65535", CVAR_LATCH);
-	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);
+	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);	// default: all except bfg
+	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);	// everything hurts
 	g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
 	g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_GENERAL);
 	g_ammo_slugs = gi.cvar("g_ammo_slugs", "10", CVAR_LATCH);
@@ -1053,14 +1048,29 @@ static void G_Init(void) {
 	g_ammo_bullets = gi.cvar("g_ammo_bullets", "100", CVAR_LATCH);
 	g_ammo_shells = gi.cvar("g_ammo_shells", "14", CVAR_LATCH);
 	g_timein_time = gi.cvar("g_timein_time", "11", CVAR_GENERAL);
+	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
+	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
+	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_GENERAL);
+	g_health_start = gi.cvar("g_health_start", "100", CVAR_LATCH);
+	g_armor_start = gi.cvar("g_armor_start", "100", CVAR_LATCH);
 
+	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_arena_numrounds->value, 1, 15);
 	clamp(g_round_end_time->value, 1, 15);
-
-	// force deathmatch
-	//gi.cvar_set( "coop", "0" ); //atu
-	//gi.cvar_set( "deathmatch", "1" );
+	clamp(g_weapon_flags->value, 0, 2046);
+	clamp(g_damage_flags->value, 0, 31);
+	clamp(g_timein_time->value, 3, 30);
+	clamp(g_timeout_time->value, 30, 300);
+	clamp(g_round_limit->value, 1, 9);
+	clamp(g_health_start->value, 1, 999);
+	clamp(g_armor_start->value, 0, 999);
+	clamp(g_ammo_slugs->value, 0, 999);
+	clamp(g_ammo_rockets->value, 0, 999);
+	clamp(g_ammo_cells->value, 0, 999);
+	clamp(g_ammo_grenades->value, 0, 999);
+	clamp(g_ammo_bullets->value, 0, 999);
+	clamp(g_ammo_shells->value, 0, 999);
 
 	// initialize all entities for this game
 	game.maxentities = maxentities->value;
