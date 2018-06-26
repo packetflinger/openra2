@@ -759,7 +759,6 @@ extern  cvar_t  *flood_infos;
 extern  cvar_t  *flood_perinfo;
 extern  cvar_t  *flood_infodelay;
 
-extern	cvar_t	*g_arena_numrounds;
 extern	cvar_t	*g_round_countdown;
 extern	cvar_t	*g_weapon_flags;
 extern	cvar_t	*g_damage_flags;

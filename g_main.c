@@ -102,7 +102,6 @@ cvar_t *flood_infos;
 cvar_t *flood_perinfo;
 cvar_t *flood_infodelay;
 
-cvar_t *g_arena_numrounds;
 cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
 cvar_t *g_hometeam_name;
@@ -1029,7 +1028,6 @@ static void G_Init(void) {
 	flood_infodelay = gi.cvar("flood_infodelay", "60", CVAR_GENERAL);
 
 	// arena defaults
-	g_arena_numrounds = gi.cvar("g_arena_numrounds", "7", CVAR_GENERAL);
 	g_round_end_time = gi.cvar("g_round_end_time", "5", CVAR_GENERAL);
 	g_round_countdown = gi.cvar("g_round_countdown", "12", CVAR_GENERAL);
 	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
@@ -1056,7 +1054,6 @@ static void G_Init(void) {
 
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);
-	clamp(g_arena_numrounds->value, 1, 15);
 	clamp(g_round_end_time->value, 1, 15);
 	clamp(g_weapon_flags->value, 0, 2046);
 	clamp(g_damage_flags->value, 0, 31);
