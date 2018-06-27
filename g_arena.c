@@ -81,6 +81,52 @@ static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 	return NULL;
 }
 
+// generate a name for auto-recorded demos
+const char *DemoName(edict_t *ent) {
+	if (!TEAM(ent))
+		return "";
+	
+	static char name[MAX_STRING_CHARS];
+	
+	int32_t			i;
+	size_t			namesize;
+	struct tm		*ts;
+	time_t			t;
+	cvar_t			*hostname;
+	cvar_t			*demohostname;
+	char			*servername;
+
+	hostname = gi.cvar("hostname", NULL, 0);
+	servername = (hostname) ? hostname->string : "unnamed_server";
+	demohostname = gi.cvar("g_demo_hostname", servername, 0);
+
+	t = time(NULL);
+	ts = localtime(&t);
+
+	// server-map-arena-team-date-time
+	namesize = Q_snprintf(name, sizeof(name), "%s-%s-%s-%s-%d%02d%02d-%02d%02d%02d",
+		demohostname->string,
+		level.mapname,
+		ARENA(ent)->name,
+		TEAM(ent)->name,
+		ts->tm_year + 1900,
+		ts->tm_mon + 1,
+		ts->tm_mday,
+		ts->tm_hour,
+		ts->tm_min,
+		ts->tm_sec
+	);
+
+	for (i = 0; i < namesize; i++) {
+		if ((name[i] < '!' && name[i] > '~') || name[i] == '\\' || name[i] == '\"' ||
+			name[i] == ':' || name[i] == '*' || name[i] == '/' || name[i] == '?' ||
+			name[i] == '>' || name[i] == '<' || name[i] == '|' || name[i] == ' ')
+			name[i] = '_';
+	}
+
+	return name;
+}
+
 // periodically count players to make sure none got lost
 static void update_playercounts(arena_t *a) {
 
@@ -259,6 +305,10 @@ void G_ArenaThink(arena_t *a) {
 			a->countdown = (int) g_round_countdown->value;
 
 			G_RespawnPlayers(a);
+			
+			if (g_demo->value) {
+				G_ForceDemo(a);
+			}
 		}
 	}
 
@@ -1222,6 +1272,18 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 	}
 }
 
+void G_ForceDemo(arena_t *arena) {
+	uint32_t i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (arena->team_home.players[i]) {
+			G_StuffText(arena->team_home.players[i], va("record \"%s\"", DemoName(arena->team_home.players[i])));
+		}
+		
+		if (arena->team_away.players[i]) {
+			G_StuffText(arena->team_away.players[i], va("record \"%s\"", DemoName(arena->team_away.players[i])));
+		}
+	}
+}
 
 /**
  * Reset after match is finished
@@ -1250,6 +1312,14 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	// un-ready everyone
 	G_ForceReady(&a->team_home, false);
 	G_ForceReady(&a->team_away, false);
+	
+	if (g_screenshot->value) {
+		G_ArenaStuff(a, "screenshot");
+	}
+			
+	if (g_demo->value) {
+		G_ArenaStuff(a, "stop");
+	}
 }
 
 

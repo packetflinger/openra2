@@ -2074,11 +2074,6 @@ void ClientCommand(edict_t *ent)
 		Cmd_Sound_f(ent);
 	else if (Q_stricmp(cmd, "test") == 0) {
 		Cmd_NotImplYet_f(ent);
-		char out[100];
-		G_AsciiToConsole(out, "hey there");
-		gi.cprintf(ent, PRINT_HIGH, "hey there\n");
-		gi.cprintf(ent, PRINT_HIGH, va("%s\n",out));
-		G_Centerprintf(ARENA(ent), "%s", out);
 	}
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_ARENA);

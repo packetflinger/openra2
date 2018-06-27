@@ -773,6 +773,8 @@ extern	cvar_t	*g_ammo_grenades;
 extern	cvar_t	*g_ammo_bullets;
 extern	cvar_t	*g_ammo_shells;
 extern	cvar_t	*g_timein_time;
+extern	cvar_t	*g_screenshot;
+extern	cvar_t	*g_demo;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
@@ -1488,4 +1490,3 @@ void G_LogClients(void);
 qboolean G_OpenDatabase(void);
 void G_CloseDatabase(void);
 #endif
-

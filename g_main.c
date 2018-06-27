@@ -120,6 +120,8 @@ cvar_t *g_ammo_grenades;
 cvar_t *g_ammo_bullets;
 cvar_t *g_ammo_shells;
 cvar_t *g_timein_time;
+cvar_t *g_screenshot;
+cvar_t *g_demo;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -1051,7 +1053,9 @@ static void G_Init(void) {
 	g_team_balance = gi.cvar("g_team_balance", "0", CVAR_GENERAL);
 	g_health_start = gi.cvar("g_health_start", "100", CVAR_LATCH);
 	g_armor_start = gi.cvar("g_armor_start", "100", CVAR_LATCH);
-
+	g_screenshot = gi.cvar("g_screenshot", "0", CVAR_GENERAL);
+	g_demo = gi.cvar("g_demo", "0", CVAR_GENERAL);
+	
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);
 	clamp(g_round_end_time->value, 1, 15);
