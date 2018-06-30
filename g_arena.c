@@ -305,10 +305,7 @@ void G_ArenaThink(arena_t *a) {
 			a->countdown = (int) g_round_countdown->value;
 
 			G_RespawnPlayers(a);
-			
-			if (g_demo->value) {
-				G_ForceDemo(a);
-			}
+			G_ForceDemo(a);
 		}
 	}
 
@@ -1274,13 +1271,53 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 
 void G_ForceDemo(arena_t *arena) {
 	uint32_t i;
+	
+	if (!g_demo->value) {
+		return;
+	}
+	
+	if (arena->recording) {
+		for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+			
+			if (arena->team_home.players[i]) {
+				G_StuffText(arena->team_home.players[i], "stop\n");
+			}
+			
+			if (arena->team_away.players[i]) {
+				G_StuffText(arena->team_away.players[i], "stop\n");
+			}
+		}
+		
+		arena->recording = qfalse;
+		
+	} else {
+		for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+			if (arena->team_home.players[i]) {
+				G_StuffText(arena->team_home.players[i], va("record \"%s\"\n", DemoName(arena->team_home.players[i])));
+			}
+			
+			if (arena->team_away.players[i]) {
+				G_StuffText(arena->team_away.players[i], va("record \"%s\"\n", DemoName(arena->team_away.players[i])));
+			}
+		}
+		
+		arena->recording = qtrue;
+	}
+}
+
+void G_ForceScreenshot(arena_t *arena) {
+	if (!g_screenshot->value) {
+		return;
+	}
+	
+	uint32_t i;
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (arena->team_home.players[i]) {
-			G_StuffText(arena->team_home.players[i], va("record \"%s\"", DemoName(arena->team_home.players[i])));
+			G_StuffText(arena->team_home.players[i], "screenshot\n");
 		}
 		
 		if (arena->team_away.players[i]) {
-			G_StuffText(arena->team_away.players[i], va("record \"%s\"", DemoName(arena->team_away.players[i])));
+			G_StuffText(arena->team_away.players[i], "screenshot\n");
 		}
 	}
 }
@@ -1313,13 +1350,8 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_ForceReady(&a->team_home, false);
 	G_ForceReady(&a->team_away, false);
 	
-	if (g_screenshot->value) {
-		G_ArenaStuff(a, "screenshot");
-	}
-			
-	if (g_demo->value) {
-		G_ArenaStuff(a, "stop");
-	}
+	G_ForceScreenshot(a);
+	G_ForceDemo(a);
 }
 
 

@@ -120,6 +120,7 @@ typedef struct {
 	int32_t			ready_notify_frame;
 	qboolean		ready;
 	int32_t			timer_last_frame;		// the frame we last ran timers
+	qboolean		recording;				// were players forced to start recording demos?
 } arena_t;
 
 
