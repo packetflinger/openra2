@@ -2076,7 +2076,6 @@ void G_SelectBestWeapon(edict_t *ent) {
 }
 
 void G_ResetArena(arena_t *a) {
-	gi.dprintf("Resetting Arena %d (%s)\n", a->number, a->name);
 	uint8_t i;
 	edict_t *player;
 	
