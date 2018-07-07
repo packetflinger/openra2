@@ -2088,9 +2088,13 @@ void G_ResetArena(arena_t *a) {
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (a->team_home.players[i]) {
 			player = a->team_home.players[i];
+			
 			memset(&player->client->resp, 0, sizeof(player->client->resp));
 			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
+			
 			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
+			player->client->pers.ready = qfalse;
+			
 			if (g_team_reset->value) {
 				G_PartTeam(player, true);
 			} else {
@@ -2100,9 +2104,13 @@ void G_ResetArena(arena_t *a) {
 		
 		if (a->team_away.players[i]) {
 			player = a->team_away.players[i];
+			
 			memset(&player->client->resp, 0, sizeof(player->client->resp));
 			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
+			
 			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
+			player->client->pers.ready = qfalse;
+			
 			if (g_team_reset->value) {
 				G_PartTeam(player, true);
 			} else {
