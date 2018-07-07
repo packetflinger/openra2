@@ -341,8 +341,6 @@ void MoveClientToIntermission(edict_t *ent)
     if (ent->client->pers.uf & UF_AUTOSCREENSHOT) {
         //G_StuffText(ent, "wait; screenshot\n");
     }
-	
-	gi.dprintf("Moving %s to intermission in arena %d\n", NAME(ent), ARENA(ent)->number);
 }
 
 void BeginIntermission(arena_t *a)
