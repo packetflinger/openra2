@@ -598,9 +598,13 @@ static void G_LoadSkinList(void) {
  =================
  */
 void G_EndLevel(void) {
+	uint8_t i;
+	
 	G_RegisterScore();
 
-	BeginIntermission();
+	for (i = 1; i <= level.arena_count; i++) {
+		BeginIntermission(&level.arenas[i]);
+	}
 
 	if (level.nextmap[0]) {
 		return; // already set by operator or vote

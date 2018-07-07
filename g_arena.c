@@ -259,6 +259,8 @@ void G_ArenaThink(arena_t *a) {
 		G_TimeoutFrame(a);
 		return;
 	}
+	
+	G_CheckIntermission(a);
 
 	// end of round
 	if (a->state == ARENA_STATE_PLAY) {
@@ -2071,4 +2073,69 @@ void G_SelectBestWeapon(edict_t *ent) {
 	}
 
 	ChangeWeapon(ent);
+}
+
+void G_ResetArena(arena_t *a) {
+	gi.dprintf("Resetting Arena %d (%s)\n", a->number, a->name);
+	uint8_t i;
+	edict_t *player;
+	
+	a->intermission_framenum = 0;
+	a->intermission_exit = 0;
+	a->state = ARENA_STATE_WARMUP;
+	
+	// respawn all players
+    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (a->team_home.players[i]) {
+			player = a->team_home.players[i];
+			memset(&player->client->resp, 0, sizeof(player->client->resp));
+			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
+			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
+			respawn(player);
+		}
+		
+		if (a->team_away.players[i]) {
+			player = a->team_away.players[i];
+			memset(&player->client->resp, 0, sizeof(player->client->resp));
+			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
+			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
+			respawn(player);
+		}
+    }
+}
+
+void G_CheckIntermission(arena_t *a) {
+	if (a->intermission_exit) {
+		if (level.framenum > a->intermission_exit + 5) {
+			G_ResetArena(a); // in case gamemap failed
+		}
+	} else if (a->intermission_framenum) {
+		int32_t delta, exit_delta;
+		exit_delta = SECS_TO_FRAMES(g_intermission_time->value);
+
+		clamp(exit_delta, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
+
+		delta = level.framenum - a->intermission_framenum;
+		if (delta == SECS_TO_FRAMES(1)) {
+			if (rand_byte() > 127) {
+				G_StartSound(level.sounds.xian);
+			} else {
+				G_StartSound(level.sounds.makron);
+			}
+		} else if (delta == exit_delta) {
+			G_ResetArena(a);
+		} /*else if (delta % (5 * HZ) == 0) {
+			delta /= 5 * HZ;
+			if (level.numscores && (delta & 1)) {
+				HighScoresMessage();
+			} else {
+				for (i = 0, ent = &g_edicts[1]; i < game.maxclients;
+						i++, ent++) {
+					if (ent->client->pers.connected > CONN_CONNECTED) {
+						G_ArenaScoreboardMessage(ent, qtrue);
+					}
+				}
+			}
+		}*/
+	}
 }

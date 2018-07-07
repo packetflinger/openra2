@@ -913,7 +913,7 @@ void fire_bfg(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, fl
 //
 void respawn(edict_t *ent);
 void spectator_respawn(edict_t *ent, int connected);
-void BeginIntermission(void);
+void BeginIntermission(arena_t *a);
 void PutClientInServer(edict_t *ent);
 void InitBodyQue(void);
 void ClientBeginServerFrame(edict_t *ent);
@@ -1431,6 +1431,7 @@ struct edict_s {
 	
 	int			arena;
 	int			override;
+	int			version;
 };
 
 //

@@ -163,6 +163,8 @@ Changes level to "map" when fired
 */
 static void use_target_changelevel(edict_t *self, edict_t *other, edict_t *activator)
 {
+	uint8_t i;
+	
     if (level.intermission_framenum)
         return;     // already activated
 
@@ -181,7 +183,10 @@ static void use_target_changelevel(edict_t *self, edict_t *other, edict_t *activ
         game.serverflags &= ~(SFL_CROSS_TRIGGER_MASK);
 
     Q_strlcpy(level.nextmap, self->map, sizeof(level.nextmap));
-    BeginIntermission();
+
+	for (i = 1; i <= level.arena_count; i++) {
+		BeginIntermission(&level.arenas[i]);
+	}
 }
 
 void SP_target_changelevel(edict_t *ent)

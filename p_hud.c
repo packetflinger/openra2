@@ -290,14 +290,16 @@ INTERMISSION
 
 void MoveClientToIntermission(edict_t *ent)
 {
+	arena_t *a = ARENA(ent);
+	
     PMenu_Close(ent);
-
+	
     ent->client->layout = LAYOUT_SCORES;
     VectorCopy(level.intermission_origin, ent->s.origin);
-    ent->client->ps.pmove.origin[0] = level.intermission_origin[0] * 8;
-    ent->client->ps.pmove.origin[1] = level.intermission_origin[1] * 8;
-    ent->client->ps.pmove.origin[2] = level.intermission_origin[2] * 8;
-    VectorCopy(level.intermission_angle, ent->client->ps.viewangles);
+    ent->client->ps.pmove.origin[0] = a->intermission_origin[0] * 8;
+    ent->client->ps.pmove.origin[1] = a->intermission_origin[1] * 8;
+    ent->client->ps.pmove.origin[2] = a->intermission_origin[2] * 8;
+    VectorCopy(a->intermission_angle, ent->client->ps.viewangles);
     ent->client->ps.pmove.pm_type = PM_FREEZE;
     ent->client->ps.pmove.pm_flags ^= PMF_TELEPORT_BIT;
     ent->client->ps.gunindex = 0;
@@ -334,23 +336,27 @@ void MoveClientToIntermission(edict_t *ent)
     }
 
     // add the layout
-    //DeathmatchScoreboardMessage(ent, qtrue);
     G_ArenaScoreboardMessage(ent, qtrue);
 
     if (ent->client->pers.uf & UF_AUTOSCREENSHOT) {
-        G_StuffText(ent, "wait; screenshot\n");
+        //G_StuffText(ent, "wait; screenshot\n");
     }
+	
+	gi.dprintf("Moving %s to intermission in arena %d\n", NAME(ent), ARENA(ent)->number);
 }
 
-void BeginIntermission(void)
+void BeginIntermission(arena_t *a)
 {
     int        i;
     edict_t    *ent, *client;
 
-    if (level.intermission_framenum)
-        return;        // already activated
+	if (!a)
+		return;
+	
+    if (a->intermission_framenum)
+        return;
 
-    level.intermission_framenum = level.framenum;
+    a->intermission_framenum = level.framenum;
 
     G_FinishVote();
 
@@ -365,34 +371,41 @@ void BeginIntermission(void)
             respawn(client);
     }
 
-    // find an intermission spot
-    ent = G_Find(NULL, FOFS(classname), "info_player_intermission");
-    if (!ent) {
-        // the map creator forgot to put in an intermission point...
-        ent = G_Find(NULL, FOFS(classname), "info_player_start");
-        if (!ent)
-            ent = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
-    } else {
-        // chose one of four spots
-        i = rand_byte() & 3;
-        while (i--) {
-            ent = G_Find(ent, FOFS(classname), "info_player_intermission");
-            if (!ent)    // wrap around the list
-                ent = G_Find(ent, FOFS(classname), "info_player_intermission");
-        }
-    }
+	// find the intermission for this arena
+	if (a->version) {
+		ent = NULL;
+		while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
+			if (ent->arena == a->number) {
+				break;
+			}
+		}
+	} else {
+		for (i=0; i<MAX_SPAWNS; i++) {
+			if (!level.spawns[i])
+				continue;
+			
+			ent = level.spawns[i];
+			
+			if (ent->arena == a->number) {
+				break;
+			}
+		}
+	}
 
     if (ent) {
-        VectorCopy(ent->s.origin, level.intermission_origin);
-        VectorCopy(ent->s.angles, level.intermission_angle);
+        VectorCopy(ent->s.origin, a->intermission_origin);
+        VectorCopy(ent->s.angles, a->intermission_angle);
     }
 
-    // move all clients to the intermission point
+    // move all clients in this arena to the intermission point
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
         if (!client->inuse)
             continue;
-        MoveClientToIntermission(client);
+		
+		if (ARENA(client) == a) {
+			MoveClientToIntermission(client);
+		}
     }
 }
 

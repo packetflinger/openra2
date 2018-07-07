@@ -242,9 +242,9 @@ static const field_t g_fields[] = {
     {"origin", FOFS(s.origin), F_VECTOR},
     {"angles", FOFS(s.angles), F_VECTOR},
     {"angle", FOFS(s.angles), F_ANGLEHACK},
-	{"arena", FOFS(arena), F_INT},
+	{"arena", FOFS(arena), F_INT},			// 
 	{"override", FOFS(override), F_INT},	// for adding ents that would otherwise be filtered out 
-	
+	{"version", FOFS(version), F_INT},		// map version (original ra2 and non-ra2 maps will be null)
     {NULL}
 };
 

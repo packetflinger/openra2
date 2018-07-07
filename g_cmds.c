@@ -1980,7 +1980,7 @@ void ClientCommand(edict_t *ent)
         return;
     }
 
-    if (level.intermission_framenum)
+    if (ARENA(ent)->intermission_framenum)
         return;
 
     if (Q_stricmp(cmd, "score") == 0 || Q_stricmp(cmd, "help") == 0)
@@ -2073,6 +2073,7 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "sound") == 0) // test
 		Cmd_Sound_f(ent);
 	else if (Q_stricmp(cmd, "test") == 0) {
+		BeginIntermission(ARENA(ent));
 		Cmd_NotImplYet_f(ent);
 	}
     else    // anything that doesn't match a command will be a chat

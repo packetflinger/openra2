@@ -121,6 +121,11 @@ typedef struct {
 	qboolean		ready;
 	int32_t			timer_last_frame;		// the frame we last ran timers
 	qboolean		recording;				// were players forced to start recording demos?
+	int         	intermission_framenum;	// time the intermission was started
+    int         	intermission_exit;		// time the intermission was exited
+    vec3_t      	intermission_origin;
+    vec3_t      	intermission_angle;
+	int				version;				// map version
 } arena_t;
 
 
@@ -190,3 +195,5 @@ void G_SelectBestWeapon(edict_t *ent);
 void G_AsciiToConsole(char *out, char *in);
 const char *DemoName(edict_t *ent);
 void G_ForceDemo(arena_t *arena);
+void G_ResetArena(arena_t *a);
+void G_CheckIntermission(arena_t *a);

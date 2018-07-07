@@ -121,6 +121,7 @@ qboolean G_CheckVote(void)
     int threshold = (int)g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
+	uint8_t i;
 
     if (!level.vote.proposal) {
         return qfalse;
@@ -162,7 +163,9 @@ qboolean G_CheckVote(void)
         case VOTE_MAP:
             gi.bprintf(PRINT_HIGH, "Vote passed: next map is %s.\n", level.vote.map);
             strcpy(level.nextmap, level.vote.map);
-            BeginIntermission();
+			for (i = 1; i <= level.arena_count; i++) {
+				BeginIntermission(&level.arenas[i]);
+			}
             break;
         case VOTE_TELEMODE:
             gi.bprintf(PRINT_HIGH, "Vote passed: teleporter mode is now %s.\n",
