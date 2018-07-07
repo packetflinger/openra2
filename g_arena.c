@@ -2091,7 +2091,11 @@ void G_ResetArena(arena_t *a) {
 			memset(&player->client->resp, 0, sizeof(player->client->resp));
 			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
 			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
-			respawn(player);
+			if (g_team_reset->value) {
+				G_PartTeam(player, true);
+			} else {
+				respawn(player);
+			}
 		}
 		
 		if (a->team_away.players[i]) {
@@ -2099,7 +2103,11 @@ void G_ResetArena(arena_t *a) {
 			memset(&player->client->resp, 0, sizeof(player->client->resp));
 			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
 			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
-			respawn(player);
+			if (g_team_reset->value) {
+				G_PartTeam(player, true);
+			} else {
+				respawn(player);
+			}
 		}
     }
 }
