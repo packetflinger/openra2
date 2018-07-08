@@ -1352,6 +1352,8 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_ForceReady(&a->team_home, false);
 	G_ForceReady(&a->team_away, false);
 	
+	BeginIntermission(a);
+	
 	G_ForceScreenshot(a);
 	G_ForceDemo(a);
 }

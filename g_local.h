@@ -925,6 +925,7 @@ void G_EndDamage(void);
 void G_SetDeltaAngles(edict_t *ent, vec3_t angles);
 void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
+edict_t *SelectIntermissionPoint(arena_t *a);
 
 
 

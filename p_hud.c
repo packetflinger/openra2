@@ -295,7 +295,7 @@ void MoveClientToIntermission(edict_t *ent)
     PMenu_Close(ent);
 	
     ent->client->layout = LAYOUT_SCORES;
-    VectorCopy(level.intermission_origin, ent->s.origin);
+    VectorCopy(a->intermission_origin, ent->s.origin);
     ent->client->ps.pmove.origin[0] = a->intermission_origin[0] * 8;
     ent->client->ps.pmove.origin[1] = a->intermission_origin[1] * 8;
     ent->client->ps.pmove.origin[2] = a->intermission_origin[2] * 8;
@@ -370,7 +370,7 @@ void BeginIntermission(arena_t *a)
     }
 
 	// find the intermission for this arena
-	if (a->version) {
+/*	if (a->version) {
 		ent = NULL;
 		while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
 			if (ent->arena == a->number) {
@@ -389,7 +389,9 @@ void BeginIntermission(arena_t *a)
 			}
 		}
 	}
-
+*/
+	ent = SelectIntermissionPoint(a);
+	
     if (ent) {
         VectorCopy(ent->s.origin, a->intermission_origin);
         VectorCopy(ent->s.angles, a->intermission_angle);

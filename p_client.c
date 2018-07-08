@@ -774,6 +774,28 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
 	return spot;
 }
 
+edict_t *SelectIntermissionPoint(arena_t *a) {
+	edict_t *spot = NULL;
+	edict_t *spawns[MAX_SPAWNS];
+	int i;
+	
+	for (i = 0; i < level.numspawns; i++) {
+        spawns[i] = level.spawns[i];
+    }
+	
+	G_ShuffleArray(spawns, level.numspawns);
+	
+	for (i = 0; i < level.numspawns; i++) {
+        spot = spawns[i];
+		
+        if (spot->arena == a->number) {
+			return spot;
+		}
+    }
+
+	return spot;
+}
+
 static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
 {
     edict_t *spawns[MAX_SPAWNS];
