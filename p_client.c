@@ -777,8 +777,21 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
 edict_t *SelectIntermissionPoint(arena_t *a) {
 	edict_t *spot = NULL;
 	edict_t *spawns[MAX_SPAWNS];
-	int i;
+	int8_t i;
+
+	// try an official intermission spot first
+	while ((spot = G_Find(spot, FOFS(classname), "info_player_intermission")) != NULL) {
+		
+		if (!spot->arena || spot->arena >= MAX_ARENAS) {
+			continue;
+		}
+		
+		if (spot->arena == a->number) {
+			return spot;
+		}
+    }
 	
+	// next try random spawn
 	for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
     }
