@@ -634,6 +634,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     parsed_arenas = G_ParseMapSettings(arena_settings, mapname);
 
 	// find arenas
+	List_Init(&g_arenalist);
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
 		
@@ -661,6 +662,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
 
 		level.arena_count++;
+		List_Append(&g_arenalist, &level.arenas[j].entry);
     }
 	
 	// find the default arena

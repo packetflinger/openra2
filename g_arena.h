@@ -34,6 +34,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TEAM(e) (e->client->pers.team)
 #define ARENA(e) (e->client->pers.arena)
 
+#define FOR_EACH_ARENA(a) \
+    LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
+	
+extern list_t	g_arenalist;
+
 typedef enum {
 	WINNER_NONE,
 	WINNER_HOME,
@@ -127,6 +132,7 @@ typedef struct {
     vec3_t      	intermission_origin;
     vec3_t      	intermission_angle;
 	int				version;				// map version
+	list_t			entry;					// for making linked list of arenas
 } arena_t;
 
 

@@ -21,6 +21,8 @@
 
 #include "g_local.h"
 
+LIST_DECL(g_arenalist);
+
 game_locals_t game;
 level_locals_t level;
 game_import_t gi;

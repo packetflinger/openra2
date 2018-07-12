@@ -126,6 +126,12 @@ void G_ServerCommand(void)
         Cmd_Stats_f(NULL, qtrue);
     else if (!strcmp(cmd, "settings") || !strcmp(cmd, "matchinfo"))
         Cmd_Settings_f(NULL);
+	else if (!strcmp(cmd, "test2")) {
+		arena_t *ar;
+		FOR_EACH_ARENA(ar) {
+			gi.dprintf("%s\n", ar->name);
+		}
+	}
     else
         Com_Printf("Unknown server command \"%s\"\n", cmd);
 }
