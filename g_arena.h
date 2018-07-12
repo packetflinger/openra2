@@ -79,10 +79,11 @@ typedef struct {
 	edict_t				*players[MAX_ARENA_TEAM_PLAYERS];
 	edict_t				*captain;
 	arena_team_type_t 	type;
-	int					player_count;
-	int					players_alive;
+	int8_t				player_count;
+	int8_t				players_alive;
 	qboolean			locked;
-	int					score;
+	uint32_t			damage_dealt;
+	uint32_t			damage_taken;
 } arena_team_t;
 
 
@@ -197,3 +198,6 @@ const char *DemoName(edict_t *ent);
 void G_ForceDemo(arena_t *arena);
 void G_ResetArena(arena_t *a);
 void G_CheckIntermission(arena_t *a);
+void G_ResetTeam(arena_team_t *t);
+void G_ClearRoundInfo(arena_t *a);
+void G_UpdateConfigStrings(arena_t *a);

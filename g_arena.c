@@ -246,6 +246,7 @@ void G_CheckArenaRules(arena_t *a) {
 
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
 void G_ArenaThink(arena_t *a) {
+	int8_t i;
 	static qboolean foundwinner = false;
 
 	if (!a)
@@ -262,6 +263,11 @@ void G_ArenaThink(arena_t *a) {
 	
 	G_CheckIntermission(a);
 
+	// look at each player
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		
+	}
+	
 	// end of round
 	if (a->state == ARENA_STATE_PLAY) {
 
@@ -301,7 +307,9 @@ void G_ArenaThink(arena_t *a) {
 		G_CheckReady(a);
 		if (a->ready) {	// is everyone ready?
 			a->state = ARENA_STATE_COUNTDOWN;
-			a->current_round = 1;
+			
+			G_ClearRoundInfo(a);
+			
 			a->round_start_frame = level.framenum
 					+ SECS_TO_FRAMES((int) g_round_countdown->value);
 			a->countdown = (int) g_round_countdown->value;
@@ -313,6 +321,17 @@ void G_ArenaThink(arena_t *a) {
 
 	G_CheckTimers(a);
 	G_CheckArenaRules(a);
+}
+
+// Stuff that needs to be reset between rounds
+void G_ClearRoundInfo(arena_t *a) {
+	a->current_round = 1;
+	
+	a->team_home.damage_dealt = 0;
+	a->team_home.damage_taken = 0;
+	
+	a->team_away.damage_dealt = 0;
+	a->team_away.damage_taken = 0;
 }
 
 // broadcast print to only members of specified arena
@@ -602,7 +621,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	// Build time string
 	t = time(NULL);
 	tm = localtime(&t);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M", tm);
 
 	if (len < 1)
 		strcpy(status, "???");
@@ -620,10 +639,13 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	total = Q_scnprintf(buffer, MAX_STRING_CHARS, "xv 0 %s "
 			"yt %d "
-			"cstring \"Team %s\" "
+			"cstring \"Team %s - %d\" "
 			"yt %d "
-			"cstring2 \"Name            Frg Rnd Mch FPH Time Ping\" ", entry, y,
-			arena->team_home.name, y + LAYOUT_LINE_HEIGHT);
+			"cstring2 \"Name                 Damage     Time Ping\"", entry, y,
+			arena->team_home.name, 
+			arena->team_home.damage_dealt, 
+			y + LAYOUT_LINE_HEIGHT
+	);
 
 	numranks = G_CalcArenaRanks(ranks, &arena->team_home);
 
@@ -652,10 +674,12 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		}
 
 		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-15s %3d %3d %3d %3d %4s %4d\"", y,
-				c->pers.netname, c->resp.score,
-				c->resp.round_score, c->resp.match_score,
-				c->resp.score * 3600 / sec, timebuf, c->ping);
+				"yt %d cstring \"%-21s %6d     %4s %4d\"", y,
+				c->pers.netname, 
+				c->resp.damage_given, 
+				timebuf, 
+				c->ping
+		);
 
 		if (len >= sizeof(entry))
 			continue;
@@ -674,10 +698,13 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s"
 			"yt %d "
-			"cstring \"Team %s\""
+			"cstring \"Team %s - %d\""
 			"yt %d "
-			"cstring2 \"Name            Frg Rnd Mch FPH Time Ping\"", entry, y,
-			arena->team_away.name, y + LAYOUT_LINE_HEIGHT);
+			"cstring2 \"Name                 Damage     Time Ping\"", entry, y,
+			arena->team_away.name,
+			arena->team_away.damage_dealt,
+			y + LAYOUT_LINE_HEIGHT
+	);
 
 	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
 
@@ -706,10 +733,12 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		}
 
 		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-15s %3d %3d %3d %3d %4s %4d\"", y,
-				c->pers.netname, c->resp.score,
-				c->resp.round_score, c->resp.match_score,
-				c->resp.score * 3600 / sec, timebuf, c->ping);
+				"yt %d cstring \"%-21s %6d     %4s %4d\"", y,
+				c->pers.netname, 
+				c->resp.damage_given, 
+				timebuf, 
+				c->ping
+		);
 
 		if (len >= sizeof(entry))
 			continue;
@@ -1229,7 +1258,7 @@ void G_CheckReady(arena_t *a) {
 
 // match countdowns...
 void G_CheckTimers(arena_t *a) {
-	
+	// only run once per second
 	if (!(a->timer_last_frame + SECS_TO_FRAMES(1) <= level.framenum)) {
 		return;
 	}
@@ -1237,6 +1266,9 @@ void G_CheckTimers(arena_t *a) {
 	a->timer_last_frame = level.framenum;
 	
 	uint32_t remaining;
+	
+	G_UpdateConfigStrings(a);
+	
 	if (a->state == ARENA_STATE_COUNTDOWN) {
 		remaining = (a->round_start_frame - level.framenum) / HZ;
 		switch (remaining) {
@@ -1256,6 +1288,8 @@ void G_CheckTimers(arena_t *a) {
 	}
 }
 
+void G_UpdateConfigStrings(arena_t *a) {
+}
 
 /**
  * Force the ready state for all players in an arena
@@ -1654,12 +1688,16 @@ void G_RespawnPlayers(arena_t *a) {
 		
 		ent = a->team_home.players[i];
 		if (ent && ent->inuse) {
+			ent->client->resp.damage_given = 0;
+			ent->client->resp.damage_recvd = 0;
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
 		}
 
 		ent = a->team_away.players[i];
 		if (ent && ent->inuse) {
+			ent->client->resp.damage_given = 0;
+			ent->client->resp.damage_recvd = 0;
 			G_RefillInventory(ent);
 			spectator_respawn(ent, CONN_SPAWNED);
 		}
@@ -2077,51 +2115,47 @@ void G_SelectBestWeapon(edict_t *ent) {
 	ChangeWeapon(ent);
 }
 
-void G_ResetArena(arena_t *a) {
+void G_ResetTeam(arena_team_t *t) {
 	uint8_t i;
 	edict_t *player;
+	
+	t->damage_dealt = 0;
+	t->damage_taken = 0;
+	
+	// respawn all players
+	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (t->players[i]) {
+			player = t->players[i];
+			
+			memset(&player->client->resp, 0, sizeof(player->client->resp));
+			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
+			
+			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
+			player->client->pers.ready = qfalse;
+			
+			if (g_team_reset->value) {
+				G_PartTeam(player, true);
+			} else {
+				respawn(player);
+			}
+		}
+	}
+}
+
+void G_ResetArena(arena_t *a) {
 	
 	a->intermission_framenum = 0;
 	a->intermission_exit = 0;
 	a->state = ARENA_STATE_WARMUP;
 	
-	// respawn all players
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			player = a->team_home.players[i];
-			
-			memset(&player->client->resp, 0, sizeof(player->client->resp));
-			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
-			
-			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
-			player->client->pers.ready = qfalse;
-			
-			if (g_team_reset->value) {
-				G_PartTeam(player, true);
-			} else {
-				respawn(player);
-			}
-		}
-		
-		if (a->team_away.players[i]) {
-			player = a->team_away.players[i];
-			
-			memset(&player->client->resp, 0, sizeof(player->client->resp));
-			memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
-			
-			player->movetype = MOVETYPE_NOCLIP; // don't leave a body
-			player->client->pers.ready = qfalse;
-			
-			if (g_team_reset->value) {
-				G_PartTeam(player, true);
-			} else {
-				respawn(player);
-			}
-		}
-    }
+	G_ResetTeam(&a->team_home);
+	G_ResetTeam(&a->team_away);
 }
 
 void G_CheckIntermission(arena_t *a) {
+	int32_t i;
+	edict_t *ent;
+	
 	if (a->intermission_exit) {
 		if (level.framenum > a->intermission_exit + 5) {
 			G_ResetArena(a); // in case gamemap failed
@@ -2139,6 +2173,12 @@ void G_CheckIntermission(arena_t *a) {
 			} else {
 				G_StartSound(level.sounds.makron);
 			}
+			
+			for (i = 0, ent = &g_edicts[1]; i < game.maxclients; i++, ent++) {
+				if (ent->client->pers.connected > CONN_CONNECTED) {
+					G_ArenaScoreboardMessage(ent, qtrue);
+				}
+			}	
 		} else if (delta == exit_delta) {
 			G_ResetArena(a);
 		} /*else if (delta % (5 * HZ) == 0) {

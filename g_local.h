@@ -983,10 +983,10 @@ void G_ResetLevel(void);
 //============================================================================
 
 
-#define PCS_FRAGS   0
-#define PCS_DELTA   1
-#define PCS_RANK    2
-#define PCS_TOTAL   4
+#define PCS_DAMAGE	0
+#define PCS_DELTA	1
+#define PCS_RANK	2
+#define PCS_TOTAL	4
 
 #define CS_OBSERVE          (CS_GENERAL + 1)
 #define CS_TIME             (CS_GENERAL + 2)

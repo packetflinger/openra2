@@ -31,16 +31,16 @@ int G_PlayerCmp(const void *p1, const void *p2) {
     gclient_t *a = *(gclient_t * const *)p1;
     gclient_t *b = *(gclient_t * const *)p2;
 
-    if (a->resp.score > b->resp.score) {
+    if (a->resp.damage_given > b->resp.damage_given) {
         return -1;
     }
-    if (a->resp.score < b->resp.score) {
+    if (a->resp.damage_given < b->resp.damage_given) {
         return 1;
     }
-    if (a->resp.deaths < b->resp.deaths) {
+    if (a->resp.damage_recvd < b->resp.damage_recvd) {
         return -1;
     }
-    if (a->resp.deaths > b->resp.deaths) {
+    if (a->resp.damage_recvd > b->resp.damage_recvd) {
         return 1;
     }
     return 0;
@@ -749,7 +749,7 @@ void G_SetStats(edict_t *ent)
     //
     // frags
     //
-    ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.score;
+    ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.damage_given;
 
     //
     // help icon / current weapon if not shown
@@ -775,7 +775,8 @@ void G_SetStats(edict_t *ent)
             ent->client->ps.stats[STAT_TIME_STRING] = 0;
         }
         if (ent->client->pers.connected == CONN_SPAWNED) {
-            ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_FRAGS;
+            //ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_FRAGS;
+			ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_DAMAGE;
             ent->client->ps.stats[STAT_DELTA_STRING] = CS_PRIVATE + PCS_DELTA;
             ent->client->ps.stats[STAT_RANK_STRING] = CS_PRIVATE + PCS_RANK;
 			ent->client->ps.stats[STAT_ROUNDS] = CS_ARENA_ROUNDS + ent->client->pers.arena->number;

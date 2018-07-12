@@ -599,7 +599,9 @@ void bfg_explode(edict_t *self)
             gi.WriteByte(TE_BFG_EXPLOSION);
             gi.WritePosition(ent->s.origin);
             gi.multicast(ent->s.origin, MULTICAST_PHS);
+			G_BeginDamage();
             T_Damage(ent, self, self->owner, self->velocity, ent->s.origin, vec3_origin, (int)points, 0, DAMAGE_ENERGY, MOD_BFG_EFFECT);
+			G_EndDamage();
         }
     }
 
@@ -619,11 +621,15 @@ void bfg_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *surf)
         return;
     }
 
+	G_BeginDamage();
+	
     // core explosion - prevents firing it into the wall/floor
     if (other->takedamage)
         T_Damage(other, self, self->owner, self->velocity, self->s.origin, plane->normal, 200, 0, 0, MOD_BFG_BLAST);
     T_RadiusDamage(self, self->owner, 200, other, 100, MOD_BFG_BLAST);
-
+	
+	G_EndDamage();
+	
     gi.sound(self, CHAN_VOICE, gi.soundindex("weapons/bfg__x1b.wav"), 1, ATTN_NORM, 0);
     self->solid = SOLID_NOT;
     self->touch = NULL;
@@ -685,9 +691,12 @@ void bfg_think(edict_t *self)
                 break;
 
             // hurt it if we can
-            if ((tr.ent->takedamage) && !(tr.ent->flags & FL_IMMUNE_LASER) && (tr.ent != self->owner))
+            if ((tr.ent->takedamage) && !(tr.ent->flags & FL_IMMUNE_LASER) && (tr.ent != self->owner)) {
+				G_BeginDamage();
                 T_Damage(tr.ent, self, self->owner, dir, tr.endpos, vec3_origin, dmg, 1, DAMAGE_ENERGY, MOD_BFG_LASER);
-
+				G_EndDamage();
+			}
+			
             // if we hit something that's not a monster or player we're done
             if (!(tr.ent->svflags & SVF_MONSTER) && (!tr.ent->client)) {
                 gi.WriteByte(svc_temp_entity);

@@ -110,18 +110,10 @@ int G_UpdateRanks(void)
 void G_ScoreChanged(edict_t *ent)
 {
     char buffer[MAX_QPATH];
-    int total;
+	Q_snprintf(buffer, sizeof(buffer), "%5d",
+		ent->client->resp.damage_given);
 
-    total = (int)fraglimit->value;
-    if (total > 0) {
-        Q_snprintf(buffer, sizeof(buffer), "%2d/%-2d",
-                   ent->client->resp.score, total);
-    } else {
-        Q_snprintf(buffer, sizeof(buffer), "%5d",
-                   ent->client->resp.score);
-    }
-
-    G_PrivateString(ent, PCS_FRAGS, buffer);
+    G_PrivateString(ent, PCS_DAMAGE, buffer);
 }
 
 qboolean G_IsSameView(edict_t *ent, edict_t *other)
@@ -466,7 +458,7 @@ void G_BeginDamage(void)
 void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int points)
 {
     frag_t frag;
-
+	
     if (!damaging) {
         return;
     }
@@ -480,8 +472,16 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     if (targ == attacker) {
         return; // no credit for shooting yourself
     }
-
-    attacker->client->resp.damage_given += points;
+	
+	if (!G_Teammates(attacker, targ)) {
+		attacker->client->resp.damage_given += points;
+		TEAM(attacker)->damage_dealt += points;
+		TEAM(targ)->damage_taken += points;
+	} else {
+		attacker->client->resp.damage_given -= points;
+		TEAM(attacker)->damage_dealt -= points;
+		TEAM(targ)->damage_taken += points;
+	}
 
     // don't count multiple damage as multiple hits (but railgun still counts)
     if (damaging == 1 || frag == FRAG_RAILGUN) {
@@ -489,6 +489,8 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     }
 
     damaging++;
+	
+	G_ScoreChanged(attacker);
 }
 
 void G_EndDamage(void)

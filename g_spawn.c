@@ -798,7 +798,7 @@ void G_ResetLevel(void)
 
 //===================================================================
 
-static const char dm_statusbar[] =
+static const char statusbar[] =
 "yb -24 "
 
 // health
@@ -867,10 +867,10 @@ static const char dm_statusbar[] =
 
 // frags
 "if 18 "
-  "xr -44 "
+  "xr -54 "
   "yt 2 "
-  "string2 Frags "
-  "yt 10 "
+  //"string2 \"Damage\" "
+  //"yt 10 "
   "stat_string 18 "
 "endif "
 
@@ -889,13 +889,13 @@ static const char dm_statusbar[] =
 //"endif "
 
 // rounds
-"if 28 "
-  "yt 34 "
-  "string2 \"Round\" "
-  "yt 42 "
-  "xr -44 "
-  "stat_string 28 "
-"endif "
+//"if 28 "
+//  "yt 34 "
+//  "string2 \"Round\" "
+//  "yt 42 "
+//  "xr -44 "
+//  "stat_string 28 "
+//"endif "
 
 // countdown
 "if 29 "
@@ -1013,7 +1013,7 @@ void SP_worldspawn(edict_t *ent)
     gi.configstring(CS_MAXCLIENTS, va("%i", (int)(maxclients->value)));
 
     // status bar program
-    gi.configstring(CS_STATUSBAR, dm_statusbar);
+    gi.configstring(CS_STATUSBAR, statusbar);
 
     gi.configstring(CS_OBSERVE, "SPECT");
 
