@@ -1401,7 +1401,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 
 	int i;
 	a->round_start_frame = 0;
-
+	
 	if (winner) {
 		G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
 				a->current_round, a->round_limit);
@@ -1852,11 +1852,17 @@ arena_team_t *G_GetWinningTeam(arena_t *a) {
 	if (!a)
 		return NULL;
 
-	if (a->team_home.players_alive == 0)
-		return &(a->team_away);
-
-	if (a->team_away.players_alive == 0)
-		return &(a->team_home);
+	// everyone dead, round is over
+	if (a->team_home.players_alive == 0 || a->team_away.players_alive == 0) {
+	
+		if (a->team_home.damage_dealt > a->team_away.damage_dealt)
+			return &a->team_home;
+		
+		if (a->team_home.damage_dealt < a->team_away.damage_dealt)
+			return &a->team_away;
+		
+		// what if they tie?
+	}
 
 	return NULL;
 }
