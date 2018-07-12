@@ -90,7 +90,7 @@ typedef struct {
 
 typedef struct {
 	int				number;
-	char			name[50];
+	char			name[MAX_TEAM_NAME];
 	arena_state_t	state;
 	int				countdown;
 	int				player_count;
