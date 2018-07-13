@@ -356,40 +356,23 @@ void BeginIntermission(arena_t *a)
 
     a->intermission_framenum = level.framenum;
 
-    G_FinishVote();
+    G_FinishVote(); // ? maybe not
 
     //BuildDeathmatchScoreboard(game.oldscores, NULL);
 
     // respawn any dead clients
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-        if (!client->inuse)
+		
+        if (!client->inuse) {
             continue;
-        if (client->health <= 0)
+		}
+		
+        if (client->health <= 0 && ARENA(client) == a) {
             respawn(client);
+		}
     }
 
-	// find the intermission for this arena
-/*	if (a->version) {
-		ent = NULL;
-		while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
-			if (ent->arena == a->number) {
-				break;
-			}
-		}
-	} else {
-		for (i=0; i<MAX_SPAWNS; i++) {
-			if (!level.spawns[i])
-				continue;
-			
-			ent = level.spawns[i];
-			
-			if (ent->arena == a->number) {
-				break;
-			}
-		}
-	}
-*/
 	ent = SelectIntermissionPoint(a);
 	
     if (ent) {
@@ -400,8 +383,10 @@ void BeginIntermission(arena_t *a)
     // move all clients in this arena to the intermission point
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-        if (!client->inuse)
+		
+        if (!client->inuse) {
             continue;
+		}
 		
 		if (ARENA(client) == a) {
 			MoveClientToIntermission(client);

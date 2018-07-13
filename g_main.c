@@ -850,35 +850,13 @@ void G_RunFrame(void) {
 			}
 		}
 	} else {
-#if 0
-		if (level.warmup_framenum) {
-			delta = level.framenum - level.warmup_framenum;
-		} else if (level.countdown_framenum) {
-			delta = level.framenum - level.countdown_framenum;
-			if ((level.framenum % HZ) == 0) {
-				int remaining = 15 * HZ - delta;
 
-				if (remaining) {
-					G_WriteTime(remaining);
-					if (remaining == 10 * HZ) {
-						G_StartSound(level.sounds.count);
-					}
-				} else {
-					gi.bprintf(PRINT_HIGH, "Match has started!\n");
-					level.countdown_framenum = 0;
-					level.match_framenum = level.framenum;
-				}
-			}
-		} else
-#endif
-		{
-			// see if it is time to end a deathmatch
-			G_CheckRules();
+		// see if it is time to end a deathmatch
+		G_CheckRules();
 
-			// let each arena think in turn
-			FOR_EACH_ARENA(a) {
-				G_ArenaThink(a);
-			}
+		// let each arena think in turn
+		FOR_EACH_ARENA(a) {
+			G_ArenaThink(a);
 		}
 
 		// check vote timeout

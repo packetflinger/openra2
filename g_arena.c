@@ -1349,11 +1349,11 @@ void G_ForceScreenshot(arena_t *arena) {
 	uint32_t i;
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (arena->team_home.players[i]) {
-			G_StuffText(arena->team_home.players[i], "screenshot\n");
+			G_StuffText(arena->team_home.players[i], "wait; screenshot\n");
 		}
 		
 		if (arena->team_away.players[i]) {
-			G_StuffText(arena->team_away.players[i], "screenshot\n");
+			G_StuffText(arena->team_away.players[i], "wait; screenshot\n");
 		}
 	}
 }
@@ -1379,12 +1379,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
 
-	a->state = ARENA_STATE_WARMUP;
-	a->ready = false;
-
-	// un-ready everyone
-	G_ForceReady(&a->team_home, false);
-	G_ForceReady(&a->team_away, false);
+	a->state = ARENA_STATE_INTERMISSION;
 	
 	BeginIntermission(a);
 	
@@ -2153,6 +2148,7 @@ void G_ResetArena(arena_t *a) {
 	a->intermission_framenum = 0;
 	a->intermission_exit = 0;
 	a->state = ARENA_STATE_WARMUP;
+	a->ready = qfalse;
 	
 	G_ResetTeam(&a->team_home);
 	G_ResetTeam(&a->team_away);
