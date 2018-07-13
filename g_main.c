@@ -790,6 +790,7 @@ void G_ExitLevel(void) {
 void G_RunFrame(void) {
 	int i, delta;
 	edict_t *ent;
+	arena_t *a;
 
 	//
 	// treat each object in turn
@@ -874,9 +875,9 @@ void G_RunFrame(void) {
 			// see if it is time to end a deathmatch
 			G_CheckRules();
 
-			// Let each arena think
-			for (i = 1; i <= level.arena_count; i++) {
-				G_ArenaThink(&level.arenas[i]);
+			// let each arena think in turn
+			FOR_EACH_ARENA(a) {
+				G_ArenaThink(a);
 			}
 		}
 
