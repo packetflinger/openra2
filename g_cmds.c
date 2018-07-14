@@ -153,27 +153,24 @@ static void Cmd_Ready_f(edict_t *ent) {
 }
 
 static void Cmd_Arena_f(edict_t *ent) {
-	int i;
+	arena_t *a;
 	
 	if (gi.argc() != 2) {
 		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID   Cl    Name\n", level.mapname);
-		for (i=0; i<MAX_ARENAS; i++) {
-			if (level.arenas[i].number < 1) {
-				continue;
-			}
-			
-			if (ent->client->pers.arena->number == level.arenas[i].number) {
+		
+		FOR_EACH_ARENA(a) {
+			if (ARENA(ent)->number == a->number) {
 				
 				gi.cprintf(ent, PRINT_HIGH, "-> %d    %02d    %s <-\n", 
-					level.arenas[i].number, 
-					level.arenas[i].client_count, 
-					level.arenas[i].name
+					a->number, 
+					a->client_count, 
+					a->name
 				);
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "   %d    %02d    %s\n", 
-					level.arenas[i].number, 
-					level.arenas[i].client_count, 
-					level.arenas[i].name
+					a->number, 
+					a->client_count, 
+					a->name
 				);
 			}
 		}
@@ -912,6 +909,8 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
 
 void Cmd_Players_f(edict_t *ent)
 {
+	arena_t *arena;
+	arena_team_t *team;
     gclient_t *c;
     int i, sec;
     char score[16], idle[16], time[16];
@@ -947,25 +946,14 @@ void Cmd_Players_f(edict_t *ent)
             sprintf(time, "%d", sec / 60);
         }
 		
-		arena_t *arena;
-		arena = FindArena(c->edict);
+		arena = ARENA(c->edict);
+		team = TEAM(c->edict);
 		
-		arena_team_t *team;
 		char *teamname = "";
 		char *capt = "";
-		if (c->pers.team) {
-			team = c->pers.team;
-			switch (team->type) {
-				case ARENA_TEAM_SPEC:
-					teamname = "spectators";
-					break;
-				case ARENA_TEAM_HOME:
-					teamname = g_hometeam_name->string;
-					break;
-				case ARENA_TEAM_AWAY:
-					teamname = g_awayteam_name->string;
-
-			}
+		
+		if (team) {
+			teamname = team->name;
 			
 			if (team->captain == c->edict) {
 				capt = "*";
@@ -975,7 +963,8 @@ void Cmd_Players_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %5s %-15s %4s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
 				   va("%d", arena->number), teamname, capt,
-                   show_ips ? c->pers.ip : "");
+                   show_ips ? c->pers.ip : ""
+		);
     }
 }
 
@@ -1574,14 +1563,12 @@ static void Cmd_Score_f(edict_t *ent)
 {
 	if (ent->client->layout == LAYOUT_PLAYERS) {
 		ent->client->layout = 0;
-
 		return;
 	}
 
 	// don't toggle playerboard if playing a match
-	if (ent->client->layout == LAYOUT_SCORES && ent->client->pers.arena->state == ARENA_STATE_PLAY) {
+	if (ent->client->layout == LAYOUT_SCORES && ARENA(ent)->state == ARENA_STATE_PLAY) {
 		ent->client->layout = 0;
-
 		return;
 	}
 
@@ -1593,7 +1580,6 @@ static void Cmd_Score_f(edict_t *ent)
     }
 
     ent->client->layout = LAYOUT_SCORES;
-
 	G_ArenaScoreboardMessage(ent, true);
 }
 
@@ -1605,7 +1591,6 @@ static void Cmd_Playerboard_f(edict_t *ent)
     }
 
     ent->client->layout = LAYOUT_PLAYERS;
-
 	G_ArenaPlayerboardMessage(ent, true);
 }
 
@@ -1648,7 +1633,7 @@ void Cmd_LockTeam_f(edict_t *ent) {
 	if (!ent->client->pers.team)
 		return;
 	
-	arena_team_t *team = ent->client->pers.team;
+	arena_team_t *team = TEAM(ent);
 	
 	if (ent != team->captain) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can lock/unlock their team\n");
@@ -1665,26 +1650,26 @@ void Cmd_LockTeam_f(edict_t *ent) {
 }
 
 static void Cmd_Teams_f(edict_t *ent) {
+
+	int8_t i;
 	
-	arena_t *a = ent->client->pers.arena;
-	arena_team_t *home = &a->team_home;
-	arena_team_t *away = &a->team_away;
-	
-	int i;
-	gi.cprintf(ent, PRINT_HIGH, "Home Team\n");
+	arena_team_t *home = &ARENA(ent)->team_home;
+	arena_team_t *away = &ARENA(ent)->team_away;
+
+	gi.cprintf(ent, PRINT_HIGH, "%s\n", home->name);
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (!home->players[i])
 			continue;
 		
-		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (home->players[i] == home->captain) ? "*" : " ", home->players[i]->client->pers.netname);
+		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (home->players[i] == home->captain) ? "* " : "  ", home->players[i]->client->pers.netname);
 	}
 	
-	gi.cprintf(ent, PRINT_HIGH, "Away Team\n");
+	gi.cprintf(ent, PRINT_HIGH, "%s\n", away->name);
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (!away->players[i])
 			continue;
 		
-		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (away->players[i] == away->captain) ? "*" : " ", away->players[i]->client->pers.netname);
+		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (away->players[i] == away->captain) ? "* " : "  ", away->players[i]->client->pers.netname);
 	}
 }
 
@@ -1692,7 +1677,7 @@ static void Cmd_ReadyTeam_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (!ent->client->pers.team)
+	if (!TEAM(ent))
 		return;
 	
 	arena_team_t *team = TEAM(ent);
@@ -1711,10 +1696,10 @@ static void Cmd_RemoveTeammate_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (!ent->client->pers.team)
+	if (!TEAM(ent))
 		return;
 	
-	arena_team_t *team = ent->client->pers.team;
+	arena_team_t *team = TEAM(ent);
 	
 	if (team->captain != ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can remove players\n");
@@ -1739,7 +1724,7 @@ static void Cmd_RemoveTeammate_f(edict_t *ent) {
 		if (team->players[i] == ent)
 			continue;
 		
-		if (match(namepattern, team->players[i]->client->pers.netname)) {
+		if (match(namepattern, NAME(team->players[i]))) {
 			matches++;
 			playermatch = team->players[i];
 		}
@@ -1767,11 +1752,11 @@ static void Cmd_PickTeammate_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (!ent->client->pers.team)
+	if (!TEAM(ent))
 		return;
 	
-	arena_t *arena = ent->client->pers.arena;
-	arena_team_t *team = ent->client->pers.team;
+	arena_t *arena = ARENA(ent);
+	arena_team_t *team = TEAM(ent);
 	
 	if (team->captain != ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can pick players\n");
@@ -1825,9 +1810,9 @@ static void Cmd_PickTeammate_f(edict_t *ent) {
 	}
 	
 	if (playermatch) {
-		gi.cprintf(ent, PRINT_HIGH, "Adding %s to your team...\n", playermatch->client->pers.netname);
+		gi.cprintf(ent, PRINT_HIGH, "Adding %s to your team...\n", NAME(playermatch));
 	
-		gi.cprintf(playermatch, PRINT_HIGH, "%s added you to team %s\n", ent->client->pers.netname, team->name);
+		gi.cprintf(playermatch, PRINT_HIGH, "%s added you to team %s\n", NAME(ent), team->name);
 		G_JoinTeam(playermatch, team->type, true);
 	}
 }
@@ -1836,10 +1821,10 @@ static void Cmd_TeamSkin_f(edict_t *ent) {
 	if (!ent->client)
 		return;
 	
-	if (!ent->client->pers.team)
+	if (!TEAM(ent))
 		return;
 	
-	arena_team_t *team = ent->client->pers.team;
+	arena_team_t *team = TEAM(ent);
 	
 	if (team->captain != ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Only team captains can change team skins\n");
