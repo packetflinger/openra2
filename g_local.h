@@ -1434,6 +1434,9 @@ struct edict_s {
 	int			arena;
 	int			override;
 	int			version;
+	
+	// list testing
+	list_t		entry;
 };
 
 //

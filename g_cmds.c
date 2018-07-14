@@ -956,8 +956,8 @@ void Cmd_Players_f(edict_t *ent)
 		if (c->pers.team) {
 			team = c->pers.team;
 			switch (team->type) {
-				case ARENA_TEAM_NONE:
-					teamname = "";
+				case ARENA_TEAM_SPEC:
+					teamname = "spectators";
 					break;
 				case ARENA_TEAM_HOME:
 					teamname = g_hometeam_name->string;

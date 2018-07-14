@@ -1592,7 +1592,6 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 	spectator_respawn(ent, CONN_SPAWNED);
 }
 
-
 /**
  * Remove this player from whatever team they're on
  *

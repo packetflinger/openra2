@@ -48,7 +48,7 @@ typedef enum {
 
 
 typedef enum {
-	ARENA_TEAM_NONE,
+	ARENA_TEAM_SPEC,
 	ARENA_TEAM_HOME,
 	ARENA_TEAM_AWAY,
 } arena_team_type_t;

@@ -544,11 +544,13 @@ static void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
 	
+	// team 1
 	team = &arena->team_home;
 	team->type = ARENA_TEAM_HOME;
 	Q_strlcpy(team->skin, g_hometeam_skin->string, sizeof(team->skin));
 	Q_strlcpy(team->name, g_hometeam_name->string, sizeof(team->name));
 	
+	// team 2
 	team = &arena->team_away;
 	team->type = ARENA_TEAM_AWAY;
 	Q_strlcpy(team->skin, g_awayteam_skin->string, sizeof(team->skin));
@@ -628,7 +630,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     level.entstring = entities;
 
     G_ParseString();
-    G_FindTeams();
+    G_FindTeams();	// teamed entities not player teams
 
     memset(&arena_settings, 0, sizeof(arena_entry_t) * MAX_ARENAS);
     parsed_arenas = G_ParseMapSettings(arena_settings, mapname);
