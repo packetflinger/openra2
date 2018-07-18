@@ -125,6 +125,7 @@ cvar_t *g_timein_time;
 cvar_t *g_screenshot;
 cvar_t *g_demo;
 cvar_t *g_team_reset;
+cvar_t *g_all_chat;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -985,7 +986,6 @@ static void G_Init(void) {
 	g_bugs = gi.cvar("g_bugs", "0", CVAR_GENERAL);
 	g_teleporter_nofreeze = gi.cvar("g_teleporter_nofreeze", "0", CVAR_GENERAL);
 	g_spawn_mode = gi.cvar("g_spawn_mode", "1", CVAR_GENERAL);
-	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
 	g_mute_chat = gi.cvar("g_mute_chat", "0", CVAR_GENERAL);
 	g_protection_time = gi.cvar("g_protection_time", "0", CVAR_GENERAL);
 #if USE_SQLITE
@@ -1042,6 +1042,8 @@ static void G_Init(void) {
 	g_screenshot = gi.cvar("g_screenshot", "0", CVAR_GENERAL);
 	g_demo = gi.cvar("g_demo", "0", CVAR_GENERAL);
 	g_team_reset = gi.cvar("g_team_reset", "0", CVAR_GENERAL);
+	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
+	g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
 	
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);

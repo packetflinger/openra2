@@ -159,7 +159,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Usage: arena <ID>\n\nArena list for %s:\n\n   ID   Cl    Name\n", level.mapname);
 		
 		FOR_EACH_ARENA(a) {
-			if (ARENA(ent)->number == a->number) {
+			if (ARENA(ent) == a) {
 				
 				gi.cprintf(ent, PRINT_HIGH, "-> %d    %02d    %s <-\n", 
 					a->number, 
@@ -178,6 +178,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	}
 	
 	uint8_t newarena = atoi(gi.argv(1));
+	clamp(newarena, 1, MAX_ARENAS);
 	
 	G_ChangeArena(ent->client, &level.arenas[newarena]);
 }
@@ -410,7 +411,7 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	
 	arena_t *a = ARENA(ent);
 	
-	if (a->state < ARENA_STATE_PLAY)
+	if (a->state != ARENA_STATE_PLAY)
 		return;
 	
 	if (!TEAM(ent)) {
@@ -480,7 +481,7 @@ static void Cmd_Drop_f(edict_t *ent)
     char        *s;
 
     if (!g_drop_allowed->value) {
-    	gi.cprintf(ent, PRINT_HIGH, "Dropping items is prohibited.\n");
+    	gi.cprintf(ent, PRINT_HIGH, "Dropping items is disabled.\n");
     	return;
     }
 
@@ -847,31 +848,36 @@ Cmd_Say_f
 */
 static void Cmd_Say_f(edict_t *ent, chat_t chat)
 {
-    int     i, start;
-    edict_t *other;
-    char    text[MAX_CHAT];
-    gclient_t *cl = ent->client;
-	arena_t *arena = ent->client->pers.arena;
+    int8_t		i, start;
+    edict_t		*other;
+    char		text[MAX_CHAT];
+    gclient_t	*cl = ent->client;
 
+	if (cl->pers.muted) {
+		gi.cprintf(ent, PRINT_HIGH, "You are not allowed to talk.\n");
+		return;
+	}
+	
+	if (chat == CHAT_ALL && !(int) g_all_chat->value) {
+		gi.cprintf(ent, PRINT_HIGH, "%s command is disabled\n", gi.argv(0));
+		return;
+	}
+		
     start = (chat == CHAT_MISC) ? 0 : 1;
+	
+	// default is arena chat
+	if (!start) {
+		chat = CHAT_ARENA;
+	}
+	
     if (gi.argc() <= start)
         return;
 
-    // don't flood protect team chat to self
-    if (chat == CHAT_TEAM && (int)g_team_chat->value == 0 && PLAYER_SPAWNED(ent)) {
-        build_chat(ent, chat, start, text);
-        gi.cprintf(ent, PRINT_CHAT, "%s\n", text);
-        return;
-    }
-
     // stop flood during the match
-    if (!cl->pers.admin && !level.intermission_framenum) {
-        if (cl->pers.muted) {
-            gi.cprintf(ent, PRINT_HIGH, "You are not allowed to talk.\n");
-            return;
-        }
-        if ((int)g_mute_chat->value) {
-            if (PLAYER_SPAWNED(ent)) {
+    if (!cl->pers.admin && ARENA(ent)->state == ARENA_STATE_PLAY) {
+        
+        if (g_mute_chat->value) {
+            if (TEAM(ent)) {
                 gi.cprintf(ent, PRINT_HIGH, "Players can't talk during the match.\n");
                 return;
             }
@@ -890,19 +896,28 @@ static void Cmd_Say_f(edict_t *ent, chat_t chat)
 
     build_chat(ent, chat, start, text);
 
-    if ((int)dedicated->value)
+    if ((int)dedicated->value) {
         gi.cprintf(NULL, PRINT_CHAT, "%s\n", text);
+	}
 
     for (i = 1; i <= game.maxclients; i++) {
         other = &g_edicts[i];
         if (!other->inuse)
             continue;
+		
         if (!other->client)
             continue;
-        if (chat == CHAT_TEAM && PLAYER_SPAWNED(ent) != PLAYER_SPAWNED(other))
+		
+        if (chat == CHAT_TEAM && !G_Teammates(ent, other))
             continue;
-		if (chat == CHAT_ARENA && other->client->pers.arena != arena)
+		
+		// for spectators
+		if (chat == CHAT_TEAM && ARENA(ent) != ARENA(other))
 			continue;
+		
+		if (chat == CHAT_ARENA && ARENA(other) != ARENA(ent))
+			continue;
+		
         gi.cprintf(other, PRINT_CHAT, "%s\n", text);
     }
 }
@@ -2062,6 +2077,6 @@ void ClientCommand(edict_t *ent)
 		Cmd_NotImplYet_f(ent);
 	}
     else    // anything that doesn't match a command will be a chat
-        Cmd_Say_f(ent, CHAT_ARENA);
+        Cmd_Say_f(ent, CHAT_MISC);
 }
 
