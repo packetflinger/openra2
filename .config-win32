@@ -1,0 +1,8 @@
+# rename this file to .config to build a window 32bit DLL
+
+CONFIG_WINDOWS = 1
+CPU = x86
+CC = i686-w64-mingw32-gcc
+WINDRES = i686-w64-mingw32-windres
+STRIP = i686-w64-mingw32-strip
+
