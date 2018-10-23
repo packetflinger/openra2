@@ -39,6 +39,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	
 extern list_t	g_arenalist;
 
+#ifdef _WIN32
+#define DATE_FORMAT ("%b %d, %Y %H:%M ")
+#else
+#define DATE_FORMAT ("%b %e, %Y %H:%M ")
+#endif
+
 typedef enum {
 	WINNER_NONE,
 	WINNER_HOME,

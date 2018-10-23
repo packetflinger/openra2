@@ -408,7 +408,7 @@ size_t G_BuildScoreboard_H(char *buffer, gclient_t *client, arena_t *arena) {
 
 	t = time(NULL);
 	tm = localtime(&t);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+	len = strftime(status, sizeof(status), DATE_FORMAT, tm);
 
 	if (len < 1)
 		strcpy(status, "???");
@@ -621,7 +621,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	// Build time string
 	t = time(NULL);
 	tm = localtime(&t);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M", tm);
+	len = strftime(status, sizeof(status), DATE_FORMAT, tm);
 
 	if (len < 1)
 		strcpy(status, "???");
@@ -844,7 +844,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	// Build time string
 	t = time(NULL);
 	tm = localtime(&t);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", tm);
+	len = strftime(status, sizeof(status), DATE_FORMAT, tm);
 
 	if (len < 1)
 		strcpy(status, "???");
@@ -1047,7 +1047,7 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena) {
 
 	// Build time string
 	t = time(NULL);
-	len = strftime(status, sizeof(status), "%b %e, %Y %H:%M ", (struct tm *) localtime(&t));
+	len = strftime(status, sizeof(status), DATE_FORMAT, (struct tm *) localtime(&t));
 
 	if (len < 1) {
 		strcpy(status, "Beer O'Clock");
