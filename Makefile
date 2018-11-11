@@ -33,29 +33,30 @@ endif
 CFLAGS += -DOPENRA2_VERSION='"$(VER)"' -DOPENRA2_REVISION=$(REV)
 RCFLAGS += -DOPENRA2_VERSION='\"$(VER)\"' -DOPENRA2_REVISION=$(REV)
 
-OBJS := 	g_arena.o \
-			g_bans.o \
-			g_chase.o \
-			g_cmds.o \
-			g_combat.o \
-			g_func.o \
-			g_items.o \
-			g_main.o \
-			g_misc.o \
-			g_phys.o \
-			g_spawn.o \
-			g_svcmds.o \
-			g_target.o \
-			g_trigger.o \
-			g_utils.o \
-			g_vote.o \
-			g_weapon.o \
-			p_client.o \
-			p_hud.o \
-			p_menu.o \
-			p_view.o \
-			p_weapon.o \
-			q_shared.o
+OBJS := \
+	g_arena.o \
+	g_bans.o \
+	g_chase.o \
+	g_cmds.o \
+	g_combat.o \
+	g_func.o \
+	g_items.o \
+	g_main.o \
+	g_misc.o \
+	g_phys.o \
+	g_spawn.o \
+	g_svcmds.o \
+	g_target.o \
+	g_trigger.o \
+	g_utils.o \
+	g_vote.o \
+	g_weapon.o \
+	p_client.o \
+	p_hud.o \
+	p_menu.o \
+	p_view.o \
+	p_weapon.o \
+	q_shared.o
 
 ifdef CONFIG_VARIABLE_SERVER_FPS
     CFLAGS += -DUSE_FPS=1
