@@ -54,9 +54,12 @@ typedef enum {
 
 
 typedef enum {
-	ARENA_TEAM_SPEC,
-	ARENA_TEAM_HOME,
-	ARENA_TEAM_AWAY,
+	TEAM_SPECTATORS,
+	TEAM_RED,
+	TEAM_BLUE,
+	TEAM_GREEN,
+	TEAM_YELLOW,
+	TEAM_AQUA
 } arena_team_type_t;
 
 
@@ -140,6 +143,9 @@ typedef struct {
     vec3_t      	intermission_angle;
 	int				version;				// map version
 	list_t			entry;					// for making linked list of arenas
+	arena_team_t	spectators;
+	arena_team_t	*teams;					// [team_count]
+	uint8_t			team_count;
 } arena_t;
 
 

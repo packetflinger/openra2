@@ -186,21 +186,39 @@ static void Cmd_Arena_f(edict_t *ent) {
 static void Cmd_Team_f(edict_t *ent) {
 	
 	if (gi.argc() != 2) {
-		gi.cprintf(ent, PRINT_HIGH, "Usage: team <home|away> to join a team.\n");
+		gi.cprintf(ent, PRINT_HIGH, "Usage: \"team #\" to join a team (1-%d)\n", ARENA(ent)->team_count);
 		return;
 	}
 	
-	char *teamname = gi.argv(1);
-	
-	if (str_equal(teamname, "home") || str_equal(teamname, "1")) {
-		G_JoinTeam(ent, ARENA_TEAM_HOME, false);
+	char *team= gi.argv(1);
+
+	if (str_equal(team, "1")) {
+		G_JoinTeam(ent, TEAM_RED, false);
 		return;
 	}
 	
-	if (str_equal(teamname, "away") || str_equal(teamname, "2")) {
-		G_JoinTeam(ent, ARENA_TEAM_AWAY, false);
+	if (str_equal(team, "2")) {
+		G_JoinTeam(ent, TEAM_BLUE, false);
 		return;
 	}
+
+	if (str_equal(team, "3") && ARENA(ent)->team_count >= 3) {
+		G_JoinTeam(ent, TEAM_GREEN, false);
+		return;
+	}
+	
+	if (str_equal(team, "4") && ARENA(ent)->team_count >= 4) {
+		G_JoinTeam(ent, TEAM_GREEN, false);
+		return;
+	}
+
+	if (str_equal(team, "5") && ARENA(ent)->team_count == 5) {
+		G_JoinTeam(ent, TEAM_GREEN, false);
+		return;
+	}
+
+	gi.cprintf(ent, PRINT_HIGH, "Unknown team, use \"team 1-%d\"\n", ARENA(ent)->team_count);
+
 }
 
 /*
@@ -1449,11 +1467,11 @@ static void select_test(edict_t *ent)
 {
     switch (ent->client->menu.cur) {
 	case 5:
-		G_JoinTeam(ent, ARENA_TEAM_HOME, false);
+		G_JoinTeam(ent, TEAM_RED, false);
 		PMenu_Close(ent);
         break;
     case 6:
-        G_JoinTeam(ent, ARENA_TEAM_AWAY, false);
+        G_JoinTeam(ent, TEAM_BLUE, false);
 		PMenu_Close(ent);
         break;
     case 7:
@@ -1525,13 +1543,13 @@ void Cmd_Menu_f(edict_t *ent) {
     PMenu_Open(ent, main_menu);
 
 	if (ent->client->pers.team) {
-		if (ent->client->pers.team->type == ARENA_TEAM_HOME) {
+		if (ent->client->pers.team->type == TEAM_RED) {
 			ent->client->menu.entries[5].text = va("*Leave team %s", ent->client->pers.team->name);
 		} else {
 			ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
 		}
 		
-		if (ent->client->pers.team->type == ARENA_TEAM_AWAY) {
+		if (ent->client->pers.team->type == TEAM_BLUE) {
 			ent->client->menu.entries[6].text = va("*Leave team %s", ent->client->pers.team->name);
 		} else {
 			ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
@@ -1666,25 +1684,21 @@ void Cmd_LockTeam_f(edict_t *ent) {
 
 static void Cmd_Teams_f(edict_t *ent) {
 
-	int8_t i;
-	
-	arena_team_t *home = &ARENA(ent)->team_home;
-	arena_team_t *away = &ARENA(ent)->team_away;
+	uint8_t i, j;
+	arena_team_t *t;
 
-	gi.cprintf(ent, PRINT_HIGH, "%s\n", home->name);
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (!home->players[i])
-			continue;
-		
-		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (home->players[i] == home->captain) ? "* " : "  ", home->players[i]->client->pers.netname);
-	}
-	
-	gi.cprintf(ent, PRINT_HIGH, "%s\n", away->name);
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (!away->players[i])
-			continue;
-		
-		gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (away->players[i] == away->captain) ? "* " : "  ", away->players[i]->client->pers.netname);
+	for (i=0; i<ARENA(ent)->team_count; i++) {
+		t = &ARENA(ent)->teams[i];
+		gi.cprintf(ent, PRINT_HIGH, "%s:\n", t->name);
+
+		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+			if (!t->players[j])
+				continue;
+
+			gi.cprintf(ent, PRINT_HIGH, " %s%s\n", (t->players[j] == t->captain) ? "* " : "  ", NAME(t->players[j]));
+		}
+
+		gi.cprintf(ent, PRINT_HIGH, "\n");
 	}
 }
 

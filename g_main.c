@@ -106,10 +106,22 @@ cvar_t *flood_infodelay;
 
 cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
-cvar_t *g_hometeam_name;
-cvar_t *g_awayteam_name;
-cvar_t *g_hometeam_skin;
-cvar_t *g_awayteam_skin;
+//cvar_t *g_hometeam_name;
+//cvar_t *g_awayteam_name;
+//cvar_t *g_hometeam_skin;
+//cvar_t *g_awayteam_skin;
+cvar_t *g_team_count;
+cvar_t *g_teamspec_name;
+cvar_t *g_team1_name;
+cvar_t *g_team1_skin;
+cvar_t *g_team2_name;
+cvar_t *g_team2_skin;
+cvar_t *g_team3_name;
+cvar_t *g_team3_skin;
+cvar_t *g_team4_name;
+cvar_t *g_team4_skin;
+cvar_t *g_team5_name;
+cvar_t *g_team5_skin;
 cvar_t *g_default_arena;
 cvar_t *g_weapon_flags;
 cvar_t *g_damage_flags;
@@ -1018,10 +1030,24 @@ static void G_Init(void) {
 	// arena defaults
 	g_round_end_time = gi.cvar("g_round_end_time", "5", CVAR_GENERAL);
 	g_round_countdown = gi.cvar("g_round_countdown", "12", CVAR_GENERAL);
-	g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
-	g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
-	g_hometeam_skin = gi.cvar("g_hometeam_skin", "female/jezebel", CVAR_GENERAL);
-	g_awayteam_skin = gi.cvar("g_awayteam_skin", "male/cypher", CVAR_GENERAL);
+	//g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
+	//g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
+	//g_hometeam_skin = gi.cvar("g_hometeam_skin", "female/jezebel", CVAR_GENERAL);
+	//g_awayteam_skin = gi.cvar("g_awayteam_skin", "male/cypher", CVAR_GENERAL);
+
+	g_team_count = gi.cvar("g_team_count", "2", CVAR_LATCH);
+	g_teamspec_name = gi.cvar("g_teamspec_name", "Spectators", CVAR_LATCH);
+	g_team1_name = gi.cvar("g_team1_name", "Red", CVAR_LATCH);
+	g_team1_skin = gi.cvar("g_team1_skin", "female/ra2red", CVAR_LATCH);
+	g_team2_name = gi.cvar("g_team2_name", "Blue", CVAR_LATCH);
+	g_team2_skin = gi.cvar("g_team2_skin", "male/ra2blue", CVAR_LATCH);
+	g_team3_name = gi.cvar("g_team3_name", "Green", CVAR_LATCH);
+	g_team3_skin = gi.cvar("g_team3_skin", "female/ra2dgre", CVAR_LATCH);
+	g_team4_name = gi.cvar("g_team4_name", "Yellow", CVAR_LATCH);
+	g_team4_skin = gi.cvar("g_team4_skin", "male/ra2yell", CVAR_LATCH);
+	g_team5_name = gi.cvar("g_team5_name", "Aqua", CVAR_LATCH);
+	g_team5_skin = gi.cvar("g_team5_skin", "female/ra2aqua", CVAR_LATCH);
+
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);	// default: all except bfg
 	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);	// everything hurts

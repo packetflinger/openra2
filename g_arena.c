@@ -66,17 +66,18 @@ arena_t *FindArena(edict_t *ent) {
 
 static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 
-	arena_t *a = FindArena(ent);
+	uint8_t i;
+	arena_t *a = ARENA(ent);
 
 	if (!a) {
 		return NULL;
 	}
 
-	if (a->team_home.type == type)
-		return &(a->team_home);
-
-	if (a->team_away.type == type)
-		return &(a->team_away);
+	for (i=0; i<a->team_count; i++) {
+		if (a->teams[i].type == type) {
+			return &a->teams[i];
+		}
+	}
 
 	return NULL;
 }
@@ -1527,7 +1528,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 	if (!ent->client)
 		return;
 
-	arena_t *arena = ent->client->pers.arena;
+	arena_t *arena = ARENA(ent);
 	arena_team_t *team = FindTeam(ent, type);
 
 	PMenu_Close(ent);
@@ -1558,8 +1559,8 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 		return;
 	}
 
-	if (ent->client->pers.team) {
-		if (ent->client->pers.team->type == type) {
+	if (TEAM(ent)) {
+		if (TEAM(ent)->type == type) {
 			G_PartTeam(ent, false);
 			return;
 		} else {
@@ -1568,7 +1569,7 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 	}
 
 	// add player to the team
-	ent->client->pers.team = team;
+	TEAM(ent) = team;
 	team->player_count++;
 
 	int i;

@@ -543,18 +543,49 @@ static void G_ParseString(void)
 static void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
+	uint8_t i = 0;
+
+	arena->teams = G_Malloc(arena->team_count * sizeof(arena_team_t));
+
+	team = &arena->spectators;
+	team->type = TEAM_SPECTATORS;
+	Q_strlcpy(team->name, g_teamspec_name->string, sizeof(team->name));
 	
 	// team 1
-	team = &arena->team_home;
-	team->type = ARENA_TEAM_HOME;
-	Q_strlcpy(team->skin, g_hometeam_skin->string, sizeof(team->skin));
-	Q_strlcpy(team->name, g_hometeam_name->string, sizeof(team->name));
+	team = &arena->teams[i++];
+	team->type = TEAM_RED;
+	Q_strlcpy(team->skin, g_team1_skin->string, sizeof(team->skin));
+	Q_strlcpy(team->name, g_team1_name->string, sizeof(team->name));
 	
 	// team 2
-	team = &arena->team_away;
-	team->type = ARENA_TEAM_AWAY;
-	Q_strlcpy(team->skin, g_awayteam_skin->string, sizeof(team->skin));
-	Q_strlcpy(team->name, g_awayteam_name->string, sizeof(team->name));
+	team = &arena->teams[i++];
+	team->type = TEAM_BLUE;
+	Q_strlcpy(team->skin, g_team2_skin->string, sizeof(team->skin));
+	Q_strlcpy(team->name, g_team2_name->string, sizeof(team->name));
+
+	// team 3
+	if (arena->team_count >= i) {
+		team = &arena->teams[i++];
+		team->type = TEAM_GREEN;
+		Q_strlcpy(team->skin, g_team3_skin->string, sizeof(team->skin));
+		Q_strlcpy(team->name, g_team3_name->string, sizeof(team->name));
+	}
+
+	// team 4
+	if (arena->team_count >= i) {
+		team = &arena->teams[i++];
+		team->type = TEAM_YELLOW;
+		Q_strlcpy(team->skin, g_team4_skin->string, sizeof(team->skin));
+		Q_strlcpy(team->name, g_team4_name->string, sizeof(team->name));
+	}
+
+	// team 5
+	if (arena->team_count >= i) {
+		team = &arena->teams[i++];
+		team->type = TEAM_AQUA;
+		Q_strlcpy(team->skin, g_team5_skin->string, sizeof(team->skin));
+		Q_strlcpy(team->name, g_team5_name->string, sizeof(team->name));
+	}
 }
 
 /*
@@ -654,6 +685,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         level.arenas[j].damage_flags = (int) g_damage_flags->value;
         level.arenas[j].armor = (int) g_armor_start->value;
         level.arenas[j].health = (int) g_health_start->value;
+        level.arenas[j].team_count = (int) g_team_count->value;
 
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
