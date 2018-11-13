@@ -1554,16 +1554,13 @@ void Cmd_Menu_f(edict_t *ent) {
 
     // loop through each team building the menu
     for (i=0,j=5; i<a->team_count; i++, j++) {
-    	/*
-    	if (TEAM(ent) && (TEAM(ent) != &a->teams[i])) {
-    		menu->entries[j].text = va("*Join team %s", a->teams[i].name);
-    	} else {
+    	if (TEAM(ent) && (TEAM(ent) == &a->teams[i])) {
     		menu->entries[j].text = va("*Leave team %s", a->teams[i].name);
+    	} else {
+    		menu->entries[j].text = va("*Join team %s", a->teams[i].name);
     	}
-		*/
 
     	//gi.dprintf("i=%d - j=%d - name=%s\n", i, j, va("*%s",a->teams[i].name));
-    	menu->entries[j].text = va("%d", j);
     	menu->entries[j].align = PMENU_ALIGN_LEFT;
     	menu->entries[j].select = select_team;
     }
