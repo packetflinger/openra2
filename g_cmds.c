@@ -1466,6 +1466,9 @@ static void select_arena(edict_t *ent) {
 static void select_test(edict_t *ent)
 {
     switch (ent->client->menu.cur) {
+    case 3:
+		Cmd_ArenaMenu_f(ent);
+		break;
 	case 5:
 		G_JoinTeam(ent, TEAM_RED, false);
 		PMenu_Close(ent);
@@ -1475,14 +1478,18 @@ static void select_test(edict_t *ent)
 		PMenu_Close(ent);
         break;
     case 7:
+    	G_JoinTeam(ent, TEAM_GREEN, false);
+    	PMenu_Close(ent);
         break;
-    case 3:
-        // show arena change menu
-		Cmd_ArenaMenu_f(ent);
-        break;
+    case 8:
+    	G_JoinTeam(ent, TEAM_YELLOW, false);
+    	PMenu_Close(ent);
+    	break;
     case 9:
-        break;
-    case 10:
+		G_JoinTeam(ent, TEAM_AQUA, false);
+		PMenu_Close(ent);
+		break;
+    case 11:
         PMenu_Close(ent);
         break;
     }
@@ -1499,11 +1506,11 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { NULL },
 	{ NULL },
 	{ NULL },
+	{ NULL },
     { "*Exit menu", PMENU_ALIGN_LEFT, select_test },
     { NULL },
     { "Use [ and ] to move cursor", PMENU_ALIGN_CENTER },
     { "Press Enter to select", PMENU_ALIGN_CENTER },
-	{ NULL },
 	{ NULL },
 	{ NULL },
     { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
@@ -1534,6 +1541,8 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
 void Cmd_Menu_f(edict_t *ent) {
 	
 	arena_t *a = ent->client->pers.arena;
+	pmenu_t *menu = &ent->client->menu;
+	uint8_t i, offset;
 	
     if (ent->client->layout == LAYOUT_MENU) {
         PMenu_Close(ent);
@@ -1542,24 +1551,19 @@ void Cmd_Menu_f(edict_t *ent) {
 
     PMenu_Open(ent, main_menu);
 
-	if (ent->client->pers.team) {
-		if (ent->client->pers.team->type == TEAM_RED) {
-			ent->client->menu.entries[5].text = va("*Leave team %s", ent->client->pers.team->name);
-		} else {
-			ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
-		}
-		
-		if (ent->client->pers.team->type == TEAM_BLUE) {
-			ent->client->menu.entries[6].text = va("*Leave team %s", ent->client->pers.team->name);
-		} else {
-			ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
-		}
-	} else {
-		ent->client->menu.entries[5].text = va("*Join team %s", a->team_home.name);
-		ent->client->menu.entries[6].text = va("*Join team %s", a->team_away.name);
-	
-	}
-	
+    offset = 5;
+
+    for (i=0; i<a->team_count; i++) {
+    	if (TEAM(ent) && (TEAM(ent) != &a->teams[i])) {
+    		menu->entries[i + offset].text = va("*Join team %s", a->teams[i].name);
+    	} else {
+    		menu->entries[i + offset].text = va("*Leave team %s", a->teams[i].name);
+    	}
+
+    	menu->entries[i + offset].align = PMENU_ALIGN_LEFT;
+    	menu->entries[i + offset].select = select_test;
+    }
+
 	ent->client->menu.cur = 3;
 }
 
