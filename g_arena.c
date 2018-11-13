@@ -609,7 +609,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	char status[MAX_QPATH];
 	char timebuf[16];
 	size_t total, len;
-	int i, j, numranks;
+	int i, j, k, numranks;
 	int y, sec;
 	gclient_t *ranks[MAX_CLIENTS];
 	gclient_t *c;
@@ -638,122 +638,69 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	// move down 6 lines
 	y += LAYOUT_LINE_HEIGHT * 6;
 
-	total = Q_scnprintf(buffer, MAX_STRING_CHARS, "xv 0 %s "
-			"yt %d "
-			"cstring \"Team %s - %d\" "
-			"yt %d "
-			"cstring2 \"Name                 Damage     Time Ping\"", entry, y,
-			arena->team_home.name, 
-			arena->team_home.damage_dealt, 
-			y + LAYOUT_LINE_HEIGHT
-	);
+	total = 0;
+	for (k=0; k<arena->team_count; k++) {
 
-	numranks = G_CalcArenaRanks(ranks, &arena->team_home);
-
-	// hometeam first, add the clients sorted by rank
-	y += LAYOUT_LINE_HEIGHT * 2;
-	for (i = 0; i < numranks; i++) {
-		c = ranks[i];
-
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
-
-		if (!sec) {
-			sec = 1;
-		}
-
-		if (c->resp.score > 0) {
-			j = c->resp.score + c->resp.deaths;
-			//eff = j ? c->resp.score * 100 / j : 100;
-		} else {
-			//eff = 0;
-		}
-
-		if (level.framenum < 10 * 60 * HZ) {
-			sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
-		} else {
-			sprintf(timebuf, "%d", sec / 60);
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-21s %6d     %4s %4d\"", y,
-				c->pers.netname, 
-				c->resp.damage_given, 
-				timebuf, 
-				c->ping
+		total = Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s "
+				"yt %d "
+				"cstring \"Team %s - %d\" "
+				"yt %d "
+				"cstring2 \"Name                 Damage     Time Ping\"", entry, y,
+				arena->teams[k].name,
+				arena->teams[k].damage_dealt,
+				y + LAYOUT_LINE_HEIGHT
 		);
 
-		if (len >= sizeof(entry))
-			continue;
+		numranks = G_CalcArenaRanks(ranks, &arena->team_home);
 
-		if (total + len >= MAX_STRING_CHARS)
-			break;
+		// hometeam first, add the clients sorted by rank
+		y += LAYOUT_LINE_HEIGHT * 2;
+		for (i = 0; i < numranks; i++) {
+			c = ranks[i];
 
-		memcpy(buffer + total, entry, len);
+			sec = (level.framenum - c->resp.enter_framenum) / HZ;
 
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
+			if (!sec) {
+				sec = 1;
+			}
+
+			if (c->resp.score > 0) {
+				j = c->resp.score + c->resp.deaths;
+				//eff = j ? c->resp.score * 100 / j : 100;
+			} else {
+				//eff = 0;
+			}
+
+			if (level.framenum < 10 * 60 * HZ) {
+				sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
+			} else {
+				sprintf(timebuf, "%d", sec / 60);
+			}
+
+			len = Q_snprintf(entry, sizeof(entry),
+					"yt %d cstring \"%-21s %6d     %4s %4d\"", y,
+					c->pers.netname,
+					c->resp.damage_given,
+					timebuf,
+					c->ping
+			);
+
+			if (len >= sizeof(entry))
+				continue;
+
+			if (total + len >= MAX_STRING_CHARS)
+				break;
+
+			memcpy(buffer + total, entry, len);
+
+			total += len;
+			y += LAYOUT_LINE_HEIGHT;
+		}
+
+		// skip 4 lines
+		y += LAYOUT_LINE_HEIGHT * 4;
+
 	}
-
-	// skip 4 lines
-	y += LAYOUT_LINE_HEIGHT * 4;
-
-	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s"
-			"yt %d "
-			"cstring \"Team %s - %d\""
-			"yt %d "
-			"cstring2 \"Name                 Damage     Time Ping\"", entry, y,
-			arena->team_away.name,
-			arena->team_away.damage_dealt,
-			y + LAYOUT_LINE_HEIGHT
-	);
-
-	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
-
-	y += LAYOUT_LINE_HEIGHT * 2;
-
-	// away team second, add the clients sorted by rank
-	for (i = 0; i < numranks; i++) {
-		c = ranks[i];
-
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
-		if (!sec) {
-			sec = 1;
-		}
-
-		if (c->resp.score > 0) {
-			j = c->resp.score + c->resp.deaths;
-			//eff = j ? c->resp.score * 100 / j : 100;
-		} else {
-			//eff = 0;
-		}
-
-		if (level.framenum < 10 * 60 * HZ) {
-			sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
-		} else {
-			sprintf(timebuf, "%d", sec / 60);
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-21s %6d     %4s %4d\"", y,
-				c->pers.netname, 
-				c->resp.damage_given, 
-				timebuf, 
-				c->ping
-		);
-
-		if (len >= sizeof(entry))
-			continue;
-
-		if (total + len >= MAX_STRING_CHARS)
-			break;
-
-		memcpy(buffer + total, entry, len);
-
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
-	}
-
-	y += LAYOUT_LINE_HEIGHT * 4;
 
 	// add spectators in fixed order
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
@@ -826,7 +773,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	char status[MAX_QPATH];
 	char timebuf[16];
 	size_t total, len;
-	int i, j, numranks;
+	int i, j, k, numranks;
 	int y, sec;
 	gclient_t *ranks[MAX_CLIENTS];
 	gclient_t *c;
@@ -861,110 +808,65 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	// move down 6 lines
 	y += LAYOUT_LINE_HEIGHT * 6;
 
-	total = Q_scnprintf(buffer, MAX_STRING_CHARS, "xv 0 %s "
-			"yt %d "
-			"cstring \"Team %s\" "
-			"yt %d "
-			"cstring2 \"Name                            Time Ping\" ", entry, y,
-			arena->team_home.name, y + LAYOUT_LINE_HEIGHT);
+	total = 0;
 
-	numranks = G_CalcArenaRanks(ranks, &arena->team_home);
+	// loop through teams
+	for (k=0; k<arena->team_count; k++) {
 
-	// hometeam first, add the clients sorted by rank
-	y += LAYOUT_LINE_HEIGHT * 2;
-	for (i = 0; i < numranks; i++) {
-		c = ranks[i];
+		total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s "
+				"yt %d "
+				"cstring \"Team %s\" "
+				"yt %d "
+				"cstring2 \"Name                            Time Ping\" ", entry, y,
+				arena->teams[k].name, y + LAYOUT_LINE_HEIGHT);
 
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
+		numranks = G_CalcArenaRanks(ranks, &arena->teams[k]);
 
-		if (!sec) {
-			sec = 1;
+		// hometeam first, add the clients sorted by rank
+		y += LAYOUT_LINE_HEIGHT * 2;
+
+		for (i = 0; i < numranks; i++) {
+			c = ranks[i];
+
+			sec = (level.framenum - c->resp.enter_framenum) / HZ;
+
+			if (!sec) {
+				sec = 1;
+			}
+
+			if (c->resp.score > 0) {
+				j = c->resp.score + c->resp.deaths;
+				//eff = j ? c->resp.score * 100 / j : 100;
+			} else {
+				//eff = 0;
+			}
+
+			if (level.framenum < 10 * 60 * HZ) {
+				sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
+			} else {
+				sprintf(timebuf, "%d", sec / 60);
+			}
+
+			len = Q_snprintf(entry, sizeof(entry),
+					"yt %d cstring \"%-15s %-15s %4s %4d\"", y, c->pers.netname,
+					(c->pers.ready) ? va("%sready%s", bracketopen, bracketclosed) : "",
+					timebuf, c->ping);
+
+			if (len >= sizeof(entry))
+				continue;
+
+			if (total + len >= MAX_STRING_CHARS)
+				break;
+
+			memcpy(buffer + total, entry, len);
+
+			total += len;
+			y += LAYOUT_LINE_HEIGHT;
 		}
 
-		if (c->resp.score > 0) {
-			j = c->resp.score + c->resp.deaths;
-			//eff = j ? c->resp.score * 100 / j : 100;
-		} else {
-			//eff = 0;
-		}
-
-		if (level.framenum < 10 * 60 * HZ) {
-			sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
-		} else {
-			sprintf(timebuf, "%d", sec / 60);
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-15s %-15s %4s %4d\"", y, c->pers.netname, 
-				(c->pers.ready) ? va("%sready%s", bracketopen, bracketclosed) : "", 
-				timebuf, c->ping);
-
-		if (len >= sizeof(entry))
-			continue;
-
-		if (total + len >= MAX_STRING_CHARS)
-			break;
-
-		memcpy(buffer + total, entry, len);
-
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
+		// skip 4 lines
+		y += LAYOUT_LINE_HEIGHT * 4;
 	}
-
-	// skip 4 lines
-	y += LAYOUT_LINE_HEIGHT * 4;
-
-	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s"
-			"yt %d "
-			"cstring \"Team %s\""
-			"yt %d "
-			"cstring2 \"Name                            Time Ping\"", entry, y,
-			arena->team_away.name, y + LAYOUT_LINE_HEIGHT);
-
-	numranks = G_CalcArenaRanks(ranks, &arena->team_away);
-
-	y += LAYOUT_LINE_HEIGHT * 2;
-
-	// away team second, add the clients sorted by rank
-	for (i = 0; i < numranks; i++) {
-		c = ranks[i];
-
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
-		if (!sec) {
-			sec = 1;
-		}
-
-		if (c->resp.score > 0) {
-			j = c->resp.score + c->resp.deaths;
-			//eff = j ? c->resp.score * 100 / j : 100;
-		} else {
-			//eff = 0;
-		}
-
-		if (level.framenum < 10 * 60 * HZ) {
-			sprintf(timebuf, "%d:%02d", sec / 60, sec % 60);
-		} else {
-			sprintf(timebuf, "%d", sec / 60);
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%-15s %-15s %4s %4d\"", y, c->pers.netname, 
-				(c->pers.ready) ? va("%sready%s", bracketopen, bracketclosed) : "", 
-				timebuf, c->ping);
-
-		if (len >= sizeof(entry))
-			continue;
-
-		if (total + len >= MAX_STRING_CHARS)
-			break;
-
-		memcpy(buffer + total, entry, len);
-
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
-	}
-
-	y += LAYOUT_LINE_HEIGHT * 4;
 
 	// add spectators in fixed order
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,

@@ -1030,11 +1030,8 @@ static void G_Init(void) {
 	// arena defaults
 	g_round_end_time = gi.cvar("g_round_end_time", "5", CVAR_GENERAL);
 	g_round_countdown = gi.cvar("g_round_countdown", "12", CVAR_GENERAL);
-	//g_hometeam_name = gi.cvar("g_hometeam_name", "Home", CVAR_LATCH);
-	//g_awayteam_name = gi.cvar("g_awayteam_name", "Away", CVAR_LATCH);
-	//g_hometeam_skin = gi.cvar("g_hometeam_skin", "female/jezebel", CVAR_GENERAL);
-	//g_awayteam_skin = gi.cvar("g_awayteam_skin", "male/cypher", CVAR_GENERAL);
 
+	// team stuff
 	g_team_count = gi.cvar("g_team_count", "2", CVAR_LATCH);
 	g_teamspec_name = gi.cvar("g_teamspec_name", "Spectators", CVAR_LATCH);
 	g_team1_name = gi.cvar("g_team1_name", "Red", CVAR_LATCH);
@@ -1087,6 +1084,7 @@ static void G_Init(void) {
 	clamp(g_ammo_grenades->value, 0, 999);
 	clamp(g_ammo_bullets->value, 0, 999);
 	clamp(g_ammo_shells->value, 0, 999);
+	clamp(g_team_count->value, 2, 5);
 
 	// initialize all entities for this game
 	game.maxentities = maxentities->value;

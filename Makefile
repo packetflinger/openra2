@@ -75,7 +75,8 @@ ifdef CONFIG_WINDOWS
     TARGET := game$(CPU)-openra2-$(VER).dll
 else
     LIBS += -lm
-    TARGET := game$(CPU)-openra2-$(VER).so
+    #TARGET := game$(CPU)-openra2-$(VER).so
+    TARGET := game$(CPU).so
 endif
 
 all: $(TARGET)

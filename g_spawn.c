@@ -544,7 +544,7 @@ static void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
 	uint8_t i = 0;
-	arena->teams = G_Malloc(arena->team_count * sizeof(arena_team_t));
+	arena->teams = G_Malloc(arena->team_count * sizeof(arena->teams[0]));
 
 	team = &arena->spectators;
 	team->type = TEAM_SPECTATORS;
@@ -689,7 +689,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
 		// setup the teams
-		G_InitArenaTeams(&(level.arenas[j]));
+		G_InitArenaTeams(&level.arenas[j]);
 
 		// apply overrides for default flags
 		G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
