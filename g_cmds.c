@@ -208,12 +208,12 @@ static void Cmd_Team_f(edict_t *ent) {
 	}
 	
 	if (str_equal(team, "4") && ARENA(ent)->team_count >= 4) {
-		G_JoinTeam(ent, TEAM_GREEN, false);
+		G_JoinTeam(ent, TEAM_YELLOW, false);
 		return;
 	}
 
 	if (str_equal(team, "5") && ARENA(ent)->team_count == 5) {
-		G_JoinTeam(ent, TEAM_GREEN, false);
+		G_JoinTeam(ent, TEAM_AQUA, false);
 		return;
 	}
 
@@ -1892,6 +1892,10 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 	gi.cprintf(ent, PRINT_HIGH, "command not implimented yet...\n");
 }
 
+static void Cmd_Test_f(edict_t *ent) {
+	gi.cprintf(ent, PRINT_HIGH, "Testing something\n");
+}
+
 /*
 =================
 ClientCommand
@@ -2087,8 +2091,8 @@ void ClientCommand(edict_t *ent)
 	else if (Q_stricmp(cmd, "sound") == 0) // test
 		Cmd_Sound_f(ent);
 	else if (Q_stricmp(cmd, "test") == 0) {
-		BeginIntermission(ARENA(ent));
-		Cmd_NotImplYet_f(ent);
+		Cmd_Test_f(ent);
+		//Cmd_NotImplYet_f(ent);
 	}
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);

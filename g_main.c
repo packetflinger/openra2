@@ -22,6 +22,10 @@
 #include "g_local.h"
 
 LIST_DECL(g_arenalist);
+//LIST_DECL(g_teamlist[0]);
+//LIST_DECL(g_speclist);
+//LIST_DECL(g_playerlist);
+list_t *g_teamlist;
 
 game_locals_t game;
 level_locals_t level;

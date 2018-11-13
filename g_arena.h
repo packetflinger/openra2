@@ -36,8 +36,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
+
+#define FOR_EACH_TEAM(t,a) \
+	LIST_FOR_EACH(arena_team_t, t, &g_teamlist[a->number], entry)
 	
 extern list_t	g_arenalist;
+extern list_t	*g_teamlist;	// array of lists, indexed by area
+extern list_t	g_speclist;
+extern list_t	g_playerlist;
+extern list_t	team1list;
+extern list_t	team2list;
 
 #ifdef _WIN32
 #define DATE_FORMAT ("%b %d, %Y %H:%M ")
@@ -99,6 +107,7 @@ typedef struct {
 	qboolean			locked;
 	uint32_t			damage_dealt;
 	uint32_t			damage_taken;
+	list_t				entry;
 } arena_team_t;
 
 
