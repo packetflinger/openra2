@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #define MAX_ARENAS				9
+#define MAX_TEAMS				5
 #define MAX_ARENA_TEAM_PLAYERS	10
 #define MAX_TEAM_NAME			20
 #define MAX_TEAM_SKIN			25
@@ -147,7 +148,7 @@ typedef struct {
 	int				version;				// map version
 	list_t			entry;					// for making linked list of arenas
 	arena_team_t	spectators;
-	arena_team_t	*teams;					// [team_count]
+	arena_team_t	teams[MAX_TEAMS];		// [team_count]
 	uint8_t			team_count;
 } arena_t;
 

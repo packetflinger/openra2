@@ -1496,7 +1496,7 @@ static void select_team(edict_t *ent)
 }
 
 static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
-    { "OpenRA2 - Main Main", PMENU_ALIGN_CENTER },
+    { "Main Main", PMENU_ALIGN_CENTER },
     { NULL },
     { NULL },
     { "*Change ARENA", PMENU_ALIGN_LEFT, select_team },
@@ -1513,11 +1513,11 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { "Press Enter to select", PMENU_ALIGN_CENTER },
 	{ NULL },
 	{ NULL },
-    { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
+    { "*OpenRA2 " OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
 static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
-    { "OpenRA2 - Select Arena", PMENU_ALIGN_CENTER },
+    { "Select Arena", PMENU_ALIGN_CENTER },
     { NULL },
     { NULL },
     { NULL },
@@ -1534,7 +1534,7 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
 	{ NULL },
 	{ NULL },
 	{ NULL },
-    { "*" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
+    { "*OpenRA2" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
 
@@ -1554,12 +1554,14 @@ void Cmd_Menu_f(edict_t *ent) {
 
     // loop through each team building the menu
     for (i=0,j=5; i<a->team_count; i++, j++) {
-    	if (TEAM(ent) && (TEAM(ent) == &a->teams[i])) {
-    		menu->entries[j].text = va("*Leave team %s", a->teams[i].name);
-    	} else {
-    		menu->entries[j].text = va("*Join team %s", a->teams[i].name);
-    	}
+    	gi.dprintf("before: %s\n", menu->entries[j].text);
 
+    	if (TEAM(ent) && (TEAM(ent) == &a->teams[i])) {
+    		ent->client->menu.entries[j].text = va("*Leave team %s", a->teams[i].name);
+    	} else {
+    		ent->client->menu.entries[j].text = va("*Join team %s", a->teams[i].name);
+    	}
+    	gi.dprintf("after: %s\n", menu->entries[j].text);
     	//gi.dprintf("i=%d - j=%d - name=%s\n", i, j, va("*%s",a->teams[i].name));
     	menu->entries[j].align = PMENU_ALIGN_LEFT;
     	menu->entries[j].select = select_team;

@@ -544,7 +544,6 @@ static void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
 	uint8_t i = 0;
-	arena->teams = G_Malloc(arena->team_count * sizeof(arena->teams[0]));
 
 	team = &arena->spectators;
 	team->type = TEAM_SPECTATORS;
