@@ -1463,7 +1463,7 @@ static void select_arena(edict_t *ent) {
 	}
 }
 
-static void select_test(edict_t *ent)
+static void select_team(edict_t *ent)
 {
     switch (ent->client->menu.cur) {
     case 3:
@@ -1499,15 +1499,15 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { "OpenRA2 - Main Main", PMENU_ALIGN_CENTER },
     { NULL },
     { NULL },
-    { "*Change ARENA", PMENU_ALIGN_LEFT, select_test },
+    { "*Change ARENA", PMENU_ALIGN_LEFT, select_team },
     { NULL },
-	{ "*Join HOME team", PMENU_ALIGN_LEFT, select_test },
-	{ "*Join AWAY team", PMENU_ALIGN_LEFT, select_test },	
+	{ "*Join HOME team", PMENU_ALIGN_LEFT, select_team },
+	{ "*Join AWAY team", PMENU_ALIGN_LEFT, select_team },
     { NULL },
 	{ NULL },
 	{ NULL },
 	{ NULL },
-    { "*Exit menu", PMENU_ALIGN_LEFT, select_test },
+    { "*Exit menu", PMENU_ALIGN_LEFT, select_team },
     { NULL },
     { "Use [ and ] to move cursor", PMENU_ALIGN_CENTER },
     { "Press Enter to select", PMENU_ALIGN_CENTER },
@@ -1561,7 +1561,7 @@ void Cmd_Menu_f(edict_t *ent) {
     	}
 
     	menu->entries[i + offset].align = PMENU_ALIGN_LEFT;
-    	menu->entries[i + offset].select = select_test;
+    	menu->entries[i + offset].select = select_team;
     }
 
 	ent->client->menu.cur = 3;
