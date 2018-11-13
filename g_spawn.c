@@ -546,22 +546,15 @@ static void G_InitArenaTeams(arena_t *arena) {
 	uint8_t i = 0;
 	arena->teams = G_Malloc(arena->team_count * sizeof(arena_team_t));
 
-	//g_teamlist = G_Malloc(level.arena_count * sizeof(list_t));
-	//g_teamlist = G_Malloc(100);
-
 	team = &arena->spectators;
 	team->type = TEAM_SPECTATORS;
 	Q_strlcpy(team->name, g_teamspec_name->string, sizeof(team->name));
 	
 	// team 1
-	//LIST_DECL(team1list);
-	//g_teamlist[arena->number] = team1list;
 	team = &arena->teams[i++];
 	team->type = TEAM_RED;
 	Q_strlcpy(team->skin, g_team1_skin->string, sizeof(team->skin));
 	Q_strlcpy(team->name, g_team1_name->string, sizeof(team->name));
-	//List_Init(&g_teamlist[arena->number]);
-	//List_Append(&g_teamlist[arena->number], &team->entry);
 	
 	// team 2
 	team = &arena->teams[i++];

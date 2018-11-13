@@ -1501,8 +1501,8 @@ static const pmenu_entry_t main_menu[MAX_MENU_ENTRIES] = {
     { NULL },
     { "*Change ARENA", PMENU_ALIGN_LEFT, select_team },
     { NULL },
-	{ "*Join HOME team", PMENU_ALIGN_LEFT, select_team },
-	{ "*Join AWAY team", PMENU_ALIGN_LEFT, select_team },
+	{ NULL },
+	{ NULL },
     { NULL },
 	{ NULL },
 	{ NULL },
@@ -1540,10 +1540,11 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
 
 void Cmd_Menu_f(edict_t *ent) {
 	
-	arena_t *a = ent->client->pers.arena;
+	arena_t *a = ARENA(ent);
 	pmenu_t *menu = &ent->client->menu;
-	uint8_t i, offset;
+	uint8_t i, j;
 	
+	// menu is already open, close it
     if (ent->client->layout == LAYOUT_MENU) {
         PMenu_Close(ent);
         return;
@@ -1551,19 +1552,23 @@ void Cmd_Menu_f(edict_t *ent) {
 
     PMenu_Open(ent, main_menu);
 
-    offset = 5;
-
-    for (i=0; i<a->team_count; i++) {
+    // loop through each team building the menu
+    for (i=0,j=5; i<a->team_count; i++, j++) {
+    	/*
     	if (TEAM(ent) && (TEAM(ent) != &a->teams[i])) {
-    		menu->entries[i + offset].text = va("*Join team %s", a->teams[i].name);
+    		menu->entries[j].text = va("*Join team %s", a->teams[i].name);
     	} else {
-    		menu->entries[i + offset].text = va("*Leave team %s", a->teams[i].name);
+    		menu->entries[j].text = va("*Leave team %s", a->teams[i].name);
     	}
+		*/
 
-    	menu->entries[i + offset].align = PMENU_ALIGN_LEFT;
-    	menu->entries[i + offset].select = select_team;
+    	//gi.dprintf("i=%d - j=%d - name=%s\n", i, j, va("*%s",a->teams[i].name));
+    	menu->entries[j].text = va("%d", j);
+    	menu->entries[j].align = PMENU_ALIGN_LEFT;
+    	menu->entries[j].select = select_team;
     }
 
+    // put the cursor on the first selectable item
 	ent->client->menu.cur = 3;
 }
 
@@ -1898,6 +1903,11 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 
 static void Cmd_Test_f(edict_t *ent) {
 	gi.cprintf(ent, PRINT_HIGH, "Testing something\n");
+
+	uint8_t i;
+	for (i=0; i<ARENA(ent)->team_count; i++) {
+		gi.cprintf(ent, PRINT_HIGH, "%s\n", ARENA(ent)->teams[i].name);
+	}
 }
 
 /*
@@ -2096,7 +2106,7 @@ void ClientCommand(edict_t *ent)
 		Cmd_Sound_f(ent);
 	else if (Q_stricmp(cmd, "test") == 0) {
 		Cmd_Test_f(ent);
-		//Cmd_NotImplYet_f(ent);
+		Cmd_NotImplYet_f(ent);
 	}
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
