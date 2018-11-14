@@ -416,28 +416,27 @@ size_t COM_strclr(char *s)
     return len;
 }
 
-/*
-============
-va
 
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-FIXME: make this buffer size safe someday
-============
-*/
-char *va(const char *format, ...)
-{
-    va_list         argptr;
-    static char     buffers[2][0x2800];
-    static int      index;
+/**
+ * @brief A shorthand g_snprintf into a statically allocated buffer. Several
+ * buffers are maintained internally so that nested va()'s are safe within
+ * reasonable limits. This function is not thread safe.
+ *
+ * This version ganked from Quetoo
+ */
+char *va(const char *format, ...) {
+	static char strings[8][MAX_STRING_CHARS];
+	static uint16_t index;
 
-    index ^= 1;
+	char *string = strings[index++ % 8];
 
-    va_start(argptr, format);
-    Q_vsnprintf(buffers[index], sizeof(buffers[0]), format, argptr);
-    va_end(argptr);
+	va_list args;
 
-    return buffers[index];
+	va_start(args, format);
+	vsnprintf(string, MAX_STRING_CHARS, format, args);
+	va_end(args);
+
+	return string;
 }
 
 static char     com_token[4][MAX_TOKEN_CHARS];
