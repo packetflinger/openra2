@@ -794,56 +794,6 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		j++;
 	}
 
-
-
-
-
-
-	/*
-
-	for (i = 0, j = 0; i < game.maxclients; i++) {
-		c = &game.clients[i];
-
-		if (c->pers.connected != CONN_PREGAME
-				&& c->pers.connected != CONN_SPECTATOR)
-			continue;
-
-		if (c->pers.arena != arena)
-			continue;
-
-		if (c->pers.mvdspec)
-			continue;
-
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
-		if (!sec) {
-			sec = 1;
-		}
-
-		// spec is following someone, show who
-		if (c->chase_target) {
-			Q_snprintf(status, sizeof(status), "-> %.13s",
-					c->chase_target->client->pers.netname);
-		} else {
-			status[0] = 0;
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%s\"", y,
-				va("%s:%d %s", c->pers.netname, c->ping, status));
-
-		if (len >= sizeof(entry))
-			continue;
-
-		if (total + len >= MAX_STRING_CHARS)
-			break;
-
-		memcpy(buffer + total, entry, len);
-
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
-		j++;
-	}
-
 	// add server info
 	if (sv_hostname && sv_hostname->string[0]) {
 		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
@@ -858,7 +808,6 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		}
 	}
 
-	*/
 	buffer[total] = 0;
 
 	return total;
@@ -1003,57 +952,6 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 		j++;
 	}
 
-
-	/*
-
-	// add spectators in fixed order
-	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
-			"yt %d cstring2 \"---- Spectators ----\"", y);
-	y += LAYOUT_LINE_HEIGHT;
-	for (i = 0, j = 0; i < game.maxclients; i++) {
-		c = &game.clients[i];
-
-		if (c->pers.connected != CONN_PREGAME
-				&& c->pers.connected != CONN_SPECTATOR)
-			continue;
-
-		if (c->pers.arena != arena)
-			continue;
-
-		if (c->pers.mvdspec)
-			continue;
-
-		sec = (level.framenum - c->resp.enter_framenum) / HZ;
-		if (!sec) {
-			sec = 1;
-		}
-
-		// spec is following someone, show who
-		if (c->chase_target) {
-			Q_snprintf(status, sizeof(status), "-> %.13s",
-					c->chase_target->client->pers.netname);
-		} else {
-			status[0] = 0;
-		}
-
-		len = Q_snprintf(entry, sizeof(entry),
-				"yt %d cstring \"%s\"", y,
-				va("%s:%d %s", c->pers.netname, c->ping, status));
-
-		if (len >= sizeof(entry))
-			continue;
-
-		if (total + len >= MAX_STRING_CHARS)
-			break;
-
-		memcpy(buffer + total, entry, len);
-
-		total += len;
-		y += LAYOUT_LINE_HEIGHT;
-		j++;
-	}
-
-*/
 	// add server info
 	if (sv_hostname && sv_hostname->string[0]) {
 		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
