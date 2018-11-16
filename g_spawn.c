@@ -544,10 +544,6 @@ static void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
 	uint8_t i = 0;
-
-	team = &arena->spectators;
-	team->type = TEAM_SPECTATORS;
-	Q_strlcpy(team->name, g_teamspec_name->string, sizeof(team->name));
 	
 	// team 1
 	team = &arena->teams[i++];
@@ -674,7 +670,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		}
 		
 		j = ent->arena;
-		
+
 		memset(&level.arenas[j], 0, sizeof(arena_t));
 		
         level.arenas[j].number = ent->arena;

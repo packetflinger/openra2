@@ -32,6 +32,7 @@ spawn_temp_t st;
 int meansOfDeath;
 
 edict_t *g_edicts;
+edict_t *g_spectators[MAX_ARENAS];
 
 pmenu_arena_t menu_lookup[MAX_ARENAS];
 

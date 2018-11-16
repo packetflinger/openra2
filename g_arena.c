@@ -43,17 +43,70 @@ static int arena_find_cl_index(gclient_t *cl) {
 	return -1;
 }
 
+static int arena_find_sp_index(edict_t *ent) {
+
+	int i;
+	for (i = 0; i < ARENA(ent)->spectator_count; i++) {
+		if (ARENA(ent)->spectators[i] == ent) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 // find the next open slot in the clients array
 static int arena_find_cl_slot(arena_t *a) {
 
 	int i;
-	for (i = 0; i < MAX_CLIENTS; i++) {
+	for (i = 0; i < game.maxclients; i++) {
 		if (!&a->clients[i]) {
 			return i;
 		}
 	}
 
+	return -1;
+}
+
+// find the next open slot in the spectator array
+static int arena_find_sp_slot(arena_t *a) {
+
+	int i;
+	for (i = 0; i < game.maxclients; i++) {
+		if (!&a->spectators[i]) {
+			return i;
+		}
+	}
+
 	return 0;
+}
+
+void G_SpectatorsJoin(edict_t *ent) {
+
+	int8_t idx;
+	if (!ent->client)
+		return;
+
+	if (arena_find_sp_index(ent) == -1) {
+		idx = arena_find_sp_slot(ARENA(ent));
+		ARENA(ent)->spectators[idx] = ent;
+		ARENA(ent)->spectator_count++;
+	}
+}
+
+void G_SpectatorsPart(edict_t *ent) {
+
+	int8_t idx;
+
+	if (!ent->client)
+		return;
+
+	idx = arena_find_sp_index(ent);
+
+	if (idx >= 0) {
+		ARENA(ent)->spectators[idx] = NULL;
+		ARENA(ent)->spectator_count--;
+	}
 }
 
 arena_t *FindArena(edict_t *ent) {
@@ -615,6 +668,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	gclient_t *c;
 	time_t t;
 	struct tm *tm;
+	edict_t *ent;
 
 	// starting point down from top of screen
 	y = 20;
@@ -706,6 +760,47 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
 			"yt %d cstring2 \"---- Spectators ----\"", y);
 	y += LAYOUT_LINE_HEIGHT;
+
+	for (i = 0; i < arena->spectator_count; i++) {
+		ent = arena->spectators[i];
+		if (!ent->client)
+			continue;
+
+		if (ent->client->pers.mvdspec)
+			continue;
+
+		// spec is following someone, show who
+		if (ent->client->chase_target) {
+			Q_snprintf(status, sizeof(status), "-> %.13s",
+					ent->client->chase_target->client->pers.netname);
+		} else {
+			status[0] = 0;
+		}
+
+		len = Q_snprintf(entry, sizeof(entry),
+				"yt %d cstring \"%s\"", y,
+				va("%s:%d %s", NAME(ent), ent->client->ping, status));
+
+		if (len >= sizeof(entry))
+			continue;
+
+		if (total + len >= MAX_STRING_CHARS)
+			break;
+
+		memcpy(buffer + total, entry, len);
+
+		total += len;
+		y += LAYOUT_LINE_HEIGHT;
+		j++;
+	}
+
+
+
+
+
+
+	/*
+
 	for (i = 0, j = 0; i < game.maxclients; i++) {
 		c = &game.clients[i];
 
@@ -763,6 +858,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		}
 	}
 
+	*/
 	buffer[total] = 0;
 
 	return total;
@@ -779,6 +875,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	gclient_t *c;
 	time_t t;
 	struct tm *tm;
+	edict_t *ent;
 
 	char bracketopen[2];
 	char bracketclosed[2];
@@ -872,6 +969,47 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
 			"yt %d cstring2 \"---- Spectators ----\"", y);
 	y += LAYOUT_LINE_HEIGHT;
+
+	for (i = 0; i < arena->spectator_count; i++) {
+		ent = arena->spectators[i];
+		if (!ent->client)
+			continue;
+
+		if (ent->client->pers.mvdspec)
+			continue;
+
+		// spec is following someone, show who
+		if (ent->client->chase_target) {
+			Q_snprintf(status, sizeof(status), "-> %.13s",
+					ent->client->chase_target->client->pers.netname);
+		} else {
+			status[0] = 0;
+		}
+
+		len = Q_snprintf(entry, sizeof(entry),
+				"yt %d cstring \"%s\"", y,
+				va("%s:%d %s", NAME(ent), ent->client->ping, status));
+
+		if (len >= sizeof(entry))
+			continue;
+
+		if (total + len >= MAX_STRING_CHARS)
+			break;
+
+		memcpy(buffer + total, entry, len);
+
+		total += len;
+		y += LAYOUT_LINE_HEIGHT;
+		j++;
+	}
+
+
+	/*
+
+	// add spectators in fixed order
+	total += Q_scnprintf(buffer + total, MAX_STRING_CHARS,
+			"yt %d cstring2 \"---- Spectators ----\"", y);
+	y += LAYOUT_LINE_HEIGHT;
 	for (i = 0, j = 0; i < game.maxclients; i++) {
 		c = &game.clients[i];
 
@@ -915,6 +1053,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 		j++;
 	}
 
+*/
 	// add server info
 	if (sv_hostname && sv_hostname->string[0]) {
 		len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
@@ -1099,10 +1238,13 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 
 	arena->client_count++;
 	arena->clients[index] = cl->edict;
+
 	cl->pers.arena = arena;
 
 	cl->pers.connected = CONN_SPECTATOR;
 	cl->pers.ready = false;
+
+	G_SpectatorsJoin(cl->edict);
 
 	PutClientInServer(cl->edict);
 	G_ArenaSound(arena, level.sounds.teleport);
@@ -1482,6 +1624,9 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 		}
 	}
 
+	// remove them from the spectator list
+	G_SpectatorsPart(ent);
+
 	if (!team->captain) {
 		team->captain = ent;
 	}
@@ -1543,6 +1688,8 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 						&arena->team_away : &arena->team_home;
 		G_EndMatch(arena, otherteam);
 	}
+
+	G_SpectatorsJoin(ent);
 
 	spectator_respawn(ent, CONN_SPECTATOR);
 }

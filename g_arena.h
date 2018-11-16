@@ -38,9 +38,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
 
+#define FOR_EACH_SPECTATOR(s, a) \
+	LIST_FOR_EACH(edict_t, s, &a->spectators, entry)
 	
 extern list_t	g_arenalist;
-
 
 #ifdef _WIN32
 #define DATE_FORMAT ("%b %d, %Y %H:%M ")
@@ -108,46 +109,46 @@ typedef struct {
 
 
 typedef struct {
-	int				number;
+	uint8_t			number;
 	char			name[MAX_TEAM_NAME];
 	arena_state_t	state;
 	int				countdown;
-	int				player_count;
-	int				spectator_count;
-	int				round_limit;
-	int				current_round;
-	int				weapon_flags;
-	int				damage_flags;
-	int				health;
-	int				armor;
-	int				round_start_frame;
-	int				round_end_frame;
-	int				timeout_frame;
-	int				timein_frame;
+	uint8_t			player_count;
+	uint8_t			spectator_count;
+	edict_t			*spectators[MAX_CLIENTS];			// make this not suck later
+	uint8_t			round_limit;
+	uint8_t			current_round;
+	uint32_t		weapon_flags;
+	uint32_t		damage_flags;
+	uint16_t		health;
+	uint16_t		armor;
+	uint32_t		round_start_frame;
+	uint32_t		round_end_frame;
+	uint32_t		timeout_frame;
+	uint32_t		timein_frame;
 	char        	oldscores[MAX_STRING_CHARS];
 	edict_t			*timeout_caller;
 	edict_t			*clients[MAX_CLIENTS];
 	int				client_count;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
-	int				slugs;
-	int				rockets;
-	int				cells;
-	int				grenades;
-	int				bullets;
-	int				shells;
+	uint32_t		slugs;
+	uint32_t		rockets;
+	uint32_t		cells;
+	uint32_t		grenades;
+	uint32_t		bullets;
+	uint32_t		shells;
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;
 	int32_t			timer_last_frame;		// the frame we last ran timers
 	qboolean		recording;				// were players forced to start recording demos?
-	int         	intermission_framenum;	// time the intermission was started
-    int         	intermission_exit;		// time the intermission was exited
+	uint32_t       	intermission_framenum;	// time the intermission was started
+	uint32_t       	intermission_exit;		// time the intermission was exited
     vec3_t      	intermission_origin;
     vec3_t      	intermission_angle;
-	int				version;				// map version
+    uint32_t		version;				// map version
 	list_t			entry;					// for making linked list of arenas
-	arena_team_t	spectators;
 	arena_team_t	teams[MAX_TEAMS];		// [team_count]
 	uint8_t			team_count;
 } arena_t;
@@ -224,3 +225,5 @@ void G_CheckIntermission(arena_t *a);
 void G_ResetTeam(arena_team_t *t);
 void G_ClearRoundInfo(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
+void G_SpectatorsJoin(edict_t *ent);
+void G_SpectatorsPart(edict_t *ent);
