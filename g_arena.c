@@ -694,8 +694,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	total = 0;
 	for (k=0; k<arena->team_count; k++) {
-
-		total = Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s "
+		total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s "
 				"yt %d "
 				"cstring \"Team %s - %d\" "
 				"yt %d "
@@ -705,7 +704,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 				y + LAYOUT_LINE_HEIGHT
 		);
 
-		numranks = G_CalcArenaRanks(ranks, &arena->team_home);
+		numranks = G_CalcArenaRanks(ranks, &arena->teams[k]);
 
 		// hometeam first, add the clients sorted by rank
 		y += LAYOUT_LINE_HEIGHT * 2;
@@ -720,9 +719,6 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 			if (c->resp.score > 0) {
 				j = c->resp.score + c->resp.deaths;
-				//eff = j ? c->resp.score * 100 / j : 100;
-			} else {
-				//eff = 0;
 			}
 
 			if (level.framenum < 10 * 60 * HZ) {
@@ -746,7 +742,6 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 				break;
 
 			memcpy(buffer + total, entry, len);
-
 			total += len;
 			y += LAYOUT_LINE_HEIGHT;
 		}
@@ -882,9 +877,6 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
 			if (c->resp.score > 0) {
 				j = c->resp.score + c->resp.deaths;
-				//eff = j ? c->resp.score * 100 / j : 100;
-			} else {
-				//eff = 0;
 			}
 
 			if (level.framenum < 10 * 60 * HZ) {
@@ -1161,41 +1153,44 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
  *
  */
 void G_CheckReady(arena_t *a) {
-	int i;
-	
+	uint8_t i, count;
+
 	if (level.framenum != a->ready_think_frame) {
 		return;
 	}
 	
+	// check for ready every 2 seconds to save looping every team every frame
 	a->ready_think_frame = SECS_TO_FRAMES(2) + level.framenum;
+
+	count = 0;
 	
-	// need players on both teams
-	if (a->team_home.player_count == 0 || a->team_away.player_count == 0) {
-		a->ready = false;
-		return;
-	}
-	
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			if (!a->team_home.players[i]->client->pers.ready) {
-				a->ready = false;
-				return;
-			}
+	for (i=0; i<a->team_count; i++) {
+		// just being safe, shouldn't happen
+		if (!&a->teams[i])
+			continue;
+
+		// all teams need at least 1 player to be considered ready
+		if (a->teams[i].player_count == 0)	{
+			a->ready = qfalse;
+			return;
 		}
 
-		if (a->team_away.players[i]) {
-			if (!a->team_away.players[i]->client->pers.ready) {
-				a->ready = false;
-				return;
-			}
+		// any team not currently ready means arena isn't ready
+		if (!a->teams[i].ready) {
+			a->ready = qfalse;
+			return;
 		}
+
+		//
+		if (g_team_balance->value > 0 && a->teams[i].player_count != count && count != 0) {
+			a->ready = qfalse;
+			return;
+		}
+
+		count = a->teams[i].player_count;
 	}
 
-	if (g_team_balance->value > 0 && a->team_home.player_count != a->team_away.player_count) {
-		a->ready = false;
-		return;
-	}
-
+	// if we made it this far, everyone is ready, start the round
 	a->ready = true;
 }
 
@@ -1246,6 +1241,8 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 			team->players[i]->client->pers.ready = ready;
 		}
 	}
+
+	team->ready = ready;
 }
 
 void G_ForceDemo(arena_t *arena) {
@@ -1307,7 +1304,7 @@ void G_ForceScreenshot(arena_t *arena) {
  */
 void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
-	int i;
+	uint8_t i;
 	if (winner) {
 		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 			if (!winner->players[i])
@@ -1321,6 +1318,10 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_BuildScoreboard(a->oldscores, NULL, a);
 
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
+
+	for (i = 0; i < a->team_count; i++) {
+		G_ForceReady(&a->teams[i], qfalse);
+	}
 
 	a->state = ARENA_STATE_INTERMISSION;
 	
@@ -1623,29 +1624,25 @@ void G_RefillInventory(edict_t *ent) {
  */
 void G_RespawnPlayers(arena_t *a) {
 
-	int i;
+	uint8_t i, j;
 	edict_t *ent;
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+	// for each team
+	for (i = 0; i < a->team_count; i++) {
 		
-		ent = a->team_home.players[i];
-		if (ent && ent->inuse) {
-			ent->client->resp.damage_given = 0;
-			ent->client->resp.damage_recvd = 0;
-			G_RefillInventory(ent);
-			spectator_respawn(ent, CONN_SPAWNED);
-		}
+		// for each player
+		for (j = 0; j < a->teams[i].player_count; j++) {
+			ent = a->teams[i].players[j];
 
-		ent = a->team_away.players[i];
-		if (ent && ent->inuse) {
-			ent->client->resp.damage_given = 0;
-			ent->client->resp.damage_recvd = 0;
-			G_RefillInventory(ent);
-			spectator_respawn(ent, CONN_SPAWNED);
-		}
+			if (ent && ent->inuse) {
+				ent->client->resp.damage_given = 0;
+				ent->client->resp.damage_recvd = 0;
+				G_RefillInventory(ent);
+				spectator_respawn(ent, CONN_SPAWNED);
+			}
 
-		a->team_home.players_alive = a->team_home.player_count;
-		a->team_away.players_alive = a->team_away.player_count;
+			a->teams[i].players_alive = a->teams[i].player_count;
+		}
 	}
 }
 
@@ -1677,15 +1674,19 @@ void G_SetSkin(edict_t *ent, const char *skin) {
  *
  */
 void G_ShowScores(arena_t *a) {
-	int i;
+	uint8_t i, j;
+	edict_t *ent;
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			a->team_home.players[i]->client->layout = LAYOUT_SCORES;
-		}
+	// for each team
+	for (i = 0; i < a->team_count; i++) {
 
-		if (a->team_away.players[i]) {
-			a->team_away.players[i]->client->layout = LAYOUT_SCORES;
+		// for each player
+		for (j = 0; j < a->teams[i].player_count; j++) {
+			ent = a->teams[i].players[j];
+
+			if (ent && ent->inuse) {
+				ent->client->layout = LAYOUT_SCORES;
+			}
 		}
 	}
 }
@@ -1696,15 +1697,19 @@ void G_ShowScores(arena_t *a) {
  *
  */
 void G_HideScores(arena_t *a) {
-	int i;
+	uint8_t i, j;
+	edict_t *ent;
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			a->team_home.players[i]->client->layout = 0;
-		}
+	// for each team
+	for (i = 0; i < a->team_count; i++) {
 
-		if (a->team_away.players[i]) {
-			a->team_away.players[i]->client->layout = 0;
+		// for each player
+		for (j = 0; j < a->teams[i].player_count; j++) {
+			ent = a->teams[i].players[j];
+
+			if (ent && ent->inuse) {
+				ent->client->layout = 0;
+			}
 		}
 	}
 }
@@ -1715,9 +1720,11 @@ void G_HideScores(arena_t *a) {
  *
  */
 void G_StartRound(arena_t *a) {
+	uint8_t i;
 
-	a->team_home.players_alive = a->team_home.player_count;
-	a->team_away.players_alive = a->team_away.player_count;
+	for (i=0; i<a->team_count; i++) {
+		a->teams[i].players_alive = a->teams[i].player_count;
+	}
 
 	a->state = ARENA_STATE_PLAY;
 
@@ -1790,23 +1797,27 @@ const char *G_SecsToString(int seconds) {
 
 // 
 arena_team_t *G_GetWinningTeam(arena_t *a) {
+	uint8_t i;
+
+	static uint8_t alivecount = 0;
+	static arena_team_t *winner;
 
 	if (!a)
 		return NULL;
 
-	// everyone dead, round is over
-	if (a->team_home.players_alive == 0 || a->team_away.players_alive == 0) {
+	for (i=0; i<a->team_count; i++) {
+		if (a->teams[i].players_alive > 0) {
+			alivecount++;
+			winner = &a->teams[i];
+		}
+	}
 	
-		if (a->team_home.damage_dealt > a->team_away.damage_dealt)
-			return &a->team_home;
-		
-		if (a->team_home.damage_dealt < a->team_away.damage_dealt)
-			return &a->team_away;
-		
-		// what if they tie?
+	if (alivecount > 1) {
+		winner = NULL;
 	}
 
-	return NULL;
+	alivecount = 0;
+	return winner;
 }
 
 /**
@@ -1906,7 +1917,7 @@ qboolean G_Teammates(edict_t *p1, edict_t *p2) {
 	if (!(p1->client && p2->client)) {
 		return qfalse;
 	}
-	return p1->client->pers.team == p2->client->pers.team;
+	return TEAM(p1) == TEAM(p2);
 }
 
 /**

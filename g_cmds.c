@@ -122,14 +122,15 @@ static qboolean CheckCheats(edict_t *ent)
 
 
 static void Cmd_Ready_f(edict_t *ent) {
+	uint8_t i;
+	client_persistant_t *p;
+
 	if (!ent->client)
 		return;
 	
-	if (!TEAM(ent)) {
+	if (!TEAM(ent))
 		return;
-	}
 	
-	client_persistant_t *p;
 	p = &ent->client->pers;
 	
 	ARENA(ent)->ready_think_frame = level.framenum;
@@ -137,9 +138,22 @@ static void Cmd_Ready_f(edict_t *ent) {
 	if (!p->ready) {
 		p->ready = qtrue;
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
+		for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+			if (!TEAM(ent)->players[i])
+				continue;
+
+			if (!TEAM(ent)->players[i]->client->pers.ready) {
+				p->team->ready = qfalse;
+				return;
+			}
+		}
+
+		p->team->ready = qtrue;
 		return;
+
 	} else {
 		p->ready = qfalse;
+		p->team->ready = qfalse;
 		if (p->arena->state == ARENA_STATE_COUNTDOWN) {
 			p->arena->round_start_frame = 0;
 			p->arena->state = ARENA_STATE_WARMUP;
@@ -1901,10 +1915,12 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 static void Cmd_Test_f(edict_t *ent) {
 	gi.cprintf(ent, PRINT_HIGH, "Spectators:\n");
 
+	/*
 	uint8_t i;
 	for (i = 0; i < ARENA(ent)->spectator_count; i++) {
 		gi.cprintf(ent, PRINT_HIGH, "%s\n", NAME(ARENA(ent)->spectators[i]));
 	}
+	*/
 }
 
 /*
