@@ -2081,6 +2081,8 @@ void G_ResetTeam(arena_team_t *t) {
 	t->damage_dealt = 0;
 	t->damage_taken = 0;
 	
+	t->ready = qfalse;
+
 	// respawn all players
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (t->players[i]) {
@@ -2102,14 +2104,16 @@ void G_ResetTeam(arena_team_t *t) {
 }
 
 void G_ResetArena(arena_t *a) {
+	uint8_t i;
 	
 	a->intermission_framenum = 0;
 	a->intermission_exit = 0;
 	a->state = ARENA_STATE_WARMUP;
 	a->ready = qfalse;
 	
-	G_ResetTeam(&a->team_home);
-	G_ResetTeam(&a->team_away);
+	for (i=0; i<a->team_count; i++) {
+		G_ResetTeam(&a->teams[i]);
+	}
 }
 
 void G_CheckIntermission(arena_t *a) {
