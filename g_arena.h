@@ -38,13 +38,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
 
-#define FOR_EACH_SPECTATOR(s, a) \
-	LIST_FOR_EACH(edict_t, s, &a->spectators, entry)
-	
-#define FOR_EACH_PLAYER(p, t) \
-	for(uint8_t idx = 0, p = NULL; \
-	idx < t->player_count; idx++, p = &t->players[idx])
-
 extern list_t	g_arenalist;
 
 #ifdef _WIN32
@@ -164,6 +157,7 @@ typedef struct {
 typedef struct {
 	char		name[50];
 	uint8_t		arena;
+	uint8_t		teams;
 	uint32_t	weapon_flags;
 	uint32_t	damage_flags;
 	uint8_t 	rounds;

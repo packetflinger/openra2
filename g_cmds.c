@@ -1913,14 +1913,7 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
-	gi.cprintf(ent, PRINT_HIGH, "Spectators:\n");
 
-	/*
-	uint8_t i;
-	for (i = 0; i < ARENA(ent)->spectator_count; i++) {
-		gi.cprintf(ent, PRINT_HIGH, "%s\n", NAME(ARENA(ent)->spectators[i]));
-	}
-	*/
 }
 
 /*

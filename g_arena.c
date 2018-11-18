@@ -1843,7 +1843,14 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->grenades = (int) g_ammo_grenades->value;
 		a->bullets = (int) g_ammo_bullets->value;
 		a->shells = (int) g_ammo_shells->value;
+		a->team_count = (int) g_team_count->value;
 		return;
+	}
+
+	if (m->teams) {
+		a->team_count = m->teams;
+	} else {
+		a->team_count = (int) g_team_count->value;
 	}
 
 	if (m->damage_flags) {
@@ -1979,6 +1986,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 				}
 
 				count++;
+			}
+
+			if (Q_strcasecmp(token, "teams") == 0 && inarena) {
+				entry[arena_num].teams = atoi(COM_Parse(&fp_data));
 			}
 
 			if (Q_strcasecmp(token, "damage") == 0 && inarena) {
