@@ -683,11 +683,11 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
-		// setup the teams
-		G_InitArenaTeams(&level.arenas[j]);
-
 		// apply overrides for default flags
 		G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
+
+		// setup the teams
+		G_InitArenaTeams(&level.arenas[j]);
 
 		level.arena_count++;
 		List_Append(&g_arenalist, &level.arenas[j].entry);
