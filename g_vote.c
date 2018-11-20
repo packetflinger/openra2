@@ -20,8 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
+// voting enabled and on a team or an admin
 #define MAY_VOTE(c) \
-    (c->pers.connected == CONN_SPAWNED || c->pers.admin || VF(SPECS))
+    (VF(ENABLED) && (c->pers.team || c->pers.admin))
 
 static int G_CalcVote(int *votes)
 {
@@ -122,6 +123,7 @@ qboolean G_CheckVote(void)
     int votes[2], total;
     int acc, rej;
 	uint8_t i;
+	//arena_t *arena;
 
     if (!level.vote.proposal) {
         return qfalse;
@@ -163,16 +165,20 @@ qboolean G_CheckVote(void)
         case VOTE_MAP:
             gi.bprintf(PRINT_HIGH, "Vote passed: next map is %s.\n", level.vote.map);
             strcpy(level.nextmap, level.vote.map);
+
+            /*FOR_EACH_ARENA(arena) {
+            	BeginIntermission(&arena);
+            }*/
 			for (i = 1; i <= level.arena_count; i++) {
 				BeginIntermission(&level.arenas[i]);
 			}
             break;
-        case VOTE_TELEMODE:
+        /*case VOTE_TELEMODE:
             gi.bprintf(PRINT_HIGH, "Vote passed: teleporter mode is now %s.\n",
                        level.vote.value ? "NO FREEZE" : "NORMAL");
             gi.cvar_set("g_teleporter_nofreeze", va("%d", level.vote.value));
             game.settings_modified++;
-            break;
+            break;*/
 
         default:
             break;
@@ -206,45 +212,41 @@ static void G_BuildProposal(char *buffer)
     case VOTE_MAP:
         sprintf(buffer, "map %s", level.vote.map);
         break;
-    case VOTE_TELEMODE:
+    case VOTE_TEAMS:
+        sprintf(buffer, "set g_team_count %s", level.vote.map);
+        break;
+    /*case VOTE_TELEMODE:
         sprintf(buffer, "%s teleporter mode",
                 level.vote.value ? "no freeze" : "normal");
-        break;
+        break;*/
     default:
         strcpy(buffer, "unknown");
         break;
     }
 }
 
-void Cmd_CastVote_f(edict_t *ent, qboolean accepted)
-{
-    if (!level.vote.proposal) {
+void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
+    if (!level.vote.proposal && !ARENA(ent)->vote.proposal) {
         gi.cprintf(ent, PRINT_HIGH, "No vote in progress.\n");
         return;
     }
+
     if (!MAY_VOTE(ent->client)) {
-        gi.cprintf(ent, PRINT_HIGH, "Spectators can't vote on this server.\n");
+        gi.cprintf(ent, PRINT_HIGH, "Only team players can vote.\n");
         return;
     }
+
     if (ent->client->level.vote.index == level.vote.index) {
         if (ent->client->level.vote.accepted == accepted) {
-            gi.cprintf(ent, PRINT_HIGH, "You have already voted %s.\n",
-                       accepted ? "YES" : "NO");
+            gi.cprintf(ent, PRINT_HIGH, "You've already voted %s.\n", accepted ? "YES" : "NO");
             return;
         }
-        if (!VF(CHANGE)) {
-            gi.cprintf(ent, PRINT_HIGH, "You can't change your vote.\n");
-            return;
-        }
-        if (VF(ANNOUNCE)) {
-            gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n",
-                       ent->client->pers.netname, accepted ? "YES" : "NO");
-        }
+
+        gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
+
     } else {
-        if (VF(ANNOUNCE)) {
-            gi.bprintf(PRINT_HIGH, "%s voted %s.\n",
-                       ent->client->pers.netname, accepted ? "YES" : "NO");
-        }
+
+    	gi.bprintf(PRINT_HIGH, "%s voted %s.\n", NAME(ent), accepted ? "YES" : "NO");
     }
 
     ent->client->level.vote.index = level.vote.index;
@@ -254,9 +256,7 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted)
         return;
     }
 
-    if (!VF(ANNOUNCE)) {
-        gi.cprintf(ent, PRINT_HIGH, "Vote cast.\n");
-    }
+    //gi.cprintf(ent, PRINT_HIGH, "Vote cast.\n");
 }
 
 static qboolean vote_victim(edict_t *ent)
@@ -295,7 +295,7 @@ static qboolean vote_map(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_telemode(edict_t *ent)
+/*static qboolean vote_telemode(edict_t *ent)
 {
     char *s = gi.argv(2);
     qboolean v;
@@ -316,6 +316,30 @@ static qboolean vote_telemode(edict_t *ent)
 
     level.vote.value = v;
     return qtrue;
+}*/
+
+static qboolean vote_teams(edict_t *ent) {
+	return qtrue;
+}
+
+static qboolean vote_weapons(edict_t *ent) {
+	return qtrue;
+}
+
+static qboolean vote_damage(edict_t *ent) {
+	return qtrue;
+}
+
+static qboolean vote_rounds(edict_t *ent) {
+	return qtrue;
+}
+
+static qboolean vote_health(edict_t *ent) {
+	return qtrue;
+}
+
+static qboolean vote_armor(edict_t *ent) {
+	return qtrue;
 }
 
 typedef struct {
@@ -328,7 +352,12 @@ static const vote_proposal_t vote_proposals[] = {
     { "kick",       VOTE_KICK,          vote_victim     },
     { "mute",       VOTE_MUTE,          vote_victim     },
     { "map",        VOTE_MAP,           vote_map        },
-    { "telemode",   VOTE_TELEMODE,      vote_telemode   },
+    { "teams",		VOTE_TEAMS,			vote_teams		},
+	{ "weapons",	VOTE_WEAPONS,		vote_weapons	},
+	{ "damage",		VOTE_DAMAGE,		vote_damage		},
+	{ "rounds",		VOTE_ROUNDS,		vote_rounds		},
+	{ "health",		VOTE_HEALTH,		vote_health		},
+	{ "armor",		VOTE_ARMOR,			vote_armor		},
     { NULL }
 };
 
@@ -342,13 +371,13 @@ void Cmd_Vote_f(edict_t *ent)
     int votes[2], total;
     char *s;
 
-    if (!mask) {
+    if (!VF(ENABLED)) {
         gi.cprintf(ent, PRINT_HIGH, "Voting is disabled on this server.\n");
         return;
     }
 
     if (argc < 2) {
-        if (!level.vote.proposal) {
+        if (!level.vote.proposal && !ARENA(ent)->vote.proposal) {
             gi.cprintf(ent, PRINT_HIGH, "No vote in progress. Type '%s help' for usage.\n", gi.argv(0));
             return;
         }
@@ -387,9 +416,29 @@ void Cmd_Vote_f(edict_t *ent)
             gi.cprintf(ent, PRINT_HIGH,
                        " map <name>                     Change current map\n");
         }
-        if (mask & VOTE_TELEMODE) {
+        if (mask & VOTE_TEAMS) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " telemode <normal/nofreeze>     Change teleporter mode\n");
+                       " teams <2-%d>     				Change the number of teams for this arena\n", MAX_TEAMS);
+        }
+        if (mask & VOTE_WEAPONS) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " weapons <weapflags>     		Change available weapons for this arena\n");
+        }
+        if (mask & VOTE_DAMAGE) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " damage <dmgflags>     			Change damage flags (falling dmg/friendly fire/armor)\n");
+        }
+        if (mask & VOTE_ROUNDS) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " rounds <count>     			Change the number of rounds per match for this arena\n");
+        }
+        if (mask & VOTE_HEALTH) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " health <count>     			Change the starting health for everyone in this arena\n");
+        }
+        if (mask & VOTE_ARMOR) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " armor <count>					Change the starting armor for everyone in this arena\n");
         }
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"
@@ -397,11 +446,13 @@ void Cmd_Vote_f(edict_t *ent)
                    " help                           Show this help\n");
         return;
     }
-    if (!strcmp(s, "yes") || !strcmp(s, "y")) {
+
+    if (!strcmp(s, "yes") || !strcmp(s, "y") || !strcmp(s, "1")) {
         Cmd_CastVote_f(ent, qtrue);
         return;
     }
-    if (!strcmp(s, "no") || !strcmp(s, "n")) {
+
+    if (!strcmp(s, "no") || !strcmp(s, "n") || !strcmp(s, "0")) {
         Cmd_CastVote_f(ent, qfalse);
         return;
     }

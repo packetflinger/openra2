@@ -90,6 +90,17 @@ typedef enum {
 
 
 typedef struct {
+	int8_t		proposal;			// which VOTE_*
+	int8_t		index;				// matches index in client_level_t
+	uint32_t	framenum;			// expiration (level.framenum + vote len cvar)
+	uint32_t	value;				//
+	edict_t		*victim;			// target for kick/mute
+	edict_t		*initiator;			// who called the vote
+	char		map[MAX_QPATH];		// the map
+} arena_vote_t;
+
+
+typedef struct {
 	char 				name[MAX_TEAM_NAME];
 	char				skin[MAX_TEAM_SKIN];
 	edict_t				*players[MAX_ARENA_TEAM_PLAYERS];
@@ -103,7 +114,6 @@ typedef struct {
 	uint32_t			damage_taken;
 	list_t				entry;
 } arena_team_t;
-
 
 
 typedef struct {
@@ -149,6 +159,8 @@ typedef struct {
 	list_t			entry;					// for making linked list of arenas
 	arena_team_t	teams[MAX_TEAMS];		// [team_count]
 	uint8_t			team_count;
+	arena_vote_t	vote;
+	qboolean		modified;				// defaults have been changed via votes
 } arena_t;
 
 

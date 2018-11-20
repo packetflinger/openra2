@@ -419,13 +419,18 @@ typedef struct {
 } game_locals_t;
 
 // vote proposals
-#define VOTE_KICK       1
-#define VOTE_MUTE       2
-#define VOTE_MAP        4
-#define VOTE_TELEMODE   8
+#define VOTE_KICK       (1 << 0)	// global
+#define VOTE_MUTE       (1 << 1) 	// global
+#define VOTE_MAP        (1 << 2)	// global
+#define VOTE_TEAMS		(1 << 3) 	// local (arena)
+#define VOTE_WEAPONS	(1 << 4)	// local
+#define VOTE_DAMAGE		(1 << 5)	// local
+#define VOTE_ROUNDS		(1 << 6)	// local
+#define VOTE_HEALTH		(1 << 7)	// local
+#define VOTE_ARMOR		(1 << 8)	// local
 
 // vote flags
-#define VF_ANNOUNCE 1
+#define VF_ENABLED	1
 #define VF_SHOW     2
 #define VF_SPECS    4
 #define VF_CHANGE   8
