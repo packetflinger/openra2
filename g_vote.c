@@ -418,27 +418,27 @@ void Cmd_Vote_f(edict_t *ent)
         }
         if (mask & VOTE_TEAMS) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " teams <2-%d>     				Change the number of teams for this arena\n", MAX_TEAMS);
+                       " teams <2-%d>                   Change the number of teams for this arena\n", MAX_TEAMS);
         }
         if (mask & VOTE_WEAPONS) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " weapons <weapflags>     		Change available weapons for this arena\n");
+                       " weapons <weapflags>            Change available weapons for this arena\n");
         }
         if (mask & VOTE_DAMAGE) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " damage <dmgflags>     			Change damage flags (falling dmg/friendly fire/armor)\n");
+                       " damage <dmgflags>              Change damage flags (falling dmg/friendly fire/armor)\n");
         }
         if (mask & VOTE_ROUNDS) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " rounds <count>     			Change the number of rounds per match for this arena\n");
+                       " rounds <count>                 Change the number of rounds per match for this arena\n");
         }
         if (mask & VOTE_HEALTH) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " health <count>     			Change the starting health for everyone in this arena\n");
+                       " health <count>                 Change the starting health for everyone in this arena\n");
         }
         if (mask & VOTE_ARMOR) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " armor <count>					Change the starting armor for everyone in this arena\n");
+                       " armor <count>                  Change the starting armor for everyone in this arena\n");
         }
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"

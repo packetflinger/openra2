@@ -985,11 +985,11 @@ static void G_Init(void) {
 
 	g_select_empty = gi.cvar("g_select_empty", "0", CVAR_ARCHIVE);
 	g_idle_time = gi.cvar("g_idle_time", "0", CVAR_GENERAL);
-	g_vote_mask = gi.cvar("g_vote_mask", "0", CVAR_GENERAL);
+	g_vote_mask = gi.cvar("g_vote_mask", va("%d", VOTE_ALL), CVAR_GENERAL);
 	g_vote_time = gi.cvar("g_vote_time", "30", CVAR_GENERAL);
 	g_vote_threshold = gi.cvar("g_vote_threshold", "51", CVAR_GENERAL);
 	g_vote_limit = gi.cvar("g_vote_limit", "3", CVAR_GENERAL);
-	g_vote_flags = gi.cvar("g_vote_flags", "11", CVAR_GENERAL);
+	g_vote_flags = gi.cvar("g_vote_flags", va("%d", VF_DEFAULT), CVAR_GENERAL);
 	g_intermission_time = gi.cvar("g_intermission_time", "10", CVAR_GENERAL);
 	g_admin_password = gi.cvar("g_admin_password", "", CVAR_GENERAL);
 	g_maps_random = gi.cvar("g_maps_random", "2", CVAR_GENERAL);

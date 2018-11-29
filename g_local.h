@@ -428,12 +428,16 @@ typedef struct {
 #define VOTE_ROUNDS		(1 << 6)	// local
 #define VOTE_HEALTH		(1 << 7)	// local
 #define VOTE_ARMOR		(1 << 8)	// local
+#define VOTE_ALL		(VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
+						VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
+						VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR)
 
 // vote flags
-#define VF_ENABLED	1
-#define VF_SHOW     2
-#define VF_SPECS    4
-#define VF_CHANGE   8
+#define VF_ENABLED	1		// globally allow voting on this server
+#define VF_SHOW     2		// show the vote in the player hud
+#define VF_SPECS    4		// allow spectators to vote
+#define VF_CHANGE   8		// allow users to change their vote
+#define VF_DEFAULT	(VF_ENABLED | VF_SHOW | VF_CHANGE)
 
 #define VF(x)       (((int)g_vote_flags->value & VF_##x) != 0)
 
@@ -1004,6 +1008,7 @@ void G_ResetLevel(void);
 #define PCS_DAMAGE	0
 #define PCS_DELTA	1
 #define PCS_RANK	2
+#define PCS_VOTE	3
 #define PCS_TOTAL	4
 
 #define CS_OBSERVE          (CS_GENERAL + 1)
