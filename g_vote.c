@@ -24,6 +24,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAY_VOTE(c) \
     (VF(ENABLED) && (c->pers.team || c->pers.admin))
 
+/**
+ * Return the arena number where a vote is active or 0 if it's global or -1 if not vote is active
+ */
+static int32_t G_VoteActive(void) {
+	arena_t *a;
+	FOR_EACH_ARENA(a) {
+		if (a->vote.proposal) {
+			return a->number;
+		}
+	}
+
+	if (level.vote.proposal) {
+		return level.vote.proposal;
+	}
+
+	return -1;
+}
+
+static void G_FinishArenaVote(arena_t *a) {
+	if (VF(SHOW)) {
+		gi.WriteByte(svc_configstring);
+		gi.WriteShort(CS_VOTE_PROPOSAL);
+		gi.WriteString("");
+		G_ArenaCast(a);
+	}
+	a->vote.proposal = 0;
+	a->vote.framenum = level.framenum;
+	a->vote.victim = NULL;
+}
+
 static int G_CalcVote(int *votes)
 {
     gclient_t *c;
@@ -60,10 +90,67 @@ static int G_CalcVote(int *votes)
     return total;
 }
 
+static uint8_t G_CalcArenaVote(arena_t *a, uint8_t *votes) {
+    gclient_t *c;
+    uint8_t total = 0;
+    uint8_t i;
+
+    if (!a) {
+    	return total;
+    }
+
+    votes[0] = votes[1] = 0;
+    for (i=0; i<a->client_count; i++) {
+    	if (!a->clients[i])
+    		return total;
+
+    	if (!a->clients[i]->client)
+    		return total;
+
+    	c = a->clients[i]->client;
+        if (c->pers.connected <= CONN_CONNECTED) {
+            continue;
+        }
+        if (c->pers.mvdspec) {
+            continue;
+        }
+        if (!MAY_VOTE(c)) {
+            continue; // don't count spectators
+        }
+
+        total++;
+        if (c->level.vote.index != a->vote.index) {
+            continue; // not voted yet
+        }
+
+        if (c->pers.admin) {
+            // admin vote decides immediately
+            votes[c->level.vote.accepted    ] = game.maxclients;
+            votes[c->level.vote.accepted ^ 1] = 0;
+            break;
+        }
+
+        // count normal vote
+        votes[c->level.vote.accepted]++;
+    }
+
+    return total;
+}
+
 static int _G_CalcVote(int *votes)
 {
-    int threshold = (int)g_vote_threshold->value;
+    int threshold = (int) g_vote_threshold->value;
     int total = G_CalcVote(votes);
+
+    total = total * threshold / 100 + 1;
+
+    return total;
+}
+
+static int _G_CalcArenaVote(arena_t *a, uint8_t *votes)
+{
+    int threshold = (int) g_vote_threshold->value;
+    int total = G_CalcArenaVote(a, votes);
 
     total = total * threshold / 100 + 1;
 
@@ -80,18 +167,75 @@ void G_FinishVote(void)
     level.vote.victim = NULL;
 }
 
+/**
+ * Arena specific votes
+ */
+static void G_UpdateArenaVote(arena_t *a) {
+	char buffer[MAX_QPATH];
+	uint8_t votes[2], total;
+	uint8_t remaining;
+
+	if (!a)
+		return;
+
+	if (!a->vote.proposal)
+		return;
+
+	// check timeout
+	if (level.framenum >= a->vote.framenum) {
+		G_bprintf(a, PRINT_HIGH, "Vote timed out.\n");
+		G_FinishArenaVote(a);
+		return;
+	}
+
+	if (!VF(SHOW)) {
+		return;
+	}
+
+	remaining = a->vote.framenum - level.framenum;
+	if (remaining % HZ) {
+		return;
+	}
+
+	total = _G_CalcArenaVote(a, votes);
+	Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
+			   votes[1], total, votes[0], remaining / HZ);
+
+	gi.WriteByte(svc_configstring);
+	gi.WriteShort(CS_VOTE_COUNT);
+	gi.WriteString(buffer);
+	G_ArenaCast(a);
+}
+
+/**
+ * Global votes
+ */
 void G_UpdateVote(void)
 {
     char buffer[MAX_QPATH];
     int votes[2], total;
     int remaining;
+    int32_t scope;
+    arena_t *a;
 
-    if (!level.vote.proposal) {
+    scope = G_VoteActive();
+
+    if (scope >= VOTE_SCOPE_ARENA) {
+    	FOR_EACH_ARENA(a) {
+    		if (a->vote.proposal) {
+    			G_UpdateArenaVote(a);
+    		}
+    	}
+
+    	return;
+    }
+
+    if (scope == VOTE_SCOPE_NONE) {
         return;
     }
 
     // check timeout
-    if (level.framenum >= level.vote.framenum) {
+    if (level.framenum >= level.vote.framenum && scope == VOTE_SCOPE_GLOBAL) {
         gi.bprintf(PRINT_HIGH, "Vote timed out.\n");
         G_FinishVote();
         return;
@@ -122,16 +266,28 @@ qboolean G_CheckVote(void)
     int threshold = (int)g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
-	uint8_t i;
-	//arena_t *arena;
+	int32_t scope;
+	arena_t *a;
 
-    if (!level.vote.proposal) {
+	scope = G_VoteActive();
+
+	if (scope >= VOTE_SCOPE_ARENA) {
+		FOR_EACH_ARENA(a) {
+			if (a->vote.proposal) {
+				G_UpdateArenaVote(a);
+			}
+		}
+
+		goto finish;
+	}
+
+    if (scope == VOTE_SCOPE_NONE) {
         return qfalse;
     }
 
     // is vote initiator gone?
     if (!level.vote.initiator->pers.connected) {
-        gi.bprintf(PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
+    	gi.bprintf(PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
         goto finish;
     }
 
@@ -164,21 +320,8 @@ qboolean G_CheckVote(void)
             break;
         case VOTE_MAP:
             gi.bprintf(PRINT_HIGH, "Vote passed: next map is %s.\n", level.vote.map);
-            strcpy(level.nextmap, level.vote.map);
-
-            /*FOR_EACH_ARENA(arena) {
-            	BeginIntermission(&arena);
-            }*/
-			for (i = 1; i <= level.arena_count; i++) {
-				BeginIntermission(&level.arenas[i]);
-			}
+            gi.AddCommandString(va("gamemap %s", level.vote.map));
             break;
-        /*case VOTE_TELEMODE:
-            gi.bprintf(PRINT_HIGH, "Vote passed: teleporter mode is now %s.\n",
-                       level.vote.value ? "NO FREEZE" : "NORMAL");
-            gi.cvar_set("g_teleporter_nofreeze", va("%d", level.vote.value));
-            game.settings_modified++;
-            break;*/
 
         default:
             break;
@@ -295,50 +438,52 @@ static qboolean vote_map(edict_t *ent)
     return qtrue;
 }
 
-/*static qboolean vote_telemode(edict_t *ent)
-{
-    char *s = gi.argv(2);
-    qboolean v;
-
-    if (!Q_stricmp(s, "normal") || !Q_stricmp(s, "freeze") || !Q_stricmp(s, "q2")) {
-        v =  qfalse;
-    } else if (!Q_stricmp(s, "nofreeze") || !Q_stricmp(s, "q3")) {
-        v = qtrue;
-    } else {
-        gi.cprintf(ent, PRINT_HIGH, "Please specify one of normal/nofreeze/q2/q3.\n");
-        return qfalse;
-    }
-
-    if (!!(int)g_teleporter_nofreeze->value == v) {
-        gi.cprintf(ent, PRINT_HIGH, "Teleporter mode is already set to %s.\n", v ? "NOFREEZE" : "NORMAL");
-        return qfalse;
-    }
-
-    level.vote.value = v;
-    return qtrue;
-}*/
 
 static qboolean vote_teams(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 2, MAX_TEAMS);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
 static qboolean vote_weapons(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 0, ARENAWEAPON_ALL);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
 static qboolean vote_damage(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 0, ARENADAMAGE_ALL);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
 static qboolean vote_rounds(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 1, MAX_ROUNDS);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
 static qboolean vote_health(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 1, 999);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
 static qboolean vote_armor(edict_t *ent) {
+	char *arg = gi.argv(2);
+	unsigned count = strtoul(arg, NULL, 10);
+	clamp(count, 0, 999);
+	ARENA(ent)->vote.value = count;
 	return qtrue;
 }
 
@@ -477,6 +622,7 @@ void Cmd_Vote_f(edict_t *ent)
 
     if (level.framenum - level.vote.framenum < 2 * HZ) {
         gi.cprintf(ent, PRINT_HIGH, "You may not initiate votes too soon.\n");
+        gi.dprintf("level frame: %d - vote frame: %d\n", level.framenum, level.vote.framenum);
         return;
     }
 
@@ -553,7 +699,12 @@ void Cmd_Vote_f(edict_t *ent)
             gi.configstring(CS_VOTE_PROPOSAL, va("Vote: %s", buffer));
             G_UpdateVote();
         }
-        gi.bprintf(PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
+
+        if (level.vote.proposal) {
+        	gi.bprintf(PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
+        } else {
+        	G_bprintf(ARENA(ent), PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
+        }
     }
 }
 

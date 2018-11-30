@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAX_ARENA_TEAM_PLAYERS	10
 #define MAX_TEAM_NAME			20
 #define MAX_TEAM_SKIN			25
+#define MAX_ROUNDS				21
 
 #define str_equal(x, y)			(Q_stricmp((x), (y)) == 0)
 
@@ -238,3 +239,4 @@ void G_ClearRoundInfo(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
 void G_SpectatorsJoin(edict_t *ent);
 void G_SpectatorsPart(edict_t *ent);
+void G_ArenaCast(arena_t *a);

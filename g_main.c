@@ -1076,7 +1076,7 @@ static void G_Init(void) {
 	clamp(g_damage_flags->value, 0, 31);
 	clamp(g_timein_time->value, 3, 30);
 	clamp(g_timeout_time->value, 30, 300);
-	clamp(g_round_limit->value, 1, 9);
+	clamp(g_round_limit->value, 1, MAX_ROUNDS);
 	clamp(g_health_start->value, 1, 999);
 	clamp(g_armor_start->value, 0, 999);
 	clamp(g_ammo_slugs->value, 0, 999);
@@ -1085,7 +1085,7 @@ static void G_Init(void) {
 	clamp(g_ammo_grenades->value, 0, 999);
 	clamp(g_ammo_bullets->value, 0, 999);
 	clamp(g_ammo_shells->value, 0, 999);
-	clamp(g_team_count->value, 2, 5);
+	clamp(g_team_count->value, 2, MAX_TEAMS);
 
 	// initialize all entities for this game
 	game.maxentities = maxentities->value;

@@ -2171,3 +2171,15 @@ void G_CheckIntermission(arena_t *a) {
 		}*/
 	}
 }
+
+
+/**
+ * Similar to gi.multicast() but only sends the msg buffer to the members of 1 arena
+ */
+void G_ArenaCast(arena_t *a) {
+	uint8_t i;
+
+	for (i=0; i<a->player_count; i++) {
+		gi.unicast(a->clients[i], qtrue);
+	}
+}

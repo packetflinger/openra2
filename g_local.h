@@ -418,6 +418,11 @@ typedef struct {
     char        dir[MAX_OSPATH]; // where variable data is stored
 } game_locals_t;
 
+// vote scopes
+#define VOTE_SCOPE_NONE		(-1)	// no vote
+#define VOTE_SCOPE_GLOBAL	(0)		// vote affects the whole server
+#define VOTE_SCOPE_ARENA	(1)		// vote affects only one arena
+
 // vote proposals
 #define VOTE_KICK       (1 << 0)	// global
 #define VOTE_MUTE       (1 << 1) 	// global
