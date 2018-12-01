@@ -190,7 +190,7 @@ typedef struct {
 
 void change_arena(edict_t *self);
 const char *DemoName(edict_t *ent);
-void G_ArenaCast(arena_t *a);
+void G_ArenaCast(arena_t *a, qboolean reliable);
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaSound(arena_t *a, int index);
@@ -238,6 +238,7 @@ void G_SpectatorsJoin(edict_t *ent);
 void G_SpectatorsPart(edict_t *ent);
 void G_StartingWeapon(edict_t *ent);
 void G_StartRound(arena_t *a);
+void G_TeamCast(arena_team_t *t, qboolean reliable);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
 void G_TimeoutFrame(arena_t *a);
 void G_UpdateArenaVote(arena_t *a);

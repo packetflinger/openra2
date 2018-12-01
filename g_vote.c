@@ -30,7 +30,7 @@ void G_FinishArenaVote(arena_t *a) {
 		gi.WriteByte(svc_configstring);
 		gi.WriteShort(CS_VOTE_PROPOSAL);
 		gi.WriteString("");
-		G_ArenaCast(a);
+		G_ArenaCast(a, true);
 	}
 	a->vote.proposal = 0;
 	a->vote.framenum = level.framenum;
@@ -114,67 +114,10 @@ static int G_CalcVote(int *votes, arena_t *a)
     return total;
 }
 
-static uint8_t G_CalcArenaVote(arena_t *a, uint8_t *votes) {
-    gclient_t *c;
-    uint8_t total = 0;
-    uint8_t i;
-
-    if (!a) {
-    	return total;
-    }
-
-    votes[0] = votes[1] = 0;
-    for (i=0; i<a->client_count; i++) {
-    	if (!a->clients[i])
-    		return total;
-
-    	if (!a->clients[i]->client)
-    		return total;
-
-    	c = a->clients[i]->client;
-        if (c->pers.connected <= CONN_CONNECTED) {
-            continue;
-        }
-        if (c->pers.mvdspec) {
-            continue;
-        }
-        if (!MAY_VOTE(c)) {
-            continue; // don't count spectators
-        }
-
-        total++;
-        if (c->level.vote.index != a->vote.index) {
-            continue; // not voted yet
-        }
-
-        if (c->pers.admin) {
-            // admin vote decides immediately
-            votes[c->level.vote.accepted    ] = game.maxclients;
-            votes[c->level.vote.accepted ^ 1] = 0;
-            break;
-        }
-
-        // count normal vote
-        votes[c->level.vote.accepted]++;
-    }
-
-    return total;
-}
-
 static int _G_CalcVote(int *votes, arena_t *a)
 {
     int threshold = (int) g_vote_threshold->value;
     int total = G_CalcVote(votes, a);
-
-    total = total * threshold / 100 + 1;
-
-    return total;
-}
-
-static int _G_CalcArenaVote(arena_t *a, uint8_t *votes)
-{
-    int threshold = (int) g_vote_threshold->value;
-    int total = G_CalcArenaVote(a, votes);
 
     total = total * threshold / 100 + 1;
 
@@ -196,8 +139,8 @@ void G_FinishVote(void)
  */
 void G_UpdateArenaVote(arena_t *a) {
 	char buffer[MAX_QPATH];
-	uint8_t votes[2], total, remaining, i;
-	edict_t *ent;
+	uint8_t total, remaining;
+	int votes[2];
 
 	if (!a)
 		return;
@@ -221,20 +164,14 @@ void G_UpdateArenaVote(arena_t *a) {
 		return;
 	}
 
-	total = _G_CalcArenaVote(a, votes);
+	total = _G_CalcVote(votes, a);
 	Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
 			   votes[1], total, votes[0], remaining / HZ);
 
 	gi.WriteByte(svc_configstring);
 	gi.WriteShort(CS_VOTE_COUNT);
 	gi.WriteString(buffer);
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		ent = a->clients[i];
-
-		if (ent && ent->inuse) {
-			gi.unicast(ent, qtrue);
-		}
-	}
+	G_ArenaCast(a, qtrue);
 }
 
 /**
@@ -638,7 +575,6 @@ void Cmd_Vote_f(edict_t *ent)
 
     if (level.framenum - level.vote.framenum < 2 * HZ) {
         gi.cprintf(ent, PRINT_HIGH, "You may not initiate votes too soon.\n");
-        gi.dprintf("level frame: %d - vote frame: %d\n", level.framenum, level.vote.framenum);
         return;
     }
 

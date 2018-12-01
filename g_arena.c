@@ -2182,15 +2182,29 @@ void G_CheckIntermission(arena_t *a) {
 /**
  * Similar to gi.multicast() but only sends the msg buffer to the members of 1 arena
  */
-void G_ArenaCast(arena_t *a) {
+void G_ArenaCast(arena_t *a, qboolean reliable) {
+	uint8_t i;
+	arena_team_t *team;
+
+	for (i=0; i<a->team_count; i++) {
+		team = &a->teams[i];
+
+		G_TeamCast(team, reliable);
+	}
+}
+
+
+/**
+ * Just like gi.multicast() but to every team player
+ */
+void G_TeamCast(arena_team_t *t, qboolean reliable) {
 	uint8_t i;
 	edict_t *ent;
 
 	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		ent = a->clients[i];
-
+		ent = t->players[i];
 		if (ent && ent->inuse) {
-			gi.unicast(ent, qtrue);
+			gi.unicast(ent, reliable);
 		}
 	}
 }
