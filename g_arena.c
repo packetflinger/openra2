@@ -760,6 +760,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 
 	for (i = 0; i < arena->spectator_count; i++) {
 		ent = arena->spectators[i];
+		if (!ent)
+			continue;
+
 		if (!ent->client)
 			continue;
 
@@ -915,6 +918,9 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
 	for (i = 0; i < arena->spectator_count; i++) {
 		ent = arena->spectators[i];
+		if (!ent)
+			continue;
+
 		if (!ent->client)
 			continue;
 
