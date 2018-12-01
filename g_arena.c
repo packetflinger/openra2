@@ -298,9 +298,8 @@ void G_CheckArenaRules(arena_t *a) {
 	}
 }
 
-// check for things like state changes, start/end of rounds, timeouts, countdown clocks, etc
+// check for things like state changes, start/end of rounds, timeouts, countdown clocks, votes, etc
 void G_ArenaThink(arena_t *a) {
-	int8_t i;
 	static qboolean foundwinner = false;
 
 	if (!a)
@@ -316,11 +315,6 @@ void G_ArenaThink(arena_t *a) {
 	}
 	
 	G_CheckIntermission(a);
-
-	// look at each player
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		
-	}
 	
 	// end of round
 	if (a->state == ARENA_STATE_PLAY) {
@@ -374,6 +368,7 @@ void G_ArenaThink(arena_t *a) {
 	}
 
 	G_CheckTimers(a);
+	G_UpdateArenaVote(a);
 	G_CheckArenaRules(a);
 }
 

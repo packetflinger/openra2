@@ -1913,7 +1913,7 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
-
+	gi.cprintf(ent, PRINT_HIGH, "current level frame: %d\n", level.framenum);
 }
 
 /*

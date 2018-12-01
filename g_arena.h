@@ -240,3 +240,5 @@ void G_UpdateConfigStrings(arena_t *a);
 void G_SpectatorsJoin(edict_t *ent);
 void G_SpectatorsPart(edict_t *ent);
 void G_ArenaCast(arena_t *a);
+void G_UpdateArenaVote(arena_t *a);
+void G_FinishArenaVote(arena_t *a);

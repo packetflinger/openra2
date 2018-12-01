@@ -24,25 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAY_VOTE(c) \
     (VF(ENABLED) && (c->pers.team || c->pers.admin))
 
-/**
- * Return the arena number where a vote is active or 0 if it's global or -1 if not vote is active
- */
-static int32_t G_VoteActive(void) {
-	arena_t *a;
-	FOR_EACH_ARENA(a) {
-		if (a->vote.proposal) {
-			return a->number;
-		}
-	}
 
-	if (level.vote.proposal) {
-		return level.vote.proposal;
-	}
-
-	return -1;
-}
-
-static void G_FinishArenaVote(arena_t *a) {
+void G_FinishArenaVote(arena_t *a) {
 	if (VF(SHOW)) {
 		gi.WriteByte(svc_configstring);
 		gi.WriteShort(CS_VOTE_PROPOSAL);
@@ -54,37 +37,78 @@ static void G_FinishArenaVote(arena_t *a) {
 	a->vote.victim = NULL;
 }
 
-static int G_CalcVote(int *votes)
+static int G_CalcVote(int *votes, arena_t *a)
 {
     gclient_t *c;
+    uint8_t i;
     int total = 0;
 
     votes[0] = votes[1] = 0;
-    for (c = game.clients; c < game.clients + game.maxclients; c++) {
-        if (c->pers.connected <= CONN_CONNECTED) {
-            continue;
-        }
-        if (c->pers.mvdspec) {
-            continue;
-        }
-        if (!MAY_VOTE(c)) {
-            continue; // don't count spectators
-        }
 
-        total++;
-        if (c->level.vote.index != level.vote.index) {
-            continue; // not voted yet
-        }
+    if (a && a->vote.proposal) {
+    	for (i=0; i<a->client_count; i++) {
+    		if (!a->clients[i])
+    			continue;
 
-        if (c->pers.admin) {
-            // admin vote decides immediately
-            votes[c->level.vote.accepted    ] = game.maxclients;
-            votes[c->level.vote.accepted ^ 1] = 0;
-            break;
-        }
+    		if (!a->clients[i]->client)
+    			continue;
 
-        // count normal vote
-        votes[c->level.vote.accepted]++;
+    		c = a->clients[i]->client;
+
+			if (c->pers.connected <= CONN_CONNECTED) {
+				continue;
+			}
+
+			if (c->pers.mvdspec) {
+				continue;
+			}
+
+			if (!MAY_VOTE(c)) {
+				continue; // don't count spectators
+			}
+
+			total++;
+			if (c->level.vote.index != a->vote.index) {
+				continue; // not voted yet
+			}
+
+			if (c->pers.admin) {
+				// admin vote decides immediately
+				votes[c->level.vote.accepted    ] = game.maxclients;
+				votes[c->level.vote.accepted ^ 1] = 0;
+				break;
+			}
+
+			// count normal vote
+			votes[c->level.vote.accepted]++;
+		}
+    } else {
+		for (c = game.clients; c < game.clients + game.maxclients; c++) {
+			if (c->pers.connected <= CONN_CONNECTED) {
+				continue;
+			}
+			if (c->pers.mvdspec) {
+				continue;
+			}
+			if (!MAY_VOTE(c)) {
+				continue; // don't count spectators
+			}
+
+			total++;
+			if (c->level.vote.index != level.vote.index) {
+				continue; // not voted yet
+			}
+
+			if (c->pers.admin) {
+				// admin vote decides immediately
+				votes[c->level.vote.accepted    ] = game.maxclients;
+				votes[c->level.vote.accepted ^ 1] = 0;
+				break;
+			}
+
+			// count normal vote
+			votes[c->level.vote.accepted]++;
+		}
     }
 
     return total;
@@ -137,10 +161,10 @@ static uint8_t G_CalcArenaVote(arena_t *a, uint8_t *votes) {
     return total;
 }
 
-static int _G_CalcVote(int *votes)
+static int _G_CalcVote(int *votes, arena_t *a)
 {
     int threshold = (int) g_vote_threshold->value;
-    int total = G_CalcVote(votes);
+    int total = G_CalcVote(votes, a);
 
     total = total * threshold / 100 + 1;
 
@@ -170,10 +194,9 @@ void G_FinishVote(void)
 /**
  * Arena specific votes
  */
-static void G_UpdateArenaVote(arena_t *a) {
+void G_UpdateArenaVote(arena_t *a) {
 	char buffer[MAX_QPATH];
-	uint8_t votes[2], total;
-	uint8_t remaining;
+	uint8_t votes[2], total, remaining;
 
 	if (!a)
 		return;
@@ -183,7 +206,7 @@ static void G_UpdateArenaVote(arena_t *a) {
 
 	// check timeout
 	if (level.framenum >= a->vote.framenum) {
-		G_bprintf(a, PRINT_HIGH, "Vote timed out.\n");
+		G_bprintf(a, PRINT_HIGH, "Local vote timed out.\n");
 		G_FinishArenaVote(a);
 		return;
 	}
@@ -215,27 +238,13 @@ void G_UpdateVote(void)
     char buffer[MAX_QPATH];
     int votes[2], total;
     int remaining;
-    int32_t scope;
-    arena_t *a;
 
-    scope = G_VoteActive();
-
-    if (scope >= VOTE_SCOPE_ARENA) {
-    	FOR_EACH_ARENA(a) {
-    		if (a->vote.proposal) {
-    			G_UpdateArenaVote(a);
-    		}
-    	}
-
-    	return;
-    }
-
-    if (scope == VOTE_SCOPE_NONE) {
+    if (!level.vote.proposal) {
         return;
     }
 
     // check timeout
-    if (level.framenum >= level.vote.framenum && scope == VOTE_SCOPE_GLOBAL) {
+    if (level.framenum >= level.vote.framenum) {
         gi.bprintf(PRINT_HIGH, "Vote timed out.\n");
         G_FinishVote();
         return;
@@ -251,7 +260,7 @@ void G_UpdateVote(void)
         return;
     }
 
-    total = _G_CalcVote(votes);
+    total = _G_CalcVote(votes, NULL);
     Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
                votes[1], total, votes[0], remaining / HZ);
 
@@ -263,25 +272,11 @@ void G_UpdateVote(void)
 
 qboolean G_CheckVote(void)
 {
-    int threshold = (int)g_vote_threshold->value;
+    int threshold = (int) g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
-	int32_t scope;
-	arena_t *a;
 
-	scope = G_VoteActive();
-
-	if (scope >= VOTE_SCOPE_ARENA) {
-		FOR_EACH_ARENA(a) {
-			if (a->vote.proposal) {
-				G_UpdateArenaVote(a);
-			}
-		}
-
-		goto finish;
-	}
-
-    if (scope == VOTE_SCOPE_NONE) {
+    if (!level.vote.proposal) {
         return qfalse;
     }
 
@@ -298,7 +293,7 @@ qboolean G_CheckVote(void)
     }
 
     // are there any players?
-    total = G_CalcVote(votes);
+    total = G_CalcVote(votes, NULL);
     if (!total) {
         gi.bprintf(PRINT_HIGH, "Vote aborted due to the absence of players.\n");
         goto finish;
@@ -312,7 +307,7 @@ qboolean G_CheckVote(void)
 
         case VOTE_KICK:
             gi.bprintf(PRINT_HIGH, "Vote passed.\n");
-            gi.AddCommandString(va("kick %d\n", (int)(level.vote.victim - game.clients)));
+            gi.AddCommandString(va("kick %d\n", (int) (level.vote.victim - game.clients)));
             break;
         case VOTE_MUTE:
             gi.bprintf(PRINT_HIGH, "Vote passed: %s has been muted\n", level.vote.victim->pers.netname);
@@ -342,9 +337,12 @@ finish:
 }
 
 
-static void G_BuildProposal(char *buffer)
+static void G_BuildProposal(char *buffer, arena_t *a)
 {
-    switch (level.vote.proposal) {
+	uint8_t proposal;
+	proposal = (level.vote.proposal) ? level.vote.proposal : (a->vote.proposal) ? a->vote.proposal : 0;
+
+    switch (proposal) {
 
     case VOTE_KICK:
         sprintf(buffer, "kick %s", level.vote.victim->pers.netname);
@@ -356,12 +354,9 @@ static void G_BuildProposal(char *buffer)
         sprintf(buffer, "map %s", level.vote.map);
         break;
     case VOTE_TEAMS:
-        sprintf(buffer, "set g_team_count %s", level.vote.map);
+        sprintf(buffer, "teams %d", a->vote.value);
         break;
-    /*case VOTE_TELEMODE:
-        sprintf(buffer, "%s teleporter mode",
-                level.vote.value ? "no freeze" : "normal");
-        break;*/
+
     default:
         strcpy(buffer, "unknown");
         break;
@@ -515,6 +510,9 @@ void Cmd_Vote_f(edict_t *ent)
     int argc = gi.argc();
     int votes[2], total;
     char *s;
+    arena_t *a;
+
+    a = ARENA(ent);
 
     if (!VF(ENABLED)) {
         gi.cprintf(ent, PRINT_HIGH, "Voting is disabled on this server.\n");
@@ -526,16 +524,27 @@ void Cmd_Vote_f(edict_t *ent)
             gi.cprintf(ent, PRINT_HIGH, "No vote in progress. Type '%s help' for usage.\n", gi.argv(0));
             return;
         }
-        G_BuildProposal(buffer);
-        total = _G_CalcVote(votes);
-        gi.cprintf(ent, PRINT_HIGH,
-                   "Proposal:   %s\n"
-                   "Yes/No:     %d/%d [%d]\n"
-                   "Timeout:    %d sec\n"
-                   "Initiator:  %s\n",
-                   buffer, votes[1], votes[0], total,
-                   (level.vote.framenum - level.framenum) / HZ,
-                   level.vote.initiator->pers.netname);
+        G_BuildProposal(buffer, a);
+        total = _G_CalcVote(votes, a);
+        if (a->vote.proposal) {
+        	gi.cprintf(ent, PRINT_HIGH,
+					   "Proposal:   %s\n"
+					   "Yes/No:     %d/%d [%d]\n"
+					   "Timeout:    %d sec\n"
+					   "Initiator:  %s\n",
+					   buffer, votes[1], votes[0], total,
+					   (a->vote.framenum - level.framenum) / HZ,
+					   a->vote.initiator->client->pers.netname);
+        } else {
+			gi.cprintf(ent, PRINT_HIGH,
+					   "Proposal:   %s\n"
+					   "Yes/No:     %d/%d [%d]\n"
+					   "Timeout:    %d sec\n"
+					   "Initiator:  %s\n",
+					   buffer, votes[1], votes[0], total,
+					   (level.vote.framenum - level.framenum) / HZ,
+					   level.vote.initiator->pers.netname);
+        }
         return;
     }
 
@@ -681,12 +690,19 @@ void Cmd_Vote_f(edict_t *ent)
         return;
     }
 
-    level.vote.initiator = ent->client;
-    level.vote.proposal = v->bit;
-    level.vote.framenum = level.framenum + g_vote_time->value * HZ;
-    level.vote.index++;
+    if (v->bit <= VOTE_MAP) {	// global
+		level.vote.initiator = ent->client;
+		level.vote.proposal = v->bit;
+		level.vote.framenum = level.framenum + g_vote_time->value * HZ;
+		level.vote.index++;
+    } else {	// per arena
+    	a->vote.initiator = ent;
+		a->vote.proposal = v->bit;
+		a->vote.framenum = level.framenum + g_vote_time->value * HZ;
+		a->vote.index++;
+    }
 
-    G_BuildProposal(buffer);
+    G_BuildProposal(buffer, a);
     gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n",
                ent->client->pers.netname, buffer);
     ent->client->level.vote.index = level.vote.index;
