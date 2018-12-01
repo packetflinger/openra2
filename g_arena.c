@@ -278,25 +278,32 @@ void G_ArenaStuff(arena_t *a, const char *command) {
 	}
 }
 
+
 /**
  * Check for things like players dropping from teams
  */
 void G_CheckArenaRules(arena_t *a) {
 
+	uint8_t previous, i;
+
 	if (!a)
 		return;
 
-	// teams are now uneven, check if we should abort
-	if (a->team_away.player_count != a->team_home.player_count && a->state > ARENA_STATE_WARMUP) {
-		if (g_team_balance->value > 0 ||
-			a->team_away.player_count == 0 ||
-			a->team_home.player_count == 0) {
+	if (a->state > ARENA_STATE_WARMUP && g_team_balance->value > 0) {
+		previous = a->teams[0].player_count;
 
-			a->current_round = a->round_limit;
-			G_EndRound(a, NULL);
+		for (i=0; i<a->team_count; i++) {
+			if (a->teams[i].player_count != previous || a->teams[i].player_count == 0) {
+				a->current_round = a->round_limit;
+				G_EndRound(a, NULL);
+				return;
+			}
+
+			previous = a->teams[i].player_count;
 		}
 	}
 }
+
 
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, votes, etc
 void G_ArenaThink(arena_t *a) {
