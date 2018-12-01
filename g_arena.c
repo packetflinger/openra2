@@ -381,13 +381,13 @@ void G_ArenaThink(arena_t *a) {
 
 // Stuff that needs to be reset between rounds
 void G_ClearRoundInfo(arena_t *a) {
+	uint8_t i;
+
 	a->current_round = 1;
-	
-	a->team_home.damage_dealt = 0;
-	a->team_home.damage_taken = 0;
-	
-	a->team_away.damage_dealt = 0;
-	a->team_away.damage_taken = 0;
+	for (i=0; i<a->team_count; i++) {
+		a->teams[i].damage_dealt = 0;
+		a->teams[i].damage_taken = 0;
+	}
 }
 
 // broadcast print to only members of specified arena
@@ -1074,8 +1074,9 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 	va_list argptr;
 	char string[MAX_STRING_CHARS];
 	size_t len;
-	int i;
+	int i, j;
 	edict_t *ent;
+	arena_team_t *team;
 
 	va_start(argptr, fmt);
 	len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
@@ -1085,19 +1086,17 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 		return;
 	}
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			ent = a->team_home.players[i];
-			gi.WriteByte(svc_centerprint);
-			gi.WriteString(string);
-			gi.unicast(ent, true);
-		}
+	for (i=0; i<a->team_count; i++) {
+		team = &a->teams[i];
 
-		if (a->team_away.players[i]) {
-			ent = a->team_away.players[i];
-			gi.WriteByte(svc_centerprint);
-			gi.WriteString(string);
-			gi.unicast(ent, true);
+		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+			ent = team->players[j];
+
+			if (ent && ent->inuse) {
+				gi.WriteByte(svc_centerprint);
+				gi.WriteString(string);
+				gi.unicast(ent, true);
+			}
 		}
 	}
 }
@@ -1248,34 +1247,37 @@ void G_ForceReady(arena_team_t *team, qboolean ready) {
 }
 
 void G_ForceDemo(arena_t *arena) {
-	uint32_t i;
+	uint8_t i, j;
+	edict_t *ent;
+	arena_team_t *team;
 	
 	if (!g_demo->value) {
 		return;
 	}
 	
 	if (arena->recording) {
-		for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-			
-			if (arena->team_home.players[i]) {
-				G_StuffText(arena->team_home.players[i], "stop\n");
-			}
-			
-			if (arena->team_away.players[i]) {
-				G_StuffText(arena->team_away.players[i], "stop\n");
+
+		for (i=0; i<arena->team_count; i++) {
+			team = &arena->teams[i];
+			for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+				ent = team->players[j];
+				if (ent && ent->inuse) {
+					G_StuffText(ent, "stop\n");
+				}
 			}
 		}
 		
 		arena->recording = qfalse;
 		
 	} else {
-		for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-			if (arena->team_home.players[i]) {
-				G_StuffText(arena->team_home.players[i], va("record \"%s\"\n", DemoName(arena->team_home.players[i])));
-			}
-			
-			if (arena->team_away.players[i]) {
-				G_StuffText(arena->team_away.players[i], va("record \"%s\"\n", DemoName(arena->team_away.players[i])));
+
+		for (i=0; i<arena->team_count; i++) {
+			team = &arena->teams[i];
+			for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+				ent = team->players[j];
+				if (ent && ent->inuse) {
+					G_StuffText(ent, va("record \"%s\"\n", DemoName(ent)));
+				}
 			}
 		}
 		
@@ -1284,18 +1286,21 @@ void G_ForceDemo(arena_t *arena) {
 }
 
 void G_ForceScreenshot(arena_t *arena) {
+	uint8_t i, j;
+	edict_t *ent;
+	arena_team_t *team;
+
 	if (!g_screenshot->value) {
 		return;
 	}
 	
-	uint32_t i;
-	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (arena->team_home.players[i]) {
-			G_StuffText(arena->team_home.players[i], "wait; screenshot\n");
-		}
-		
-		if (arena->team_away.players[i]) {
-			G_StuffText(arena->team_away.players[i], "wait; screenshot\n");
+	for (i=0; i<arena->team_count; i++) {
+		team = &arena->teams[i];
+		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+			ent = team->players[j];
+			if (ent && ent->inuse) {
+				G_StuffText(ent, "wait; screenshot\n");
+			}
 		}
 	}
 }
@@ -1378,11 +1383,13 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
  *
  */
 void G_FreezePlayers(arena_t *a, qboolean freeze) {
+	uint8_t i, j;
+	edict_t *ent;
+	arena_team_t *team;
 
 	if (!a)
 		return;
 
-	int i;
 	pmtype_t type;
 
 	if (freeze) {
@@ -1391,13 +1398,13 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
 		type = PM_NORMAL;
 	}
 
-	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-		if (a->team_home.players[i]) {
-			a->team_home.players[i]->client->ps.pmove.pm_type = type;
-		}
-
-		if (a->team_away.players[i]) {
-			a->team_away.players[i]->client->ps.pmove.pm_type = type;
+	for (i=0; i<a->team_count; i++) {
+		team = &a->teams[i];
+		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+			ent = team->players[j];
+			if (ent && ent->inuse) {
+				ent->client->ps.pmove.pm_type = type;
+			}
 		}
 	}
 }
@@ -1555,13 +1562,12 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	if (!ent->client)
 		return;
 
-	arena = ent->client->pers.arena;
-	oldteam = ent->client->pers.team;
+	arena = ARENA(ent);
+	oldteam = TEAM(ent);
 
 	if (!oldteam)
 		return;
 
-	oldteam->player_count--;
 	if (oldteam->captain == ent) {
 		oldteam->captain = 0;
 	}
@@ -1573,7 +1579,7 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 		}
 	}
 
-	ent->client->pers.team = 0;
+	oldteam->player_count--;
 
 	if (!silent) {
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s left team %s\n",
@@ -1581,14 +1587,7 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	}
 
 	ent->client->pers.ready = false;
-
-	// last team member, end the match
-	if (oldteam->player_count == 0 && arena->state == ARENA_STATE_PLAY) {
-		otherteam =
-				(oldteam == &arena->team_home) ?
-						&arena->team_away : &arena->team_home;
-		G_EndMatch(arena, otherteam);
-	}
+	ent->client->pers.team = 0;
 
 	G_SpectatorsJoin(ent);
 

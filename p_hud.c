@@ -814,11 +814,11 @@ void G_SetStats(edict_t *ent)
 			if (!ent->client->pers.ready) {
 				ent->client->ps.stats[STAT_READY] = CS_READY;
 			} else {
-				if (g_team_balance->value && (ARENA(ent)->team_home.player_count != ARENA(ent)->team_away.player_count)) {
-					ent->client->ps.stats[STAT_READY] = CS_READY_BALANCED;
-				} else {
+				//if (g_team_balance->value && (ARENA(ent)->team_home.player_count != ARENA(ent)->team_away.player_count)) {
+					//ent->client->ps.stats[STAT_READY] = CS_READY_BALANCED;
+				//} else {
 					ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
-				}
+				//}
 			}
 		} else {
 			ent->client->ps.stats[STAT_READY] = 0;
