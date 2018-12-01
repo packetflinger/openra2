@@ -196,7 +196,8 @@ void G_FinishVote(void)
  */
 void G_UpdateArenaVote(arena_t *a) {
 	char buffer[MAX_QPATH];
-	uint8_t votes[2], total, remaining;
+	uint8_t votes[2], total, remaining, i;
+	edict_t *ent;
 
 	if (!a)
 		return;
@@ -227,7 +228,13 @@ void G_UpdateArenaVote(arena_t *a) {
 	gi.WriteByte(svc_configstring);
 	gi.WriteShort(CS_VOTE_COUNT);
 	gi.WriteString(buffer);
-	G_ArenaCast(a);
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		ent = a->clients[i];
+
+		if (ent && ent->inuse) {
+			gi.unicast(ent, qtrue);
+		}
+	}
 }
 
 /**

@@ -1633,7 +1633,7 @@ void G_RespawnPlayers(arena_t *a) {
 	for (i = 0; i < a->team_count; i++) {
 		
 		// for each player
-		for (j = 0; j < a->teams[i].player_count; j++) {
+		for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
 			ent = a->teams[i].players[j];
 
 			if (ent && ent->inuse) {
@@ -1683,7 +1683,7 @@ void G_ShowScores(arena_t *a) {
 	for (i = 0; i < a->team_count; i++) {
 
 		// for each player
-		for (j = 0; j < a->teams[i].player_count; j++) {
+		for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
 			ent = a->teams[i].players[j];
 
 			if (ent && ent->inuse) {
@@ -1706,7 +1706,7 @@ void G_HideScores(arena_t *a) {
 	for (i = 0; i < a->team_count; i++) {
 
 		// for each player
-		for (j = 0; j < a->teams[i].player_count; j++) {
+		for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
 			ent = a->teams[i].players[j];
 
 			if (ent && ent->inuse) {
@@ -2180,8 +2180,13 @@ void G_CheckIntermission(arena_t *a) {
  */
 void G_ArenaCast(arena_t *a) {
 	uint8_t i;
+	edict_t *ent;
 
-	for (i=0; i<a->player_count; i++) {
-		gi.unicast(a->clients[i], qtrue);
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		ent = a->clients[i];
+
+		if (ent && ent->inuse) {
+			gi.unicast(ent, qtrue);
+		}
 	}
 }
