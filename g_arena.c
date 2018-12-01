@@ -1565,14 +1565,22 @@ void G_PartTeam(edict_t *ent, qboolean silent) {
 	if (!oldteam)
 		return;
 
-	if (oldteam->captain == ent) {
-		oldteam->captain = 0;
-	}
-
+	// remove player
 	for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
 		if (oldteam->players[i] == ent) {
 			oldteam->players[i] = NULL;
 			break;
+		}
+	}
+
+	// we're the captain, reassign to next player
+	if (oldteam->captain == ent) {
+
+		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+			if (oldteam->players[i]) {
+				oldteam->captain = oldteam->players[i];
+				break;
+			}
 		}
 	}
 
