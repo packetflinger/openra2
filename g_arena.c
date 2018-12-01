@@ -1555,14 +1555,11 @@ void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced) {
 void G_PartTeam(edict_t *ent, qboolean silent) {
 
 	arena_team_t *oldteam;
-	arena_team_t *otherteam;
-	arena_t *arena;
 	int i;
 
 	if (!ent->client)
 		return;
 
-	arena = ARENA(ent);
 	oldteam = TEAM(ent);
 
 	if (!oldteam)
