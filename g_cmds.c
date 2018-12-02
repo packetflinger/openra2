@@ -2080,9 +2080,9 @@ void ClientCommand(edict_t *ent)
 		Cmd_Team_f(ent);
     else if (Q_stricmp(cmd, "vote") == 0 || Q_stricmp(cmd, "callvote") == 0)
         Cmd_Vote_f(ent);
-    else if (Q_stricmp(cmd, "yes") == 0 && level.vote.proposal)
+    else if (Q_stricmp(cmd, "yes") == 0 && (level.vote.proposal || ARENA(ent)->vote.proposal))
         Cmd_CastVote_f(ent, qtrue);
-    else if (Q_stricmp(cmd, "no") == 0 && level.vote.proposal)
+    else if (Q_stricmp(cmd, "no") == 0 && (level.vote.proposal || ARENA(ent)->vote.proposal))
         Cmd_CastVote_f(ent, qfalse);
     else if (Q_stricmp(cmd, "menu") == 0)
         Cmd_Menu_f(ent);
