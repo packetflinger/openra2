@@ -56,7 +56,7 @@ static int G_CalcVote(int *votes, arena_t *a)
     		c = a->clients[i]->client;
 
 			if (c->pers.connected <= CONN_CONNECTED) {
-				continue;
+				//continue;
 			}
 
 			if (c->pers.mvdspec) {
@@ -81,11 +81,12 @@ static int G_CalcVote(int *votes, arena_t *a)
 
 			// count normal vote
 			votes[c->level.vote.accepted]++;
+			gi.dprintf("vote look: %s %d\n", c->pers.netname, c->level.vote.accepted);
 		}
     } else {
 		for (c = game.clients; c < game.clients + game.maxclients; c++) {
 			if (c->pers.connected <= CONN_CONNECTED) {
-				continue;
+				//continue;
 			}
 			if (c->pers.mvdspec) {
 				continue;
@@ -318,13 +319,21 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
         return;
     }
 
-    if (ent->client->level.vote.index == level.vote.index) {
+    if (ent->client->level.vote.index == level.vote.index && level.vote.proposal) {
         if (ent->client->level.vote.accepted == accepted) {
             gi.cprintf(ent, PRINT_HIGH, "You've already voted %s.\n", accepted ? "YES" : "NO");
             return;
         }
 
         gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
+
+    } else if (ent->client->level.vote.index == ARENA(ent)->vote.index && ARENA(ent)->vote.proposal) {
+    	if (ent->client->level.vote.accepted == accepted) {
+			gi.cprintf(ent, PRINT_HIGH, "You've already voted %s.\n", accepted ? "YES" : "NO");
+			return;
+		}
+
+		gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
 
     } else {
 
@@ -646,9 +655,12 @@ void Cmd_Vote_f(edict_t *ent)
     }
 
     G_BuildProposal(buffer, a);
-    gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n",
-               ent->client->pers.netname, buffer);
-    ent->client->level.vote.index = level.vote.index;
+    gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
+    if (a->vote.proposal) {
+    	ent->client->level.vote.index = a->vote.index;
+    } else {
+    	ent->client->level.vote.index = level.vote.index;
+    }
     ent->client->level.vote.accepted = qtrue;
     ent->client->level.vote.count++;
 
