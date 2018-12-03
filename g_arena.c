@@ -31,11 +31,14 @@ void G_AsciiToConsole(char *out, char *in) {
 	out[i] = '\0';
 }
 
+/**
+ * Find the index in the client array for the client's current arena
+ */
 static int arena_find_cl_index(gclient_t *cl) {
 
 	int i;
 	for (i = 0; i < cl->pers.arena->client_count; i++) {
-		if (&cl->pers.arena->clients[i] == &cl->edict) {
+		if (cl->pers.arena->clients[i] == cl->edict) {
 			return i;
 		}
 	}
@@ -43,6 +46,9 @@ static int arena_find_cl_index(gclient_t *cl) {
 	return -1;
 }
 
+/**
+ * Find the index in the spectator array for the current arena
+ */
 static int arena_find_sp_index(edict_t *ent) {
 
 	int i;
@@ -60,7 +66,7 @@ static int arena_find_cl_slot(arena_t *a) {
 
 	int i;
 	for (i = 0; i < game.maxclients; i++) {
-		if (!&a->clients[i]) {
+		if (!a->clients[i]) {
 			return i;
 		}
 	}
@@ -73,7 +79,7 @@ static int arena_find_sp_slot(arena_t *a) {
 
 	int i;
 	for (i = 0; i < game.maxclients; i++) {
-		if (!&a->spectators[i]) {
+		if (!a->spectators[i]) {
 			return i;
 		}
 	}
@@ -81,6 +87,9 @@ static int arena_find_sp_slot(arena_t *a) {
 	return 0;
 }
 
+/**
+ * Join the spectators "team" for the player's arena
+ */
 void G_SpectatorsJoin(edict_t *ent) {
 
 	int8_t idx;
@@ -94,6 +103,9 @@ void G_SpectatorsJoin(edict_t *ent) {
 	}
 }
 
+/**
+ * Leave the spectator "team" for the player's arena
+ */
 void G_SpectatorsPart(edict_t *ent) {
 
 	int8_t idx;
