@@ -133,8 +133,6 @@ static void Cmd_Ready_f(edict_t *ent) {
 	
 	p = &ent->client->pers;
 	
-	ARENA(ent)->ready_think_frame = level.framenum;
-	
 	if (!p->ready) {
 		p->ready = qtrue;
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
@@ -151,15 +149,6 @@ static void Cmd_Ready_f(edict_t *ent) {
 
 		p->team->ready = qtrue;
 
-		// if all teams are ready, arena is, start
-		for (i=0; i<ARENA(ent)->team_count; i++) {
-			if (!ARENA(ent)->teams[i].ready) {
-				return;
-			}
-		}
-
-		ARENA(ent)->ready = qtrue;
-
 	} else {
 		p->ready = qfalse;
 		p->team->ready = qfalse;
@@ -175,6 +164,8 @@ static void Cmd_Ready_f(edict_t *ent) {
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is not ready\n", NAME(ent));
 		return;
 	}
+
+	G_CheckReady(ARENA(ent));
 }
 
 static void Cmd_Arena_f(edict_t *ent) {

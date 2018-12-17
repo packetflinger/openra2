@@ -371,7 +371,6 @@ void G_ArenaThink(arena_t *a) {
 
 	// pregame
 	if (a->state == ARENA_STATE_WARMUP) {
-		G_CheckReady(a);
 		if (a->ready) {	// is everyone ready?
 			a->state = ARENA_STATE_COUNTDOWN;
 			
@@ -1173,13 +1172,6 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
  */
 void G_CheckReady(arena_t *a) {
 	uint8_t i, count;
-
-	if (level.framenum != a->ready_think_frame) {
-		return;
-	}
-	
-	// check for ready every 2 seconds to save looping every team every frame
-	a->ready_think_frame = SECS_TO_FRAMES(2) + level.framenum;
 
 	count = 0;
 	
