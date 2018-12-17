@@ -144,16 +144,27 @@ static void Cmd_Ready_f(edict_t *ent) {
 
 			if (!TEAM(ent)->players[i]->client->pers.ready) {
 				p->team->ready = qfalse;
+				ARENA(ent)->ready = qfalse;
 				return;
 			}
 		}
 
 		p->team->ready = qtrue;
-		return;
+
+		// if all teams are ready, arena is, start
+		for (i=0; i<ARENA(ent)->team_count; i++) {
+			if (!ARENA(ent)->teams[i].ready) {
+				return;
+			}
+		}
+
+		ARENA(ent)->ready = qtrue;
 
 	} else {
 		p->ready = qfalse;
 		p->team->ready = qfalse;
+		ARENA(ent)->ready = qfalse;
+
 		if (p->arena->state == ARENA_STATE_COUNTDOWN) {
 			p->arena->round_start_frame = 0;
 			p->arena->state = ARENA_STATE_WARMUP;
