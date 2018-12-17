@@ -1185,7 +1185,7 @@ void G_CheckReady(arena_t *a) {
 	
 	for (i=0; i<a->team_count; i++) {
 		// just being safe, shouldn't happen
-		if (!&a->teams[i])
+		if (!a->teams[i])
 			continue;
 
 		// all teams need at least 1 player to be considered ready
