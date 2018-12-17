@@ -107,10 +107,6 @@ cvar_t *flood_infodelay;
 
 cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
-//cvar_t *g_hometeam_name;
-//cvar_t *g_awayteam_name;
-//cvar_t *g_hometeam_skin;
-//cvar_t *g_awayteam_skin;
 cvar_t *g_team_count;
 cvar_t *g_teamspec_name;
 cvar_t *g_team1_name;
@@ -142,8 +138,6 @@ cvar_t *g_all_chat;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
-
-//cvar_t  *sv_features;
 
 void ClientThink(edict_t *ent, usercmd_t *cmd);
 qboolean ClientConnect(edict_t *ent, char *userinfo);
