@@ -27,10 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void G_FinishArenaVote(arena_t *a) {
 	if (VF(SHOW)) {
-		gi.WriteByte(svc_configstring);
-		gi.WriteShort(CS_VOTE_PROPOSAL);
-		gi.WriteString("");
-		G_ArenaCast(a, true);
+		G_ConfigString(a, CS_VOTE_PROPOSAL, "");
 	}
 	a->vote.proposal = 0;
 	a->vote.framenum = level.framenum;
@@ -54,10 +51,6 @@ static int G_CalcVote(int *votes, arena_t *a)
     			continue;
 
     		c = a->clients[i]->client;
-
-			if (c->pers.connected <= CONN_CONNECTED) {
-				//continue;
-			}
 
 			if (c->pers.mvdspec) {
 				continue;
@@ -84,9 +77,6 @@ static int G_CalcVote(int *votes, arena_t *a)
 		}
     } else {
 		for (c = game.clients; c < game.clients + game.maxclients; c++) {
-			if (c->pers.connected <= CONN_CONNECTED) {
-				//continue;
-			}
 			if (c->pers.mvdspec) {
 				continue;
 			}
