@@ -268,6 +268,68 @@ finish:
     return qtrue;
 }
 
+qboolean G_CheckArenaVote(arena_t *a) {
+
+	gi.dprintf("Checking vote in arena %d\n", a->number);
+	int threshold = (int) g_vote_threshold->value;
+	int votes[2], total;
+	int acc, rej;
+
+	if (!a) {
+		return qfalse;
+	}
+
+	if (!a->vote.proposal) {
+		return qfalse;
+	}
+
+	// is vote initiator gone?
+	if (!a->vote.initiator->client->pers.connected) {
+		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
+		goto finish;
+	}
+
+	// is vote victim gone?
+	if (a->vote.victim && !a->vote.victim->client->pers.connected) {
+		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the victim disconnect.\n");
+		goto finish;
+	}
+
+	// are there any players?
+	total = G_CalcVote(votes, a);
+	if (!total) {
+		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the absence of players.\n");
+		goto finish;
+	}
+
+	rej = votes[0] * 100 / total;
+	acc = votes[1] * 100 / total;
+
+	gi.dprintf("Accepted: %d\nRejected: %d\n", acc, rej);
+	if (acc > threshold) {
+		switch (a->vote.proposal) {
+
+		case VOTE_TEAMS:
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed to %d\n", a->vote.value);
+			break;
+
+		default:
+			break;
+		}
+		goto finish;
+	}
+
+	if (rej > threshold) {
+		G_bprintf(a, PRINT_HIGH, "Vote failed.\n");
+		goto finish;
+	}
+
+	return qfalse;
+
+finish:
+	G_FinishArenaVote(a);
+	return qtrue;
+}
 
 static void G_BuildProposal(char *buffer, arena_t *a)
 {
@@ -296,6 +358,7 @@ static void G_BuildProposal(char *buffer, arena_t *a)
 }
 
 void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
+
     if (!level.vote.proposal && !ARENA(ent)->vote.proposal) {
         gi.cprintf(ent, PRINT_HIGH, "No vote in progress.\n");
         return;
@@ -330,11 +393,8 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     ent->client->level.vote.index = (ARENA(ent)->vote.proposal) ? ARENA(ent)->vote.index : level.vote.index;
     ent->client->level.vote.accepted = accepted;
 
-    if (G_CheckVote()) {
-        return;
-    }
-
-    //gi.cprintf(ent, PRINT_HIGH, "Vote cast.\n");
+    G_CheckVote();
+    G_CheckArenaVote(ARENA(ent));
 }
 
 static qboolean vote_victim(edict_t *ent)
@@ -652,7 +712,7 @@ void Cmd_Vote_f(edict_t *ent)
     ent->client->level.vote.count++;
 
     // decide vote immediately
-    if (!G_CheckVote()) {
+    if (!G_CheckVote() && !G_CheckArenaVote(a)) {
         if (VF(SHOW)) {
             gi.configstring(CS_VOTE_PROPOSAL, va("Vote: %s", buffer));
             G_UpdateVote();

@@ -206,6 +206,7 @@ size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
 void G_CheckArenaRules(arena_t *a);
+qboolean G_CheckArenaVote(arena_t *a);	// in g_vote.c
 void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
 void G_CheckTimers(arena_t *a);
