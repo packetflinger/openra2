@@ -140,7 +140,8 @@ void G_FinishVote(void)
  */
 void G_UpdateArenaVote(arena_t *a) {
 	char buffer[MAX_QPATH];
-	uint8_t total, remaining;
+	uint8_t total;
+	uint32_t remaining;
 	int votes[2];
 
 	if (!a)
