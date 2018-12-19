@@ -81,7 +81,6 @@ static int G_CalcVote(int *votes, arena_t *a)
 
 			// count normal vote
 			votes[c->level.vote.accepted]++;
-			gi.dprintf("vote look: %s %d\n", c->pers.netname, c->level.vote.accepted);
 		}
     } else {
 		for (c = game.clients; c < game.clients + game.maxclients; c++) {
