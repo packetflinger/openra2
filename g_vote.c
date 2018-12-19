@@ -327,7 +327,7 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     	gi.bprintf(PRINT_HIGH, "%s voted %s.\n", NAME(ent), accepted ? "YES" : "NO");
     }
 
-    ent->client->level.vote.index = level.vote.index;
+    ent->client->level.vote.index = (ARENA(ent)->vote.proposal) ? ARENA(ent)->vote.index : level.vote.index;
     ent->client->level.vote.accepted = accepted;
 
     if (G_CheckVote()) {
