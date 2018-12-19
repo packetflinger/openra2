@@ -169,10 +169,7 @@ void G_UpdateArenaVote(arena_t *a) {
 	Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
 			   votes[1], total, votes[0], remaining / HZ);
 
-	gi.WriteByte(svc_configstring);
-	gi.WriteShort(CS_VOTE_COUNT);
-	gi.WriteString(buffer);
-	G_ArenaCast(a, qtrue);
+	G_ConfigString(a, CS_VOTE_COUNT, buffer);
 }
 
 /**
@@ -650,7 +647,7 @@ void Cmd_Vote_f(edict_t *ent)
     } else {	// per arena
     	a->vote.initiator = ent;
 		a->vote.proposal = v->bit;
-		a->vote.framenum = level.framenum + g_vote_time->value * HZ;
+		a->vote.framenum = level.framenum + SECS_TO_FRAMES(g_vote_time->value);
 		a->vote.index++;
     }
 
