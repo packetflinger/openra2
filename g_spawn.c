@@ -540,7 +540,7 @@ static void G_ParseString(void)
 
 }
 
-static void G_InitArenaTeams(arena_t *arena) {
+void G_InitArenaTeams(arena_t *arena) {
 	
 	arena_team_t *team;
 	uint8_t i = 0;

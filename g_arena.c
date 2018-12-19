@@ -2159,6 +2159,34 @@ void G_ResetTeam(arena_team_t *t) {
 	}
 }
 
+/**
+ * Re-initialize an arena when settings are changed
+ */
+void G_RecreateArena(arena_t *a) {
+	uint8_t i;
+
+	// remove all players from all teams
+	for (i=0; i<a->team_count; i++) {
+		G_RemoveAllTeamPlayers(&a->teams[i], qtrue);
+	}
+
+	G_InitArenaTeams(a);
+}
+
+/**
+ * Drop every player from a team
+ */
+void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
+	uint8_t i;
+	for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+		if (!team->players[i]) {
+			continue;
+		}
+
+		G_PartTeam(team->players[i], silent);
+	}
+}
+
 void G_ResetArena(arena_t *a) {
 	uint8_t i;
 	

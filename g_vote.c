@@ -311,6 +311,8 @@ qboolean G_CheckArenaVote(arena_t *a) {
 
 		case VOTE_TEAMS:
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed to %d\n", a->vote.value);
+			a->team_count = a->vote.value;
+			G_RecreateArena(a);
 			break;
 
 		default:

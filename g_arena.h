@@ -222,12 +222,15 @@ void G_FreezePlayers(arena_t *a, qboolean freeze);
 arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
+void G_InitArenaTeams(arena_t *arena);	// in g_spawn.c
 void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
 void G_PartTeam(edict_t *ent, qboolean silent);
 void G_RefillInventory(edict_t *ent);
+void G_RecreateArena(arena_t *a);
+void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent);
 void G_ResetArena(arena_t *a);
 void G_ResetTeam(arena_team_t *t);
 void G_RespawnPlayers(arena_t *a);
