@@ -401,6 +401,35 @@ void G_ClearRoundInfo(arena_t *a) {
 	}
 }
 
+
+/**
+ * Send a configstring to everyone in a particular arena
+ */
+void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
+	uint8_t i, j;
+	edict_t *ent;
+
+	for (i=0; i<arena->team_count; i++) {
+		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+			ent = arena->teams[i].players[j];
+
+			if (!ent)
+				continue;
+
+			if (!ent->client)
+				continue;
+
+			// unicasting clears the msg buffer, so you have to rewrite
+			// everything each time
+			gi.WriteByte(svc_configstring);
+			gi.WriteShort(index);
+			gi.WriteString(string);
+			gi.unicast(ent, qtrue);
+		}
+	}
+}
+
+
 // broadcast print to only members of specified arena
 void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
 	va_list argptr;
