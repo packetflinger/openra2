@@ -1915,7 +1915,12 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
-	gi.cprintf(ent, PRINT_HIGH, "current level frame: %d\n", level.framenum);
+
+	if (G_RegexMatch(gi.argv(1), gi.argv(2))) {
+		gi.cprintf(ent, PRINT_HIGH, "Matches!\n");
+	} else  {
+		gi.cprintf(ent, PRINT_HIGH, "no match...:(\n");
+	}
 }
 
 /*

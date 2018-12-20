@@ -2174,6 +2174,31 @@ void G_RecreateArena(arena_t *a) {
 }
 
 /**
+ * Use glib's regex stuff to test patterns. Just returns yey or ney
+ * if the pattern matches, no way to get the actual part that matches
+ */
+qboolean G_RegexMatch(const char *pattern, const char *string) {
+
+	GRegex *regex;
+	GMatchInfo *matchinfo;
+	qboolean matches;
+
+	regex = g_regex_new(pattern, 0, 0, 0);
+	g_regex_match(regex, string, 0, &matchinfo);
+
+	if (g_match_info_matches(matchinfo)) {
+		matches = qtrue;
+	} else {
+		matches = qfalse;
+	}
+
+	g_match_info_free(matchinfo);
+	g_regex_unref(regex);
+
+	return matches;
+}
+
+/**
  * Drop every player from a team
  */
 void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {

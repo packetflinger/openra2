@@ -1,8 +1,26 @@
 # rename this file to .config to build a window 32bit DLL
 
 CONFIG_WINDOWS = 1
-CPU = x86
-CC = i686-w64-mingw32-gcc
-WINDRES = i686-w64-mingw32-windres
-STRIP = i686-w64-mingw32-strip
 
+CPU = x86
+PREFIX = i686-w64-mingw32-
+IPATH = /usr/i686-w64-mingw32/sys-root/mingw/include
+LPATH = /usr/i686-w64-mingw32/sys-root/mingw/lib
+
+CC = $(PREFIX)gcc
+STRIP = $(PREFIX)strip
+WINDRES = $(PREFIX)windres
+
+CFLAGS = -static -static-libgcc -I$(IPATH)
+
+GLIB_CFLAGS = -mms-bitfields
+GLIB_CFLAGS += -I/usr/i686-w64-mingw32/sys-root/mingw/include/glib-2.0
+GLIB_CFLAGS += -I/usr/i686-w64-mingw32/sys-root/mingw/lib/glib-2.0/include
+GLIB_CFLAGS += -I/usr/i686-w64-mingw32/sys-root/mingw/include
+
+LIBS += $(LPATH)/libglib-2.0.a
+LIBS += $(LPATH)/libpcre.a
+LIBS += $(LPATH)/libintl.a
+LIBS += $(LPATH)/libws2_32.a
+LIBS += $(LPATH)/libole32.a
+LIBS += -static -static-libgcc 

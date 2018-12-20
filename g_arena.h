@@ -230,6 +230,7 @@ int G_PlayerCmp(const void *p1, const void *p2);
 void G_PartTeam(edict_t *ent, qboolean silent);
 void G_RefillInventory(edict_t *ent);
 void G_RecreateArena(arena_t *a);
+qboolean G_RegexMatch(const char *pattern, const char *string);
 void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent);
 void G_ResetArena(arena_t *a);
 void G_ResetTeam(arena_team_t *t);
