@@ -1664,6 +1664,27 @@ void G_RefillInventory(edict_t *ent) {
 }
 
 /**
+ * refill all inventory for all players in this arena
+ */
+void G_RefillPlayers(arena_t *a) {
+	uint8_t i, j;
+	edict_t *ent;
+
+	// for each team
+	for (i = 0; i < a->team_count; i++) {
+
+		// for each player
+		for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
+			ent = a->teams[i].players[j];
+
+			if (ent && ent->inuse) {
+				G_RefillInventory(ent);
+			}
+		}
+	}
+}
+
+/**
  * Respawn all players resetting their inventory
  *
  */

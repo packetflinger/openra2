@@ -91,7 +91,7 @@ typedef enum {
 
 
 typedef struct {
-	int8_t		proposal;			// which VOTE_*
+	int32_t		proposal;			// which VOTE_*
 	int8_t		index;				// matches index in client_level_t
 	uint32_t	framenum;			// expiration (level.framenum + vote len cvar)
 	uint32_t	value;				//
@@ -229,6 +229,7 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
 void G_PartTeam(edict_t *ent, qboolean silent);
 void G_RefillInventory(edict_t *ent);
+void G_RefillPlayers(arena_t *a);
 void G_RecreateArena(arena_t *a);
 qboolean G_RegexMatch(const char *pattern, const char *string);
 void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent);

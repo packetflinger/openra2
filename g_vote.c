@@ -312,9 +312,23 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		case VOTE_TEAMS:
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed to %d\n", a->vote.value);
 			a->team_count = a->vote.value;
+			a->modified = qtrue;
 			G_RecreateArena(a);
 			break;
 
+		case VOTE_HEALTH:
+			a->modified = qtrue;
+			a->health = a->vote.value;
+			G_RefillPlayers(a);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: max health changed to %d\n", a->vote.value);
+			break;
+
+		case VOTE_ARMOR:
+			a->modified = qtrue;
+			a->armor = a->vote.value;
+			G_RefillPlayers(a);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: max armor changed to %d\n", a->vote.value);
+			break;
 		default:
 			break;
 		}
@@ -335,7 +349,7 @@ finish:
 
 static void G_BuildProposal(char *buffer, arena_t *a)
 {
-	uint8_t proposal;
+	uint32_t proposal;
 	proposal = (level.vote.proposal) ? level.vote.proposal : (a->vote.proposal) ? a->vote.proposal : 0;
 
     switch (proposal) {
@@ -352,7 +366,21 @@ static void G_BuildProposal(char *buffer, arena_t *a)
     case VOTE_TEAMS:
         sprintf(buffer, "teams %d", a->vote.value);
         break;
-
+    case VOTE_WEAPONS:
+		sprintf(buffer, "weapons %d", a->vote.value);
+		break;
+    case VOTE_DAMAGE:
+		sprintf(buffer, "damage %d", a->vote.value);
+		break;
+    case VOTE_ROUNDS:
+		sprintf(buffer, "rounds %d", a->vote.value);
+		break;
+    case VOTE_HEALTH:
+    	sprintf(buffer, "health %d", a->vote.value);
+    	break;
+    case VOTE_ARMOR:
+		sprintf(buffer, "armor %d", a->vote.value);
+		break;
     default:
         strcpy(buffer, "unknown");
         break;
