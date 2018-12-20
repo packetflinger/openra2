@@ -270,7 +270,6 @@ finish:
 
 qboolean G_CheckArenaVote(arena_t *a) {
 
-	gi.dprintf("Checking vote in arena %d\n", a->number);
 	int threshold = (int) g_vote_threshold->value;
 	int votes[2], total;
 	int acc, rej;
@@ -305,7 +304,6 @@ qboolean G_CheckArenaVote(arena_t *a) {
 	rej = votes[0] * 100 / total;
 	acc = votes[1] * 100 / total;
 
-	gi.dprintf("Accepted: %d\nRejected: %d\n", acc, rej);
 	if (acc > threshold) {
 		switch (a->vote.proposal) {
 
