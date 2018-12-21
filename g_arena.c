@@ -1678,7 +1678,7 @@ void G_RefillPlayers(arena_t *a) {
 			ent = a->teams[i].players[j];
 
 			if (ent && ent->inuse) {
-				G_RefillInventory(ent);
+				G_GiveItems(ent);
 			}
 		}
 	}

@@ -304,29 +304,55 @@ qboolean G_CheckArenaVote(arena_t *a) {
 	rej = votes[0] * 100 / total;
 	acc = votes[1] * 100 / total;
 
+	uint32_t from;
+
 	if (acc > threshold) {
 		switch (a->vote.proposal) {
 
 		case VOTE_TEAMS:
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed to %d\n", a->vote.value);
-			a->team_count = a->vote.value;
 			a->modified = qtrue;
+			from = a->team_count;
+			a->team_count = a->vote.value;
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed from %d to %d\n", from, a->vote.value);
 			G_RecreateArena(a);
 			break;
 
 		case VOTE_HEALTH:
 			a->modified = qtrue;
+			from = a->health;
 			a->health = a->vote.value;
 			G_RefillPlayers(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: max health changed to %d\n", a->vote.value);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: max health changed from %d to %d\n", from, a->vote.value);
 			break;
 
 		case VOTE_ARMOR:
 			a->modified = qtrue;
+			from = a->armor;
 			a->armor = a->vote.value;
 			G_RefillPlayers(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: max armor changed to %d\n", a->vote.value);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: max armor changed from %d to %d\n", from, a->vote.value);
 			break;
+
+		case VOTE_ROUNDS:
+			a->modified = qtrue;
+			from = a->round_limit;
+			a->round_limit = a->vote.value;
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: round count changed from %d to %d\n", from, a->vote.value);
+			break;
+
+		case VOTE_WEAPONS:
+			a->modified = qtrue;
+			a->weapon_flags = a->vote.value;
+			G_RefillPlayers(a);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons flags changed to %d\n", a->vote.value);
+			break;
+
+		case VOTE_DAMAGE:
+			a->modified = qtrue;
+			a->damage_flags = a->vote.value;
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage flags changed to %d\n", a->vote.value);
+			break;
+
 		default:
 			break;
 		}
@@ -730,12 +756,15 @@ void Cmd_Vote_f(edict_t *ent)
     }
 
     G_BuildProposal(buffer, a);
-    gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
+
     if (a->vote.proposal) {
+    	G_bprintf(a, PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
     	ent->client->level.vote.index = a->vote.index;
     } else {
+    	gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
     	ent->client->level.vote.index = level.vote.index;
     }
+
     ent->client->level.vote.accepted = qtrue;
     ent->client->level.vote.count++;
 
