@@ -1461,6 +1461,17 @@ void G_GiveItems(edict_t *ent) {
 	arena_t *a;
 	a = ARENA(ent);
 	
+	// remove all weapons first
+	ent->client->inventory[ITEM_SHOTGUN] = 0;
+	ent->client->inventory[ITEM_SUPERSHOTGUN] = 0;
+	ent->client->inventory[ITEM_MACHINEGUN] = 0;
+	ent->client->inventory[ITEM_CHAINGUN] = 0;
+	ent->client->inventory[ITEM_GRENADELAUNCHER] = 0;
+	ent->client->inventory[ITEM_HYPERBLASTER] = 0;
+	ent->client->inventory[ITEM_ROCKETLAUNCHER] = 0;
+	ent->client->inventory[ITEM_RAILGUN] = 0;
+	ent->client->inventory[ITEM_BFG] = 0;
+
 	flags = a->weapon_flags;
 
 	if (flags < 2)
