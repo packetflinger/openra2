@@ -1461,7 +1461,7 @@ void G_GiveItems(edict_t *ent) {
 	arena_t *a;
 	a = ARENA(ent);
 	
-	// remove all weapons first
+	// remove it all first
 	ent->client->inventory[ITEM_SHOTGUN] = 0;
 	ent->client->inventory[ITEM_SUPERSHOTGUN] = 0;
 	ent->client->inventory[ITEM_MACHINEGUN] = 0;
@@ -1471,47 +1471,65 @@ void G_GiveItems(edict_t *ent) {
 	ent->client->inventory[ITEM_ROCKETLAUNCHER] = 0;
 	ent->client->inventory[ITEM_RAILGUN] = 0;
 	ent->client->inventory[ITEM_BFG] = 0;
+	ent->client->inventory[ITEM_GRENADES] = 0;	// item & weapon
+	ent->client->inventory[ITEM_SLUGS] = 0;
+	ent->client->inventory[ITEM_ROCKETS] = 0;
+	ent->client->inventory[ITEM_CELLS] = 0;
+	ent->client->inventory[ITEM_GRENADES] = 0;
+	ent->client->inventory[ITEM_BULLETS] = 0;
+	ent->client->inventory[ITEM_SHELLS] = 0;
+
 
 	flags = a->weapon_flags;
 
 	if (flags < 2)
 		flags = ARENAWEAPON_ALL;
 
-	// weapons
-	if (flags & ARENAWEAPON_SHOTGUN)
+	// weapons and armor
+	if (flags & ARENAWEAPON_SHOTGUN) {
 		ent->client->inventory[ITEM_SHOTGUN] = 1;
+		ent->client->inventory[ITEM_SHELLS] = a->shells;
+	}
 
-	if (flags & ARENAWEAPON_SUPERSHOTGUN)
+	if (flags & ARENAWEAPON_SUPERSHOTGUN) {
 		ent->client->inventory[ITEM_SUPERSHOTGUN] = 1;
+		ent->client->inventory[ITEM_SHELLS] = a->shells;
+	}
 
-	if (flags & ARENAWEAPON_MACHINEGUN)
+	if (flags & ARENAWEAPON_MACHINEGUN) {
 		ent->client->inventory[ITEM_MACHINEGUN] = 1;
+		ent->client->inventory[ITEM_BULLETS] = a->bullets;
+	}
 
-	if (flags & ARENAWEAPON_CHAINGUN)
+	if (flags & ARENAWEAPON_CHAINGUN) {
 		ent->client->inventory[ITEM_CHAINGUN] = 1;
+		ent->client->inventory[ITEM_BULLETS] = a->bullets;
+	}
 
-	if (flags & ARENAWEAPON_GRENADELAUNCHER)
+	if (flags & ARENAWEAPON_GRENADELAUNCHER) {
 		ent->client->inventory[ITEM_GRENADELAUNCHER] = 1;
+		ent->client->inventory[ITEM_GRENADES] = a->grenades;
+	}
 
-	if (flags & ARENAWEAPON_HYPERBLASTER)
+	if (flags & ARENAWEAPON_HYPERBLASTER) {
 		ent->client->inventory[ITEM_HYPERBLASTER] = 1;
+		ent->client->inventory[ITEM_CELLS] = a->cells;
+	}
 
-	if (flags & ARENAWEAPON_ROCKETLAUNCHER)
+	if (flags & ARENAWEAPON_ROCKETLAUNCHER) {
 		ent->client->inventory[ITEM_ROCKETLAUNCHER] = 1;
+		ent->client->inventory[ITEM_ROCKETS] = a->rockets;
+	}
 
-	if (flags & ARENAWEAPON_RAILGUN)
+	if (flags & ARENAWEAPON_RAILGUN) {
 		ent->client->inventory[ITEM_RAILGUN] = 1;
+		ent->client->inventory[ITEM_SLUGS] = a->slugs;
+	}
 
-	if (flags & ARENAWEAPON_BFG)
+	if (flags & ARENAWEAPON_BFG) {
 		ent->client->inventory[ITEM_BFG] = 1;
-
-	// ammo
-	ent->client->inventory[ITEM_SLUGS] = a->slugs;
-	ent->client->inventory[ITEM_ROCKETS] = a->rockets;
-	ent->client->inventory[ITEM_CELLS] = a->cells;
-	ent->client->inventory[ITEM_GRENADES] = a->grenades;
-	ent->client->inventory[ITEM_BULLETS] = a->bullets;
-	ent->client->inventory[ITEM_SHELLS] = a->shells;
+		ent->client->inventory[ITEM_CELLS] = a->cells;
+	}
 
 	// armor
 	ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
