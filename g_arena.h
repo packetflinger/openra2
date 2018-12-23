@@ -213,6 +213,7 @@ void G_CheckTimers(arena_t *a);
 void G_ChangeArena(gclient_t *cl, arena_t *arena);
 void G_ClearRoundInfo(arena_t *a);
 void G_ConfigString(arena_t *arena, uint16_t index, const char *string);
+char *G_DamageFlagsToString(arena_t *a);
 void G_EndMatch(arena_t *a, arena_team_t *winner);
 void G_EndRound(arena_t *a, arena_team_t *winner);
 void G_FinishArenaVote(arena_t *a);
