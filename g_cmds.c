@@ -1330,8 +1330,6 @@ static void Cmd_Id_f(edict_t *ent)
 
 void Cmd_Settings_f(edict_t *ent)
 {
-	int a_num = ent->client->pers.arena->number;
-
 	gi.cprintf(ent, PRINT_HIGH, "Damage Flags:  %d\n", ARENA(ent)->damage_flags);
 	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", ARENA(ent)->round_limit);
 	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", ARENA(ent)->health);
