@@ -1332,11 +1332,11 @@ void Cmd_Settings_f(edict_t *ent)
 {
 	int a_num = ent->client->pers.arena->number;
 
-	gi.cprintf(ent, PRINT_HIGH, "Weapon Flags:  %d\n", level.arenas[a_num].weapon_flags);
-	gi.cprintf(ent, PRINT_HIGH, "Damage Flags:  %d\n", level.arenas[a_num].damage_flags);
-	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", level.arenas[a_num].round_limit);
-	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", level.arenas[a_num].health);
-	gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", level.arenas[a_num].armor);
+	gi.cprintf(ent, PRINT_HIGH, "Damage Flags:  %d\n", ARENA(ent)->damage_flags);
+	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", ARENA(ent)->round_limit);
+	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", ARENA(ent)->health);
+	gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", ARENA(ent)->armor);
+	gi.cprintf(ent, PRINT_HIGH, "Weapons:       %s\n", G_WeaponFlagsToString(ARENA(ent)));
 }
 
 static void Cmd_Admin_f(edict_t *ent)

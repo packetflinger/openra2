@@ -2350,3 +2350,52 @@ void G_TeamCast(arena_team_t *t, qboolean reliable) {
 		}
 	}
 }
+
+char *G_WeaponFlagsToString(arena_t *a) {
+	static char str[200];
+
+	memset(&str, 0, sizeof(str));
+
+	if (a->weapon_flags & ARENAWEAPON_SHOTGUN) {
+		strcat(str, va("sg:%d, ", a->shells));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_SUPERSHOTGUN) {
+		strcat(str, va("ssg:%d, ", a->shells));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_MACHINEGUN) {
+		strcat(str, va("mg:%d, ", a->bullets));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_CHAINGUN) {
+		strcat(str, va("cg:%d, ", a->bullets));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_GRENADE) {
+		strcat(str, va("nades:%d, ", a->grenades));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_GRENADELAUNCHER) {
+		strcat(str, va("gl:%d, ", a->grenades));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_HYPERBLASTER) {
+		strcat(str, va("hb:%d, ", a->cells));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_ROCKETLAUNCHER) {
+		strcat(str, va("rl:%d, ", a->rockets));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_RAILGUN) {
+		strcat(str, va("rg:%d, ", a->slugs));
+	}
+
+	if (a->weapon_flags & ARENAWEAPON_BFG) {
+		strcat(str, va("bfg:%d, ", a->cells));
+	}
+
+	str[strlen(str) -2] = 0;
+	return str;
+}
