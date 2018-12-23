@@ -1370,6 +1370,7 @@ static void Cmd_Admin_f(edict_t *ent)
     gi.bprintf(PRINT_HIGH, "%s is now an admin.\n", ent->client->pers.netname);
 
     G_CheckVote();
+    G_CheckArenaVote(ARENA(ent));
 }
 
 static void Cmd_Mute_f(edict_t *ent, qboolean muted)
