@@ -98,6 +98,7 @@ typedef struct {
 	edict_t		*victim;			// target for kick/mute
 	edict_t		*initiator;			// who called the vote
 	char		map[MAX_QPATH];		// the map
+	uint8_t		items[ITEM_TOTAL];	// ammo
 } arena_vote_t;
 
 
