@@ -595,6 +595,7 @@ static qboolean vote_weapons(edict_t *ent) {
 
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
+				g_strfreev(weapammopair);
 				return qfalse;
 			}
 
