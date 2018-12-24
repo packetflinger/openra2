@@ -83,7 +83,7 @@ typedef struct {
 	edict_t		*victim;			// target for kick/mute
 	edict_t		*initiator;			// who called the vote
 	char		map[MAX_QPATH];		// the map
-	uint8_t		items[33];			// ammo
+	uint16_t	items[33];			// ammo
 } arena_vote_t;
 
 typedef enum {
@@ -148,7 +148,7 @@ typedef struct {
 	int				client_count;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
-	uint8_t			ammo[MAX_INVENTORY];
+	uint16_t			ammo[MAX_INVENTORY];
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;

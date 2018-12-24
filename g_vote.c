@@ -21,26 +21,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 #define WEAPON_MAX 	(10)
+
 typedef struct weaponvote_s
 {
 	const char		*names[2];
-	unsigned		value;
-	int				itemindex;
+	unsigned		value;		// arena weapon bitmask value
+	int				itemindex;	// q2 item index value
+	int				ammoindex;	// q2 item index value for ammo
 } weaponinfo_t;
 
 //the ordering of weapons must match ITEM_ defines too!
 const weaponinfo_t	weaponvotes[WEAPON_MAX] =
 {
-	{{"shot", "sg"}, ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN},
-	{{"sup", "ssg"}, ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN},
-	{{"mac", "mg"}, ARENAWEAPON_MACHINEGUN, ITEM_MACHINEGUN},
-	{{"cha", "cg"}, ARENAWEAPON_CHAINGUN, ITEM_CHAINGUN},
-	{{"han", "hg"}, ARENAWEAPON_GRENADE, ITEM_GRENADES},
-	{{"gre", "gl"}, ARENAWEAPON_GRENADELAUNCHER, ITEM_GRENADELAUNCHER},
-	{{"roc", "rl"}, ARENAWEAPON_ROCKETLAUNCHER, ITEM_ROCKETLAUNCHER},
-	{{"hyper", "hb"}, ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER},
-	{{"rail", "rg"}, ARENAWEAPON_RAILGUN, ITEM_RAILGUN},
-	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG},
+	{{"shot", "sg"}, ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN, ITEM_SHELLS},
+	{{"sup", "ssg"}, ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN, ITEM_SHELLS},
+	{{"mac", "mg"}, ARENAWEAPON_MACHINEGUN, ITEM_MACHINEGUN, ITEM_BULLETS},
+	{{"cha", "cg"}, ARENAWEAPON_CHAINGUN, ITEM_CHAINGUN, ITEM_BULLETS},
+	{{"han", "hg"}, ARENAWEAPON_GRENADE, ITEM_GRENADES, ITEM_GRENADES},
+	{{"gre", "gl"}, ARENAWEAPON_GRENADELAUNCHER, ITEM_GRENADELAUNCHER, ITEM_GRENADES},
+	{{"roc", "rl"}, ARENAWEAPON_ROCKETLAUNCHER, ITEM_ROCKETLAUNCHER, ITEM_ROCKETS},
+	{{"hyper", "hb"}, ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER, ITEM_CELLS},
+	{{"rail", "rg"}, ARENAWEAPON_RAILGUN, ITEM_RAILGUN, ITEM_SLUGS},
+	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG, ITEM_CELLS},
 };
 
 // voting enabled and on a team or an admin
@@ -366,8 +368,14 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		case VOTE_WEAPONS:
 			a->modified = qtrue;
 			a->weapon_flags = a->vote.value;
+			a->ammo[ITEM_SHELLS] = a->vote.items[ITEM_SHELLS];
+			a->ammo[ITEM_BULLETS] = a->vote.items[ITEM_BULLETS];
+			a->ammo[ITEM_GRENADES] = a->vote.items[ITEM_GRENADES];
+			a->ammo[ITEM_ROCKETS] = a->vote.items[ITEM_ROCKETS];
+			a->ammo[ITEM_CELLS] = a->vote.items[ITEM_CELLS];
+			a->ammo[ITEM_SLUGS] = a->vote.items[ITEM_SLUGS];
 			G_RefillPlayers(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons flags changed to %d\n", a->vote.value);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
 			break;
 
 		case VOTE_DAMAGE:
@@ -474,22 +482,11 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     G_CheckArenaVote(ARENA(ent));
 }
 
-static unsigned arena_weapon_index(const char *name) {
+static unsigned weapon_vote_index(const char *name) {
 	uint8_t i;
 	for (i=0; i<WEAPON_MAX; i++) {
 		if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
-			return weaponvotes[i].value;
-		}
-	}
-
-	return 0;
-}
-
-static unsigned weapon_idx_to_item_idx(unsigned index) {
-	uint8_t i;
-	for (i=0; i<WEAPON_MAX; i++) {
-		if (weaponvotes[i].value == index) {
-			return weaponvotes[i].itemindex;
+			return i;
 		}
 	}
 
@@ -546,8 +543,9 @@ static qboolean vote_weapons(edict_t *ent) {
 	qboolean modifier;	// should we add?
 	const char *input = gi.args();
 	char *token;
-	unsigned aweapidx, itemidx;
+	weaponinfo_t w;
 	gchar **weapammopair;
+	arena_t *arena = ARENA(ent);
 
 	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&input);
@@ -566,7 +564,7 @@ static qboolean vote_weapons(edict_t *ent) {
 		}
 
 		if (str_equal(token, "all")) {
-			ARENA(ent)->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
+			arena->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
 			token = COM_Parse(&input);
 			continue;
 		}
@@ -574,17 +572,17 @@ static qboolean vote_weapons(edict_t *ent) {
 		// ammo specified
 		if (strstr(token, ":")) {
 			weapammopair = g_strsplit(token, ":", 2);
-			aweapidx = arena_weapon_index(weapammopair[0]);
+			w = weaponvotes[weapon_vote_index(weapammopair[0])];
 
-			if (aweapidx) {
-				itemidx = weapon_idx_to_item_idx(aweapidx);
+			if (w.value) {
 
 				if (modifier) {
-					ARENA(ent)->vote.value |= aweapidx;	// include this weapon
-					ARENA(ent)->vote.items[itemidx] = (itemidx) ? strtoul(weapammopair[1], NULL, 10) : 1;
-					clamp(ARENA(ent)->vote.items[itemidx], 1, 999);
+					arena->vote.value |= w.value;	// include this weapon
+					arena->vote.items[w.ammoindex] = (w.value) ? strtoul(weapammopair[1], NULL, 10) : 1;
+					clamp(arena->vote.items[w.ammoindex], 1, 999);
 				} else {
-					ARENA(ent)->vote.value &= ~aweapidx; // remove it
+					arena->vote.value &= ~w.value; // remove it
+					arena->vote.items[w.ammoindex] = 0;
 				}
 
 			} else {
@@ -596,10 +594,11 @@ static qboolean vote_weapons(edict_t *ent) {
 			g_strfreev(weapammopair);
 
 		} else { // just gun, use arena default for ammo
-			if ((aweapidx = arena_weapon_index(token)) > 0) {
-				ARENA(ent)->vote.value |= aweapidx;
-				ARENA(ent)->vote.items[itemidx] = ARENA(ent)->ammo[itemidx];
-				clamp(ARENA(ent)->vote.items[itemidx], 1, 999);
+			w = weaponvotes[weapon_vote_index(token)];
+			if (w.value) {
+				arena->vote.value |= w.value;
+				arena->vote.items[w.ammoindex] = arena->ammo[w.ammoindex];
+				clamp(arena->vote.items[w.ammoindex], 1, 999);
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
 				return qfalse;
@@ -609,7 +608,7 @@ static qboolean vote_weapons(edict_t *ent) {
 		token = COM_Parse(&input);
 	}
 
-	return qfalse;
+	return qtrue;
 }
 
 static qboolean vote_damage(edict_t *ent) {
