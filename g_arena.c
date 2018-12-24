@@ -1488,47 +1488,47 @@ void G_GiveItems(edict_t *ent) {
 	// weapons and armor
 	if (flags & ARENAWEAPON_SHOTGUN) {
 		ent->client->inventory[ITEM_SHOTGUN] = 1;
-		ent->client->inventory[ITEM_SHELLS] = a->shells;
+		ent->client->inventory[ITEM_SHELLS] = a->ammo[ITEM_SHELLS];
 	}
 
 	if (flags & ARENAWEAPON_SUPERSHOTGUN) {
 		ent->client->inventory[ITEM_SUPERSHOTGUN] = 1;
-		ent->client->inventory[ITEM_SHELLS] = a->shells;
+		ent->client->inventory[ITEM_SHELLS] = a->ammo[ITEM_SHELLS];
 	}
 
 	if (flags & ARENAWEAPON_MACHINEGUN) {
 		ent->client->inventory[ITEM_MACHINEGUN] = 1;
-		ent->client->inventory[ITEM_BULLETS] = a->bullets;
+		ent->client->inventory[ITEM_BULLETS] = a->ammo[ITEM_BULLETS];
 	}
 
 	if (flags & ARENAWEAPON_CHAINGUN) {
 		ent->client->inventory[ITEM_CHAINGUN] = 1;
-		ent->client->inventory[ITEM_BULLETS] = a->bullets;
+		ent->client->inventory[ITEM_BULLETS] = a->ammo[ITEM_BULLETS];
 	}
 
 	if (flags & ARENAWEAPON_GRENADELAUNCHER) {
 		ent->client->inventory[ITEM_GRENADELAUNCHER] = 1;
-		ent->client->inventory[ITEM_GRENADES] = a->grenades;
+		ent->client->inventory[ITEM_GRENADES] = a->ammo[ITEM_GRENADES];
 	}
 
 	if (flags & ARENAWEAPON_HYPERBLASTER) {
 		ent->client->inventory[ITEM_HYPERBLASTER] = 1;
-		ent->client->inventory[ITEM_CELLS] = a->cells;
+		ent->client->inventory[ITEM_CELLS] = a->ammo[ITEM_CELLS];
 	}
 
 	if (flags & ARENAWEAPON_ROCKETLAUNCHER) {
 		ent->client->inventory[ITEM_ROCKETLAUNCHER] = 1;
-		ent->client->inventory[ITEM_ROCKETS] = a->rockets;
+		ent->client->inventory[ITEM_ROCKETS] = a->ammo[ITEM_ROCKETS];
 	}
 
 	if (flags & ARENAWEAPON_RAILGUN) {
 		ent->client->inventory[ITEM_RAILGUN] = 1;
-		ent->client->inventory[ITEM_SLUGS] = a->slugs;
+		ent->client->inventory[ITEM_SLUGS] = a->ammo[ITEM_SLUGS];
 	}
 
 	if (flags & ARENAWEAPON_BFG) {
 		ent->client->inventory[ITEM_BFG] = 1;
-		ent->client->inventory[ITEM_CELLS] = a->cells;
+		ent->client->inventory[ITEM_CELLS] = a->ammo[ITEM_CELLS];
 	}
 
 	// armor
@@ -1678,12 +1678,12 @@ void G_RefillInventory(edict_t *ent) {
 	a = ARENA(ent);
 	
 	// ammo
-	ent->client->inventory[ITEM_SLUGS] = a->slugs;
-	ent->client->inventory[ITEM_ROCKETS] = a->rockets;
-	ent->client->inventory[ITEM_CELLS] = a->cells;
-	ent->client->inventory[ITEM_GRENADES] = a->grenades;
-	ent->client->inventory[ITEM_BULLETS] = a->bullets;
-	ent->client->inventory[ITEM_SHELLS] = a->shells;
+	ent->client->inventory[ITEM_SLUGS] = a->ammo[ITEM_SLUGS];
+	ent->client->inventory[ITEM_ROCKETS] = a->ammo[ITEM_ROCKETS];
+	ent->client->inventory[ITEM_CELLS] = a->ammo[ITEM_CELLS];
+	ent->client->inventory[ITEM_GRENADES] = a->ammo[ITEM_GRENADES];
+	ent->client->inventory[ITEM_BULLETS] = a->ammo[ITEM_BULLETS];
+	ent->client->inventory[ITEM_SHELLS] = a->ammo[ITEM_SHELLS];
 
 	// armor
 	ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
@@ -1932,12 +1932,12 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->round_limit = (int) g_round_limit->value;
 		a->health = (int) g_health_start->value;
 		a->armor = (int) g_armor_start->value;
-		a->slugs = (int) g_ammo_slugs->value;
-		a->rockets = (int) g_ammo_rockets->value;
-		a->cells = (int) g_ammo_cells->value;
-		a->grenades = (int) g_ammo_grenades->value;
-		a->bullets = (int) g_ammo_bullets->value;
-		a->shells = (int) g_ammo_shells->value;
+		a->ammo[ITEM_SLUGS] = (int) g_ammo_slugs->value;
+		a->ammo[ITEM_ROCKETS] = (int) g_ammo_rockets->value;
+		a->ammo[ITEM_CELLS] = (int) g_ammo_cells->value;
+		a->ammo[ITEM_GRENADES] = (int) g_ammo_grenades->value;
+		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
+		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 		a->team_count = (int) g_team_count->value;
 		return;
 	}
@@ -1979,39 +1979,39 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 	}
 	
 	if (m->slugs) {
-		a->slugs = m->slugs;
+		a->ammo[ITEM_SLUGS] = m->slugs;
 	} else {
-		a->slugs = (int) g_ammo_slugs->value;
+		a->ammo[ITEM_SLUGS] = (int) g_ammo_slugs->value;
 	}
 	
 	if (m->rockets) {
-		a->rockets = m->rockets;
+		a->ammo[ITEM_ROCKETS] = m->rockets;
 	} else {
-		a->rockets = (int) g_ammo_rockets->value;
+		a->ammo[ITEM_ROCKETS] = (int) g_ammo_rockets->value;
 	}
 	
 	if (m->cells) {
-		a->cells = m->cells;
+		a->ammo[ITEM_CELLS] = m->cells;
 	} else {
-		a->cells = (int) g_ammo_cells->value;
+		a->ammo[ITEM_CELLS] = (int) g_ammo_cells->value;
 	}
 	
 	if (m->grenades) {
-		a->grenades = m->grenades;
+		a->ammo[ITEM_GRENADES] = m->grenades;
 	} else {
-		a->grenades = (int) g_ammo_grenades->value;
+		a->ammo[ITEM_GRENADES] = (int) g_ammo_grenades->value;
 	}
 	
 	if (m->bullets) {
-		a->bullets = m->bullets;
+		a->ammo[ITEM_BULLETS] = m->bullets;
 	} else {
-		a->bullets = (int) g_ammo_bullets->value;
+		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
 	}
 	
 	if (m->shells) {
-		a->shells = m->shells;
+		a->ammo[ITEM_SHELLS] = m->shells;
 	} else {
-		a->shells = (int) g_ammo_shells->value;
+		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 	}
 }
 
@@ -2357,43 +2357,43 @@ char *G_WeaponFlagsToString(arena_t *a) {
 	memset(&str, 0, sizeof(str));
 
 	if (a->weapon_flags & ARENAWEAPON_SHOTGUN) {
-		strcat(str, va("sg:%d, ", a->shells));
+		strcat(str, va("sg:%d, ", a->ammo[ITEM_SHELLS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_SUPERSHOTGUN) {
-		strcat(str, va("ssg:%d, ", a->shells));
+		strcat(str, va("ssg:%d, ", a->ammo[ITEM_SHELLS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_MACHINEGUN) {
-		strcat(str, va("mg:%d, ", a->bullets));
+		strcat(str, va("mg:%d, ", a->ammo[ITEM_BULLETS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_CHAINGUN) {
-		strcat(str, va("cg:%d, ", a->bullets));
+		strcat(str, va("cg:%d, ", a->ammo[ITEM_BULLETS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_GRENADE) {
-		strcat(str, va("nades:%d, ", a->grenades));
+		strcat(str, va("nades:%d, ", a->ammo[ITEM_GRENADES]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_GRENADELAUNCHER) {
-		strcat(str, va("gl:%d, ", a->grenades));
+		strcat(str, va("gl:%d, ", a->ammo[ITEM_GRENADES]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_HYPERBLASTER) {
-		strcat(str, va("hb:%d, ", a->cells));
+		strcat(str, va("hb:%d, ", a->ammo[ITEM_CELLS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_ROCKETLAUNCHER) {
-		strcat(str, va("rl:%d, ", a->rockets));
+		strcat(str, va("rl:%d, ", a->ammo[ITEM_ROCKETS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_RAILGUN) {
-		strcat(str, va("rg:%d, ", a->slugs));
+		strcat(str, va("rg:%d, ", a->ammo[ITEM_SLUGS]));
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_BFG) {
-		strcat(str, va("bfg:%d, ", a->cells));
+		strcat(str, va("bfg:%d, ", a->ammo[ITEM_CELLS]));
 	}
 
 	str[strlen(str) -2] = 0;

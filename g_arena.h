@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ARENA_H
 #define ARENA_H
 
+#define MAX_INVENTORY			33
+
 #define MAX_ARENAS				9
 #define MAX_TEAMS				5
 #define MAX_ARENA_TEAM_PLAYERS	10
@@ -146,12 +148,7 @@ typedef struct {
 	int				client_count;
 	arena_team_t	team_home;
 	arena_team_t	team_away;
-	uint32_t		slugs;
-	uint32_t		rockets;
-	uint32_t		cells;
-	uint32_t		grenades;
-	uint32_t		bullets;
-	uint32_t		shells;
+	uint8_t			ammo[MAX_INVENTORY];
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;
