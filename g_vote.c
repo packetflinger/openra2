@@ -542,14 +542,7 @@ static qboolean vote_teams(edict_t *ent) {
 }
 
 static qboolean vote_weapons(edict_t *ent) {
-	/*
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 0, ARENAWEAPON_ALL);
-	ARENA(ent)->vote.value = count;
-	*/
 
-	gi.dprintf("weap flags starting: %d\n", ARENA(ent)->weapon_flags);
 	qboolean modifier;	// should we add?
 	const char *input = gi.args();
 	char *token;
@@ -584,14 +577,15 @@ static qboolean vote_weapons(edict_t *ent) {
 			aweapidx = arena_weapon_index(weapammopair[0]);
 
 			if (aweapidx) {
+				itemidx = weapon_idx_to_item_idx(aweapidx);
+
 				if (modifier) {
 					ARENA(ent)->vote.value |= aweapidx;	// include this weapon
+					ARENA(ent)->vote.items[itemidx] = (itemidx) ? strtoul(weapammopair[1], NULL, 10) : 1;
+					clamp(ARENA(ent)->vote.items[itemidx], 1, 999);
 				} else {
 					ARENA(ent)->vote.value &= ~aweapidx; // remove it
 				}
-
-				itemidx = weapon_idx_to_item_idx(aweapidx);
-				ARENA(ent)->vote.items[itemidx] = (itemidx) ? strtoul(weapammopair[1], NULL, 10) : 1;
 
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
@@ -599,12 +593,13 @@ static qboolean vote_weapons(edict_t *ent) {
 				return qfalse;
 			}
 
-			//gi.dprintf("ammo: %ld\n", strtoul(weapammopair[1], NULL, 10));
 			g_strfreev(weapammopair);
 
 		} else { // just gun, use arena default for ammo
 			if ((aweapidx = arena_weapon_index(token)) > 0) {
 				ARENA(ent)->vote.value |= aweapidx;
+				ARENA(ent)->vote.items[itemidx] = ARENA(ent)->ammo[itemidx];
+				clamp(ARENA(ent)->vote.items[itemidx], 1, 999);
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
 				return qfalse;
