@@ -482,7 +482,7 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     G_CheckArenaVote(ARENA(ent));
 }
 
-static unsigned weapon_vote_index(const char *name) {
+static uint8_t weapon_vote_index(const char *name) {
 	uint8_t i;
 	for (i=0; i<WEAPON_MAX; i++) {
 		if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
@@ -490,7 +490,7 @@ static unsigned weapon_vote_index(const char *name) {
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 static qboolean vote_victim(edict_t *ent)
@@ -545,7 +545,17 @@ static qboolean vote_weapons(edict_t *ent) {
 	char *token;
 	weaponinfo_t w;
 	gchar **weapammopair;
+	int8_t index;
 	arena_t *arena = ARENA(ent);
+
+	// start the vote with what we've already got
+	arena->vote.value = arena->weapon_flags;
+	arena->vote.items[ITEM_SHELLS] = arena->ammo[ITEM_SHELLS];
+	arena->vote.items[ITEM_BULLETS] = arena->ammo[ITEM_BULLETS];
+	arena->vote.items[ITEM_GRENADES] = arena->ammo[ITEM_GRENADES];
+	arena->vote.items[ITEM_CELLS] = arena->ammo[ITEM_CELLS];
+	arena->vote.items[ITEM_ROCKETS] = arena->ammo[ITEM_ROCKETS];
+	arena->vote.items[ITEM_SLUGS] = arena->ammo[ITEM_SLUGS];
 
 	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&input);
@@ -559,7 +569,7 @@ static qboolean vote_weapons(edict_t *ent) {
 		} else if (token[0] == '+') {
 			modifier = qtrue;
 			token++;
-		} else {
+		} else { // no modifier, assume default to add
 			modifier = qtrue;
 		}
 
@@ -572,13 +582,14 @@ static qboolean vote_weapons(edict_t *ent) {
 		// ammo specified
 		if (strstr(token, ":")) {
 			weapammopair = g_strsplit(token, ":", 2);
-			w = weaponvotes[weapon_vote_index(weapammopair[0])];
 
-			if (w.value) {
-
+			index = weapon_vote_index(weapammopair[0]);
+			gi.dprintf("index: %d\n", index);
+			if (index > -1) {
+				w = weaponvotes[index];
 				if (modifier) {
 					arena->vote.value |= w.value;	// include this weapon
-					arena->vote.items[w.ammoindex] = (w.value) ? strtoul(weapammopair[1], NULL, 10) : 1;
+					arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
 					clamp(arena->vote.items[w.ammoindex], 1, 999);
 				} else {
 					arena->vote.value &= ~w.value; // remove it
@@ -586,7 +597,7 @@ static qboolean vote_weapons(edict_t *ent) {
 				}
 
 			} else {
-				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", weapammopair[0]);
 				g_strfreev(weapammopair);
 				return qfalse;
 			}
@@ -594,17 +605,24 @@ static qboolean vote_weapons(edict_t *ent) {
 			g_strfreev(weapammopair);
 
 		} else { // just gun, use arena default for ammo
-			w = weaponvotes[weapon_vote_index(token)];
-			if (w.value) {
-				arena->vote.value |= w.value;
-				arena->vote.items[w.ammoindex] = arena->ammo[w.ammoindex];
-				clamp(arena->vote.items[w.ammoindex], 1, 999);
+			index = weapon_vote_index(token);
+			if (index > -1) {
+				w = weaponvotes[index];
+				if (modifier) {
+					arena->vote.value |= w.value;
+					arena->vote.items[w.ammoindex] = arena->ammo[w.ammoindex];
+					clamp(arena->vote.items[w.ammoindex], 1, 999);
+				} else {
+					arena->vote.value &= ~w.value;
+					// dont take ammo away, in case shared (sg/ssg, mg/cg)
+				}
+
 			} else {
 				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
 				return qfalse;
 			}
 		}
-
+		gi.dprintf("value: %d\n", arena->vote.value);
 		token = COM_Parse(&input);
 	}
 
