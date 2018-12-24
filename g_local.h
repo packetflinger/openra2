@@ -1525,3 +1525,5 @@ void G_LogClients(void);
 qboolean G_OpenDatabase(void);
 void G_CloseDatabase(void);
 #endif
+
+

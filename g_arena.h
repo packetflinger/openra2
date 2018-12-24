@@ -17,6 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#ifndef ARENA_H
+#define ARENA_H
+
 #define MAX_ARENAS				9
 #define MAX_TEAMS				5
 #define MAX_ARENA_TEAM_PLAYERS	10
@@ -70,6 +73,16 @@ typedef struct {
 	char	name[20];
 } pmenu_arena_t;
 
+typedef struct {
+	int32_t		proposal;			// which VOTE_*
+	int8_t		index;				// matches index in client_level_t
+	uint32_t	framenum;			// expiration (level.framenum + vote len cvar)
+	uint32_t	value;				//
+	edict_t		*victim;			// target for kick/mute
+	edict_t		*initiator;			// who called the vote
+	char		map[MAX_QPATH];		// the map
+	uint8_t		items[33];			// ammo
+} arena_vote_t;
 
 typedef enum {
 	ARENA_STATE_WARMUP,
@@ -90,16 +103,7 @@ typedef enum {
 } arena_default_t;
 
 
-typedef struct {
-	int32_t		proposal;			// which VOTE_*
-	int8_t		index;				// matches index in client_level_t
-	uint32_t	framenum;			// expiration (level.framenum + vote len cvar)
-	uint32_t	value;				//
-	edict_t		*victim;			// target for kick/mute
-	edict_t		*initiator;			// who called the vote
-	char		map[MAX_QPATH];		// the map
-	uint8_t		items[ITEM_TOTAL];	// ammo
-} arena_vote_t;
+
 
 
 typedef struct {
@@ -253,3 +257,5 @@ void G_TimeoutFrame(arena_t *a);
 void G_UpdateArenaVote(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
 char *G_WeaponFlagsToString(arena_t *a);
+
+#endif // ARENA_H

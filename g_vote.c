@@ -20,6 +20,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
+#define WEAPON_MAX 	(10)
+typedef struct weaponvote_s
+{
+	const char		*names[2];
+	unsigned		value;
+	int				itemindex;
+} weaponinfo_t;
+
+//the ordering of weapons must match ITEM_ defines too!
+const weaponinfo_t	weaponvotes[WEAPON_MAX] =
+{
+	{{"shot", "sg"}, ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN},
+	{{"sup", "ssg"}, ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN},
+	{{"mac", "mg"}, ARENAWEAPON_MACHINEGUN, ITEM_MACHINEGUN},
+	{{"cha", "cg"}, ARENAWEAPON_CHAINGUN, ITEM_CHAINGUN},
+	{{"han", "hg"}, ARENAWEAPON_GRENADE, ITEM_GRENADES},
+	{{"gre", "gl"}, ARENAWEAPON_GRENADELAUNCHER, ITEM_GRENADELAUNCHER},
+	{{"roc", "rl"}, ARENAWEAPON_ROCKETLAUNCHER, ITEM_ROCKETLAUNCHER},
+	{{"hyper", "hb"}, ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER},
+	{{"rail", "rg"}, ARENAWEAPON_RAILGUN, ITEM_RAILGUN},
+	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG},
+};
+
 // voting enabled and on a team or an admin
 #define MAY_VOTE(c) \
     (VF(ENABLED) && (c->pers.team || c->pers.admin))
@@ -451,6 +474,28 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     G_CheckArenaVote(ARENA(ent));
 }
 
+static unsigned arena_weapon_index(const char *name) {
+	uint8_t i;
+	for (i=0; i<WEAPON_MAX; i++) {
+		if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
+			return weaponvotes[i].value;
+		}
+	}
+
+	return 0;
+}
+
+static unsigned weapon_idx_to_item_idx(unsigned index) {
+	uint8_t i;
+	for (i=0; i<WEAPON_MAX; i++) {
+		if (weaponvotes[i].value == index) {
+			return weaponvotes[i].itemindex;
+		}
+	}
+
+	return 0;
+}
+
 static qboolean vote_victim(edict_t *ent)
 {
     edict_t *other = G_SetVictim(ent, 1);
@@ -497,11 +542,78 @@ static qboolean vote_teams(edict_t *ent) {
 }
 
 static qboolean vote_weapons(edict_t *ent) {
+	/*
 	char *arg = gi.argv(2);
 	unsigned count = strtoul(arg, NULL, 10);
 	clamp(count, 0, ARENAWEAPON_ALL);
 	ARENA(ent)->vote.value = count;
-	return qtrue;
+	*/
+
+	gi.dprintf("weap flags starting: %d\n", ARENA(ent)->weapon_flags);
+	qboolean modifier;	// should we add?
+	const char *input = gi.args();
+	char *token;
+	unsigned aweapidx, itemidx;
+	gchar **weapammopair;
+
+	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
+	token = COM_Parse(&input);
+
+	while(token[0]){
+
+		// parse out the +/- modifier
+		if (token[0] == '-') {
+			modifier = qfalse;
+			token++;
+		} else if (token[0] == '+') {
+			modifier = qtrue;
+			token++;
+		} else {
+			modifier = qtrue;
+		}
+
+		if (str_equal(token, "all")) {
+			ARENA(ent)->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
+			token = COM_Parse(&input);
+			continue;
+		}
+
+		// ammo specified
+		if (strstr(token, ":")) {
+			weapammopair = g_strsplit(token, ":", 2);
+			aweapidx = arena_weapon_index(weapammopair[0]);
+
+			if (aweapidx) {
+				if (modifier) {
+					ARENA(ent)->vote.value |= aweapidx;	// include this weapon
+				} else {
+					ARENA(ent)->vote.value &= ~aweapidx; // remove it
+				}
+
+				itemidx = weapon_idx_to_item_idx(aweapidx);
+				ARENA(ent)->vote.items[itemidx] = (itemidx) ? strtoul(weapammopair[1], NULL, 10) : 1;
+
+			} else {
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
+				return qfalse;
+			}
+
+			//gi.dprintf("ammo: %ld\n", strtoul(weapammopair[1], NULL, 10));
+			g_strfreev(weapammopair);
+
+		} else { // just gun, use arena default for ammo
+			if ((aweapidx = arena_weapon_index(token)) > 0) {
+				ARENA(ent)->vote.value |= aweapidx;
+			} else {
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
+				return qfalse;
+			}
+		}
+
+		token = COM_Parse(&input);
+	}
+
+	return qfalse;
 }
 
 static qboolean vote_damage(edict_t *ent) {
