@@ -150,6 +150,7 @@ typedef struct {
 	arena_team_t	team_home;
 	arena_team_t	team_away;
 	uint16_t		ammo[MAX_INVENTORY];
+	uint16_t		defaultammo[MAX_INVENTORY];
 	qboolean		infinite[MAX_INVENTORY];
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;

@@ -569,6 +569,9 @@ static qboolean vote_weapons(edict_t *ent) {
 
 		if (str_equal(token, "all")) {
 			arena->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
+			if (modifier) {
+				memcpy(arena->vote.items, arena->defaultammo, sizeof(arena->vote.items));
+			}
 			token = COM_Parse(&input);
 			continue;
 		}
@@ -605,13 +608,13 @@ static qboolean vote_weapons(edict_t *ent) {
 
 			g_strfreev(weapammopair);
 
-		} else { // just gun, use arena default for ammo
+		} else { // just gun, use default for ammo
 			index = weapon_vote_index(token);
 			if (index > -1) {
 				w = weaponvotes[index];
 				if (modifier) {
 					arena->vote.value |= w.value;
-					arena->vote.items[w.ammoindex] = arena->ammo[w.ammoindex];
+					arena->vote.items[w.ammoindex] = arena->defaultammo[w.ammoindex];
 					clamp(arena->vote.items[w.ammoindex], 1, 999);
 				} else {
 					arena->vote.value &= ~w.value;

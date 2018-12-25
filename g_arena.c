@@ -2013,6 +2013,9 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 	} else {
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 	}
+
+	// save defaults for voting
+	memcpy(a->defaultammo, a->ammo, sizeof(a->defaultammo));
 }
 
 qboolean G_Teammates(edict_t *p1, edict_t *p2) {
