@@ -48,6 +48,7 @@ OBJS := \
 	g_main.o \
 	g_misc.o \
 	g_phys.o \
+	g_random.o \
 	g_spawn.o \
 	g_svcmds.o \
 	g_target.o \
