@@ -571,6 +571,7 @@ static qboolean vote_weapons(edict_t *ent) {
 			arena->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
 			if (modifier) {
 				memcpy(arena->vote.items, arena->defaultammo, sizeof(arena->vote.items));
+				memset(&arena->vote.infinite, 0, sizeof(arena->vote.infinite));
 			}
 			token = COM_Parse(&input);
 			continue;
