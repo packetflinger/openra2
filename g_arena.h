@@ -76,14 +76,15 @@ typedef struct {
 } pmenu_arena_t;
 
 typedef struct {
-	int32_t		proposal;			// which VOTE_*
-	int8_t		index;				// matches index in client_level_t
-	uint32_t	framenum;			// expiration (level.framenum + vote len cvar)
-	uint32_t	value;				//
-	edict_t		*victim;			// target for kick/mute
-	edict_t		*initiator;			// who called the vote
-	char		map[MAX_QPATH];		// the map
-	uint16_t	items[33];			// ammo
+	int32_t		proposal;						// which VOTE_*
+	int8_t		index;							// matches index in client_level_t
+	uint32_t	framenum;						// expiration (level.framenum + vote len cvar)
+	uint32_t	value;							//
+	edict_t		*victim;						// target for kick/mute
+	edict_t		*initiator;						// who called the vote
+	char		map[MAX_QPATH];					// the map
+	uint16_t	items[MAX_INVENTORY];			// ammo
+	qboolean	infinite[MAX_INVENTORY];		// inf ammo
 } arena_vote_t;
 
 typedef enum {
@@ -149,6 +150,7 @@ typedef struct {
 	arena_team_t	team_home;
 	arena_team_t	team_away;
 	uint16_t		ammo[MAX_INVENTORY];
+	qboolean		infinite[MAX_INVENTORY];
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;

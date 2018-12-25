@@ -556,6 +556,12 @@ static qboolean vote_weapons(edict_t *ent) {
 	arena->vote.items[ITEM_CELLS] = arena->ammo[ITEM_CELLS];
 	arena->vote.items[ITEM_ROCKETS] = arena->ammo[ITEM_ROCKETS];
 	arena->vote.items[ITEM_SLUGS] = arena->ammo[ITEM_SLUGS];
+	arena->vote.infinite[ITEM_SHELLS] = arena->infinite[ITEM_SHELLS];
+	arena->vote.infinite[ITEM_BULLETS] = arena->infinite[ITEM_BULLETS];
+	arena->vote.infinite[ITEM_GRENADES] = arena->infinite[ITEM_GRENADES];
+	arena->vote.infinite[ITEM_CELLS] = arena->infinite[ITEM_CELLS];
+	arena->vote.infinite[ITEM_ROCKETS] = arena->infinite[ITEM_ROCKETS];
+	arena->vote.infinite[ITEM_SLUGS] = arena->infinite[ITEM_SLUGS];
 
 	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&input);
@@ -582,18 +588,25 @@ static qboolean vote_weapons(edict_t *ent) {
 		// ammo specified
 		if (strstr(token, ":")) {
 			weapammopair = g_strsplit(token, ":", 2);
-
 			index = weapon_vote_index(weapammopair[0]);
-			gi.dprintf("index: %d\n", index);
+
 			if (index > -1) {
 				w = weaponvotes[index];
 				if (modifier) {
 					arena->vote.value |= w.value;	// include this weapon
-					arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
+					if (str_equal(weapammopair[1], "inf")) {
+						arena->vote.items[w.ammoindex] = 999;
+						arena->vote.infinite[w.ammoindex] = qtrue;
+					} else {
+						arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
+						arena->vote.infinite[w.ammoindex] = qfalse;
+					}
+
 					clamp(arena->vote.items[w.ammoindex], 1, 999);
 				} else {
 					arena->vote.value &= ~w.value; // remove it
 					arena->vote.items[w.ammoindex] = 0;
+					arena->vote.infinite[w.ammoindex] = qfalse;
 				}
 
 			} else {
@@ -622,7 +635,7 @@ static qboolean vote_weapons(edict_t *ent) {
 				return qfalse;
 			}
 		}
-		gi.dprintf("value: %d\n", arena->vote.value);
+
 		token = COM_Parse(&input);
 	}
 
