@@ -601,7 +601,7 @@ static qboolean vote_weapons(edict_t *ent) {
 				if (modifier) {
 					arena->vote.value |= w.value;	// include this weapon
 					if (str_equal(weapammopair[1], "inf")) {
-						arena->vote.items[w.ammoindex] = 999;
+						arena->vote.items[w.ammoindex] = 666;
 						arena->vote.infinite[w.ammoindex] = qtrue;
 					} else {
 						arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);

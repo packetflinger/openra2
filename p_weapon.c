@@ -459,7 +459,7 @@ static void weapon_grenade_fire(edict_t *ent, qboolean held)
     speed = GRENADE_MINSPEED + (GRENADE_TIMER - timer) * ((GRENADE_MAXSPEED - GRENADE_MINSPEED) / GRENADE_TIMER);
     fire_grenade2(ent, start, forward, damage, speed, timer, radius, held);
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_GRENADES])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_GRENADES].atts++;
@@ -610,7 +610,7 @@ static void weapon_grenadelauncher_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_GRENADES])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_GRENADELAUNCHER].atts++;
@@ -669,7 +669,7 @@ static void weapon_rocketlauncher_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_ROCKETS])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_ROCKETLAUNCHER].atts++;
@@ -764,7 +764,7 @@ static void weapon_hyperblaster_fire(edict_t *ent)
             else
                 effect = 0;
             blaster_fire(ent, offset, 15, qtrue, effect);
-            if (!DF(INFINITE_AMMO))
+            if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_CELLS])
                 ent->client->inventory[ent->client->ammo_index]--;
 
             ent->client->resp.frags[FRAG_HYPERBLASTER].atts++;
@@ -864,7 +864,7 @@ static void weapon_machinegun_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_BULLETS])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_MACHINEGUN].atts++;
@@ -979,7 +979,7 @@ static void weapon_chaingun_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_BULLETS])
         ent->client->inventory[ent->client->ammo_index] -= shots;
 
     ent->client->resp.frags[FRAG_CHAINGUN].atts++;
@@ -1045,7 +1045,7 @@ static void weapon_shotgun_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_SHELLS])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_SHOTGUN].atts++;
@@ -1163,7 +1163,7 @@ static void weapon_railgun_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_SLUGS])
         ent->client->inventory[ent->client->ammo_index]--;
 
     ent->client->resp.frags[FRAG_RAILGUN].atts++;
@@ -1238,7 +1238,7 @@ static void weapon_bfg_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_CELLS])
         ent->client->inventory[ent->client->ammo_index] -= 50;
 }
 
