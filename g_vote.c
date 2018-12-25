@@ -374,12 +374,12 @@ qboolean G_CheckArenaVote(arena_t *a) {
 			a->ammo[ITEM_ROCKETS] = a->vote.items[ITEM_ROCKETS];
 			a->ammo[ITEM_CELLS] = a->vote.items[ITEM_CELLS];
 			a->ammo[ITEM_SLUGS] = a->vote.items[ITEM_SLUGS];
-			a->infinite[ITEM_SHELLS] = a->vote.items[ITEM_SHELLS];
-			a->infinite[ITEM_BULLETS] = a->vote.items[ITEM_BULLETS];
-			a->infinite[ITEM_GRENADES] = a->vote.items[ITEM_GRENADES];
-			a->infinite[ITEM_ROCKETS] = a->vote.items[ITEM_ROCKETS];
-			a->infinite[ITEM_CELLS] = a->vote.items[ITEM_CELLS];
-			a->infinite[ITEM_SLUGS] = a->vote.items[ITEM_SLUGS];
+			a->infinite[ITEM_SHELLS] = a->vote.infinite[ITEM_SHELLS];
+			a->infinite[ITEM_BULLETS] = a->vote.infinite[ITEM_BULLETS];
+			a->infinite[ITEM_GRENADES] = a->vote.infinite[ITEM_GRENADES];
+			a->infinite[ITEM_ROCKETS] = a->vote.infinite[ITEM_ROCKETS];
+			a->infinite[ITEM_CELLS] = a->vote.infinite[ITEM_CELLS];
+			a->infinite[ITEM_SLUGS] = a->vote.infinite[ITEM_SLUGS];
 			G_RefillPlayers(a);
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
 			break;
@@ -605,10 +605,10 @@ static qboolean vote_weapons(edict_t *ent) {
 						arena->vote.infinite[w.ammoindex] = qtrue;
 					} else {
 						arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
+						clamp(arena->vote.items[w.ammoindex], 1, 999);
 						arena->vote.infinite[w.ammoindex] = qfalse;
 					}
 
-					clamp(arena->vote.items[w.ammoindex], 1, 999);
 				} else {
 					arena->vote.value &= ~w.value; // remove it
 					arena->vote.items[w.ammoindex] = 0;

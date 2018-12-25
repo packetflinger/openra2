@@ -2356,44 +2356,87 @@ char *G_WeaponFlagsToString(arena_t *a) {
 
 	memset(&str, 0, sizeof(str));
 
+	char inf[4];
+	G_AsciiToConsole(inf, "inf");
+
 	if (a->weapon_flags & ARENAWEAPON_SHOTGUN) {
-		strcat(str, va("sg:%d, ", a->ammo[ITEM_SHELLS]));
+		if (a->infinite[ITEM_SHELLS]) {
+			strcat(str, va("sg:%s, ", inf));
+		} else {
+			strcat(str, va("sg:%d, ", a->ammo[ITEM_SHELLS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_SUPERSHOTGUN) {
-		strcat(str, va("ssg:%d, ", a->ammo[ITEM_SHELLS]));
+		if (a->infinite[ITEM_SHELLS]) {
+			strcat(str, va("ssg:%s, ", inf));
+		} else {
+			strcat(str, va("ssg:%d, ", a->ammo[ITEM_SHELLS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_MACHINEGUN) {
-		strcat(str, va("mg:%d, ", a->ammo[ITEM_BULLETS]));
+		if (a->infinite[ITEM_BULLETS]) {
+			strcat(str, va("mg:%s, ", inf));
+		} else {
+			strcat(str, va("mg:%d, ", a->ammo[ITEM_BULLETS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_CHAINGUN) {
-		strcat(str, va("cg:%d, ", a->ammo[ITEM_BULLETS]));
+		if (a->infinite[ITEM_BULLETS]) {
+			strcat(str, va("cg:%s, ", inf));
+		} else {
+			strcat(str, va("cg:%d, ", a->ammo[ITEM_BULLETS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_GRENADE) {
-		strcat(str, va("nades:%d, ", a->ammo[ITEM_GRENADES]));
+		if (a->infinite[ITEM_GRENADES]) {
+			strcat(str, va("gr:%s, ", inf));
+		} else {
+			strcat(str, va("gr:%d, ", a->ammo[ITEM_GRENADES]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_GRENADELAUNCHER) {
-		strcat(str, va("gl:%d, ", a->ammo[ITEM_GRENADES]));
+		if (a->infinite[ITEM_GRENADES]) {
+			strcat(str, va("gl:%s, ", inf));
+		} else {
+			strcat(str, va("gl:%d, ", a->ammo[ITEM_GRENADES]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_HYPERBLASTER) {
-		strcat(str, va("hb:%d, ", a->ammo[ITEM_CELLS]));
+		if (a->infinite[ITEM_CELLS]) {
+			strcat(str, va("hb:%s, ", inf));
+		} else {
+			strcat(str, va("hb:%d, ", a->ammo[ITEM_CELLS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_ROCKETLAUNCHER) {
-		strcat(str, va("rl:%d, ", a->ammo[ITEM_ROCKETS]));
+		if (a->infinite[ITEM_ROCKETS]) {
+			strcat(str, va("rl:%s, ", inf));
+		} else {
+			strcat(str, va("rl:%d, ", a->ammo[ITEM_ROCKETS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_RAILGUN) {
-		strcat(str, va("rg:%d, ", a->ammo[ITEM_SLUGS]));
+		if (a->infinite[ITEM_SLUGS]) {
+			strcat(str, va("rg:%s, ", inf));
+		} else {
+			strcat(str, va("rg:%d, ", a->ammo[ITEM_SLUGS]));
+		}
 	}
 
 	if (a->weapon_flags & ARENAWEAPON_BFG) {
-		strcat(str, va("bfg:%d, ", a->ammo[ITEM_CELLS]));
+		if (a->infinite[ITEM_CELLS]) {
+			strcat(str, va("bfg:%s, ", inf));
+		} else {
+			strcat(str, va("bfg:%d, ", a->ammo[ITEM_CELLS]));
+		}
 	}
 
 	str[strlen(str) -2] = 0;
