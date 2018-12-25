@@ -1105,7 +1105,7 @@ static void weapon_supershotgun_fire(edict_t *ent)
         ent->client->silencer_shots--;
     }
 
-    if (!DF(INFINITE_AMMO))
+    if (!DF(INFINITE_AMMO) && !ARENA(ent)->infinite[ITEM_SHELLS])
         ent->client->inventory[ent->client->ammo_index] -= 2;
 
     ent->client->resp.frags[FRAG_SUPERSHOTGUN].atts++;
