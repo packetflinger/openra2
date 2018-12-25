@@ -368,18 +368,10 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		case VOTE_WEAPONS:
 			a->modified = qtrue;
 			a->weapon_flags = a->vote.value;
-			a->ammo[ITEM_SHELLS] = a->vote.items[ITEM_SHELLS];
-			a->ammo[ITEM_BULLETS] = a->vote.items[ITEM_BULLETS];
-			a->ammo[ITEM_GRENADES] = a->vote.items[ITEM_GRENADES];
-			a->ammo[ITEM_ROCKETS] = a->vote.items[ITEM_ROCKETS];
-			a->ammo[ITEM_CELLS] = a->vote.items[ITEM_CELLS];
-			a->ammo[ITEM_SLUGS] = a->vote.items[ITEM_SLUGS];
-			a->infinite[ITEM_SHELLS] = a->vote.infinite[ITEM_SHELLS];
-			a->infinite[ITEM_BULLETS] = a->vote.infinite[ITEM_BULLETS];
-			a->infinite[ITEM_GRENADES] = a->vote.infinite[ITEM_GRENADES];
-			a->infinite[ITEM_ROCKETS] = a->vote.infinite[ITEM_ROCKETS];
-			a->infinite[ITEM_CELLS] = a->vote.infinite[ITEM_CELLS];
-			a->infinite[ITEM_SLUGS] = a->vote.infinite[ITEM_SLUGS];
+
+			memcpy(a->ammo, a->vote.items, sizeof(a->ammo));
+			memcpy(a->infinite, a->vote.infinite, sizeof(a->infinite));
+
 			G_RefillPlayers(a);
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
 			break;
@@ -556,18 +548,8 @@ static qboolean vote_weapons(edict_t *ent) {
 
 	// start the vote with what we've already got
 	arena->vote.value = arena->weapon_flags;
-	arena->vote.items[ITEM_SHELLS] = arena->ammo[ITEM_SHELLS];
-	arena->vote.items[ITEM_BULLETS] = arena->ammo[ITEM_BULLETS];
-	arena->vote.items[ITEM_GRENADES] = arena->ammo[ITEM_GRENADES];
-	arena->vote.items[ITEM_CELLS] = arena->ammo[ITEM_CELLS];
-	arena->vote.items[ITEM_ROCKETS] = arena->ammo[ITEM_ROCKETS];
-	arena->vote.items[ITEM_SLUGS] = arena->ammo[ITEM_SLUGS];
-	arena->vote.infinite[ITEM_SHELLS] = arena->infinite[ITEM_SHELLS];
-	arena->vote.infinite[ITEM_BULLETS] = arena->infinite[ITEM_BULLETS];
-	arena->vote.infinite[ITEM_GRENADES] = arena->infinite[ITEM_GRENADES];
-	arena->vote.infinite[ITEM_CELLS] = arena->infinite[ITEM_CELLS];
-	arena->vote.infinite[ITEM_ROCKETS] = arena->infinite[ITEM_ROCKETS];
-	arena->vote.infinite[ITEM_SLUGS] = arena->infinite[ITEM_SLUGS];
+	memcpy(arena->vote.items, arena->ammo, sizeof(arena->vote.items));
+	memcpy(arena->vote.infinite, arena->infinite, sizeof(arena->vote.infinite));
 
 	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&input);
