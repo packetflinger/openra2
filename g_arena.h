@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TEAM(e) (e->client->pers.team)
 #define ARENA(e) (e->client->pers.arena)
 
+#define WEAPONFLAG_MASK			0x7FF
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
 
@@ -234,6 +235,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
 void G_PartTeam(edict_t *ent, qboolean silent);
+void G_RandomizeAmmo(uint16_t *out);
 void G_RefillInventory(edict_t *ent);
 void G_RefillPlayers(arena_t *a);
 void G_RecreateArena(arena_t *a);

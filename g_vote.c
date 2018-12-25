@@ -567,6 +567,12 @@ static qboolean vote_weapons(edict_t *ent) {
 			modifier = qtrue;
 		}
 
+		if (str_equal(token, "random")) {
+			arena->vote.value = genrand_int32() & WEAPONFLAG_MASK;
+			G_RandomizeAmmo(arena->vote.items);
+			return qtrue;
+		}
+
 		if (str_equal(token, "all")) {
 			arena->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
 			if (modifier) {

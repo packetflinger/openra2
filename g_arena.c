@@ -2475,3 +2475,12 @@ char *G_DamageFlagsToString(arena_t *a) {
 	str[strlen(str) -2] = 0;
 	return str;
 }
+
+void G_RandomizeAmmo(uint16_t *out) {
+	out[ITEM_SHELLS] = genrand_int32() & 0xF;
+	out[ITEM_BULLETS] = genrand_int32() & 0xFF;
+	out[ITEM_GRENADES] = genrand_int32() & 0xF;
+	out[ITEM_CELLS] = genrand_int32() & 0xFF;
+	out[ITEM_ROCKETS] = genrand_int32() & 0xF;
+	out[ITEM_SLUGS] = genrand_int32() & 0xF;
+}

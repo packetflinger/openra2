@@ -1914,12 +1914,8 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
-
-	if (G_RegexMatch(gi.argv(1), gi.argv(2))) {
-		gi.cprintf(ent, PRINT_HIGH, "Matches!\n");
-	} else  {
-		gi.cprintf(ent, PRINT_HIGH, "no match...:(\n");
-	}
+	gi.dprintf("Random: %ld\n", genrand_int32() & WEAPONFLAG_MASK);
+	//gi.dprintf("random: %ld\n", g_rand_int())
 }
 
 /*
