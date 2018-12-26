@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 #define WEAPON_MAX 	(10)
+#define DAMAGE_MAX	(6)
 
 typedef struct weaponvote_s
 {
@@ -43,6 +44,21 @@ const weaponinfo_t	weaponvotes[WEAPON_MAX] =
 	{{"hyper", "hb"}, ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER, ITEM_CELLS},
 	{{"rail", "rg"}, ARENAWEAPON_RAILGUN, ITEM_RAILGUN, ITEM_SLUGS},
 	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG, ITEM_CELLS},
+};
+
+typedef struct damagevote_s
+{
+	const char		*name;
+	uint16_t		value;
+} damagevote_t;
+
+const damagevote_t damagevotes[DAMAGE_MAX] =
+{
+		{"self", ARENADAMAGE_SELF},
+		{"aself", ARENADAMAGE_SELF_ARMOR},
+		{"team", ARENADAMAGE_TEAM},
+		{"ateam", ARENADAMAGE_TEAM_ARMOR},
+		{"falling", ARENADAMAGE_FALL},
 };
 
 // voting enabled and on a team or an admin
@@ -379,7 +395,7 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		case VOTE_DAMAGE:
 			a->modified = qtrue;
 			a->damage_flags = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage flags changed to %d\n", a->vote.value);
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a));
 			break;
 
 		default:
@@ -491,6 +507,17 @@ static uint8_t weapon_vote_index(const char *name) {
 	return -1;
 }
 
+static uint8_t damage_vote_index(const char *name) {
+	uint8_t i;
+	for (i=0; i<DAMAGE_MAX; i++) {
+		if (str_equal(name, damagevotes[i].name)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 static qboolean vote_victim(edict_t *ent)
 {
     edict_t *other = G_SetVictim(ent, 1);
@@ -554,7 +581,7 @@ static qboolean vote_weapons(edict_t *ent) {
 	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&input);
 
-	while(token[0]){
+	while (token[0]) {
 
 		// parse out the +/- modifier
 		if (token[0] == '-') {
@@ -565,6 +592,13 @@ static qboolean vote_weapons(edict_t *ent) {
 			token++;
 		} else { // no modifier, assume default to add
 			modifier = qtrue;
+		}
+
+		if (str_equal(token, "reset")) {
+			arena->vote.value = arena->original_weapon_flags;
+			memcpy(arena->vote.items, arena->defaultammo, sizeof(arena->vote.items));
+			memcpy(arena->vote.infinite, arena->defaultinfinite, sizeof(arena->vote.infinite));
+			return qtrue;
 		}
 
 		if (str_equal(token, "random")) {
@@ -641,10 +675,56 @@ static qboolean vote_weapons(edict_t *ent) {
 }
 
 static qboolean vote_damage(edict_t *ent) {
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 0, ARENADAMAGE_ALL);
-	ARENA(ent)->vote.value = count;
+	qboolean modifier;	// should we add?
+	const char *input = gi.args();
+	char *token;
+	arena_t *arena = ARENA(ent);
+	uint8_t index;
+
+	arena->vote.value = arena->damage_flags;
+
+	token = COM_Parse(&input);	// get rid of the "damage" command at the head
+	token = COM_Parse(&input);
+
+	while (token[0]) {
+		// parse out the +/- modifier
+		if (token[0] == '-') {
+			modifier = qfalse;
+			token++;
+		} else if (token[0] == '+') {
+			modifier = qtrue;
+			token++;
+		} else { // no modifier, assume default to add
+			modifier = qtrue;
+		}
+
+		// reset back to original status
+		if (str_equal(token, "reset")) {
+			arena->vote.value = arena->original_damage_flags;
+			return qtrue;
+		}
+
+		if (str_equal(token, "all")) {
+			arena->vote.value = (modifier) ? ARENADAMAGE_ALL : 0;
+			token = COM_Parse(&input);
+			continue;
+		}
+
+		index = damage_vote_index(token);
+		if (index > -1) {
+			if (modifier) {
+				arena->vote.value |= damagevotes[index].value;
+			} else {
+				arena->vote.value &= ~damagevotes[index].value;
+			}
+		} else {
+			gi.cprintf(ent, PRINT_HIGH, "Unknown damage type '%s'", token);
+			return qfalse;
+		}
+
+		token = COM_Parse(&input);
+	}
+
 	return qtrue;
 }
 

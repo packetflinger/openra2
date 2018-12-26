@@ -138,6 +138,8 @@ typedef struct {
 	uint8_t			current_round;
 	uint32_t		weapon_flags;
 	uint32_t		damage_flags;
+	uint32_t		original_weapon_flags;
+	uint32_t		original_damage_flags;
 	uint16_t		health;
 	uint16_t		armor;
 	uint32_t		round_start_frame;
@@ -153,6 +155,7 @@ typedef struct {
 	uint16_t		ammo[MAX_INVENTORY];
 	uint16_t		defaultammo[MAX_INVENTORY];
 	qboolean		infinite[MAX_INVENTORY];
+	qboolean		defaultinfinite[MAX_INVENTORY];
 	int32_t			ready_think_frame;
 	int32_t			ready_notify_frame;
 	qboolean		ready;
