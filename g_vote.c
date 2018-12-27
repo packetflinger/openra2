@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 #define WEAPON_MAX 	(10)
-#define DAMAGE_MAX	(6)
+#define DAMAGE_MAX	(5)
 
 typedef struct weaponvote_s
 {
