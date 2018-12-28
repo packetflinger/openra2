@@ -47,6 +47,8 @@ typedef struct {
 } field_t;
 
 
+
+
 void SP_item_health(edict_t *self);
 void SP_item_health_small(edict_t *self);
 void SP_item_health_large(edict_t *self);
@@ -269,6 +271,59 @@ static const field_t g_temps[] = {
 
     {NULL}
 };
+
+
+/**
+ *
+ */
+qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint16_t *target) {
+	qboolean modifier;
+	char *token;
+	uint8_t index;
+
+	token = COM_Parse(&input);
+
+	while (token[0]) {
+
+		// parse out the +/- modifier
+		if (token[0] == '-') {
+			modifier = qfalse;
+			token++;
+		} else if (token[0] == '+') {
+			modifier = qtrue;
+			token++;
+		} else { // no modifier, assume default to add
+			modifier = qtrue;
+		}
+
+		// reset back to original status
+		if (str_equal(token, "reset")) {
+			*target = a->original_damage_flags;
+			return qtrue;
+		}
+
+		if (str_equal(token, "all")) {
+			*target = (modifier) ? ARENADAMAGE_ALL : 0;
+			token = COM_Parse(&input);
+			continue;
+		}
+
+		index = damage_vote_index(token);
+		if (index > -1) {
+			if (modifier) {
+				*target |= damagevotes[index].value;
+			} else {
+				*target &= ~damagevotes[index].value;
+			}
+		} else {
+			gi.cprintf(ent, PRINT_HIGH, "Unknown damage type '%s'", token);
+			return qfalse;
+		}
+
+		token = COM_Parse(&input);
+	}
+	return qtrue;
+}
 
 /*
 ===============

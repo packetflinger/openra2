@@ -1914,8 +1914,16 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
-	gi.dprintf("Random: %ld\n", genrand_int32() & WEAPONFLAG_MASK);
-	//gi.dprintf("random: %ld\n", g_rand_int())
+	const char *test = "self +falling";
+	uint16_t flags = 0;
+
+	if (G_ParseDamageString(ARENA(ent), ent, test, &flags)) {
+		gi.dprintf("dmg string parsed successfully\n");
+	} else {
+		gi.dprintf("oops, can't parse dmg flags\n");
+	}
+
+	gi.dprintf("flags: %d\n", flags);
 }
 
 /*

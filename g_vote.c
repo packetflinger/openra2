@@ -20,17 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-#define WEAPON_MAX 	(10)
-#define DAMAGE_MAX	(5)
-
-typedef struct weaponvote_s
-{
-	const char		*names[2];
-	unsigned		value;		// arena weapon bitmask value
-	int				itemindex;	// q2 item index value
-	int				ammoindex;	// q2 item index value for ammo
-} weaponinfo_t;
-
 //the ordering of weapons must match ITEM_ defines too!
 const weaponinfo_t	weaponvotes[WEAPON_MAX] =
 {
@@ -46,12 +35,6 @@ const weaponinfo_t	weaponvotes[WEAPON_MAX] =
 	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG, ITEM_CELLS},
 };
 
-typedef struct damagevote_s
-{
-	const char		*name;
-	uint16_t		value;
-} damagevote_t;
-
 const damagevote_t damagevotes[DAMAGE_MAX] =
 {
 		{"self", ARENADAMAGE_SELF},
@@ -60,6 +43,7 @@ const damagevote_t damagevotes[DAMAGE_MAX] =
 		{"ateam", ARENADAMAGE_TEAM_ARMOR},
 		{"falling", ARENADAMAGE_FALL},
 };
+
 
 // voting enabled and on a team or an admin
 #define MAY_VOTE(c) \
@@ -507,7 +491,7 @@ static uint8_t weapon_vote_index(const char *name) {
 	return -1;
 }
 
-static uint8_t damage_vote_index(const char *name) {
+uint8_t damage_vote_index(const char *name) {
 	uint8_t i;
 	for (i=0; i<DAMAGE_MAX; i++) {
 		if (str_equal(name, damagevotes[i].name)) {
