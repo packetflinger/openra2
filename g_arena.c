@@ -160,11 +160,9 @@ const char *DemoName(edict_t *ent) {
 	time_t			t;
 	cvar_t			*hostname;
 	cvar_t			*demohostname;
-	char			*servername;
 
-	hostname = gi.cvar("hostname", NULL, 0);
-	servername = (hostname) ? hostname->string : "unnamed_server";
-	demohostname = gi.cvar("g_demo_hostname", servername, 0);
+	hostname = gi.cvar("hostname", "unnamed_server", 0);
+	demohostname = gi.cvar("g_demo_hostname", hostname->string, 0);
 
 	t = time(NULL);
 	ts = localtime(&t);
