@@ -1915,7 +1915,7 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 
 static void Cmd_Test_f(edict_t *ent) {
 	const char *test = "self +falling";
-	uint16_t flags = 0;
+	uint32_t flags = 0;
 
 	if (G_ParseDamageString(ARENA(ent), ent, test, &flags)) {
 		gi.dprintf("dmg string parsed successfully\n");

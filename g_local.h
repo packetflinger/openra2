@@ -1007,7 +1007,7 @@ map_entry_t *G_FindMap(const char *name);
 //
 void G_SpawnEntities(const char *mapname, const char *entities, const char *spawnpoint);
 void G_ResetLevel(void);
-qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint16_t *target);
+qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32_t *target);
 
 /**
  * g_random.c

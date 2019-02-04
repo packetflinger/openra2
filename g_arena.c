@@ -2094,7 +2094,8 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 			}
 
 			if (Q_strcasecmp(token, "damage") == 0 && inarena) {
-				entry[arena_num].damage_flags = atoi(COM_Parse(&fp_data));
+				//entry[arena_num].damage_flags = atoi(COM_Parse(&fp_data));
+				G_ParseDamageString(NULL, NULL, &fp_data, &entry[arena_num].damage_flags);
 			}
 
 			if (Q_strcasecmp(token, "weapons") == 0 && inarena) {

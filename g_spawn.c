@@ -276,7 +276,7 @@ static const field_t g_temps[] = {
 /**
  *
  */
-qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint16_t *target) {
+qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32_t *target) {
 	qboolean modifier;
 	char *token;
 	uint8_t index;
@@ -284,6 +284,11 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint16
 	token = COM_Parse(&input);
 
 	while (token[0]) {
+
+		// EOL
+		if (token[0] == '\n') {
+			return qtrue;
+		}
 
 		// parse out the +/- modifier
 		if (token[0] == '-') {
@@ -298,7 +303,7 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint16
 
 		// reset back to original status
 		if (str_equal(token, "reset")) {
-			*target = a->original_damage_flags;
+			*target = (a) ? a->original_damage_flags : 0;
 			return qtrue;
 		}
 
