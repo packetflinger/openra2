@@ -549,113 +549,25 @@ static qboolean vote_teams(edict_t *ent) {
 
 static qboolean vote_weapons(edict_t *ent) {
 
-	qboolean modifier;	// should we add?
 	const char *input = gi.args();
-	char *token;
-	weaponinfo_t w;
-	gchar **weapammopair;
-	int8_t index;
 	arena_t *arena = ARENA(ent);
+	temp_weaponflags_t temp;
+
+	COM_Parse(&input);	// remove "weapon" from command
 
 	// start the vote with what we've already got
 	arena->vote.value = arena->weapon_flags;
 	memcpy(arena->vote.items, arena->ammo, sizeof(arena->vote.items));
 	memcpy(arena->vote.infinite, arena->infinite, sizeof(arena->vote.infinite));
 
-	token = COM_Parse(&input);	// get rid of the "weapons" command at the head
-	token = COM_Parse(&input);
-
-	while (token[0]) {
-
-		// parse out the +/- modifier
-		if (token[0] == '-') {
-			modifier = qfalse;
-			token++;
-		} else if (token[0] == '+') {
-			modifier = qtrue;
-			token++;
-		} else { // no modifier, assume default to add
-			modifier = qtrue;
-		}
-
-		if (str_equal(token, "reset")) {
-			arena->vote.value = arena->original_weapon_flags;
-			memcpy(arena->vote.items, arena->defaultammo, sizeof(arena->vote.items));
-			memcpy(arena->vote.infinite, arena->defaultinfinite, sizeof(arena->vote.infinite));
-			return qtrue;
-		}
-
-		if (str_equal(token, "random")) {
-			arena->vote.value = genrand_int32() & WEAPONFLAG_MASK;
-			G_RandomizeAmmo(arena->vote.items);
-			return qtrue;
-		}
-
-		if (str_equal(token, "all")) {
-			arena->vote.value = (modifier) ? ARENAWEAPON_ALL : 0;
-			if (modifier) {
-				memcpy(arena->vote.items, arena->defaultammo, sizeof(arena->vote.items));
-				memset(&arena->vote.infinite, 0, sizeof(arena->vote.infinite));
-			}
-			token = COM_Parse(&input);
-			continue;
-		}
-
-		// ammo specified
-		if (strstr(token, ":")) {
-			weapammopair = g_strsplit(token, ":", 2);
-			index = weapon_vote_index(weapammopair[0]);
-
-			if (index > -1) {
-				w = weaponvotes[index];
-				if (modifier) {
-					arena->vote.value |= w.value;	// include this weapon
-					if (str_equal(weapammopair[1], "inf")) {
-						arena->vote.items[w.ammoindex] = 666;
-						arena->vote.infinite[w.ammoindex] = qtrue;
-					} else {
-						arena->vote.items[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
-						clamp(arena->vote.items[w.ammoindex], 1, 999);
-						arena->vote.infinite[w.ammoindex] = qfalse;
-					}
-
-				} else {
-					arena->vote.value &= ~w.value; // remove it
-					arena->vote.items[w.ammoindex] = 0;
-					arena->vote.infinite[w.ammoindex] = qfalse;
-				}
-
-			} else {
-				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", weapammopair[0]);
-				g_strfreev(weapammopair);
-				return qfalse;
-			}
-
-			g_strfreev(weapammopair);
-
-		} else { // just gun, use default for ammo
-			index = weapon_vote_index(token);
-			if (index > -1) {
-				w = weaponvotes[index];
-				if (modifier) {
-					arena->vote.value |= w.value;
-					arena->vote.items[w.ammoindex] = arena->defaultammo[w.ammoindex];
-					clamp(arena->vote.items[w.ammoindex], 1, 999);
-				} else {
-					arena->vote.value &= ~w.value;
-					// dont take ammo away, in case shared (sg/ssg, mg/cg)
-				}
-
-			} else {
-				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
-				return qfalse;
-			}
-		}
-
-		token = COM_Parse(&input);
+	if (G_ParseWeaponString(arena, ent, &input, &temp)) {
+		arena->vote.value = temp.weaponflags;
+		memcpy(arena->vote.items, temp.ammo, sizeof(arena->vote.items));
+		memcpy(arena->vote.infinite, temp.infinite, sizeof(arena->vote.infinite));
+		return qtrue;
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 static qboolean vote_damage(edict_t *ent) {

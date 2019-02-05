@@ -1937,6 +1937,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 		a->team_count = (int) g_team_count->value;
+		memset(&a->infinite, 0, sizeof(a->infinite));
 		return;
 	}
 
