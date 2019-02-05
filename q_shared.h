@@ -489,6 +489,7 @@ qboolean COM_IsPath(const char *s);
 qboolean COM_IsWhite(const char *s);
 
 char *COM_Parse(const char **data_p);
+char *COM_Parse_Newline(const char **data_p);
 // data is an in/out parm, returns a parsed out token
 size_t COM_Compress(char *data);
 

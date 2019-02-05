@@ -53,6 +53,16 @@ extern list_t	g_arenalist;
 #define DATE_FORMAT ("%b %e, %Y %H:%M ")
 #endif
 
+/**
+ * Used for parsing weapons flags (and associated data) for initial map spawn
+ * and voting.
+ */
+typedef struct {
+	uint32_t weaponflags;
+	uint16_t ammo[MAX_INVENTORY];
+	qboolean infinite[MAX_INVENTORY];
+} temp_weaponflags_t;
+
 typedef enum {
 	WINNER_NONE,
 	WINNER_HOME,
@@ -193,6 +203,8 @@ typedef struct {
 	uint32_t	grenades;
 	uint32_t	bullets;
 	uint32_t	shells;
+	uint16_t	ammo[MAX_INVENTORY];
+	qboolean	infinite[MAX_INVENTORY];
 } arena_entry_t;
 
 

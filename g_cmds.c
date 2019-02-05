@@ -1914,16 +1914,18 @@ static void Cmd_NotImplYet_f(edict_t *ent) {
 }
 
 static void Cmd_Test_f(edict_t *ent) {
+	/*
 	const char *test = "self +falling";
 	uint32_t flags = 0;
 
-	if (G_ParseDamageString(ARENA(ent), ent, test, &flags)) {
+	if (G_ParseDamageString(ARENA(ent), ent, &test, &flags)) {
 		gi.dprintf("dmg string parsed successfully\n");
 	} else {
 		gi.dprintf("oops, can't parse dmg flags\n");
 	}
 
 	gi.dprintf("flags: %d\n", flags);
+	*/
 }
 
 /*

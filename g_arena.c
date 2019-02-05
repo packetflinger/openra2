@@ -1977,40 +1977,42 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 	}
 	
 	if (m->slugs) {
-		a->ammo[ITEM_SLUGS] = m->slugs;
+		a->ammo[ITEM_SLUGS] = m->ammo[ITEM_SLUGS];
 	} else {
 		a->ammo[ITEM_SLUGS] = (int) g_ammo_slugs->value;
 	}
 	
 	if (m->rockets) {
-		a->ammo[ITEM_ROCKETS] = m->rockets;
+		a->ammo[ITEM_ROCKETS] = m->ammo[ITEM_ROCKETS];
 	} else {
 		a->ammo[ITEM_ROCKETS] = (int) g_ammo_rockets->value;
 	}
 	
 	if (m->cells) {
-		a->ammo[ITEM_CELLS] = m->cells;
+		a->ammo[ITEM_CELLS] = m->ammo[ITEM_CELLS];
 	} else {
 		a->ammo[ITEM_CELLS] = (int) g_ammo_cells->value;
 	}
 	
 	if (m->grenades) {
-		a->ammo[ITEM_GRENADES] = m->grenades;
+		a->ammo[ITEM_GRENADES] = m->ammo[ITEM_GRENADES];
 	} else {
 		a->ammo[ITEM_GRENADES] = (int) g_ammo_grenades->value;
 	}
 	
 	if (m->bullets) {
-		a->ammo[ITEM_BULLETS] = m->bullets;
+		a->ammo[ITEM_BULLETS] = m->ammo[ITEM_BULLETS];
 	} else {
 		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
 	}
 	
 	if (m->shells) {
-		a->ammo[ITEM_SHELLS] = m->shells;
+		a->ammo[ITEM_SHELLS] = m->ammo[ITEM_SHELLS];
 	} else {
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 	}
+
+	memcpy(a->infinite, m->infinite, sizeof(a->infinite));
 
 	// save defaults for voting
 	memcpy(a->defaultammo, a->ammo, sizeof(a->defaultammo));
@@ -2041,6 +2043,7 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 	const char *fp_data;
 	char *token;
 	qboolean inarena;
+	temp_weaponflags_t twf;
 
 	count = 0;
 
@@ -2092,12 +2095,15 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 			}
 
 			if (Q_strcasecmp(token, "damage") == 0 && inarena) {
-				//entry[arena_num].damage_flags = atoi(COM_Parse(&fp_data));
 				G_ParseDamageString(NULL, NULL, &fp_data, &entry[arena_num].damage_flags);
 			}
 
 			if (Q_strcasecmp(token, "weapons") == 0 && inarena) {
-				entry[arena_num].weapon_flags = atoi(COM_Parse(&fp_data));
+				memset(&twf, 0, sizeof(temp_weaponflags_t));
+				G_ParseWeaponString(NULL, NULL, &fp_data, &twf);
+				entry[arena_num].weapon_flags = twf.weaponflags;
+				memcpy(entry[arena_num].ammo, twf.ammo, sizeof(entry[arena_num].ammo));
+				memcpy(entry[arena_num].infinite, twf.infinite, sizeof(entry[arena_num].infinite));
 			}
 
 			if (Q_strcasecmp(token, "rounds") == 0 && inarena) {
@@ -2113,27 +2119,27 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 			}
 			
 			if (Q_strcasecmp(token, "slugs") == 0 && inarena) {
-				entry[arena_num].slugs = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_SLUGS] = atoi(COM_Parse(&fp_data));
 			}
 			
 			if (Q_strcasecmp(token, "rockets") == 0 && inarena) {
-				entry[arena_num].rockets = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_ROCKETS] = atoi(COM_Parse(&fp_data));
 			}
 			
 			if (Q_strcasecmp(token, "cells") == 0 && inarena) {
-				entry[arena_num].cells = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_CELLS] = atoi(COM_Parse(&fp_data));
 			}
 			
 			if (Q_strcasecmp(token, "grenades") == 0 && inarena) {
-				entry[arena_num].grenades = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_GRENADES] = atoi(COM_Parse(&fp_data));
 			}
 			
 			if (Q_strcasecmp(token, "bullets") == 0 && inarena) {
-				entry[arena_num].bullets = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_BULLETS] = atoi(COM_Parse(&fp_data));
 			}
 			
 			if (Q_strcasecmp(token, "shells") == 0 && inarena) {
-				entry[arena_num].shells = atoi(COM_Parse(&fp_data));
+				entry[arena_num].ammo[ITEM_SHELLS] = atoi(COM_Parse(&fp_data));
 			}
 		}
 

@@ -272,17 +272,171 @@ static const field_t g_temps[] = {
     {NULL}
 };
 
+qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, temp_weaponflags_t *t) {
 
+	char *token;
+	const char *fulltoken;
+	qboolean modifier;
+	gchar **weapammopair;
+	weaponinfo_t w;
+	int8_t windex;
+	long testval;
+	char *next;
+
+	uint16_t defaultammo[MAX_INVENTORY];
+	defaultammo[ITEM_SHELLS] = 20;
+	defaultammo[ITEM_BULLETS] = 200;
+	defaultammo[ITEM_GRENADES] = 10;
+	defaultammo[ITEM_CELLS] = 100;
+	defaultammo[ITEM_ROCKETS] = 15;
+	defaultammo[ITEM_SLUGS] = 5;
+
+	if (arena) {
+		t->weaponflags = arena->weapon_flags;
+		memcpy(t->ammo, arena->ammo, sizeof(t->ammo));
+		memcpy(t->infinite, arena->infinite, sizeof(t->infinite));
+	}
+
+	fulltoken = COM_Parse_Newline(input);
+
+	// check if it's a number, if so assume raw dmg flags value
+	testval = strtol(fulltoken, &next, 10);
+	if (!((next == fulltoken) || (*next != '\0'))) {
+		t->weaponflags = testval;
+		memcpy(t->ammo, defaultammo, sizeof(t->ammo));
+		memset(t->infinite, 0, sizeof(t->infinite));
+		return qtrue;
+	}
+
+	gi.dprintf("fulltoken: %s\n", fulltoken);
+	//token = COM_Parse(&fulltoken);	// get rid of the "weapons" command at the head
+	token = COM_Parse(&fulltoken);
+
+	while (token[0]) {
+
+		gi.dprintf("token: %s\n", token);
+		// parse out the +/- modifier
+		if (token[0] == '-') {
+			modifier = qfalse;
+			token++;
+		} else if (token[0] == '+') {
+			modifier = qtrue;
+			token++;
+		} else { // no modifier, assume default to add
+			modifier = qtrue;
+		}
+
+		if (str_equal(token, "reset")) {
+			t->weaponflags = arena->original_weapon_flags;
+			memcpy(t->ammo, arena->defaultammo, sizeof(t->ammo));
+			memcpy(t->infinite, arena->defaultinfinite, sizeof(t->infinite));
+			return qtrue;
+		}
+
+		if (str_equal(token, "random")) {
+			t->weaponflags = genrand_int32() & WEAPONFLAG_MASK;
+			G_RandomizeAmmo(t->ammo);
+			return qtrue;
+		}
+
+		if (str_equal(token, "all")) {
+			t->weaponflags = (modifier) ? ARENAWEAPON_ALL : 0;
+			if (modifier) {
+				if (arena) {
+					memcpy(t->ammo, arena->defaultammo, sizeof(t->ammo));
+				} else {
+					memcpy(t->ammo, defaultammo, sizeof(t->ammo));
+				}
+				memset(t->infinite, 0, sizeof(t->infinite));
+			}
+			token = COM_Parse(&fulltoken);
+			continue;
+		}
+
+		// ammo specified
+		if (strstr(token, ":")) {
+			weapammopair = g_strsplit(token, ":", 2);
+			windex = weapon_vote_index(weapammopair[0]);
+
+			if (windex > -1) {
+				w = weaponvotes[windex];
+				if (modifier) {
+					t->weaponflags |= w.value;
+					if (str_equal(weapammopair[1], "inf")) {
+						t->ammo[w.ammoindex] = 666;
+						t->infinite[w.ammoindex] = qtrue;
+					} else {
+						t->ammo[w.ammoindex] = strtoul(weapammopair[1], NULL, 10);
+						clamp(t->ammo[w.ammoindex], 1, 999);
+						t->infinite[w.ammoindex] = qfalse;
+					}
+
+				} else {
+					t->weaponflags &= ~w.value;
+					t->ammo[w.ammoindex] = 0;
+					t->infinite[w.ammoindex] = qfalse;
+				}
+
+			} else {
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", weapammopair[0]);
+				g_strfreev(weapammopair);
+				return qfalse;
+			}
+
+			g_strfreev(weapammopair);
+
+		} else { // just gun, use default for ammo
+			windex = weapon_vote_index(token);
+			if (windex > -1) {
+				w = weaponvotes[windex];
+				if (modifier) {
+					t->weaponflags |= w.value;
+					if (arena) {
+						t->ammo[w.ammoindex] = arena->defaultammo[w.ammoindex];
+					} else {
+						t->ammo[w.ammoindex] = defaultammo[w.ammoindex];
+					}
+					clamp(t->ammo[w.ammoindex], 1, 999);
+				} else {
+					t->weaponflags &= ~w.value;
+					// dont take ammo away, in case shared (sg/ssg, mg/cg)
+				}
+
+			} else {
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
+				return qfalse;
+			}
+		}
+
+		token = COM_Parse(&fulltoken);
+	}
+
+	gi.dprintf("weapflags: %d\n", t->weaponflags);
+
+	return qtrue;
+}
 /**
+ * Take a string like "-all +falling +self" and translate that to a integer bitmask
  *
  */
-qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32_t *target) {
+qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint32_t *target) {
 	qboolean modifier;
+	const char *fulltoken;
 	char *token;
 	uint8_t index;
+	long testval;
+	char *next;
 
-	token = COM_Parse(&input);
+	fulltoken = COM_Parse_Newline(input);
 
+	// check if it's a number, if so assume raw dmg flags value
+	testval = strtol(fulltoken, &next, 10);
+	if (!((next == fulltoken) || (*next != '\0'))) {
+		*target = testval;
+		return qtrue;
+	}
+
+	token = COM_Parse(&fulltoken);
 	while (token[0]) {
 
 		// EOL
@@ -297,7 +451,7 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32
 		} else if (token[0] == '+') {
 			modifier = qtrue;
 			token++;
-		} else { // no modifier, assume default to add
+		} else { // no modifier, assume add
 			modifier = qtrue;
 		}
 
@@ -309,7 +463,7 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32
 
 		if (str_equal(token, "all")) {
 			*target = (modifier) ? ARENADAMAGE_ALL : 0;
-			token = COM_Parse(&input);
+			token = COM_Parse(&fulltoken);
 			continue;
 		}
 
@@ -325,8 +479,9 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32
 			return qfalse;
 		}
 
-		token = COM_Parse(&input);
+		token = COM_Parse(&fulltoken);
 	}
+
 	return qtrue;
 }
 

@@ -480,7 +480,7 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     G_CheckArenaVote(ARENA(ent));
 }
 
-static uint8_t weapon_vote_index(const char *name) {
+uint8_t weapon_vote_index(const char *name) {
 	uint8_t i;
 	for (i=0; i<WEAPON_MAX; i++) {
 		if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
@@ -659,57 +659,21 @@ static qboolean vote_weapons(edict_t *ent) {
 }
 
 static qboolean vote_damage(edict_t *ent) {
-	qboolean modifier;	// should we add?
+
 	const char *input = gi.args();
-	char *token;
 	arena_t *arena = ARENA(ent);
-	uint8_t index;
+	uint32_t output = 0;
 
 	arena->vote.value = arena->damage_flags;
 
-	token = COM_Parse(&input);	// get rid of the "damage" command at the head
-	token = COM_Parse(&input);
+	COM_Parse(&input);	// get rid of the word "weapon" from the head
 
-	while (token[0]) {
-		// parse out the +/- modifier
-		if (token[0] == '-') {
-			modifier = qfalse;
-			token++;
-		} else if (token[0] == '+') {
-			modifier = qtrue;
-			token++;
-		} else { // no modifier, assume default to add
-			modifier = qtrue;
-		}
-
-		// reset back to original status
-		if (str_equal(token, "reset")) {
-			arena->vote.value = arena->original_damage_flags;
-			return qtrue;
-		}
-
-		if (str_equal(token, "all")) {
-			arena->vote.value = (modifier) ? ARENADAMAGE_ALL : 0;
-			token = COM_Parse(&input);
-			continue;
-		}
-
-		index = damage_vote_index(token);
-		if (index > -1) {
-			if (modifier) {
-				arena->vote.value |= damagevotes[index].value;
-			} else {
-				arena->vote.value &= ~damagevotes[index].value;
-			}
-		} else {
-			gi.cprintf(ent, PRINT_HIGH, "Unknown damage type '%s'", token);
-			return qfalse;
-		}
-
-		token = COM_Parse(&input);
+	if (G_ParseDamageString(arena, ent, &input, &output)) {
+		arena->vote.value = output;
+		return qtrue;
 	}
 
-	return qtrue;
+	return qfalse;
 }
 
 static qboolean vote_rounds(edict_t *ent) {

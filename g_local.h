@@ -1007,8 +1007,8 @@ map_entry_t *G_FindMap(const char *name);
 //
 void G_SpawnEntities(const char *mapname, const char *entities, const char *spawnpoint);
 void G_ResetLevel(void);
-qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char *input, uint32_t *target);
-
+qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint32_t *target);
+qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, temp_weaponflags_t *t);
 /**
  * g_random.c
  */
@@ -1508,6 +1508,7 @@ qboolean G_CheckVote(void);
 void Cmd_Vote_f(edict_t *ent);
 void Cmd_CastVote_f(edict_t *ent, qboolean accepted);
 uint8_t damage_vote_index(const char *name);
+uint8_t weapon_vote_index(const char *name);
 
 //
 // g_bans.c
@@ -1558,3 +1559,4 @@ typedef struct damagevote_s
 
 extern const weaponinfo_t	weaponvotes[WEAPON_MAX];
 extern const damagevote_t damagevotes[DAMAGE_MAX];
+

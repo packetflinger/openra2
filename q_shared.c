@@ -528,6 +528,88 @@ finish:
     return s;
 }
 
+/**
+ * Parse a token out of a string. Tokens are newline delimited
+ *
+ */
+char *COM_Parse_Newline(const char **data_p)
+{
+    int         c;
+    int         len;
+    const char  *data;
+    char        *s = com_token[com_tokidx++ & 3];
+
+    data = *data_p;
+    len = 0;
+    s[0] = 0;
+
+    if (!data) {
+        *data_p = NULL;
+        return s;
+    }
+
+// skip whitespace
+skipwhite:
+    while ((c = *data) <= ' ') {
+        if (c == 0) {
+            *data_p = NULL;
+            return s;
+        }
+        data++;
+    }
+
+// skip // comments
+    if (c == '/' && data[1] == '/') {
+        data += 2;
+        while (*data && *data != '\n')
+            data++;
+        goto skipwhite;
+    }
+
+// skip /* */ comments
+    if (c == '/' && data[1] == '*') {
+        data += 2;
+        while (*data) {
+            if (data[0] == '*' && data[1] == '/') {
+                data += 2;
+                break;
+            }
+            data++;
+        }
+        goto skipwhite;
+    }
+
+// handle quoted strings specially
+    if (c == '\"') {
+        data++;
+        while (1) {
+            c = *data++;
+            if (c == '\"' || !c) {
+                goto finish;
+            }
+
+            if (len < MAX_TOKEN_CHARS - 1) {
+                s[len++] = c;
+            }
+        }
+    }
+
+// parse a regular word
+    do {
+        if (len < MAX_TOKEN_CHARS - 1) {
+            s[len++] = c;
+        }
+        data++;
+        c = *data;
+    } while (c != 10);
+
+finish:
+    s[len] = 0;
+
+    *data_p = data;
+    return s;
+}
+
 /*
 ==============
 COM_Compress
@@ -1249,4 +1331,3 @@ void Info_Print(const char *infostring)
         Com_Printf("%-20s %s\n", key, value);
     }
 }
-
