@@ -1976,37 +1976,37 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->armor = (int) g_armor_start->value;
 	}
 	
-	if (m->slugs) {
+	if (m->ammo[ITEM_SLUGS]) {
 		a->ammo[ITEM_SLUGS] = m->ammo[ITEM_SLUGS];
 	} else {
 		a->ammo[ITEM_SLUGS] = (int) g_ammo_slugs->value;
 	}
 	
-	if (m->rockets) {
+	if (m->ammo[ITEM_ROCKETS]) {
 		a->ammo[ITEM_ROCKETS] = m->ammo[ITEM_ROCKETS];
 	} else {
 		a->ammo[ITEM_ROCKETS] = (int) g_ammo_rockets->value;
 	}
 	
-	if (m->cells) {
+	if (m->ammo[ITEM_CELLS]) {
 		a->ammo[ITEM_CELLS] = m->ammo[ITEM_CELLS];
 	} else {
 		a->ammo[ITEM_CELLS] = (int) g_ammo_cells->value;
 	}
 	
-	if (m->grenades) {
+	if (m->ammo[ITEM_GRENADES]) {
 		a->ammo[ITEM_GRENADES] = m->ammo[ITEM_GRENADES];
 	} else {
 		a->ammo[ITEM_GRENADES] = (int) g_ammo_grenades->value;
 	}
 	
-	if (m->bullets) {
+	if (m->ammo[ITEM_BULLETS]) {
 		a->ammo[ITEM_BULLETS] = m->ammo[ITEM_BULLETS];
 	} else {
 		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
 	}
 	
-	if (m->shells) {
+	if (m->ammo[ITEM_SHELLS]) {
 		a->ammo[ITEM_SHELLS] = m->ammo[ITEM_SHELLS];
 	} else {
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
