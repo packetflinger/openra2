@@ -35,7 +35,7 @@ BEGIN
             VALUE "OriginalFilename", VER_ORIGINALFILENAME_STR
             VALUE "FileVersion", OPENRA2_VERSION
             VALUE "InternalName", "openra2"
-            VALUE "LegalCopyright", "Copyright © 2018 packetflinger.com"
+            VALUE "LegalCopyright", COPYRIGHT
             VALUE "ProductName", "OpenRA2"
             VALUE "ProductVersion", OPENRA2_VERSION
         END

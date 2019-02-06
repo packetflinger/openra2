@@ -14,6 +14,10 @@ ifndef VER
     VER := r$(REV)~$(shell git rev-parse --short HEAD)
 endif
 
+ifndef COPYRIGHT
+	COPYRIGHT := Copyright 2016-$(shell date +%Y) packetflinger.com
+endif
+
 CC ?= gcc
 WINDRES ?= windres
 STRIP ?= strip
@@ -35,7 +39,7 @@ endif
 
 CFLAGS += -DOPENRA2_VERSION='"$(VER)"' -DOPENRA2_REVISION=$(REV) $(GLIB_CFLAGS)
 LDFLAGS += $(GLIB_LDFLAGS)
-RCFLAGS += -DOPENRA2_VERSION='\"$(VER)\"' -DOPENRA2_REVISION=$(REV)
+RCFLAGS += -DOPENRA2_VERSION='\"$(VER)\"' -DOPENRA2_REVISION=$(REV) -DCOPYRIGHT='\"$(COPYRIGHT)\"'
 
 OBJS := \
 	g_arena.o \
