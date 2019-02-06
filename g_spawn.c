@@ -308,13 +308,10 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 		return qtrue;
 	}
 
-	gi.dprintf("fulltoken: %s\n", fulltoken);
-	//token = COM_Parse(&fulltoken);	// get rid of the "weapons" command at the head
 	token = COM_Parse(&fulltoken);
 
 	while (token[0]) {
 
-		gi.dprintf("token: %s\n", token);
 		// parse out the +/- modifier
 		if (token[0] == '-') {
 			modifier = qfalse;
@@ -326,6 +323,7 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 			modifier = qtrue;
 		}
 
+		// only really for voting
 		if (str_equal(token, "reset")) {
 			t->weaponflags = arena->original_weapon_flags;
 			memcpy(t->ammo, arena->defaultammo, sizeof(t->ammo));
@@ -410,8 +408,6 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 
 		token = COM_Parse(&fulltoken);
 	}
-
-	gi.dprintf("weapflags: %d\n", t->weaponflags);
 
 	return qtrue;
 }
