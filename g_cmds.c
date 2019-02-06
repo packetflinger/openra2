@@ -1330,11 +1330,12 @@ static void Cmd_Id_f(edict_t *ent)
 
 void Cmd_Settings_f(edict_t *ent)
 {
+	gi.cprintf(ent, PRINT_HIGH, "Weapons:       %s\n", G_WeaponFlagsToString(ARENA(ent)));
 	gi.cprintf(ent, PRINT_HIGH, "Damage:        %s\n", G_DamageFlagsToString(ARENA(ent)));
 	gi.cprintf(ent, PRINT_HIGH, "Rounds:        %d\n", ARENA(ent)->round_limit);
+	gi.cprintf(ent, PRINT_HIGH, "Teams:         %d\n", ARENA(ent)->team_count);
 	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", ARENA(ent)->health);
 	gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", ARENA(ent)->armor);
-	gi.cprintf(ent, PRINT_HIGH, "Weapons:       %s\n", G_WeaponFlagsToString(ARENA(ent)));
 }
 
 static void Cmd_Admin_f(edict_t *ent)

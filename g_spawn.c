@@ -401,7 +401,7 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 				}
 
 			} else {
-				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s', try again\n", token);
+				gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
 				return qfalse;
 			}
 		}
@@ -411,6 +411,7 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 
 	return qtrue;
 }
+
 /**
  * Take a string like "-all +falling +self" and translate that to a integer bitmask
  *
