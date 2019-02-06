@@ -379,7 +379,7 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		case VOTE_DAMAGE:
 			a->modified = qtrue;
 			a->damage_flags = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a));
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a->damage_flags));
 			break;
 
 		default:
@@ -420,10 +420,10 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         sprintf(buffer, "teams %d", a->vote.value);
         break;
     case VOTE_WEAPONS:
-		sprintf(buffer, "weapons %d", a->vote.value);
+    	sprintf(buffer, "%s", a->vote.original);
 		break;
     case VOTE_DAMAGE:
-		sprintf(buffer, "damage %d", a->vote.value);
+    	sprintf(buffer, "%s", a->vote.original);
 		break;
     case VOTE_ROUNDS:
 		sprintf(buffer, "rounds %d", a->vote.value);
@@ -553,6 +553,8 @@ static qboolean vote_weapons(edict_t *ent) {
 	arena_t *arena = ARENA(ent);
 	temp_weaponflags_t temp;
 
+	strncpy(arena->vote.original, input, sizeof(arena->vote.original));
+
 	COM_Parse(&input);	// remove "weapon" from command
 
 	// start the vote with what we've already got
@@ -577,6 +579,8 @@ static qboolean vote_damage(edict_t *ent) {
 	uint32_t output = 0;
 
 	arena->vote.value = arena->damage_flags;
+
+	strncpy(arena->vote.original, input, sizeof(arena->vote.original));
 
 	COM_Parse(&input);	// get rid of the word "weapon" from the head
 

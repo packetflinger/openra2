@@ -2456,32 +2456,39 @@ char *G_WeaponFlagsToString(arena_t *a) {
 }
 
 
-char *G_DamageFlagsToString(arena_t *a) {
+char *G_DamageFlagsToString(uint32_t df) {
 	static char str[200];
 
 	memset(&str, 0, sizeof(str));
 
-	if (a->damage_flags & ARENADAMAGE_SELF) {
+	if (df == 0) {
+		return "none";
+	}
+
+	if (df & ARENADAMAGE_SELF) {
 		strcat(str, "self health, ");
 	}
 
-	if (a->damage_flags & ARENADAMAGE_SELF_ARMOR) {
+	if (df & ARENADAMAGE_SELF_ARMOR) {
 		strcat(str, "self armor, ");
 	}
 
-	if (a->damage_flags & ARENADAMAGE_TEAM) {
+	if (df & ARENADAMAGE_TEAM) {
 		strcat(str, "team health, ");
 	}
 
-	if (a->damage_flags & ARENADAMAGE_TEAM_ARMOR) {
+	if (df & ARENADAMAGE_TEAM_ARMOR) {
 		strcat(str, "team armor, ");
 	}
 
-	if (a->damage_flags & ARENADAMAGE_FALL) {
+	if (df & ARENADAMAGE_FALL) {
 		strcat(str, "falling, ");
 	}
 
-	str[strlen(str) -2] = 0;
+	if (strlen(str) > 1) {
+		str[strlen(str) - 2] = 0;
+	}
+
 	return str;
 }
 
