@@ -437,7 +437,6 @@ static void Cmd_Noclip_f(edict_t *ent)
                ent->movetype == MOVETYPE_NOCLIP ? "ON" : "OFF");
 }
 
-
 /*
 A player called timeout
 */
@@ -445,13 +444,11 @@ static void Cmd_Timeout_f(edict_t *ent) {
 	
 	arena_t *a = ARENA(ent);
 	
-	if (a->state != ARENA_STATE_PLAY)
-		return;
-	
 	if (!TEAM(ent)) {
 		return;
 	}
 	
+	// handle timein
 	if (a->timeout_frame) {
 		if (ent == a->timeout_caller || ent->client->pers.admin) {
 			a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timein_time->value);	
@@ -459,13 +456,17 @@ static void Cmd_Timeout_f(edict_t *ent) {
 		
 		return;
 	}
-	
+
+	if (a->state != ARENA_STATE_PLAY)
+		return;
+
 	a->state = ARENA_STATE_TIMEOUT;
 	a->timeout_frame = level.framenum;
 	a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timeout_time->value);
 	a->timeout_caller = ent;
 	
 	G_bprintf(a, PRINT_HIGH, "%s called timeout\n", NAME(ent));
+	G_ArenaSound(a, level.sounds.timeout);
 }
 
 /*
