@@ -1305,6 +1305,57 @@ void SP_worldspawn(edict_t *ent)
 
     gi.soundindex("items/respawn1.wav");
 
+    level.sounds.fight[1] = gi.soundindex("fight1.wav");
+    level.sounds.fight[2] = gi.soundindex("fight2.wav");
+    level.sounds.fight[3] = gi.soundindex("fight3.wav");
+    level.sounds.fight[4] = gi.soundindex("fight4.wav");
+	level.sounds.fight[5] = gi.soundindex("fight5.wav");
+	level.sounds.fight[6] = gi.soundindex("fight6.wav");
+
+    level.sounds.countdown[1] = gi.soundindex("count01.wav");
+    level.sounds.countdown[2] = gi.soundindex("count02.wav");
+    level.sounds.countdown[3] = gi.soundindex("count03.wav");
+	level.sounds.countdown[4] = gi.soundindex("count04.wav");
+    level.sounds.countdown[5] = gi.soundindex("count05.wav");
+    level.sounds.countdown[6] = gi.soundindex("count06.wav");
+    level.sounds.countdown[7] = gi.soundindex("count07.wav");
+	level.sounds.countdown[8] = gi.soundindex("count08.wav");
+    level.sounds.countdown[9] = gi.soundindex("count09.wav");
+    level.sounds.countdown[10] = gi.soundindex("count10.wav");
+    level.sounds.countdown[11] = gi.soundindex("count11.wav");
+	level.sounds.countdown[12] = gi.soundindex("count12.wav");
+
+    level.sounds.round[1] = gi.soundindex("round01.wav");
+    level.sounds.round[2] = gi.soundindex("round02.wav");
+    level.sounds.round[3] = gi.soundindex("round03.wav");
+    level.sounds.round[4] = gi.soundindex("round04.wav");
+    level.sounds.round[5] = gi.soundindex("round05.wav");
+    level.sounds.round[6] = gi.soundindex("round06.wav");
+    level.sounds.round[7] = gi.soundindex("round07.wav");
+    level.sounds.round[8] = gi.soundindex("round08.wav");
+    level.sounds.round[9] = gi.soundindex("round09.wav");
+    level.sounds.round[10] = gi.soundindex("round10.wav");
+    level.sounds.round[11] = gi.soundindex("round11.wav");
+    level.sounds.round[12] = gi.soundindex("round12.wav");
+    level.sounds.round[13] = gi.soundindex("round13.wav");
+    level.sounds.round[14] = gi.soundindex("round14.wav");
+    level.sounds.round[15] = gi.soundindex("round15.wav");
+    level.sounds.round[16] = gi.soundindex("round16.wav");
+    level.sounds.round[17] = gi.soundindex("round17.wav");
+    level.sounds.round[18] = gi.soundindex("round18.wav");
+    level.sounds.round[19] = gi.soundindex("round19.wav");
+    level.sounds.round[20] = gi.soundindex("round20.wav");
+    level.sounds.round[21] = gi.soundindex("round21.wav");
+
+    level.sounds.finalround = gi.soundindex("roundfinal.wav");
+    level.sounds.timeout = gi.soundindex("timeout.wav");
+    level.sounds.timein = gi.soundindex("timein.wav");
+    level.sounds.winner = gi.soundindex("winner.wav");
+    level.sounds.loser = gi.soundindex("loser.wav");
+    level.sounds.yousuck = gi.soundindex("yousuck.wav");
+    level.sounds.impressive = gi.soundindex("impressive.wav");
+    level.sounds.flawless = gi.soundindex("flawless.wav");
+
     // sexed sounds
     level.sounds.death[0] = gi.soundindex("*death1.wav");
     level.sounds.death[1] = gi.soundindex("*death2.wav");

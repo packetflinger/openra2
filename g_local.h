@@ -551,6 +551,17 @@ typedef struct {
         int     xian;
         int     makron;
 		int		teleport;
+		int		countdown[15];
+		int		fight[6];
+		int		round[21];
+		int		finalround;
+		int		timeout;
+		int		timein;
+		int		winner;
+		int		loser;
+		int		yousuck;
+		int		impressive;
+		int		flawless;
     } sounds;
 
     struct {

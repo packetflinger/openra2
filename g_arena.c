@@ -1249,7 +1249,37 @@ void G_CheckTimers(arena_t *a) {
 		remaining = (a->round_start_frame - level.framenum) / HZ;
 		switch (remaining) {
 		case 10:
-			G_ArenaSound(a, level.sounds.count);
+			G_ArenaSound(a, level.sounds.countdown[10]);
+			break;
+		case 9:
+			G_ArenaSound(a, level.sounds.countdown[9]);
+			break;
+		case 8:
+			G_ArenaSound(a, level.sounds.countdown[8]);
+			break;
+		case 7:
+			G_ArenaSound(a, level.sounds.countdown[7]);
+			break;
+		case 6:
+			G_ArenaSound(a, level.sounds.countdown[6]);
+			break;
+		case 5:
+			G_ArenaSound(a, level.sounds.countdown[5]);
+			break;
+		case 4:
+			G_ArenaSound(a, level.sounds.countdown[4]);
+			break;
+		case 3:
+			G_ArenaSound(a, level.sounds.countdown[3]);
+			break;
+		case 2:
+			G_ArenaSound(a, level.sounds.countdown[2]);
+			break;
+		case 1:
+			G_ArenaSound(a, level.sounds.countdown[1]);
+			break;
+		case 0:
+			G_ArenaSound(a, level.sounds.fight[1]);
 			break;
 		}
 	}
@@ -1258,7 +1288,37 @@ void G_CheckTimers(arena_t *a) {
 		remaining = (a->timein_frame - level.framenum) / HZ;
 		switch (remaining) {
 		case 10:
-			G_ArenaSound(a, level.sounds.count);
+			G_ArenaSound(a, level.sounds.countdown[10]);
+			break;
+		case 9:
+			G_ArenaSound(a, level.sounds.countdown[9]);
+			break;
+		case 8:
+			G_ArenaSound(a, level.sounds.countdown[8]);
+			break;
+		case 7:
+			G_ArenaSound(a, level.sounds.countdown[7]);
+			break;
+		case 6:
+			G_ArenaSound(a, level.sounds.countdown[6]);
+			break;
+		case 5:
+			G_ArenaSound(a, level.sounds.countdown[5]);
+			break;
+		case 4:
+			G_ArenaSound(a, level.sounds.countdown[4]);
+			break;
+		case 3:
+			G_ArenaSound(a, level.sounds.countdown[3]);
+			break;
+		case 2:
+			G_ArenaSound(a, level.sounds.countdown[2]);
+			break;
+		case 1:
+			G_ArenaSound(a, level.sounds.countdown[1]);
+			break;
+		case 0:
+			G_ArenaSound(a, level.sounds.timein);
 			break;
 		}
 	}
