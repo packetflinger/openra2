@@ -1054,20 +1054,39 @@ double genrand_float32_notone(void);
 #define CS_ARENA_COUNTDOWN  (CS_ARENA_ROUNDS + MAX_ARENAS)
 #define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
 
-// playerstate stat[] indexes
-#define STAT_FRAGS_STRING           18
-#define STAT_DELTA_STRING           19
-#define STAT_RANK_STRING            20
-#define STAT_TIME_STRING            21
-#define STAT_TIMER2_ICON            22
-#define STAT_TIMER2                 23
-#define STAT_VIEWID                 24
-#define STAT_VOTE_PROPOSAL          25
-#define STAT_VOTE_COUNT             26
-#define STAT_TIMEOUT                27
-#define STAT_ROUNDS                 28
-#define STAT_COUNTDOWN              29
-#define STAT_READY                  30
+// playerstate->stat[] indexes (0-31)
+#define STAT_HEALTH_ICON        0
+#define STAT_HEALTH             1	// used by client, server
+#define STAT_AMMO_ICON          2
+#define STAT_AMMO               3	// used by client
+#define STAT_ARMOR_ICON         4
+#define STAT_ARMOR              5	// used by client
+#define STAT_SELECTED_ICON      6
+#define STAT_PICKUP_ICON        7
+#define STAT_PICKUP_STRING      8
+#define STAT_TIMER_ICON         9
+#define STAT_TIMER              10
+#define STAT_HELPICON           11
+#define STAT_SELECTED_ITEM      12	// used by client
+#define STAT_LAYOUTS            13	// used by client
+#define STAT_FRAGS              14	// used by server
+#define STAT_FLASHES            15	// used by client, cleared each frame, 1 = health, 2 = armor
+#define STAT_CHASE              16
+#define STAT_SPECTATOR          17	// ? possibly use different hud
+#define STAT_FRAGS_STRING       18	// ?
+#define STAT_DELTA_STRING       19	// ?
+#define STAT_RANK_STRING        20	// ?
+#define STAT_TIME_STRING        21	// ?
+#define STAT_TIMER2_ICON        22	// ?
+#define STAT_TIMER2             23	// ?
+#define STAT_VIEWID             24
+#define STAT_VOTE_PROPOSAL      25
+#define STAT_VOTE_COUNT         26
+#define STAT_TIMEOUT            27	// ? maybe combine with time
+#define STAT_ROUNDS             28
+#define STAT_COUNTDOWN          29
+#define STAT_READY              30
+#define MAX_STATS               32
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
