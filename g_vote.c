@@ -221,7 +221,7 @@ void G_UpdateVote(void)
     Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
                votes[1], total, votes[0], remaining / HZ);
 
-    gi.WriteByte(svc_configstring);
+    gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_VOTE_COUNT);
     gi.WriteString(buffer);
     gi.multicast(NULL, MULTICAST_ALL);

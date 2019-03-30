@@ -69,7 +69,7 @@ static void PMenu_Write(edict_t *ent)
 
     string[total] = 0;
 
-    gi.WriteByte(svc_layout);
+    gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(string);
 }
 

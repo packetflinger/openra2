@@ -113,7 +113,7 @@ SpawnDamage
 */
 static void SpawnDamage(int type, vec3_t origin, vec3_t normal)
 {
-    gi.WriteByte(svc_temp_entity);
+    gi.WriteByte(SVC_TEMP_ENTITY);
     gi.WriteByte(type);
     gi.WritePosition(origin);
     gi.WriteDir(normal);

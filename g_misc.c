@@ -260,7 +260,7 @@ void ThrowClientHead(edict_t *self, int damage)
 
 void BecomeExplosion1(edict_t *self)
 {
-    gi.WriteByte(svc_temp_entity);
+    gi.WriteByte(SVC_TEMP_ENTITY);
     gi.WriteByte(TE_EXPLOSION1);
     gi.WritePosition(self->s.origin);
     gi.multicast(self->s.origin, MULTICAST_PVS);
@@ -270,7 +270,7 @@ void BecomeExplosion1(edict_t *self)
 
 static void BecomeExplosion2(edict_t *self)
 {
-    gi.WriteByte(svc_temp_entity);
+    gi.WriteByte(SVC_TEMP_ENTITY);
     gi.WriteByte(TE_EXPLOSION2);
     gi.WritePosition(self->s.origin);
     gi.multicast(self->s.origin, MULTICAST_PVS);

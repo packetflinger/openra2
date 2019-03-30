@@ -254,7 +254,7 @@ void HighScoresMessage(void)
     }
     string[total] = 0;
 
-    gi.WriteByte(svc_layout);
+    gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(string);
     gi.multicast(NULL, MULTICAST_ALL_R);
 }
@@ -274,7 +274,7 @@ void DeathmatchScoreboardMessage(edict_t *ent, qboolean reliable)
 
     BuildDeathmatchScoreboard(buffer, ent->client);
 
-    gi.WriteByte(svc_layout);
+    gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
     gi.unicast(ent, reliable);
 }
@@ -412,7 +412,7 @@ void G_PrivateString(edict_t *ent, int index, const char *string)
     // save new string
     Q_strlcpy(ent->client->level.strings[index], string, MAX_NETNAME);
 
-    gi.WriteByte(svc_configstring);
+    gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_PRIVATE + index);
     gi.WriteString(string);
     gi.unicast(ent, qtrue);

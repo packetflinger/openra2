@@ -230,7 +230,7 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
 	else
 		G_BuildScoreboard(buffer, ent->client, ARENA(ent));
 
-	gi.WriteByte(svc_layout);
+	gi.WriteByte(SVC_LAYOUT);
 	gi.WriteString(buffer);
 	gi.unicast(ent, reliable);
 }
@@ -240,7 +240,7 @@ void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
 
 	G_BuildPlayerboard(buffer, ent->client->pers.arena);
 
-	gi.WriteByte(svc_layout);
+	gi.WriteByte(SVC_LAYOUT);
 	gi.WriteString(buffer);
 	gi.unicast(ent, reliable);
 }
@@ -281,7 +281,7 @@ void G_ArenaStuff(arena_t *a, const char *command) {
 			continue;
 
 		if (cl->pers.arena == a) {
-			gi.WriteByte(svc_stufftext);
+			gi.WriteByte(SVC_STUFFTEXT);
 			gi.WriteString(command);
 			gi.unicast(cl->edict, qtrue);
 		}
@@ -419,7 +419,7 @@ void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
 
 			// unicasting clears the msg buffer, so you have to rewrite
 			// everything each time
-			gi.WriteByte(svc_configstring);
+			gi.WriteByte(SVC_CONFIGSTRING);
 			gi.WriteShort(index);
 			gi.WriteString(string);
 			gi.unicast(ent, qtrue);

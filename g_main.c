@@ -637,7 +637,7 @@ void G_StartSound(int index) {
 }
 
 void G_StuffText(edict_t *ent, const char *text) {
-	gi.WriteByte(svc_stufftext);
+	gi.WriteByte(SVC_STUFFTEXT);
 	gi.WriteString(text);
 	gi.unicast(ent, qtrue);
 }

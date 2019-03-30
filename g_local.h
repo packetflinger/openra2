@@ -61,15 +61,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAMEVERSION "OpenRA2"
 
 // protocol bytes that can be directly added to messages
-#define svc_muzzleflash     1
-#define svc_muzzleflash2    2
-#define svc_temp_entity     3
-#define svc_layout          4
-#define svc_inventory       5
-#define svc_sound           9
-#define svc_stufftext       11
-#define svc_configstring    13
-#define svc_centerprint		15
+#define SVC_MUZZLEFLASH     1
+#define SVC_MUZZLEFLASH2    2
+#define SVC_TEMP_ENTITY     3
+#define SVC_LAYOUT          4
+#define SVC_INVENTORY       5
+#define SVC_SOUND           9
+#define SVC_STUFFTEXT       11
+#define SVC_CONFIGSTRING    13
+#define SVC_CENTERPRINT     15
 
 //==================================================================
 // for setting which weapons are allowed in arenas - all weaps == 2046

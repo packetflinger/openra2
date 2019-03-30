@@ -1666,7 +1666,7 @@ static void Cmd_OldScore_f(edict_t *ent)
 
     ent->client->layout = LAYOUT_OLDSCORES;
 
-    gi.WriteByte(svc_layout);
+    gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(a->oldscores);
     gi.unicast(ent, qtrue);
 }
@@ -1675,7 +1675,7 @@ static void Cmd_Layout_f(edict_t *ent) {
 	
 	ent->client->layout = LAYOUT_SCORES;
 	
-	gi.WriteByte(svc_layout);
+	gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(gi.args());
     gi.unicast(ent, qtrue);
 }

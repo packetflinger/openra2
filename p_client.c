@@ -1064,7 +1064,7 @@ static void CopyToBodyQue(edict_t *ent)
 
     // send an effect on the removed body
     if (body->s.modelindex) {
-        gi.WriteByte(svc_temp_entity);
+        gi.WriteByte(SVC_TEMP_ENTITY);
         gi.WriteByte(TE_BLOOD);
         gi.WritePosition(body->s.origin);
         gi.WriteDir(vec3_origin);
@@ -1168,7 +1168,7 @@ void spectator_respawn(edict_t *ent, int connected)
         memset(&ent->client->resp, 0, sizeof(ent->client->resp));
 
         // send effect on removed player
-        gi.WriteByte(svc_temp_entity);
+        gi.WriteByte(SVC_TEMP_ENTITY);
         gi.WriteByte(TE_BLOOD);
         gi.WritePosition(ent->s.origin);
         gi.WriteDir(vec3_origin);
@@ -1368,7 +1368,7 @@ void G_WriteTime(int remaining)
         }
     }
 
-    gi.WriteByte(svc_configstring);
+    gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_TIME);
     gi.WriteString(buffer);
 }
@@ -1447,7 +1447,7 @@ void ClientBegin(edict_t *ent)
         level.players_in++;
 
         // send login effect only to this client
-        gi.WriteByte(svc_muzzleflash);
+        gi.WriteByte(SVC_MUZZLEFLASH);
         gi.WriteShort(ent - g_edicts);
         gi.WriteByte(MZ_LOGIN);
         gi.unicast(ent, qfalse);
@@ -1742,7 +1742,7 @@ void ClientDisconnect(edict_t *ent)
 
     if (connected == CONN_SPAWNED && !level.intermission_framenum) {
         // send effect
-        gi.WriteByte(svc_muzzleflash);
+        gi.WriteByte(SVC_MUZZLEFLASH);
         gi.WriteShort(ent - g_edicts);
         gi.WriteByte(MZ_LOGOUT);
         gi.multicast(ent->s.origin, MULTICAST_PVS);
