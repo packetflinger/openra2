@@ -992,7 +992,7 @@ void G_PrivateString(edict_t *ent, int index, const char *string);
 int G_GetPlayerIdView(edict_t *ent);
 void G_SetStats(edict_t *ent);
 int G_CalcRanks(gclient_t **ranks);
-void DeathmatchScoreboardMessage(edict_t *ent, qboolean reliable);
+void ScoreboardMessage(edict_t *ent, qboolean reliable);
 void HighScoresMessage(void);
 
 //

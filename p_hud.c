@@ -71,13 +71,13 @@ int G_CalcRanks(gclient_t **ranks)
 
 /*
 ==================
-BuildDeathmatchScoreboard
+BuildScoreboard
 
 Used to update per-client scoreboard and build
 global oldscores (client is NULL in the latter case).
 ==================
 */
-static size_t BuildDeathmatchScoreboard(char *buffer, gclient_t *client)
+static size_t BuildScoreboard(char *buffer, gclient_t *client)
 {
     char    entry[MAX_STRING_CHARS];
     char    status[MAX_QPATH];
@@ -268,11 +268,11 @@ and unreliable (automatic). Note that it isn't that hard to overflow
 the 1024 chars layout size limit!
 ==================
 */
-void DeathmatchScoreboardMessage(edict_t *ent, qboolean reliable)
+void ScoreboardMessage(edict_t *ent, qboolean reliable)
 {
     char buffer[MAX_STRING_CHARS];
 
-    BuildDeathmatchScoreboard(buffer, ent->client);
+    BuildScoreboard(buffer, ent->client);
 
     gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
