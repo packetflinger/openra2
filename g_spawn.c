@@ -1224,6 +1224,7 @@ void SP_worldspawn(edict_t *ent)
     gi.configstring(CS_MAXCLIENTS, va("%i", (int)(maxclients->value)));
 
     // status bar program
+    gi.dprintf("statusbar len: %ld\n%s\n", strlen(statusbar), statusbar);
     gi.configstring(CS_STATUSBAR, statusbar);
 
     gi.configstring(CS_OBSERVE, "SPECT");
