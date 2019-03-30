@@ -261,7 +261,6 @@ void HighScoresMessage(void)
 
 /*
 ==================
-DeathmatchScoreboardMessage
 
 Can go either as reliable message (manual updates, intermission)
 and unreliable (automatic). Note that it isn't that hard to overflow
