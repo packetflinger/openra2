@@ -1086,6 +1086,7 @@ double genrand_float32_notone(void);
 #define STAT_ROUNDS             28	// ?
 #define STAT_COUNTDOWN          29
 #define STAT_READY              30
+#define STAT_MATCH_STATUS       31	// warmup, time, timeout, countdown, etc
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
