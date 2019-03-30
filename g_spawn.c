@@ -1102,11 +1102,10 @@ static const char statusbar[] =
 "endif "
 
 // points (damage dealt)
-"if 18 "
-	"xr -100 "
-	"yt 2 "
-	"num 5 14 "
-"endif "
+"xr -80 "
+"yt 2 "
+"num 5 14 "
+
 
 // countdown
 "if 29 "
