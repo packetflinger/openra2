@@ -747,6 +747,10 @@ static float PlayersRangeFromSpot(edict_t *spot)
     return bestplayerdistance;
 }
 
+/**
+ * Pick spawn point in the current arena randomly, trying not to telefrag...
+ *
+ */
 static edict_t *SelectArenaSpawnPoint(edict_t *player) {
 	edict_t *spot = NULL;
 	edict_t *spawns[MAX_SPAWNS];
@@ -763,7 +767,7 @@ static edict_t *SelectArenaSpawnPoint(edict_t *player) {
         spot = spawns[i];
 		
 		// the spawn is in players's current arena...
-        if (spot->arena == player->client->pers.arena->number) {
+        if (spot->arena == ARENA(player)->number) {
 			
 			range = PlayersRangeFromSpot(spot);
 			if (range > 64) {
