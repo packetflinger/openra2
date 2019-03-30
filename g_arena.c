@@ -925,7 +925,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 			ent = team->players[j];
 
 			if (ent && ent->inuse) {
-				gi.WriteByte(svc_centerprint);
+				gi.WriteByte(SVC_CENTERPRINT);
 				gi.WriteString(string);
 				gi.unicast(ent, true);
 			}
