@@ -209,27 +209,27 @@ static void Cmd_Team_f(edict_t *ent) {
 	char *team= gi.argv(1);
 
 	if (str_equal(team, "1")) {
-		G_JoinTeam(ent, TEAM_RED, false);
+		G_TeamJoin(ent, TEAM_RED, false);
 		return;
 	}
 	
 	if (str_equal(team, "2")) {
-		G_JoinTeam(ent, TEAM_BLUE, false);
+		G_TeamJoin(ent, TEAM_BLUE, false);
 		return;
 	}
 
 	if (str_equal(team, "3") && ARENA(ent)->team_count >= 3) {
-		G_JoinTeam(ent, TEAM_GREEN, false);
+		G_TeamJoin(ent, TEAM_GREEN, false);
 		return;
 	}
 	
 	if (str_equal(team, "4") && ARENA(ent)->team_count >= 4) {
-		G_JoinTeam(ent, TEAM_YELLOW, false);
+		G_TeamJoin(ent, TEAM_YELLOW, false);
 		return;
 	}
 
 	if (str_equal(team, "5") && ARENA(ent)->team_count == 5) {
-		G_JoinTeam(ent, TEAM_AQUA, false);
+		G_TeamJoin(ent, TEAM_AQUA, false);
 		return;
 	}
 
@@ -1139,7 +1139,7 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 
 static void Cmd_Observe_f(edict_t *ent)
 {
-	G_PartTeam(ent, false);
+	G_TeamPart(ent, false);
 	
     if (ent->client->pers.connected == CONN_PREGAME) {
         ent->client->pers.connected = CONN_SPECTATOR;
@@ -1487,23 +1487,23 @@ static void select_team(edict_t *ent)
 		Cmd_ArenaMenu_f(ent);
 		break;
 	case 5:
-		G_JoinTeam(ent, TEAM_RED, false);
+		G_TeamJoin(ent, TEAM_RED, false);
 		PMenu_Close(ent);
         break;
     case 6:
-        G_JoinTeam(ent, TEAM_BLUE, false);
+        G_TeamJoin(ent, TEAM_BLUE, false);
 		PMenu_Close(ent);
         break;
     case 7:
-    	G_JoinTeam(ent, TEAM_GREEN, false);
+    	G_TeamJoin(ent, TEAM_GREEN, false);
     	PMenu_Close(ent);
         break;
     case 8:
-    	G_JoinTeam(ent, TEAM_YELLOW, false);
+    	G_TeamJoin(ent, TEAM_YELLOW, false);
     	PMenu_Close(ent);
     	break;
     case 9:
-		G_JoinTeam(ent, TEAM_AQUA, false);
+		G_TeamJoin(ent, TEAM_AQUA, false);
 		PMenu_Close(ent);
 		break;
     case 11:
@@ -1796,7 +1796,7 @@ static void Cmd_RemoveTeammate_f(edict_t *ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Removing %s from your team...\n", playermatch->client->pers.netname);
 	
 		gi.cprintf(playermatch, PRINT_HIGH, "%s removed you from team %s\n", ent->client->pers.netname, team->name);
-		G_PartTeam(playermatch, false);
+		G_TeamPart(playermatch, false);
 	}
 }
 
@@ -1865,7 +1865,7 @@ static void Cmd_PickTeammate_f(edict_t *ent) {
 		gi.cprintf(ent, PRINT_HIGH, "Adding %s to your team...\n", NAME(playermatch));
 	
 		gi.cprintf(playermatch, PRINT_HIGH, "%s added you to team %s\n", NAME(ent), team->name);
-		G_JoinTeam(playermatch, team->type, true);
+		G_TeamJoin(playermatch, team->type, true);
 	}
 }
 

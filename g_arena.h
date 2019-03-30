@@ -161,8 +161,8 @@ typedef struct {
 	edict_t			*timeout_caller;
 	edict_t			*clients[MAX_CLIENTS];
 	int				client_count;
-	arena_team_t	team_home;
-	arena_team_t	team_away;
+	//arena_team_t	team_home;
+	//arena_team_t	team_away;
 	uint16_t		ammo[MAX_INVENTORY];
 	uint16_t		defaultammo[MAX_INVENTORY];
 	qboolean		infinite[MAX_INVENTORY];
@@ -246,11 +246,11 @@ arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
 void G_InitArenaTeams(arena_t *arena);	// in g_spawn.c
-void G_JoinTeam(edict_t *ent, arena_team_type_t type, qboolean forced);
+void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
-void G_PartTeam(edict_t *ent, qboolean silent);
+void G_TeamPart(edict_t *ent, qboolean silent);
 void G_RandomizeAmmo(uint16_t *out);
 void G_RefillInventory(edict_t *ent);
 void G_RefillPlayers(arena_t *a);
