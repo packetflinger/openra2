@@ -121,14 +121,6 @@ void G_SpectatorsPart(edict_t *ent) {
 	}
 }
 
-arena_t *FindArena(edict_t *ent) {
-
-	if (!ent->client)
-		return NULL;
-
-	return ent->client->pers.arena;
-}
-
 static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
 
 	uint8_t i;
