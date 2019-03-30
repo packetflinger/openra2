@@ -121,10 +121,10 @@ void G_SpectatorsPart(edict_t *ent) {
 	}
 }
 
-static arena_team_t *FindTeam(edict_t *ent, arena_team_type_t type) {
+static arena_team_t *FindTeam(arena_t *a, arena_team_type_t type) {
 
 	uint8_t i;
-	arena_t *a = ARENA(ent);
+	//arena_t *a = ARENA(ent);
 
 	if (!a) {
 		return NULL;
@@ -1387,7 +1387,7 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
 		return;
 
 	arena_t *arena = ARENA(ent);
-	arena_team_t *team = FindTeam(ent, type);
+	arena_team_t *team = FindTeam(arena, type);
 
 	PMenu_Close(ent);
 	
