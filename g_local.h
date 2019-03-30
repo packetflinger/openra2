@@ -1019,6 +1019,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 void G_ResetLevel(void);
 qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint32_t *target);
 qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, temp_weaponflags_t *t);
+
 /**
  * g_random.c
  */
@@ -1029,30 +1030,31 @@ long genrand_int31(void);
 double genrand_float32_full(void);
 double genrand_float32_notone(void);
 
-//============================================================================
 
-
+// private strings (unicast configstrings)
 #define PCS_DAMAGE	0
 #define PCS_DELTA	1
 #define PCS_RANK	2
 #define PCS_VOTE	3
 #define PCS_TOTAL	4
 
+// configstring indexes
 #define CS_OBSERVE          (CS_GENERAL + 1)
 #define CS_TIME             (CS_GENERAL + 2)
 #define CS_SPECMODE         (CS_GENERAL + 3)
 #define CS_PREGAME          (CS_GENERAL + 4)
 #define CS_VOTE_PROPOSAL    (CS_GENERAL + 5)
 #define CS_VOTE_COUNT       (CS_GENERAL + 6)
-#define CS_READY			(CS_GENERAL + 7)
-#define CS_READY_WAIT		(CS_GENERAL + 8)
-#define CS_READY_BALANCED	(CS_GENERAL + 9)
+#define CS_READY            (CS_GENERAL + 7)
+#define CS_READY_WAIT       (CS_GENERAL + 8)
+#define CS_READY_BALANCED   (CS_GENERAL + 9)
 #define CS_PLAYERNAMES      (CS_GENERAL + 10)
-#define CS_ARENA_TIMEOUT	(CS_GENERAL + MAX_CLIENTS)
-#define CS_ARENA_ROUNDS		(CS_ARENA_TIMEOUT + MAX_ARENAS)
-#define CS_ARENA_COUNTDOWN	(CS_ARENA_ROUNDS + MAX_ARENAS)
+#define CS_ARENA_TIMEOUT    (CS_GENERAL + MAX_CLIENTS)
+#define CS_ARENA_ROUNDS     (CS_ARENA_TIMEOUT + MAX_ARENAS)
+#define CS_ARENA_COUNTDOWN  (CS_ARENA_ROUNDS + MAX_ARENAS)
 #define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
 
+// playerstate stat[] indexes
 #define STAT_FRAGS_STRING           18
 #define STAT_DELTA_STRING           19
 #define STAT_RANK_STRING            20
@@ -1062,10 +1064,10 @@ double genrand_float32_notone(void);
 #define STAT_VIEWID                 24
 #define STAT_VOTE_PROPOSAL          25
 #define STAT_VOTE_COUNT             26
-#define STAT_TIMEOUT				27
-#define STAT_ROUNDS					28
-#define STAT_COUNTDOWN				29
-#define STAT_READY					30
+#define STAT_TIMEOUT                27
+#define STAT_ROUNDS                 28
+#define STAT_COUNTDOWN              29
+#define STAT_READY                  30
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
