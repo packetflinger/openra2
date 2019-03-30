@@ -2154,6 +2154,9 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
 	}
 }
 
+/**
+ * Return an arena to it's original state. Called after match ends
+ */
 void G_ResetArena(arena_t *a) {
 	uint8_t i;
 	
@@ -2165,6 +2168,8 @@ void G_ResetArena(arena_t *a) {
 	for (i=0; i<a->team_count; i++) {
 		G_ResetTeam(&a->teams[i]);
 	}
+
+	G_FinishArenaVote(a);
 }
 
 void G_CheckIntermission(arena_t *a) {
