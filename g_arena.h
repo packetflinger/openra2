@@ -161,8 +161,6 @@ typedef struct {
 	edict_t			*timeout_caller;
 	edict_t			*clients[MAX_CLIENTS];
 	int				client_count;
-	//arena_team_t	team_home;
-	//arena_team_t	team_away;
 	uint16_t		ammo[MAX_INVENTORY];
 	uint16_t		defaultammo[MAX_INVENTORY];
 	qboolean		infinite[MAX_INVENTORY];
