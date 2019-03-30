@@ -1051,156 +1051,125 @@ static const char statusbar[] =
 
 // ammo
 "if 2 "
-  "xv 100 "
-  "anum "
-  "xv 150 "
-  "pic 2 "
+	"xv 100 "
+	"anum "
+	"xv 150 "
+	"pic 2 "
 "endif "
 
 // armor
 "if 4 "
-  "xv 200 "
-  "rnum "
-  "xv 250 "
-  "pic 4 "
-"endif "
-
-// selected item
-"if 6 "
-  "xv 296 "
-  "pic 6 "
+	"xv 200 "
+	"rnum "
+	"xv 250 "
+	"pic 4 "
 "endif "
 
 "yb -50 "
 
 // picked up item
 "if 7 "
-  "xv 0 "
-  "pic 7 "
-  "xv 26 "
-  "yb -42 "
-  "stat_string 8 "
-  "yb -50 "
+	"xv 0 "
+	"pic 7 "
+	"xv 26 "
+	"yb -42 "
+	"stat_string 8 "
+	"yb -50 "
 "endif "
 
 // timer 1 (quad, enviro, breather)
 "if 9 "
-  "xv 246 "
-  "num 2 10 "
-  "xv 296 "
-  "pic 9 "
+	"xv 246 "
+	"num 2 10 "
+	"xv 296 "
+	"pic 9 "
 "endif "
 
 // timer 2 (pent)
 "if 22 "
-  "yb -76 "
-  "xv 246 "
-  "num 2 23 "
-  "xv 296 "
-  "pic 22 "
-  "yb -50 "
+	"yb -76 "
+	"xv 246 "
+	"num 2 23 "
+	"xv 296 "
+	"pic 22 "
+	"yb -50 "
 "endif "
 
 //  help / weapon icon
 "if 11 "
-  "xv 148 "
-  "pic 11 "
+	"xv 148 "
+	"pic 11 "
 "endif "
 
-// frags
+// points (damage dealt)
 "if 18 "
-  "xr -54 "
-  "yt 2 "
-  //"string2 \"Damage\" "
-  //"yt 10 "
-  "stat_string 18 "
+	"xr -100 "
+	"yt 2 "
+	"num 5 14 "
 "endif "
-
-// delta frags
-//"if 19 "
-//  "yt 18 "
-//  "stat_string 19 "
-//"endif "
-
-// rank
-//"if 20 "
-//  "yt 34 "
-//  "string2 \" Rank\" "
-//  "yt 42 "
-//  "stat_string 20 "
-//"endif "
-
-// rounds
-//"if 28 "
-//  "yt 34 "
-//  "string2 \"Round\" "
-//  "yt 42 "
-//  "xr -44 "
-//  "stat_string 28 "
-//"endif "
 
 // countdown
 "if 29 "
-  "yv 100 "
-  "xv 150 "
-  "num 2 29 "
+	"yv 100 "
+	"xv 150 "
+	"num 2 29 "
 "endif "
 
 // time
 "if 21 "
-  "yt 58 "
-  "string2 \" Time\" "
-  "yt 66 "
-  "stat_string 21 "
+	"yt 58 "
+	"string2 \" Time\" "
+	"yt 66 "
+	"stat_string 21 "
 "endif "
 
 // chase camera
 "if 16 "
-  "xv 0 "
-  "yb -68 "
-  "string Chasing "
-  "xv 64 "
-  "stat_string 16 "
+	"xv 0 "
+	"yb -68 "
+	"string Chasing "
+	"xv 64 "
+	"stat_string 16 "
 "endif "
 
 // spectator
 "if 17 "
-  "xv 0 "
-  "yb -58 "
-  "stat_string 17 "
+	"xv 0 "
+	"yb -58 "
+	"stat_string 17 "
 "endif "
 
 // view id
 "if 24 "
-  "xv -100 "
-  "yb -80 "
-  "string Viewing "
-  "xv -36 "
-  "stat_string 24 "
+	"xv -100 "
+	"yb -80 "
+	"string Viewing "
+	"xv -36 "
+	"stat_string 24 "
 "endif "
 
 // vote proposal
 "if 25 "
-  "xl 10 "
-  "yb -188 "
-  "stat_string 25 "
-  "yb -180 "
-  "stat_string 26 "
+	"xl 10 "
+	"yb -188 "
+	"stat_string 25 "
+	"yb -180 "
+	"stat_string 26 "
 "endif "
 
 // timeout
 "if 27 "
-  "xr -110 "
-  "yt 72 "
-  "color 5 " // cyan
-  "stat_string 27 "
+	"xr -110 "
+	"yt 72 "
+	"color 5 " // cyan
+	"stat_string 27 "
 "endif "
 
 // ready reminder
 "if 30 "
-  "yb -60 "
-  "xv 0 "
-  "stat_string 30 "
+	"yb -60 "
+	"xv 0 "
+	"stat_string 30 "
 "endif"
 ;
 
