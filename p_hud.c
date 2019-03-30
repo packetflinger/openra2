@@ -748,9 +748,11 @@ void G_SetStats(edict_t *ent)
 
     if (level.intermission_framenum) {
         ent->client->ps.stats[STAT_TIME_STRING] = 0;
-        ent->client->ps.stats[STAT_FRAGS_STRING] = 0;
+/*
+ 		ent->client->ps.stats[STAT_FRAGS_STRING] = 0;
         ent->client->ps.stats[STAT_DELTA_STRING] = 0;
         ent->client->ps.stats[STAT_RANK_STRING] = 0;
+*/
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
         if (timelimit->value > 0) {
@@ -760,9 +762,9 @@ void G_SetStats(edict_t *ent)
         }
         if (ent->client->pers.connected == CONN_SPAWNED) {
             //ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_FRAGS;
-			ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_DAMAGE;
-            ent->client->ps.stats[STAT_DELTA_STRING] = CS_PRIVATE + PCS_DELTA;
-            ent->client->ps.stats[STAT_RANK_STRING] = CS_PRIVATE + PCS_RANK;
+//			ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_DAMAGE;
+//            ent->client->ps.stats[STAT_DELTA_STRING] = CS_PRIVATE + PCS_DELTA;
+//            ent->client->ps.stats[STAT_RANK_STRING] = CS_PRIVATE + PCS_RANK;
 			ent->client->ps.stats[STAT_ROUNDS] = CS_ARENA_ROUNDS + ARENA(ent)->number;
 			
 			// timeout
@@ -780,9 +782,9 @@ void G_SetStats(edict_t *ent)
 			}
 			
         } else {
-            ent->client->ps.stats[STAT_FRAGS_STRING] = CS_OBSERVE;
-            ent->client->ps.stats[STAT_DELTA_STRING] = 0;
-            ent->client->ps.stats[STAT_RANK_STRING] = 0;
+//            ent->client->ps.stats[STAT_FRAGS_STRING] = CS_OBSERVE;
+//            ent->client->ps.stats[STAT_DELTA_STRING] = 0;
+//            ent->client->ps.stats[STAT_RANK_STRING] = 0;
 			ent->client->ps.stats[STAT_ROUNDS] = 0;
             if (ent->client->pers.connected == CONN_SPECTATOR) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
