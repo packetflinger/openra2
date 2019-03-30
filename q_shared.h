@@ -1018,7 +1018,7 @@ typedef enum {
 
 // sound channels
 // channel 0 never willingly overrides
-// other channels (1-7) allways override a playing sound on that channel
+// other channels (1-7) always override a playing sound on that channel
 #define CHAN_AUTO               0
 #define CHAN_WEAPON             1
 #define CHAN_VOICE              2
@@ -1028,6 +1028,7 @@ typedef enum {
 #define CHAN_NO_PHS_ADD         8   // send to all clients, not just ones in PHS (ATTN 0 will also do this)
 #define CHAN_RELIABLE           16  // send by reliable message, not datagram
 
+#define MAX_STATS               32
 
 // sound attenuation values
 #define ATTN_NONE               0   // full volume the entire level

@@ -1061,7 +1061,7 @@ double genrand_float32_notone(void);
 #define STAT_AMMO               3	// used by client
 #define STAT_ARMOR_ICON         4
 #define STAT_ARMOR              5	// used by client
-#define STAT_SELECTED_ICON      6
+#define STAT_SELECTED_ICON      6 	// ?
 #define STAT_PICKUP_ICON        7
 #define STAT_PICKUP_STRING      8
 #define STAT_TIMER_ICON         9
@@ -1083,10 +1083,9 @@ double genrand_float32_notone(void);
 #define STAT_VOTE_PROPOSAL      25
 #define STAT_VOTE_COUNT         26
 #define STAT_TIMEOUT            27	// ? maybe combine with time
-#define STAT_ROUNDS             28
+#define STAT_ROUNDS             28	// ?
 #define STAT_COUNTDOWN          29
 #define STAT_READY              30
-#define MAX_STATS               32
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
