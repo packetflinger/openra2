@@ -768,11 +768,11 @@ void G_SetStats(edict_t *ent)
 			ent->client->ps.stats[STAT_ROUNDS] = CS_ARENA_ROUNDS + ARENA(ent)->number;
 			
 			// timeout
-			if (ent->client->pers.arena->state == ARENA_STATE_TIMEOUT) {
-				ent->client->ps.stats[STAT_TIMEOUT] = CS_ARENA_TIMEOUT + ARENA(ent)->number;
-			} else {
-				ent->client->ps.stats[STAT_TIMEOUT] = 0;
-			}
+//			if (ent->client->pers.arena->state == ARENA_STATE_TIMEOUT) {
+//				ent->client->ps.stats[STAT_TIMEOUT] = CS_ARENA_TIMEOUT + ARENA(ent)->number;
+//			} else {
+//				ent->client->ps.stats[STAT_TIMEOUT] = 0;
+//			}
 			
 			// countdown
 			if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
@@ -827,5 +827,7 @@ void G_SetStats(edict_t *ent)
 	} else {
 		ent->client->ps.stats[STAT_READY] = 0;
 	}
+
+	ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
 }
 
