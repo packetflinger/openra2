@@ -138,48 +138,50 @@ typedef struct {
 
 
 typedef struct {
-	uint8_t			number;
-	char			name[MAX_TEAM_NAME];
-	arena_state_t	state;
-	int				countdown;
-	uint8_t			player_count;
-	uint8_t			spectator_count;
-	edict_t			*spectators[MAX_CLIENTS];			// make this not suck later
-	uint8_t			round_limit;
-	uint8_t			current_round;
-	uint32_t		weapon_flags;
-	uint32_t		damage_flags;
-	uint32_t		original_weapon_flags;
-	uint32_t		original_damage_flags;
-	uint16_t		health;
-	uint16_t		armor;
-	uint32_t		round_start_frame;
-	uint32_t		round_end_frame;
-	uint32_t		timeout_frame;
-	uint32_t		timein_frame;
-	char        	oldscores[MAX_STRING_CHARS];
-	edict_t			*timeout_caller;
-	edict_t			*clients[MAX_CLIENTS];
-	int				client_count;
-	uint16_t		ammo[MAX_INVENTORY];
-	uint16_t		defaultammo[MAX_INVENTORY];
-	qboolean		infinite[MAX_INVENTORY];
-	qboolean		defaultinfinite[MAX_INVENTORY];
-	int32_t			ready_think_frame;
-	int32_t			ready_notify_frame;
-	qboolean		ready;
-	int32_t			timer_last_frame;		// the frame we last ran timers
-	qboolean		recording;				// were players forced to start recording demos?
-	uint32_t       	intermission_framenum;	// time the intermission was started
-	uint32_t       	intermission_exit;		// time the intermission was exited
-    vec3_t      	intermission_origin;
-    vec3_t      	intermission_angle;
-    uint32_t		version;				// map version
-	list_t			entry;					// for making linked list of arenas
-	arena_team_t	teams[MAX_TEAMS];		// [team_count]
-	uint8_t			team_count;
-	arena_vote_t	vote;
-	qboolean		modified;				// defaults have been changed via votes
+	uint8_t         number;                      // level.arenas[] index
+	char            name[MAX_TEAM_NAME];         // name used in menu
+	arena_state_t   state;
+	uint32_t        match_frame;                 // total frames this match
+	uint32_t        round_frame;                 // current frame this round
+	uint32_t        round_start_frame;           // when this round started
+	uint32_t        round_end_frame;             // when this round ended
+	uint32_t        timeout_frame;               // when timeout was called
+	uint32_t        timein_frame;                // when timeout will end
+	edict_t         *timeout_caller;             // player who called it
+	int             countdown;
+	uint8_t         round_limit;                 // how many rounds in a match
+	uint8_t         current_round;
+	uint32_t        weapon_flags;
+	uint32_t        damage_flags;
+	uint32_t        original_weapon_flags;       // for resetting
+	uint32_t        original_damage_flags;       // for resetting
+	uint16_t        health;
+	uint16_t        armor;
+	char            oldscores[MAX_STRING_CHARS];
+	edict_t         *clients[MAX_CLIENTS];       // all players and specs
+	int             client_count;
+	edict_t         *spectators[MAX_CLIENTS];    // make this not suck later
+	uint8_t         spectator_count;
+	arena_team_t    teams[MAX_TEAMS];            // [team_count]
+	uint8_t         team_count;                  // how many teams are enabled
+	uint8_t         player_count;
+	uint16_t        ammo[MAX_INVENTORY];
+	uint16_t        defaultammo[MAX_INVENTORY];
+	qboolean        infinite[MAX_INVENTORY];
+	qboolean        defaultinfinite[MAX_INVENTORY];
+	int32_t         ready_think_frame;           // next time we check if everyone is ready
+	int32_t         ready_notify_frame;          // next time we nag about being ready
+	qboolean        ready;                       // are all team players ready?
+	int32_t         timer_last_frame;            // the frame we last ran timers
+	qboolean        recording;                   // were players forced to start recording demos?
+	uint32_t        intermission_framenum;       // time the intermission was started
+	uint32_t        intermission_exit;           // time the intermission was exited
+	vec3_t          intermission_origin;         // intermission spot
+	vec3_t          intermission_angle;          // view angle from ^ spot
+	uint32_t        version;                     // map version
+	list_t          entry;                       // for making linked list of arenas
+	arena_vote_t    vote;                        // the current local vote
+	qboolean        modified;                    // defaults have been changed via votes
 } arena_t;
 
 
