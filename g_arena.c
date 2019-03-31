@@ -1671,6 +1671,7 @@ void G_ShowScores(arena_t *a) {
 			ent = a->teams[i].players[j];
 
 			if (ent && ent->inuse) {
+				G_ArenaScoreboardMessage(ent, true);
 				ent->client->layout = LAYOUT_SCORES;
 			}
 		}
