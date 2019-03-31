@@ -1115,12 +1115,12 @@ static const char statusbar[] =
 "endif "
 
 // time
-"if 21 "
-	"yt 58 "
-	"string2 \" Time\" "
-	"yt 66 "
-	"stat_string 21 "
-"endif "
+//"if 21 "
+//	"yt 58 "
+//	"string2 \" Time\" "
+//	"yt 66 "
+//	"stat_string 21 "
+//"endif "
 
 // chase camera
 "if 16 "
@@ -1157,19 +1157,26 @@ static const char statusbar[] =
 "endif "
 
 // timeout
-"if 27 "
-	"xr -110 "
-	"yt 72 "
-	"color 5 " // cyan
-	"stat_string 27 "
-"endif "
+//"if 27 "
+//	"xr -110 "
+//	"yt 72 "
+//	"color 5 " // cyan
+//	"stat_string 27 "
+//"endif "
 
 // ready reminder
-"if 30 "
+//"if 30 "
+//	"yb -60 "
+//	"xv 0 "
+//	"stat_string 30 "
+//"endif "
+
+// status
+"if 31 "
 	"yb -60 "
 	"xv 0 "
-	"stat_string 30 "
-"endif"
+	"stat_string 31 "
+"endif "
 ;
 
 /*QUAKED worldspawn (0 0 0) ?
@@ -1222,8 +1229,6 @@ void SP_worldspawn(edict_t *ent)
 
     gi.configstring(CS_MAXCLIENTS, va("%i", (int)(maxclients->value)));
 
-    // status bar program
-    gi.dprintf("statusbar len: %ld\n%s\n", strlen(statusbar), statusbar);
     gi.configstring(CS_STATUSBAR, statusbar);
 
     gi.configstring(CS_OBSERVE, "SPECT");

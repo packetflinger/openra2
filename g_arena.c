@@ -368,6 +368,9 @@ void G_ArenaThink(arena_t *a) {
 			
 			a->round_start_frame = level.framenum
 					+ SECS_TO_FRAMES((int) g_round_countdown->value);
+			a->round_frame = a->round_start_frame;
+			a->match_frame = a->round_start_frame;
+
 			a->countdown = (int) g_round_countdown->value;
 
 			G_RespawnPlayers(a);
@@ -378,6 +381,11 @@ void G_ArenaThink(arena_t *a) {
 	G_CheckTimers(a);
 	G_UpdateArenaVote(a);
 	G_CheckArenaRules(a);
+
+	if (a->state > ARENA_STATE_WARMUP) {
+		a->round_frame++;
+		a->match_frame++;
+	}
 }
 
 // Stuff that needs to be reset between rounds
@@ -1104,7 +1112,52 @@ void G_CheckTimers(arena_t *a) {
 	}
 }
 
-void G_UpdateConfigStrings(arena_t *a) {
+void G_UpdateConfigStrings(arena_t *a)
+{
+	static char *roundtime = "0:00";
+	static char *timeouttime = "0:00";
+	static char *buf;
+	buf = NULL;
+
+	roundtime = (char *) G_FramesToTimeString(a->round_frame - a->round_start_frame);
+
+	//gi.dprintf("timeouttime: %s\n", timeouttime);
+	gi.dprintf("roundtime: %s\n", roundtime);
+
+	switch (a->state) {
+//	case ARENA_STATE_WARMUP:
+//		buf = "Warmup - Join a team and type ready to begin";
+//		break;
+
+	case ARENA_STATE_COUNTDOWN:
+		buf = va("Starting in %s", G_SecsToString((a->round_start_frame - level.framenum) / HZ));
+		break;
+
+	case ARENA_STATE_PLAY:
+		buf = va(
+			"Playing Round %d/%d - %s",
+			a->current_round,
+			a->round_limit,
+			roundtime
+		);
+		break;
+
+	case ARENA_STATE_TIMEOUT:
+		timeouttime = (char *) G_FramesToTimeString(a->timein_frame - level.framenum);
+		buf = va(
+			"Timeout - %s (%s)",
+			timeouttime,
+			roundtime
+		);
+		break;
+
+	default:
+		buf = "";
+	}
+
+	if (buf) {
+		G_ConfigString(a, CS_MATCH_STATUS, buf);
+	}
 }
 
 /**
@@ -1705,10 +1758,8 @@ void G_TimeoutFrame(arena_t *a) {
 	// countdown timer
 	int framesleft = a->timein_frame - level.framenum;
 	if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-		gi.configstring(
-		CS_ARENA_TIMEOUT + a->number,
-				va("Timeout: %s", G_SecsToString(FRAMES_TO_SECS(framesleft))));
 
+		G_UpdateConfigStrings(a);
 
 		uint32_t remaining;
 		remaining = (a->timein_frame - level.framenum) / HZ;
@@ -1749,6 +1800,8 @@ void G_TimeoutFrame(arena_t *a) {
 			break;
 		}
 	}
+
+	a->match_frame++;
 }
 
 
@@ -1766,6 +1819,10 @@ const char *G_SecsToString(int seconds) {
 	sprintf(time_buffer, "%d:%.2d", mins, seconds);
 
 	return time_buffer;
+}
+
+const char *G_FramesToTimeString(uint32_t frames) {
+	return G_SecsToString((int) frames * FRAMETIME);
 }
 
 // 
