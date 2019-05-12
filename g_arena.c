@@ -938,6 +938,10 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 
 	int index = 0;
 
+	if (!arena) {
+		return;
+	}
+
 	// leave the old arena
 	if (cl->pers.arena) {
 		index = arena_find_cl_index(cl);
@@ -953,10 +957,6 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 		}
 	}
 
-	if (!arena) {
-		return;
-	}
-
 	index = arena_find_cl_slot(arena);
 
 	arena->client_count++;
@@ -968,6 +968,9 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 	cl->pers.ready = false;
 
 	G_SpectatorsJoin(cl->edict);
+
+	// send all current player skins to this new player
+	G_UpdateSkins(cl->edict);
 
 	PutClientInServer(cl->edict);
 	G_ArenaSound(arena, level.sounds.teleport);
@@ -1157,6 +1160,27 @@ void G_UpdateConfigStrings(arena_t *a)
 
 	if (buf) {
 		G_ConfigString(a, CS_MATCH_STATUS, buf);
+	}
+}
+
+/**
+ * Send this edict the skins everyone is using so they display properly
+ */
+void G_UpdateSkins(edict_t *ent)
+{
+	uint8_t i, j;
+
+	// each team
+	for (i=0; i<ARENA(ent)->team_count; i++) {
+
+		// each player
+		for (j=0; j<ARENA(ent)->teams[i].player_count; j++) {
+
+			gi.WriteByte(SVC_CONFIGSTRING);
+			gi.WriteShort(CS_PLAYERSKINS + (ARENA(ent)->teams[i].players[j] - g_edicts) - 1);
+			gi.WriteString(ARENA(ent)->teams[i].skin);
+			gi.unicast(ent, qtrue);
+		}
 	}
 }
 

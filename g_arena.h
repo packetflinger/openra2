@@ -275,6 +275,7 @@ qboolean G_Teammates(edict_t *p1, edict_t *p2);
 void G_TimeoutFrame(arena_t *a);
 void G_UpdateArenaVote(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
+void G_UpdateSkins(edict_t *ent);
 char *G_WeaponFlagsToString(arena_t *a);
 
 #endif // ARENA_H
