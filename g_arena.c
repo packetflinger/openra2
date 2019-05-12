@@ -537,7 +537,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
 		for (i = 0; i < numranks; i++) {
 			c = ranks[i];
 
-			sec = (level.framenum - c->resp.enter_framenum) / HZ;
+			sec = (level.framenum - c->resp.enter_framenum) * FRAMETIME;
 
 			if (!sec) {
 				sec = 1;
@@ -698,7 +698,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 		for (i = 0; i < numranks; i++) {
 			c = ranks[i];
 
-			sec = (level.framenum - c->resp.enter_framenum) / HZ;
+			sec = (level.framenum - c->resp.enter_framenum) * FRAMETIME;
 
 			if (!sec) {
 				sec = 1;
@@ -1035,7 +1035,7 @@ void G_CheckTimers(arena_t *a) {
 	G_UpdateConfigStrings(a);
 	
 	if (a->state == ARENA_STATE_COUNTDOWN) {
-		remaining = (a->round_start_frame - level.framenum) / HZ;
+		remaining = (a->round_start_frame - level.framenum) * FRAMETIME;
 		switch (remaining) {
 		case 10:
 			G_ArenaSound(a, level.sounds.countdown[10]);
@@ -1074,7 +1074,7 @@ void G_CheckTimers(arena_t *a) {
 	}
 
 	if (a->state == ARENA_STATE_TIMEOUT) {
-		remaining = (a->timein_frame - level.framenum) / HZ;
+		remaining = (a->timein_frame - level.framenum) * FRAMETIME;
 		switch (remaining) {
 		case 10:
 			G_ArenaSound(a, level.sounds.countdown[10]);
@@ -1131,7 +1131,7 @@ void G_UpdateConfigStrings(arena_t *a)
 //		break;
 
 	case ARENA_STATE_COUNTDOWN:
-		buf = va("Starting in %s", G_SecsToString((a->round_start_frame - level.framenum) / HZ));
+		buf = va("Starting in %s", G_SecsToString((a->round_start_frame - level.framenum) * FRAMETIME));
 		break;
 
 	case ARENA_STATE_PLAY:
@@ -1795,7 +1795,7 @@ void G_TimeoutFrame(arena_t *a) {
 		G_UpdateConfigStrings(a);
 
 		uint32_t remaining;
-		remaining = (a->timein_frame - level.framenum) / HZ;
+		remaining = (a->timein_frame - level.framenum) * FRAMETIME;
 
 		switch (remaining) {
 		case 10:
