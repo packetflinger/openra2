@@ -1651,11 +1651,9 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     s = Info_ValueForKey(userinfo, "uf");
     client->pers.uf = *s ? atoi(s) : UF_LOCALFOV;
 	
-	// team members can't change skin after they join the team
+	// force team skins
 	if (ent->client->pers.team && changed) {
-		if (!match(s, ent->client->pers.team->skin)) {
-			G_SetSkin(ent, ent->client->pers.team->skin);
-		}
+		G_SetSkin(ent, ent->client->pers.team->skin);
 	}
 }
 

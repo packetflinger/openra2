@@ -1645,13 +1645,21 @@ char *G_RoundToString(arena_t *a) {
  * Force a particular skin on a player
  *
  */
-void G_SetSkin(edict_t *ent, const char *skin) {
-
+void G_SetSkin(edict_t *ent, const char *skin)
+{
 	if (!ent->client) {
 		return;
 	}
 
-	G_StuffText(ent, va("set skin %s", skin));
+	// let everyone know this player's new skin
+	G_ConfigString(
+		ARENA(ent),
+		CS_PLAYERSKINS + (ent - g_edicts) - 1,
+		va("%s\\%s",
+			NAME(ent),
+			skin
+		)
+	);
 }
 
 
