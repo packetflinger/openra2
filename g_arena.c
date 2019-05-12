@@ -954,10 +954,6 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 
 	int index = 0;
 
-	if (!arena) {
-		return;
-	}
-
 	// leave the old arena
 	if (cl->pers.arena) {
 		index = arena_find_cl_index(cl);
@@ -971,6 +967,10 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 			G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
 					cl->pers.netname);
 		}
+	}
+
+	if (!arena) {
+		return;
 	}
 
 	index = arena_find_cl_slot(arena);
