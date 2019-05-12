@@ -93,16 +93,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ARENADAMAGE_FALL			16	// no falling damage
 #define ARENADAMAGE_ALL				31
 
-
-//==================================================================
-#define MATCH_STATE_NONE 1
-#define MATCH_STATE_WARMUP 2
-#define MATCH_STATE_COUNTDOWN 3
-#define MATCH_STATE_PLAYTIME 4
-#define MATCH_STATE_PAUSE 5
-#define MATCH_STATE_OVERTIME 6
-#define MATCH_STATE_WAITEXIT 7
-
 // view pitching times
 #define DAMAGE_TIME     0.5
 #define FALL_TIME       0.3
