@@ -1712,7 +1712,7 @@ static void Cmd_Teams_f(edict_t *ent) {
 
 	for (i=0; i<ARENA(ent)->team_count; i++) {
 		t = &ARENA(ent)->teams[i];
-		gi.cprintf(ent, PRINT_HIGH, "%s:\n", t->name);
+		gi.cprintf(ent, PRINT_HIGH, "%s <%s>:\n", t->name, t->skin);
 
 		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
 			if (!t->players[j])

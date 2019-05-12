@@ -1651,6 +1651,8 @@ void G_SetSkin(edict_t *ent, const char *skin)
 		return;
 	}
 
+	strcpy(ent->client->pers.skin, skin);
+
 	// let everyone know this player's new skin
 	G_ConfigString(
 		ARENA(ent),

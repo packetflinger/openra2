@@ -1030,15 +1030,15 @@ static void G_Init(void) {
 	g_team_count = gi.cvar("g_team_count", "2", CVAR_LATCH);
 	g_teamspec_name = gi.cvar("g_teamspec_name", "Spectators", CVAR_LATCH);
 	g_team1_name = gi.cvar("g_team1_name", "Red", CVAR_LATCH);
-	g_team1_skin = gi.cvar("g_team1_skin", "female/ra2red", CVAR_LATCH);
+	g_team1_skin = gi.cvar("g_team1_skin", "female/r2red", CVAR_LATCH);
 	g_team2_name = gi.cvar("g_team2_name", "Blue", CVAR_LATCH);
-	g_team2_skin = gi.cvar("g_team2_skin", "male/ra2blue", CVAR_LATCH);
+	g_team2_skin = gi.cvar("g_team2_skin", "male/r2blue", CVAR_LATCH);
 	g_team3_name = gi.cvar("g_team3_name", "Green", CVAR_LATCH);
-	g_team3_skin = gi.cvar("g_team3_skin", "female/ra2dgre", CVAR_LATCH);
+	g_team3_skin = gi.cvar("g_team3_skin", "female/r2dgre", CVAR_LATCH);
 	g_team4_name = gi.cvar("g_team4_name", "Yellow", CVAR_LATCH);
-	g_team4_skin = gi.cvar("g_team4_skin", "male/ra2yell", CVAR_LATCH);
+	g_team4_skin = gi.cvar("g_team4_skin", "male/r2yell", CVAR_LATCH);
 	g_team5_name = gi.cvar("g_team5_name", "Aqua", CVAR_LATCH);
-	g_team5_skin = gi.cvar("g_team5_skin", "female/ra2aqua", CVAR_LATCH);
+	g_team5_skin = gi.cvar("g_team5_skin", "female/r2aqua", CVAR_LATCH);
 
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);	// default: all except bfg
