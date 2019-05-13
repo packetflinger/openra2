@@ -1057,20 +1057,10 @@ void G_CheckTimers(arena_t *a) {
 
 		if (remaining > 0 && remaining <= 10) {
 			G_ArenaSound(a, level.sounds.countdown[remaining]);
-		} else if (remaining == 0) {
-			G_ArenaSound(a, level.sounds.fight[1]);
 		}
 	}
 
-	if (a->state == ARENA_STATE_TIMEOUT) {
-		remaining = (a->timein_frame - level.framenum) * FRAMETIME;
-
-		if (remaining > 0 && remaining <= 10) {
-			G_ArenaSound(a, level.sounds.countdown[remaining]);
-		} else if (remaining == 0) {
-			G_ArenaSound(a, level.sounds.timein);
-		}
-	}
+	// timeout countdown handled in G_TimeoutFrame()
 }
 
 void G_UpdateConfigStrings(arena_t *a)
@@ -1082,14 +1072,7 @@ void G_UpdateConfigStrings(arena_t *a)
 
 	roundtime = (char *) G_FramesToTimeString(a->round_frame - a->round_start_frame);
 
-	//gi.dprintf("timeouttime: %s\n", timeouttime);
-	gi.dprintf("roundtime: %s\n", roundtime);
-
 	switch (a->state) {
-//	case ARENA_STATE_WARMUP:
-//		buf = "Warmup - Join a team and type ready to begin";
-//		break;
-
 	case ARENA_STATE_COUNTDOWN:
 		buf = va("Starting in %s", G_SecsToString((a->round_start_frame - level.framenum) * FRAMETIME));
 		break;
@@ -1113,10 +1096,11 @@ void G_UpdateConfigStrings(arena_t *a)
 		break;
 
 	default:
-		buf = "";
+		buf = 0;
 	}
 
 	if (buf) {
+		gi.dprintf("%s\n", buf);
 		G_ConfigString(a, CS_MATCH_STATUS, buf);
 	}
 }
@@ -1237,6 +1221,8 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	G_BuildScoreboard(a->oldscores, NULL, a);
 
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
+
+	G_ConfigString(a, CS_MATCH_STATUS, "");
 
 	for (i = 0; i < a->team_count; i++) {
 		G_ForceReady(&a->teams[i], qfalse);
@@ -1745,6 +1731,7 @@ void G_TimeoutFrame(arena_t *a) {
 		a->timeout_frame = 0;
 		a->timein_frame = 0;
 		a->timeout_caller = NULL;
+		G_ArenaSound(a, level.sounds.timein);
 		return;
 	}
 
@@ -1757,40 +1744,8 @@ void G_TimeoutFrame(arena_t *a) {
 		uint32_t remaining;
 		remaining = (a->timein_frame - level.framenum) * FRAMETIME;
 
-		switch (remaining) {
-		case 10:
-			G_ArenaSound(a, level.sounds.countdown[10]);
-			break;
-		case 9:
-			G_ArenaSound(a, level.sounds.countdown[9]);
-			break;
-		case 8:
-			G_ArenaSound(a, level.sounds.countdown[8]);
-			break;
-		case 7:
-			G_ArenaSound(a, level.sounds.countdown[7]);
-			break;
-		case 6:
-			G_ArenaSound(a, level.sounds.countdown[6]);
-			break;
-		case 5:
-			G_ArenaSound(a, level.sounds.countdown[5]);
-			break;
-		case 4:
-			G_ArenaSound(a, level.sounds.countdown[4]);
-			break;
-		case 3:
-			G_ArenaSound(a, level.sounds.countdown[3]);
-			break;
-		case 2:
-			G_ArenaSound(a, level.sounds.countdown[2]);
-			break;
-		case 1:
-			G_ArenaSound(a, level.sounds.countdown[1]);
-			break;
-		case 0:
-			G_ArenaSound(a, level.sounds.timein);
-			break;
+		if (remaining > 0 && remaining <= 10) {
+			G_ArenaSound(a, level.sounds.countdown[remaining]);
 		}
 	}
 
