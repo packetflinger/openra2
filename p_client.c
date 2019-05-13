@@ -1582,7 +1582,6 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     int     playernum;
     gclient_t *client = ent->client;
     char    name[MAX_NETNAME], skin[MAX_SKINNAME];
-    char    playerskin[MAX_QPATH];
     qboolean changed;
 
     // check for malformed or illegal info strings
@@ -1601,8 +1600,12 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     s = Info_ValueForKey(userinfo, "skin");
     parse_skin(skin, s);
 
-    changed = strcmp(name, client->pers.netname) ||
-              strcmp(skin, client->pers.skin);
+    changed = strcmp(name, client->pers.netname);
+
+    // don't allow anyone to change skin using the "skin" cmd or updating userinfo
+    if (strcmp(skin, client->pers.skin) && TEAM(ent)) {
+    	G_SetSkin(ent, TEAM(ent)->skin);
+    }
 
     if (!client->pers.mvdspec && changed) {
         if (forbid_name_change(ent)) {
@@ -1610,12 +1613,8 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
             //Info_SetValueForKey( userinfo, "skin", client->pers.skin );
             G_StuffText(ent, va("set name \"%s\"\n", client->pers.netname));
         } else {
-            // combine name and skin into a configstring
-            Q_concat(playerskin, sizeof(playerskin), name, "\\", skin, NULL);
             playernum = (ent - g_edicts) - 1;
-            gi.configstring(CS_PLAYERSKINS + playernum, playerskin);
             gi.configstring(CS_PLAYERNAMES + playernum, name);
-            strcpy(client->pers.skin, skin);
             strcpy(client->pers.netname, name);
         }
     }
