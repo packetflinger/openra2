@@ -642,7 +642,7 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     if (self->health < -40) {
         // gib
         gi.sound(self, CHAN_BODY, level.sounds.udeath, 1, ATTN_NORM, 0);
-        for (n = 0; n < 4; n++)
+        for (n = 0; n < 14; n++)
             ThrowGib(self, level.models.meat, damage, GIB_ORGANIC);
         ThrowClientHead(self, damage);
 
