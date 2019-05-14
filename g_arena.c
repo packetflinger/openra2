@@ -404,30 +404,11 @@ void G_ClearRoundInfo(arena_t *a) {
  * Send a configstring to everyone in a particular arena
  */
 void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
-	uint8_t i, j, k;
+	uint8_t i;
 	edict_t *ent;
-	arena_team_t *team;
 
-	// team players
-	for (i=0; i<arena->team_count; i++) {
-		team = &arena->teams[i];
-
-		for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
-			ent = team->players[j];
-
-			if (ent && ent->inuse) {
-				gi.WriteByte(SVC_CONFIGSTRING);
-				gi.WriteShort(index);
-				gi.WriteString(string);
-				gi.unicast(ent, qtrue);
-			}
-		}
-	}
-
-	// specs
-	for (i=0, k=0; k<arena->spectator_count; i++) {
-		ent = arena->spectators[i];
-
+	for (i=0; i<game.maxclients; i++) {
+		ent = arena->clients[i];
 		if (!ent)
 			continue;
 
@@ -438,8 +419,6 @@ void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
 		gi.WriteShort(index);
 		gi.WriteString(string);
 		gi.unicast(ent, qtrue);
-
-		k++;
 	}
 }
 
