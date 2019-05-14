@@ -721,10 +721,6 @@ extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
 extern	cvar_t	*g_team_balance;
-//extern	cvar_t	*g_hometeam_name;
-//extern	cvar_t	*g_awayteam_name;
-//extern	cvar_t	*g_hometeam_skin;
-//extern	cvar_t	*g_awayteam_skin;
 extern	cvar_t	*g_team_count;
 extern	cvar_t	*g_teamspec_name;
 extern 	cvar_t	*g_team1_name;
