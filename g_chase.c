@@ -144,7 +144,6 @@ static void UpdateChaseCam(gclient_t *client)
 
 void SetChaseTarget(edict_t *ent, edict_t *targ)
 {
-    int i;
 
     ent->client->chase_target = targ;
 
@@ -162,12 +161,10 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
         ClientEndServerFrame(ent);
     } else {
         ent->client->clientNum = (targ - g_edicts) - 1;
-        for (i = 0; i < PCS_TOTAL; i++) {
-            G_PrivateString(ent, i, targ->client->level.strings[i]);
-        }
+        ent->client->ps.pmove.pm_flags = 0;
+        ent->client->ps.pmove.pm_type = PM_SPECTATOR;
         ChaseEndServerFrame(ent);
     }
-
 }
 
 void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
