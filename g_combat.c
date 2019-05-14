@@ -100,7 +100,7 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
     targ->enemy = attacker;
     targ->die(targ, inflictor, attacker, damage, point);
 	
-	if (ARENA(targ)->state > ARENA_STATE_WARMUP) {
+	if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
 		SetChaseTarget(targ, attacker);
 	}
 }
