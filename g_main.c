@@ -105,6 +105,7 @@ cvar_t *flood_infos;
 cvar_t *flood_perinfo;
 cvar_t *flood_infodelay;
 
+cvar_t *g_frag_drop;
 cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
 cvar_t *g_team_count;
@@ -1062,6 +1063,7 @@ static void G_Init(void) {
 	g_team_reset = gi.cvar("g_team_reset", "0", CVAR_GENERAL);
 	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
 	g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
+	g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
 	
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);

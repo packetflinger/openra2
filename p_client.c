@@ -525,17 +525,15 @@ static void TossClientWeapon(edict_t *self)
     } else {
         spread = 0.0;
     }*/
-
-	item = 0; // never drop a weapon
 	
-    if (item) {
+    if (item && g_frag_drop->value) {
         self->client->v_angle[YAW] -= spread;
         drop = Drop_Item(self, item);
         self->client->v_angle[YAW] += spread;
         drop->spawnflags = DROPPED_PLAYER_ITEM;
     }
 
-    if (quad) {
+    if (quad && g_frag_drop->value) {
         self->client->v_angle[YAW] += spread;
         drop = Drop_Item(self, INDEX_ITEM(ITEM_QUAD));
         self->client->v_angle[YAW] -= spread;

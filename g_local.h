@@ -720,6 +720,7 @@ extern  cvar_t  *g_vote_threshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
+extern	cvar_t	*g_frag_drop;
 extern	cvar_t	*g_team_balance;
 extern	cvar_t	*g_team_count;
 extern	cvar_t	*g_teamspec_name;
