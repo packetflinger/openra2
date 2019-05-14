@@ -1869,7 +1869,14 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         return;
     }
 	
+    // no moving during timeout
 	if (client->pers.arena->state == ARENA_STATE_TIMEOUT) {
+		client->ps.pmove.pm_type = PM_FREEZE;
+		return;
+	}
+
+	// no moving during arena intermission
+	if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
 		client->ps.pmove.pm_type = PM_FREEZE;
 		return;
 	}

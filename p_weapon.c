@@ -214,7 +214,12 @@ void Think_Weapon(edict_t *ent)
     }
 	
 	// No attacks in timeouts
-	if (ent->client->pers.arena->state == ARENA_STATE_TIMEOUT) {
+	if (ARENA(ent)->state == ARENA_STATE_TIMEOUT) {
+		return;
+	}
+
+	// should have a gun, but no shooting during intermission
+	if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
 		return;
 	}
 
