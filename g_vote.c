@@ -373,6 +373,7 @@ qboolean G_CheckArenaVote(arena_t *a) {
 			memcpy(a->infinite, a->vote.infinite, sizeof(a->infinite));
 
 			G_RefillPlayers(a);
+			G_UpdatePlayerStatusBars(a);
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
 			break;
 

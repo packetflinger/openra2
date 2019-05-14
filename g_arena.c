@@ -2390,3 +2390,356 @@ void G_RandomizeAmmo(uint16_t *out) {
 	out[ITEM_ROCKETS] = genrand_int32() & 0xF;
 	out[ITEM_SLUGS] = genrand_int32() & 0xF;
 }
+
+/**
+ * Generate a player-specific statusbar
+ *
+ */
+const char *G_CreatePlayerStatusBar(edict_t *player)
+{
+	static char	*statusbar;
+	static char weaponhud[175];		// the weapon icons
+	static char ammohud[135];		// the ammo counts
+	int			hud_x, hud_y;
+
+	if (!player->client)
+		return "";
+
+	hud_y = 0;
+	hud_x = -25;
+
+	weaponhud[0] = 0;
+	ammohud[0] = 0;
+
+	// set x position at first for all weapon icons, to save the chars since CS max is 1000
+	strcpy(weaponhud, va("xr %d ", hud_x));
+
+	// set x position for ammo quantities ^
+	strcpy(ammohud, va("xr %d ", hud_x - 50));
+
+	// super/shotgun
+	if (player->client->inventory[ITEM_SUPERSHOTGUN]) {
+		strcat(weaponhud, va("yv %d picn w_sshotgun ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+		hud_y += 25;
+	} else if (player->client->inventory[ITEM_SHOTGUN]) {
+		strcat(weaponhud, va("yv %d picn w_shotgun ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+		hud_y += 25;
+	}
+
+	// chaingun/machinegun
+	if (player->client->inventory[ITEM_CHAINGUN]) {
+		strcat(weaponhud, va("yv %d picn w_chaingun ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_BULLETS));
+		hud_y += 25;
+	} else if (player->client->inventory[ITEM_MACHINEGUN]) {
+		strcat(weaponhud, va("yv %d picn w_machinegun ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+		hud_y += 25;
+	}
+
+	// hand grenades/launcher
+	if (player->client->inventory[ITEM_GRENADELAUNCHER]) {
+		strcat(weaponhud, va("yv %d picn w_glauncher ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
+		hud_y += 25;
+	} else if (player->client->inventory[ITEM_GRENADES]) {
+		strcat(weaponhud, va("yv %d picn w_hgrenade ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
+		hud_y += 25;
+	}
+
+	// hyper blaster
+	if (player->client->inventory[ITEM_HYPERBLASTER]) {
+		strcat(weaponhud, va("yv %d picn w_hyperblaster ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
+		hud_y += 25;
+	}
+
+	// rocket launcher
+	if (player->client->inventory[ITEM_ROCKETLAUNCHER]) {
+		strcat(weaponhud, va("yv %d picn w_rlauncher ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_ROCKETS));
+		hud_y += 25;
+	}
+
+	// railgun
+	if (player->client->inventory[ITEM_RAILGUN]) {
+		strcat(weaponhud, va("yv %d picn w_railgun ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SLUGS));
+		hud_y += 25;
+	}
+
+	// BFG
+	if (player->client->inventory[ITEM_BFG]) {
+		strcat(weaponhud, va("yv %d picn w_bfg ", hud_y));
+		strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
+		hud_y += 25;
+	}
+
+	statusbar = va(
+		"yb -24 "
+
+		// health
+		"xv 0 "
+		"hnum "
+		"xv 50 "
+		"pic 0 "
+
+		// ammo
+		"if 2 "
+			"xv 100 "
+			"anum "
+			"xv 150 "
+			"pic 2 "
+		"endif "
+
+		// armor
+		"if 4 "
+			"xv 200 "
+			"rnum "
+			"xv 250 "
+			"pic 4 "
+		"endif "
+
+		"yb -50 "
+
+		// picked up item
+		"if 7 "
+			"xv 0 "
+			"pic 7 "
+			"xv 26 "
+			"yb -42 "
+			"stat_string 8 "
+			"yb -50 "
+		"endif "
+
+		// timer 1 (quad, enviro, breather)
+		"if 9 "
+			"xv 246 "
+			"num 2 10 "
+			"xv 296 "
+			"pic 9 "
+		"endif "
+
+		//  help / weapon icon
+		"if 11 "
+			"xv 148 "
+			"pic 11 "
+		"endif "
+
+		// points (damage dealt)
+		"xr -80 "
+		"yt 2 "
+		"num 5 14 "
+
+
+		// countdown
+		"if 29 "
+			"yv 100 "
+			"xv 150 "
+			"num 2 29 "
+		"endif "
+
+		// chase camera
+		"if 16 "
+			"xv 0 "
+			"yb -68 "
+			"string Chasing "
+			"xv 64 "
+			"stat_string 16 "
+		"endif "
+
+		// spectator
+		"if 17 "
+			"xv 0 "
+			"yb -58 "
+			"stat_string 17 "
+		"endif "
+
+		// view id
+		"if 24 "
+			"xv -100 "
+			"yb -80 "
+			"string Viewing "
+			"xv -36 "
+			"stat_string 24 "
+		"endif "
+
+		// vote proposal
+		"if 25 "
+			"xl 10 "
+			"yb -188 "
+			"stat_string 25 "
+			"yb -180 "
+			"stat_string 26 "
+		"endif "
+
+		// status
+		"if 31 "
+			"yb -60 "
+			"xv 0 "
+			"stat_string 31 "
+		"endif "
+		"%s"
+		"%s",
+		weaponhud, ammohud
+	);
+
+	return statusbar;
+}
+
+/**
+ * Generate a spec-specific statusbar
+ *
+ */
+const char *G_CreateSpectatorStatusBar(edict_t *player)
+{
+	static char	*statusbar;
+
+	if (!player->client)
+		return "";
+
+	statusbar = va(
+		"yb -24 "
+
+		// health
+		"xv 0 "
+		"hnum "
+		"xv 50 "
+		"pic 0 "
+
+		// ammo
+		"if 2 "
+			"xv 100 "
+			"anum "
+			"xv 150 "
+			"pic 2 "
+		"endif "
+
+		// armor
+		"if 4 "
+			"xv 200 "
+			"rnum "
+			"xv 250 "
+			"pic 4 "
+		"endif "
+
+		"yb -50 "
+
+		// picked up item
+		"if 7 "
+			"xv 0 "
+			"pic 7 "
+			"xv 26 "
+			"yb -42 "
+			"stat_string 8 "
+			"yb -50 "
+		"endif "
+
+		// timer 1 (quad, enviro, breather)
+		"if 9 "
+			"xv 246 "
+			"num 2 10 "
+			"xv 296 "
+			"pic 9 "
+		"endif "
+
+		//  help / weapon icon
+		"if 11 "
+			"xv 148 "
+			"pic 11 "
+		"endif "
+
+		// points (damage dealt)
+		"xr -80 "
+		"yt 2 "
+		"num 5 14 "
+
+
+		// countdown
+		"if 29 "
+			"yv 100 "
+			"xv 150 "
+			"num 2 29 "
+		"endif "
+
+		// chase camera
+		"if 16 "
+			"xv 0 "
+			"yb -68 "
+			"string Chasing "
+			"xv 64 "
+			"stat_string 16 "
+		"endif "
+
+		// spectator
+		"if 17 "
+			"xv 0 "
+			"yb -58 "
+			"stat_string 17 "
+		"endif "
+
+		// view id
+		"if 24 "
+			"xv -100 "
+			"yb -80 "
+			"string Viewing "
+			"xv -36 "
+			"stat_string 24 "
+		"endif "
+
+		// vote proposal
+		"if 25 "
+			"xl 10 "
+			"yb -188 "
+			"stat_string 25 "
+			"yb -180 "
+			"stat_string 26 "
+		"endif "
+
+		// status
+		"if 31 "
+			"yb -60 "
+			"xv 0 "
+			"stat_string 31 "
+		"endif "
+	);
+
+	return statusbar;
+}
+
+/**
+ * Send player/spec their specific statusbar
+ */
+void G_SendStatusBar(edict_t *ent)
+{
+	gi.WriteByte(SVC_CONFIGSTRING);
+	gi.WriteShort(CS_STATUSBAR);
+
+	if (TEAM(ent)) {
+		gi.WriteString(G_CreatePlayerStatusBar(ent));
+	} else {
+		gi.WriteString(G_CreateSpectatorStatusBar(ent));
+	}
+
+	gi.unicast(ent, true);
+}
+
+
+/**
+ * Update statusbars for all arena players
+ *
+ */
+void G_UpdatePlayerStatusBars(arena_t *a)
+{
+	uint8_t i;
+
+	for (i=0; i<game.maxclients; i++) {
+		if (!a->clients[i])
+			continue;
+
+		G_SendStatusBar(a->clients[i]);
+	}
+}

@@ -698,6 +698,7 @@ void G_SetStats(edict_t *ent)
     //
     // timer 2 (pent)
     //
+    /*
     ent->client->ps.stats[STAT_TIMER2_ICON] = 0;
     ent->client->ps.stats[STAT_TIMER2] = 0;
     if (ent->client->invincible_framenum > level.framenum) {
@@ -709,6 +710,7 @@ void G_SetStats(edict_t *ent)
             ent->client->ps.stats[STAT_TIMER] = (ent->client->invincible_framenum - level.framenum) / HZ;
         }
     }
+    */
 
     //
     // selected item
@@ -747,32 +749,10 @@ void G_SetStats(edict_t *ent)
     ent->client->ps.stats[STAT_CHASE] = 0;
 
     if (level.intermission_framenum) {
-        ent->client->ps.stats[STAT_TIME_STRING] = 0;
-/*
- 		ent->client->ps.stats[STAT_FRAGS_STRING] = 0;
-        ent->client->ps.stats[STAT_DELTA_STRING] = 0;
-        ent->client->ps.stats[STAT_RANK_STRING] = 0;
-*/
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
-        if (timelimit->value > 0) {
-            ent->client->ps.stats[STAT_TIME_STRING] = CS_TIME;
-        } else {
-            ent->client->ps.stats[STAT_TIME_STRING] = 0;
-        }
+
         if (ent->client->pers.connected == CONN_SPAWNED) {
-            //ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_FRAGS;
-//			ent->client->ps.stats[STAT_FRAGS_STRING] = CS_PRIVATE + PCS_DAMAGE;
-//            ent->client->ps.stats[STAT_DELTA_STRING] = CS_PRIVATE + PCS_DELTA;
-//            ent->client->ps.stats[STAT_RANK_STRING] = CS_PRIVATE + PCS_RANK;
-			ent->client->ps.stats[STAT_ROUNDS] = CS_ARENA_ROUNDS + ARENA(ent)->number;
-			
-			// timeout
-//			if (ent->client->pers.arena->state == ARENA_STATE_TIMEOUT) {
-//				ent->client->ps.stats[STAT_TIMEOUT] = CS_ARENA_TIMEOUT + ARENA(ent)->number;
-//			} else {
-//				ent->client->ps.stats[STAT_TIMEOUT] = 0;
-//			}
 			
 			// countdown
 			if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
@@ -782,10 +762,7 @@ void G_SetStats(edict_t *ent)
 			}
 			
         } else {
-//            ent->client->ps.stats[STAT_FRAGS_STRING] = CS_OBSERVE;
-//            ent->client->ps.stats[STAT_DELTA_STRING] = 0;
-//            ent->client->ps.stats[STAT_RANK_STRING] = 0;
-			ent->client->ps.stats[STAT_ROUNDS] = 0;
+
             if (ent->client->pers.connected == CONN_SPECTATOR) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
             } else {
@@ -815,11 +792,7 @@ void G_SetStats(edict_t *ent)
 			if (!ent->client->pers.ready) {
 				ent->client->ps.stats[STAT_READY] = CS_READY;
 			} else {
-				//if (g_team_balance->value && (ARENA(ent)->team_home.player_count != ARENA(ent)->team_away.player_count)) {
-					//ent->client->ps.stats[STAT_READY] = CS_READY_BALANCED;
-				//} else {
-					ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
-				//}
+				ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
 			}
 		} else {
 			ent->client->ps.stats[STAT_READY] = 0;
@@ -829,5 +802,14 @@ void G_SetStats(edict_t *ent)
 	}
 
 	ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
+
+	if (TEAM(ent)) {
+		ent->client->ps.stats[STAT_AMMO_BULLETS] = ent->client->inventory[ITEM_BULLETS];
+		ent->client->ps.stats[STAT_AMMO_SHELLS] = ent->client->inventory[ITEM_SHELLS];
+		ent->client->ps.stats[STAT_AMMO_GRENADES] = ent->client->inventory[ITEM_GRENADES];
+		ent->client->ps.stats[STAT_AMMO_CELLS] = ent->client->inventory[ITEM_CELLS];
+		ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
+		ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
+	}
 }
 

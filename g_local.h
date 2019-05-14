@@ -1053,8 +1053,8 @@ double genrand_float32_notone(void);
 #define STAT_ARMOR_ICON         4
 #define STAT_ARMOR              5	// used by client
 #define STAT_SELECTED_ICON      6 	// ?
-#define STAT_PICKUP_ICON        7
-#define STAT_PICKUP_STRING      8
+#define STAT_PICKUP_ICON        7   // remove
+#define STAT_PICKUP_STRING      8   // remove
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
 #define STAT_HELPICON           11
@@ -1064,17 +1064,17 @@ double genrand_float32_notone(void);
 #define STAT_FLASHES            15	// used by client, cleared each frame, 1 = health, 2 = armor
 #define STAT_CHASE              16
 #define STAT_SPECTATOR          17	// ? possibly use different hud
-#define STAT_FRAGS_STRING       18	// ?
-#define STAT_DELTA_STRING       19	// ?
-#define STAT_RANK_STRING        20	// ?
-#define STAT_TIME_STRING        21	// ?
-#define STAT_TIMER2_ICON        22	// ?
-#define STAT_TIMER2             23	// ?
+#define STAT_AMMO_SHELLS        18
+#define STAT_AMMO_BULLETS       19
+#define STAT_AMMO_GRENADES      20
+#define STAT_AMMO_CELLS         21
+#define STAT_AMMO_ROCKETS       22
+#define STAT_AMMO_SLUGS         23
 #define STAT_VIEWID             24
 #define STAT_VOTE_PROPOSAL      25
 #define STAT_VOTE_COUNT         26
-#define STAT_TIMEOUT            27	// ? maybe combine with time
-#define STAT_ROUNDS             28	// ?
+#define STAT_TIMEOUT            27	// remove
+#define STAT_ROUNDS             28	// remove
 #define STAT_COUNTDOWN          29
 #define STAT_READY              30
 #define STAT_MATCH_STATUS       31	// warmup, time, timeout, countdown, etc

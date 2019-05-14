@@ -1085,16 +1085,6 @@ static const char statusbar[] =
 	"pic 9 "
 "endif "
 
-// timer 2 (pent)
-"if 22 "
-	"yb -76 "
-	"xv 246 "
-	"num 2 23 "
-	"xv 296 "
-	"pic 22 "
-	"yb -50 "
-"endif "
-
 //  help / weapon icon
 "if 11 "
 	"xv 148 "
@@ -1113,14 +1103,6 @@ static const char statusbar[] =
 	"xv 150 "
 	"num 2 29 "
 "endif "
-
-// time
-//"if 21 "
-//	"yt 58 "
-//	"string2 \" Time\" "
-//	"yt 66 "
-//	"stat_string 21 "
-//"endif "
 
 // chase camera
 "if 16 "
@@ -1155,21 +1137,6 @@ static const char statusbar[] =
 	"yb -180 "
 	"stat_string 26 "
 "endif "
-
-// timeout
-//"if 27 "
-//	"xr -110 "
-//	"yt 72 "
-//	"color 5 " // cyan
-//	"stat_string 27 "
-//"endif "
-
-// ready reminder
-//"if 30 "
-//	"yb -60 "
-//	"xv 0 "
-//	"stat_string 30 "
-//"endif "
 
 // status
 "if 31 "

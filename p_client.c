@@ -1346,6 +1346,9 @@ void PutClientInServer(edict_t *ent)
 	// give the player all the guns and ammo they need
 	G_GiveItems(ent);
 	
+	// Create a statusbar and send it
+	G_SendStatusBar(ent);
+
     // force the current weapon up
 	if (!client->newweapon) {
 		client->newweapon = client->weapon;
