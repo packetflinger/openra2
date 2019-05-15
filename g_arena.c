@@ -1669,7 +1669,7 @@ void G_StartRound(arena_t *a) {
 	}
 
 	a->state = ARENA_STATE_PLAY;
-	a->round_start_frame = a->round_frame;
+	a->round_start_frame = a->round_frame - SECS_TO_FRAMES(1);
 
 	G_Centerprintf(a, "Fight!");
 	G_ArenaSound(a, level.sounds.secret);
