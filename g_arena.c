@@ -1044,42 +1044,40 @@ void G_CheckTimers(arena_t *a) {
 
 void G_UpdateConfigStrings(arena_t *a)
 {
-	static char *roundtime = "0:00";
-	static char *timeouttime = "0:00";
-	static char *buf;
-	buf = NULL;
+	char countdown[10];
+	char roundtime[10];
+	char timeouttime[10];
+	char buf[0xff];
 
-	roundtime = (char *) G_FramesToTimeString(a->round_frame - a->round_start_frame);
+	buf[0] = 0;
+
+	G_SecsToString(roundtime, (a->round_frame - a->round_start_frame) * FRAMETIME);
 
 	switch (a->state) {
 	case ARENA_STATE_COUNTDOWN:
-		buf = va("Starting in %s", G_SecsToString((a->round_start_frame - level.framenum) * FRAMETIME));
+		G_SecsToString(countdown, (a->round_start_frame - level.framenum) * FRAMETIME);
+		strcat(buf, va("Starting in %s", countdown));
 		break;
 
 	case ARENA_STATE_PLAY:
-		buf = va(
+		strcat(buf, va(
 			"Playing Round %d/%d - %s",
 			a->current_round,
 			a->round_limit,
 			roundtime
-		);
+		));
 		break;
 
 	case ARENA_STATE_TIMEOUT:
-		timeouttime = (char *) G_FramesToTimeString(a->timein_frame - level.framenum);
-		buf = va(
-			"Timeout - %s (%s)",
-			timeouttime,
-			roundtime
-		);
+		G_SecsToString(timeouttime, (a->timein_frame - level.framenum) * FRAMETIME);
+		strcat(buf, va("Timeout - %s   (%s)", timeouttime, roundtime));
 		break;
 
 	default:
-		buf = 0;
+		buf[0] = 0;
 	}
 
-	if (buf) {
-		gi.dprintf("%s\n", buf);
+	if (buf[0]) {
 		G_ConfigString(a, CS_MATCH_STATUS, buf);
 	}
 }
@@ -1737,20 +1735,14 @@ void G_TimeoutFrame(arena_t *a) {
  * Get time string (mm:ss) from seconds
  *
  */
-const char *G_SecsToString(int seconds) {
-	static char time_buffer[32];
+void G_SecsToString(char *out, int seconds)
+{
 	int mins;
 
 	mins = seconds / 60;
 	seconds -= (mins * 60);
 
-	sprintf(time_buffer, "%d:%.2d", mins, seconds);
-
-	return time_buffer;
-}
-
-const char *G_FramesToTimeString(uint32_t frames) {
-	return G_SecsToString((int) frames * FRAMETIME);
+	sprintf(out, "%d:%.2d", mins, seconds);
 }
 
 // 
