@@ -294,7 +294,7 @@ void G_CheckArenaRules(arena_t *a) {
 	if (a->state > ARENA_STATE_WARMUP) {
 		previous = a->teams[0].player_count;
 
-		for (i=0; i<a->team_count; i++) {
+		for (i=1; i<a->team_count; i++) {
 			if ((a->teams[i].player_count != previous && g_team_balance->value > 0) || a->teams[i].player_count == 0) {
 				a->current_round = a->round_limit;
 				G_EndRound(a, NULL);
