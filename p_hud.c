@@ -353,11 +353,10 @@ void BeginIntermission(arena_t *a)
     if (a->intermission_framenum)
         return;
 
+    a->state = ARENA_STATE_INTERMISSION;
     a->intermission_framenum = level.framenum;
 
     G_FinishVote(); // ? maybe not
-
-    //BuildDeathmatchScoreboard(game.oldscores, NULL);
 
     // respawn any dead clients
     for (i = 0; i < game.maxclients; i++) {

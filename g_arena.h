@@ -99,6 +99,7 @@ typedef struct {
 	char		original[MAX_STRING_CHARS];		// the original vote command
 } arena_vote_t;
 
+// don't change the order of these
 typedef enum {
 	ARENA_STATE_WARMUP,
 	ARENA_STATE_COUNTDOWN,

@@ -291,7 +291,7 @@ void G_CheckArenaRules(arena_t *a) {
 	if (!a)
 		return;
 
-	if (a->state > ARENA_STATE_WARMUP) {
+	if (a->state > ARENA_STATE_WARMUP && a->state < ARENA_STATE_INTERMISSION) {
 		previous = a->teams[0].player_count;
 
 		for (i=1; i<a->team_count; i++) {
@@ -1204,8 +1204,6 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 	for (i = 0; i < a->team_count; i++) {
 		G_ForceReady(&a->teams[i], qfalse);
 	}
-
-	a->state = ARENA_STATE_INTERMISSION;
 	
 	BeginIntermission(a);
 	
