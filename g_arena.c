@@ -332,7 +332,7 @@ void G_ArenaThink(arena_t *a) {
 
 		if (winner && !foundwinner) {
 			a->round_end_frame = level.framenum
-					+ SECS_TO_FRAMES((int )g_round_end_time->value);
+					+ SECS_TO_FRAMES((int) g_round_end_time->value);
 			foundwinner = true;
 			G_ShowScores(a);
 		}
