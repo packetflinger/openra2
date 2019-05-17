@@ -230,7 +230,7 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
 	char buffer[MAX_STRING_CHARS];
 
-	G_BuildPlayerboard(buffer, ent->client->pers.arena);
+	G_BuildPlayerboard(buffer, ARENA(ent));
 
 	gi.WriteByte(SVC_LAYOUT);
 	gi.WriteString(buffer);
@@ -448,7 +448,7 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
 		if (!other->client)
 			continue;
 
-		if (arena != other->client->pers.arena)
+		if (arena != ARENA(other))
 			continue;
 
 		gi.cprintf(other, level, "%s", string);
