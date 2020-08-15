@@ -136,6 +136,7 @@ cvar_t *g_screenshot;
 cvar_t *g_demo;
 cvar_t *g_team_reset;
 cvar_t *g_all_chat;
+cvar_t *g_round_timelimit;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -643,22 +644,20 @@ void G_StuffText(edict_t *ent, const char *text) {
 	gi.unicast(ent, qtrue);
 }
 
-static void G_SetTimeVar(int remaining) {
+/*
+static void G_SetTimeVar(int remaining)
+{
 	int sec = remaining % 60;
 	int min = remaining / 60;
 
 	gi.cvar_set("time_remaining", va("%d:%02d", min, sec));
-}
+}*/
 
-/*
- =================
- CheckDMRules
- =================
+/**
+ * Check gameplay rules
  */
-static void G_CheckRules(void) {
-	int i;
-	gclient_t *c;
-
+static void G_CheckRules(void)
+{
 	if (g_item_ban->modified) {
 		G_UpdateItemBans();
 	}
@@ -672,74 +671,10 @@ static void G_CheckRules(void) {
 		G_CheckVote();
 		g_vote_flags->modified = qfalse;
 	}
-
-	if (timelimit->value > 0) {
-		if (level.time >= timelimit->value * 60) {
-			gi.bprintf(PRINT_HIGH, "Timelimit hit.\n");
-			G_SetTimeVar(0);
-			G_EndLevel();
-			return;
-		}
-		if (timelimit->modified || (level.framenum % HZ) == 0) {
-			int delta = level.framenum /*- level.match_framenum*/;
-			int remaining = timelimit->value * 60 - delta / HZ;
-
-			G_WriteTime(remaining);
-			gi.multicast(NULL, MULTICAST_ALL);
-
-			G_SetTimeVar(remaining);
-
-			// notify
-			switch (remaining) {
-			case 10:
-				gi.bprintf(PRINT_HIGH, "10 seconds remaining in match.\n");
-				G_StartSound(level.sounds.count);
-				break;
-			case 60:
-				gi.bprintf(PRINT_HIGH, "1 minute remaining in match.\n");
-				G_StartSound(level.sounds.secret);
-				break;
-			case 300:
-			case 600:
-			case 900:
-				gi.bprintf(PRINT_HIGH, "%d minutes remaining in match.\n",
-						remaining / 60);
-				G_StartSound(level.sounds.secret);
-				break;
-			}
-		}
-	} else if (timelimit->modified) {
-		gi.cvar_set("time_remaining", "");
-	}
-
-	if ((int) fraglimit->value > 0) {
-		for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-			if (c->pers.connected != CONN_SPAWNED) {
-				continue;
-			}
-			if (c->resp.score >= fraglimit->value) {
-				gi.bprintf(PRINT_HIGH, "Fraglimit hit.\n");
-				G_EndLevel();
-				return;
-			}
-		}
-	}
-
-	if (fraglimit->modified) {
-		for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-			if (c->pers.connected != CONN_SPAWNED) {
-				continue;
-			}
-			G_ScoreChanged(c->edict);
-		}
-		G_UpdateRanks();
-	}
-
-	timelimit->modified = qfalse;
-	fraglimit->modified = qfalse;
 }
 
-static void G_ResetSettings(void) {
+static void G_ResetSettings(void)
+{
 	char command[256];
 
 	gi.bprintf(PRINT_HIGH,
@@ -797,7 +732,8 @@ void G_ExitLevel(void) {
  ================
  */
 void G_RunFrame(void) {
-	int i, delta;
+	//int i, delta;
+	int i;
 	edict_t *ent;
 	arena_t *a;
 
@@ -827,6 +763,7 @@ void G_RunFrame(void) {
 		G_RunEntity(ent);
 	}
 
+/*
 	if (level.intermission_exit) {
 		if (level.framenum > level.intermission_exit + 5) {
 			G_ResetLevel(); // in case gamemap failed, reset the level
@@ -859,7 +796,7 @@ void G_RunFrame(void) {
 			}
 		}
 	} else {
-
+*/
 		// see if it is time to end a deathmatch
 		G_CheckRules();
 
@@ -872,7 +809,7 @@ void G_RunFrame(void) {
 		if (level.vote.proposal) {
 			G_UpdateVote();
 		}
-	}
+	//}
 
 	// build the playerstate_t structures for all players
 	ClientEndServerFrames();
@@ -1064,6 +1001,7 @@ static void G_Init(void) {
 	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
 	g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
 	g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
+	g_round_timelimit = gi.cvar("g_round_timelimit", "120", CVAR_GENERAL);
 	
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);

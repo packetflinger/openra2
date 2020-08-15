@@ -1337,6 +1337,7 @@ void Cmd_Settings_f(edict_t *ent)
 	gi.cprintf(ent, PRINT_HIGH, "Teams:         %d\n", ARENA(ent)->team_count);
 	gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", ARENA(ent)->health);
 	gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", ARENA(ent)->armor);
+	gi.cprintf(ent, PRINT_HIGH, "Timelimit:     %d\n", ARENA(ent)->timelimit);
 }
 
 static void Cmd_Admin_f(edict_t *ent)

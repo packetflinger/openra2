@@ -183,30 +183,32 @@ typedef struct {
 	list_t          entry;                       // for making linked list of arenas
 	arena_vote_t    vote;                        // the current local vote
 	qboolean        modified;                    // defaults have been changed via votes
+	uint32_t        timelimit;                   // how long to allow each round
 } arena_t;
 
 
 
 // maps contain multiple arenas
 typedef struct {
-	char		name[50];
-	uint8_t		arena;
-	uint8_t		teams;
-	uint32_t	weapon_flags;
-	uint32_t	damage_flags;
-	uint8_t 	rounds;
-	uint32_t 	round_timelimit;
-	uint32_t	health;
-	uint32_t	armor;
+	char        name[50];
+	uint8_t     arena;
+	uint8_t     teams;
+	uint32_t    weapon_flags;
+	uint32_t    damage_flags;
+	uint8_t     rounds;
+	uint32_t    round_timelimit;
+	uint32_t    health;
+	uint32_t    armor;
+	uint32_t    timelimit;
 	// ammo
-	uint32_t	slugs;
-	uint32_t	rockets;
-	uint32_t	cells;
-	uint32_t	grenades;
-	uint32_t	bullets;
-	uint32_t	shells;
-	uint16_t	ammo[MAX_INVENTORY];
-	qboolean	infinite[MAX_INVENTORY];
+	uint32_t    slugs;
+	uint32_t    rockets;
+	uint32_t    cells;
+	uint32_t    grenades;
+	uint32_t    bullets;
+	uint32_t    shells;
+	uint16_t    ammo[MAX_INVENTORY];
+	qboolean    infinite[MAX_INVENTORY];
 } arena_entry_t;
 
 

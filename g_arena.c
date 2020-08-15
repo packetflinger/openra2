@@ -304,8 +304,12 @@ void G_CheckArenaRules(arena_t *a) {
 			previous = a->teams[i].player_count;
 		}
 	}
-}
 
+	// round timelimit hit, nuke everyone
+	if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
+		G_EndRound(a, NULL);
+	}
+}
 
 // check for things like state changes, start/end of rounds, timeouts, countdown clocks, votes, etc
 void G_ArenaThink(arena_t *a) {
@@ -1018,8 +1022,11 @@ void G_CheckReady(arena_t *a) {
 	a->ready = true;
 }
 
-// match countdowns...
-void G_CheckTimers(arena_t *a) {
+/**
+ * Match countdowns and clocks. Runs only once per second
+ */
+void G_CheckTimers(arena_t *a)
+{
 	// only run once per second
 	if (!(a->timer_last_frame + SECS_TO_FRAMES(1) <= level.framenum)) {
 		return;
@@ -1051,7 +1058,8 @@ void G_UpdateConfigStrings(arena_t *a)
 
 	buf[0] = 0;
 
-	G_SecsToString(roundtime, (a->round_frame - a->round_start_frame) * FRAMETIME);
+	//G_SecsToString(roundtime, (a->round_frame - a->round_start_frame) * FRAMETIME);
+	G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
 
 	switch (a->state) {
 	case ARENA_STATE_COUNTDOWN:
@@ -1668,6 +1676,7 @@ void G_StartRound(arena_t *a) {
 
 	a->state = ARENA_STATE_PLAY;
 	a->round_start_frame = a->round_frame - SECS_TO_FRAMES(1);
+	a->round_end_frame = a->round_start_frame + SECS_TO_FRAMES(a->timelimit);
 
 	G_Centerprintf(a, "Fight!");
 	G_ArenaSound(a, level.sounds.secret);
@@ -1792,6 +1801,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->ammo[ITEM_BULLETS] = (int) g_ammo_bullets->value;
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
 		a->team_count = (int) g_team_count->value;
+		a->timelimit = (int) g_round_timelimit->value;
 		memset(&a->infinite, 0, sizeof(a->infinite));
 		return;
 	}
@@ -1866,6 +1876,10 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 		a->ammo[ITEM_SHELLS] = m->ammo[ITEM_SHELLS];
 	} else {
 		a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
+	}
+
+	if (m->timelimit) {
+		a->timelimit = m->timelimit;
 	}
 
 	memcpy(a->infinite, m->infinite, sizeof(a->infinite));
@@ -1996,6 +2010,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
 			
 			if (Q_strcasecmp(token, "shells") == 0 && inarena) {
 				entry[arena_num].ammo[ITEM_SHELLS] = atoi(COM_Parse(&fp_data));
+			}
+
+			if (Q_strcasecmp(token, "timelimit") == 0 && inarena) {
+				entry[arena_num].timelimit = atoi(COM_Parse(&fp_data));
 			}
 		}
 
@@ -2176,19 +2194,7 @@ void G_CheckIntermission(arena_t *a) {
 			}	
 		} else if (delta == exit_delta) {
 			G_ResetArena(a);
-		} /*else if (delta % (5 * HZ) == 0) {
-			delta /= 5 * HZ;
-			if (level.numscores && (delta & 1)) {
-				HighScoresMessage();
-			} else {
-				for (i = 0, ent = &g_edicts[1]; i < game.maxclients;
-						i++, ent++) {
-					if (ent->client->pers.connected > CONN_CONNECTED) {
-						G_ArenaScoreboardMessage(ent, qtrue);
-					}
-				}
-			}
-		}*/
+		}
 	}
 }
 

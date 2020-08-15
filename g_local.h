@@ -802,6 +802,7 @@ extern	cvar_t	*g_screenshot;
 extern	cvar_t	*g_demo;
 extern	cvar_t	*g_team_reset;
 extern	cvar_t	*g_all_chat;
+extern  cvar_t  *g_round_timelimit;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
