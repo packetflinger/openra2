@@ -11,8 +11,27 @@ everyone from one team is dead.
 ### Why?
 Yes, there is an existing RA2 mod that is available, but it dates back to the 
 20th century and the source code is not available (or at least I'm unable to
-locate it). There also don't seem to be any 64 bit binaries. 
+locate it). There also don't seem to be any 64 bit binaries.
+
+The original RA2 mod lacked many desireable features (such as chase cams) and 
+this mod is aimed at fixing that. The primary score unit is damage dealt rather
+than frags. While The Fast and the Furious is right, "it doesn't matter if you 
+win by an inch or a mile", tracking damage rather than frags gives the loser a
+little more credit.
  
+### Features
+* Up to 9 independently operating arenas per map
+* Compatible with original RA2 maps
+* Compatible with with regular maps (as a single arena)
+* 2-5 teams per arena (config & voteable)
+* Up to 10 players per team allowed
+* Up to 21 rounds per match (config & voteable)
+* Arena specific health/armor/weapon/ammo quantities (config & voteable)
+* Chase cam
+* Team-level chat, arena-level chat, server-level chat
+* Score by damage dealt
+
+
 Client commands
 ---------------
 
@@ -120,126 +139,89 @@ commands.
     Globally enable chat during the match.
 
 
-	
-Server configuration
+Map Config (optional)
 --------------------
 
-Under Construction
-<!---
-g_idle_time::
-    Time, in seconds, after which inactive players are automatically put into
-    spectator mode. Default value is 0 (don't remove inactive players).
+Each map can have it's own config file to override the default settings. These files
+need to be named [mapname].cfg and saved in the *openra2/mapcfg* folder. Each file 
+can contain a block (in curly braces) for each arena in the map. For example:
 
-g_maps_random::
-    Specifies whether map list is traversed in random on sequental order.
-    Default value is 2.
-       - 0 - sequental order
-       - 1 - random order
-       - 2 - random order, never allows the same map to be picked twice in a row
+```
+{
+    arena 1
+    weapons +all -bfg
+    rounds 5
+    damage -all +self +team
+    health 115
+    armor 12
+    teams 2
+}
+```
 
-g_defaults_file::
-    If this variable is not empty and there are some settings modified by
-    voting, server will execute the specified config file after 5 minutes pass
-    without any active players. Config file should reset all votable variables
-    to their default values. Default value is empty.
+This tells the server for arena 1 to allow all weapons but no bfg, to run 5 rounds per match, 
+to do self damage and team damage, start each player with 115 health and 12 red armor. This 
+also limits the arena to 2 teams.
+
+Another example:
+```
+{
+    arena 7
+    teams 3
+    weapons -all +ssg:20 +cg:inf
+}
+```
+This sets arena 7 to have 3 teams with all players being given only a super shotgun with 20
+shells and a chaingun with infinite bullets. The default (set via CVAR) amount of health
+and armor are applied to each player. 
+
+Possible options:
+
+**arena** <integer>
+
+The arena number this config block applies to
+
+**teams** <integer>
+
+The initial number of teams
+
+**damage** <dmgstring>
+
+What damage can be done to you
+
+**weapons** <weapstring>
+
+What weapons and ammo are provided by default. weapstring is a space-separated list, each
+item prefixed with a + to include or a - to exclude. Ammo quantities can be suffixed with a colon. Options: **all**, **bfg**, **hb**, **rg**, **rl**, **gl**, **cg**, **mg**, **ssg**, **sg**.
+
+Examples: 
+
+`-all +rl +rg:1` (Only rocket launcher and railgun (with a single slug))
+
+`+all` (everything)
+
+`+all -bfg` (all but the bfg)
+
+`-all +cg:inf` (only a chaingun with infinite bullets)
+
+**round** <integer>
+
+The default number of rounds per match
+
+**health** <integer>
+
+How much health each player in this arena gets
+
+**armor** <integer>
+
+How much bodyarmor each player in this arena gets
 
 
-g_bugs::
-    Specifies whether some known Quake 2 gameplay bugs are enabled or not.
-    Default value is 0.
-       - 0 - all bugs are fixed
-       - 1 - ‘serious’ bugs are fixed
-       - 2 - original Quake 2 behaviour
 
-g_teleporter_nofreeze::
-    Enables ‘no freeze’ (aka ‘Q3’) teleporter behaviour. Default value is 0
-    (disabled).
 
-g_vote_mask::
-    Specifies what proposals are available for voting. This variable is a
-    bitmask.  Default value is 0.
-       - 1 - change time limit
-       - 2 - change frag limit
-       - 4 - change item bans
-       - 8 - kick a player
-       - 16 - mute a player
-       - 32 - change current map
-       - 64 - toggle weapon stay
-       - 128 - toggle respawn protection (between 0 and 1.5 sec)
-       - 256 - change teleporter mode
 
-g_vote_time::
-    Time, in seconds, after which undecided vote times out. Default value is
-    60.
+Server configuration (Under Construction)
+--------------------
 
-g_vote_threshold::
-    Vote passes or fails when percentage of players who voted either ‘yes’ or
-    ‘no’ becomes greater than this value. DefaultS value is 50.
 
-g_vote_limit::
-    Maximum number of votes each player can initiate. Default value is 3.  0
-    disables this limit.
 
-g_vote_flags::
-    Specifies misc voting parameters. This variable is a bitmask. Default value
-    is 11.
-        - 1 - each player's decision is globally announced as they vote
-        - 2 - current vote status is visible in the left corner of the screen
-        - 4 - spectators are also allowed to vote
-        - 8 - players are allowed to change their votes
 
-g_intermission_time::
-    Time, in seconds, for the final scoreboard and high scores to be visible
-    before automatically changing to the next map. Default value is 10.
-
-g_admin_password::
-    If not empty, clients can execute ‘admin <password>’ command to become
-    server admins. Right now this gives them a decider voice in votes, ability
-    to see IP addresses in the output of ‘playerlist’ command and grants access
-    to a number of privileged commands (listed in ‘acommands’ command output).
-    Default value is empty (admin feature disabled).
-
-g_mute_chat::
-    Allows one to globally disallow chat during the match (chat is still
-    allowed during the intermission). Default value is 0.
-       - 0 - chat is enabled for everyone
-       - 1 - player chat is disabled, spectators are forced to use ‘say_team’
-       - 2 - chat is disabled for everyone
-
-flood_msgs::
-    Number of the last chat message considered by flood protection algorithm.
-    Default value is 4. Specify 0 to disable chat flood protection.
-
-flood_persecond::
-    Minimum time, in seconds, that has to pass since the last chat message
-    before flood protection is triggered. Default value is 4.
-
-flood_waitdelay::
-    Time, in seconds, for player chat to be disabled once flood protection is
-    triggered. Default value is 10.
-
-flood_waves::
-    Number of the last wave command considered by flood protection algorithm.
-    Default value is 4. Specify 0 to disable wave flood protection.
-
-flood_perwave::
-    Minimum time, in seconds, that has to pass since the last wave command
-    before flood protection is triggered. Default value is 30.
-
-flood_wavedelay::
-    Time, in seconds, for wave commands to be disabled once flood protection is
-    triggered. Default value is 60.
-
-flood_infos::
-    Number of the last name or skin change considered by flood protection
-    algorithm.  Default value is 4. Specify 0 to disable userinfo flood
-    protection.
-
-flood_perinfo::
-    Minimum time, in seconds, that has to pass since the last name or skin
-    change before flood protection is triggered. Default value is 30.
-
-flood_infodelay::
-    Time, in seconds, for name or skin changes to be disabled once flood
-protection is triggered. Default value is 60.
--->
