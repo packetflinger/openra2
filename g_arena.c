@@ -317,10 +317,13 @@ void G_CheckArenaRules(arena_t *a) {
 	}
 }
 
-// check for things like state changes, start/end of rounds, timeouts, countdown clocks, votes, etc
-void G_ArenaThink(arena_t *a) {
-	static qboolean foundwinner = false;
-
+/**
+ * Run once per frame for each arena in the map. Keeps track of state changes,
+ * round/match beginning and ending, timeouts, countdowns, votes, etc.
+ *
+ */
+void G_ArenaThink(arena_t *a)
+{
 	if (!a) {
 		return;
 	}
