@@ -610,7 +610,13 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
     if (!self->deadflag) {
 		if (arena && team && arena->state >= ARENA_STATE_PLAY) {
-			self->client->pers.team->players_alive--;
+			TEAM(self)->players_alive--;
+			if (TEAM(self)->players_alive == 0) {
+				ARENA(self)->teams_alive--;
+			}
+
+			gi.dprintf("team %s alive: %d\n", TEAM(self)->name, TEAM(self)->players_alive);
+			gi.dprintf("arena %s teams alive: %d\n", ARENA(self)->name, ARENA(self)->teams_alive);
 		}
 		
         self->client->respawn_framenum = level.framenum + 1 * HZ;

@@ -305,9 +305,15 @@ void G_CheckArenaRules(arena_t *a) {
 		}
 	}
 
-	// round timelimit hit, nuke everyone
+	// round intermission just expired
+	if (a->round_intermission_start && level.framenum == a->round_intermission_end) {
+		G_EndRoundIntermission(a);
+		return;
+	}
+
+	// round timelimit hit
 	if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
-		G_EndRound(a, NULL);
+		G_BeginRoundIntermission(a);
 	}
 }
 
@@ -315,12 +321,14 @@ void G_CheckArenaRules(arena_t *a) {
 void G_ArenaThink(arena_t *a) {
 	static qboolean foundwinner = false;
 
-	if (!a)
+	if (!a) {
 		return;
+	}
 
 	// don't waste cpu if nobody is in this arena
-	if (a->client_count == 0)
+	if (a->client_count == 0) {
 		return;
+	}
 
 	if (a->state == ARENA_STATE_TIMEOUT) {
 		G_TimeoutFrame(a);
@@ -331,20 +339,8 @@ void G_ArenaThink(arena_t *a) {
 	
 	// end of round
 	if (a->state == ARENA_STATE_PLAY) {
-
-		arena_team_t *winner = G_GetWinningTeam(a);
-
-		if (winner && !foundwinner) {
-			a->round_end_frame = level.framenum
-					+ SECS_TO_FRAMES((int) g_round_end_time->value);
-			foundwinner = true;
-			G_ShowScores(a);
-		}
-
-		if (a->round_end_frame == level.framenum) {
-			foundwinner = false;
-			G_EndRound(a, winner);
-			return;
+		if (a->teams_alive == 1) {
+			G_BeginRoundIntermission(a);
 		}
 	}
 
@@ -401,6 +397,8 @@ void G_ClearRoundInfo(arena_t *a) {
 		a->teams[i].damage_dealt = 0;
 		a->teams[i].damage_taken = 0;
 	}
+
+	a->teams_alive = a->team_count;
 }
 
 
@@ -1191,7 +1189,7 @@ void G_ForceScreenshot(arena_t *arena) {
  *
  */
 void G_EndMatch(arena_t *a, arena_team_t *winner) {
-
+	gi.dprintf(" in G_EndMatch\n");
 	uint8_t i;
 	if (winner) {
 		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -1253,6 +1251,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->countdown = (int) g_round_countdown->value;
 	a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
 	a->round_end_frame = 0;
+	a->teams_alive = a->team_count;
 
 	G_HideScores(a);
 	G_RespawnPlayers(a);
@@ -2157,6 +2156,7 @@ void G_ResetArena(arena_t *a) {
 	a->intermission_exit = 0;
 	a->state = ARENA_STATE_WARMUP;
 	a->ready = qfalse;
+	a->teams_alive = a->team_count;
 	
 	for (i=0; i<a->team_count; i++) {
 		G_ResetTeam(&a->teams[i]);
@@ -2718,4 +2718,34 @@ void G_UpdatePlayerStatusBars(arena_t *a)
 
 		G_SendStatusBar(a->clients[i]);
 	}
+}
+
+/**
+ * A short break between rounds (scoreboard is shown)
+ *
+ * Triggered when all but 1 team are dead or timelimit expires
+ */
+void G_BeginRoundIntermission(arena_t *a)
+{
+	// we're already in intermission
+	if (a->round_intermission_end) {
+		return;
+	}
+
+	a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
+	a->round_intermission_start = level.framenum;
+	a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
+
+	G_ShowScores(a);
+}
+
+/**
+ * Round intermission is over, reset and proceed to next round
+ */
+void G_EndRoundIntermission(arena_t *a)
+{
+	a->round_intermission_start = 0;
+	a->round_intermission_end = 0;
+
+	G_EndRound(a, NULL);
 }

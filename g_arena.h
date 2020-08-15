@@ -184,6 +184,9 @@ typedef struct {
 	arena_vote_t    vote;                        // the current local vote
 	qboolean        modified;                    // defaults have been changed via votes
 	uint32_t        timelimit;                   // how long to allow each round
+	int32_t         round_intermission_start;    // frame round intermission started
+	int32_t         round_intermission_end;      // frame we should end round intermission
+	int32_t         teams_alive;                 // how many teams have players alive
 } arena_t;
 
 
@@ -282,5 +285,7 @@ void G_UpdateConfigStrings(arena_t *a);
 void G_UpdatePlayerStatusBars(arena_t *a);
 void G_UpdateSkins(edict_t *ent);
 char *G_WeaponFlagsToString(arena_t *a);
+void G_BeginRoundIntermission(arena_t *a);
+void G_EndRoundIntermission(arena_t *a);
 
 #endif // ARENA_H

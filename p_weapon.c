@@ -229,6 +229,12 @@ void Think_Weapon(edict_t *ent)
 		ent->client->latched_buttons &= ~BUTTON_ATTACK;
 	}
 	
+	// don't allow firing during round intermissions
+	if (ARENA(ent)->round_intermission_start) {
+		ent->client->buttons &= ~BUTTON_ATTACK;
+		ent->client->latched_buttons &= ~BUTTON_ATTACK;
+	}
+
     // call active weapon think routine
     if (ent->client->weapon && ent->client->weapon->weaponthink) {
         is_quad = (ent->client->quad_framenum > level.framenum);
