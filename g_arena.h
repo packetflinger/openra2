@@ -41,6 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TEAM(e) (e->client->pers.team)
 #define ARENA(e) (e->client->pers.arena)
 
+#define ROUNDOVER(a) (a->state == ARENA_STATE_PLAY && a->teams_alive == 1)
+
 #define WEAPONFLAG_MASK			0x7FF
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)

@@ -338,10 +338,8 @@ void G_ArenaThink(arena_t *a) {
 	G_CheckIntermission(a);
 	
 	// end of round
-	if (a->state == ARENA_STATE_PLAY) {
-		if (a->teams_alive == 1) {
-			G_BeginRoundIntermission(a);
-		}
+	if (ROUNDOVER(a)) {
+		G_BeginRoundIntermission(a);
 	}
 
 	// start a round
