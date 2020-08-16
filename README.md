@@ -168,10 +168,11 @@ Another example:
     arena 7
     teams 3
     weapons -all +ssg:20 +cg:inf
+    timelimit 120
 }
 ```
 This sets arena 7 to have 3 teams with all players being given only a super shotgun with 20
-shells and a chaingun with infinite bullets. The default (set via CVAR) amount of health
+shells, a chaingun with infinite bullets and sets the length for all rounds to 2 minutes. The default (set via CVAR) amount of health
 and armor are applied to each player. 
 
 Possible options:
@@ -215,6 +216,9 @@ How much health each player in this arena gets
 
 How much bodyarmor each player in this arena gets
 
+**timelimit** <integer>
+
+Number of seconds the rounds should last
 
 
 
