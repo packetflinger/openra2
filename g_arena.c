@@ -351,7 +351,8 @@ void G_ArenaThink(arena_t *a)
 
 		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
 
-			gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
+			//gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
+			//G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 			a->countdown = FRAMES_TO_SECS(framesleft);
 		} else if (framesleft == 0) {
 
@@ -394,6 +395,8 @@ void G_ClearRoundInfo(arena_t *a) {
 	uint8_t i;
 
 	a->current_round = 1;
+	G_ConfigString(a, CS_ROUND, G_RoundToString(a));
+
 	for (i=0; i<a->team_count; i++) {
 		a->teams[i].damage_dealt = 0;
 		a->teams[i].damage_taken = 0;
@@ -1254,6 +1257,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
 	a->round_end_frame = 0;
 	a->teams_alive = a->team_count;
 
+	G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 	G_HideScores(a);
 	G_RespawnPlayers(a);
 }
@@ -2558,6 +2562,12 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
 			"yb -60 "
 			"xv 0 "
 			"stat_string 31 "
+		"endif "
+
+		// round
+		"if 28 "
+			"xr -36 "
+			"stat_string 28 "
 		"endif "
 		"%s"
 		"%s",

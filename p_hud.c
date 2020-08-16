@@ -739,15 +739,15 @@ void G_SetStats(edict_t *ent)
     //
     // help icon / current weapon if not shown
     //
-    if ((ent->client->pers.hand == CENTER_HANDED || ent->client->ps.fov > 91) && ent->client->weapon)
-        ent->client->ps.stats[STAT_HELPICON] = gi.imageindex(ent->client->weapon->icon);
-    else
-        ent->client->ps.stats[STAT_HELPICON] = 0;
+    //if ((ent->client->pers.hand == CENTER_HANDED || ent->client->ps.fov > 91) && ent->client->weapon)
+    //    ent->client->ps.stats[STAT_HELPICON] = gi.imageindex(ent->client->weapon->icon);
+    //else
+    //    ent->client->ps.stats[STAT_HELPICON] = 0;
 
     ent->client->ps.stats[STAT_SPECTATOR] = 0;
     ent->client->ps.stats[STAT_CHASE] = 0;
 
-    if (level.intermission_framenum) {
+    if (level.intermission_framenum || ARENA(ent)->round_intermission_start) {
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
 
@@ -810,5 +810,7 @@ void G_SetStats(edict_t *ent)
 		ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
 		ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
 	}
+
+	ent->client->ps.stats[STAT_ROUND] = CS_ROUND;
 }
 

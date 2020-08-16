@@ -1039,8 +1039,8 @@ double genrand_float32_notone(void);
 #define CS_PLAYERNAMES      (CS_GENERAL + 10)
 #define CS_MATCH_STATUS     (CS_GENERAL + 11)
 #define CS_ARENA_TIMEOUT    (CS_GENERAL + MAX_CLIENTS)
-#define CS_ARENA_ROUNDS     (CS_ARENA_TIMEOUT + MAX_ARENAS)
-#define CS_ARENA_COUNTDOWN  (CS_ARENA_ROUNDS + MAX_ARENAS)
+#define CS_ROUND            (CS_ARENA_TIMEOUT + MAX_ARENAS)
+#define CS_ARENA_COUNTDOWN  (CS_ROUND + MAX_ARENAS)
 #define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
 
 // playerstate->stat[] indexes (0-31)
@@ -1055,7 +1055,7 @@ double genrand_float32_notone(void);
 #define STAT_PICKUP_STRING      8   // remove
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
-#define STAT_HELPICON           11
+#define STAT_ROUNDTIME          11  // old STAT_HELPICON
 #define STAT_SELECTED_ITEM      12	// used by client
 #define STAT_LAYOUTS            13	// used by client
 #define STAT_FRAGS              14	// used by server
@@ -1072,7 +1072,7 @@ double genrand_float32_notone(void);
 #define STAT_VOTE_PROPOSAL      25
 #define STAT_VOTE_COUNT         26
 #define STAT_TIMEOUT            27	// remove
-#define STAT_ROUNDS             28	// remove
+#define STAT_ROUND              28
 #define STAT_COUNTDOWN          29
 #define STAT_READY              30
 #define STAT_MATCH_STATUS       31	// warmup, time, timeout, countdown, etc
