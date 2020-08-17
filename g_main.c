@@ -409,9 +409,11 @@ static int G_RebuildMapQueue(void) {
 	gi.dprintf("Map queue: %d entries\n", count);
 
 	// randomize it
+
 	if ((int) g_maps_random->value > 0) {
 		G_ShuffleArray(pool, count);
 	}
+
 
 	for (i = 0; i < count; i++) {
 		List_Append(&g_map_queue, &pool[i]->queue);
@@ -658,9 +660,11 @@ static void G_SetTimeVar(int remaining)
  */
 static void G_CheckRules(void)
 {
+	/*
 	if (g_item_ban->modified) {
 		G_UpdateItemBans();
 	}
+	*/
 
 	if (g_vote_threshold->modified) {
 		G_CheckVote();
@@ -1001,7 +1005,7 @@ static void G_Init(void) {
 	g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
 	g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
 	g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
-	g_round_timelimit = gi.cvar("g_round_timelimit", "120", CVAR_GENERAL);
+	g_round_timelimit = gi.cvar("g_round_timelimit", "180", CVAR_GENERAL);
 	
 	// Sane limits
 	clamp(g_round_countdown->value, 3, 30);

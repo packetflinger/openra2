@@ -1070,17 +1070,12 @@ void G_UpdateConfigStrings(arena_t *a)
 		break;
 
 	case ARENA_STATE_PLAY:
-		strcat(buf, va(
-			"Playing Round %d/%d - %s",
-			a->current_round,
-			a->round_limit,
-			roundtime
-		));
+		strcat(buf, va("Playing %s", roundtime));
 		break;
 
 	case ARENA_STATE_TIMEOUT:
 		G_SecsToString(timeouttime, (a->timein_frame - level.framenum) * FRAMETIME);
-		strcat(buf, va("Timeout - %s   (%s)", timeouttime, roundtime));
+		strcat(buf, va("Timeout %s   (%s)", timeouttime, roundtime));
 		break;
 
 	default:
@@ -1192,13 +1187,16 @@ void G_ForceScreenshot(arena_t *arena) {
  * Reset after match is finished
  *
  */
-void G_EndMatch(arena_t *a, arena_team_t *winner) {
-	gi.dprintf(" in G_EndMatch\n");
+void G_EndMatch(arena_t *a, arena_team_t *winner)
+{
 	uint8_t i;
+	char roundtime[10];
+
 	if (winner) {
 		for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-			if (!winner->players[i])
+			if (!winner->players[i]) {
 				continue;
+			}
 
 			winner->players[i]->client->resp.match_score++;
 		}
@@ -1209,7 +1207,9 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
 
-	G_ConfigString(a, CS_MATCH_STATUS, "");
+	G_SecsToString(roundtime, a->timelimit);
+	G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+	G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 
 	for (i = 0; i < a->team_count; i++) {
 		G_ForceReady(&a->teams[i], qfalse);
@@ -1457,6 +1457,8 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
 
 	// force the skin
 	G_SetSkin(ent, team->skin);
+
+	//G_SendStatusBar(ent);
 
 	// throw them into the game
 	spectator_respawn(ent, CONN_SPAWNED);
@@ -2566,7 +2568,8 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
 
 		// round
 		"if 28 "
-			"xr -36 "
+			"xr -24 "
+			"yt 30 "
 			"stat_string 28 "
 		"endif "
 		"%s"
@@ -2692,6 +2695,13 @@ const char *G_CreateSpectatorStatusBar(edict_t *player)
 			"xv 0 "
 			"stat_string 31 "
 		"endif "
+
+		// round
+		"if 28 "
+			"xr -24 "
+			"yt 30 "
+			"stat_string 28 "
+		"endif "
 	);
 
 	return statusbar;
@@ -2724,8 +2734,9 @@ void G_UpdatePlayerStatusBars(arena_t *a)
 	uint8_t i;
 
 	for (i=0; i<game.maxclients; i++) {
-		if (!a->clients[i])
+		if (!a->clients[i]) {
 			continue;
+		}
 
 		G_SendStatusBar(a->clients[i]);
 	}
@@ -2739,10 +2750,11 @@ void G_UpdatePlayerStatusBars(arena_t *a)
 void G_BeginRoundIntermission(arena_t *a)
 {
 	// we're already in intermission
-	if (a->round_intermission_end) {
+	if (a->state == ARENA_STATE_ROUNDPAUSE) {
 		return;
 	}
 
+	a->state = ARENA_STATE_ROUNDPAUSE;
 	a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
 	a->round_intermission_start = level.framenum;
 	a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
@@ -2755,6 +2767,10 @@ void G_BeginRoundIntermission(arena_t *a)
  */
 void G_EndRoundIntermission(arena_t *a)
 {
+	if (a->state != ARENA_STATE_ROUNDPAUSE) {
+		return;
+	}
+
 	a->round_intermission_start = 0;
 	a->round_intermission_end = 0;
 
