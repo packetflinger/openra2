@@ -223,9 +223,263 @@ Number of seconds the rounds should last
 
 
 
-Server configuration (Under Construction)
+Server CVARS
 --------------------
 
+**g_admin_password** <string>
+
+The password used with the `admin` command to enable privileged commands
+
+**g_ammo_bullets** <integer>
+
+The default quantity of bullets players will be assigned if they have a Machinegun or Chaingun. Default: 100
+
+**g_ammo_cells** <integer>
+
+The default quantity of cells players will be assigned if they have a Hyperblaster or BFG. Default: 50
+
+**g_ammo_grenades** <integer>
+
+The default quantity of grenades players will be assigned. Default: 20
+
+**g_ammo_rockets** <integer>
+
+The default quantity of rockets players will be assigned. Default: 20
+
+**g_ammo_shells** <integer>
+
+The default quantity of shells players will be assigned. Default: 14
+
+**g_ammo_slugs** <integer>
+
+The default quantity of slugs players will be assigned. Default: 10
+
+**g_armor_start** <integer>
+
+The default quantity of bodyarmor players will start with. Default: 100
+
+**g_bugs** <0/1/2>
+
+Fix gameplay bugs. Default: 0
+
+**g_damage_flags** <bitmask>
+
+Bitmask for damage immunities, add them up. Default: 0 (everything hurts)
+
+| Value | Meaning | Description |
+| ----: | :------ | :---------- |
+| 0 | Nothing | Everything hurts |
+| 1 | Self health | Your explosions will NOT take your own health |
+| 2 | Self armor | Your explosions will NOT take your own armor |
+| 4 | Team | Your shots will NOT hurt your team mates health |
+| 8 | Team Armor | Your shots will NOT hurt your team mates armor |
+| 16 | Fall | Falling from high distances will NOT hurt |
+| 31 | All | None of the above will hurt |
+
+**g_default_arena** <0/1/2>
+
+When a player connects to the server, they're immediately added to an arena, this setting controls which. Default: 1
+| Value | Meaning | Description |
+| ----: | :------ | :---------- |
+| 0 | First | Always join arena 1 |
+| 1 | Popular | Join which ever arena has the most players |
+| 2 | Random | Join a random arena |
+
+**g_demo** <0/1>
+
+Force players to record demos of their rounds/matches. Default 0 - don't force
+
+**g_drop_allowed** <0/1>
+
+Allow players to drop weapons/ammo. Default 1 - allowed
+
+**g_frag_drop** <0/1>
+
+Players toss their weapon when killed. Default 1 - enabled
+
+**g_health_start** <integer>
+
+The quantity of health each player will be assigned. Default: 100
+
+**g_idle_time** <integer>
+
+Number of seconds to consider a team player idle and remove them from the team. Default: 0 (disabled)
+
+**g_intermission_time** <integer>
+
+The length in seconds match intermission should last. Default: 10
+
+**g_round_countdown** <integer>
+
+The number of seconds for a round countdown. Default: 12
+
+**g_round_end_time** <integer>
+
+The number of seconds the round intermission screen will be up before starting the next round. Default: 5
+
+**g_round_limit** <integer>
+
+The default number of rounds per match. Default: 7
+
+**g_round_timelimit** <integer>
+
+The default number of seconds each round can last. Default: 180
+
+**g_screenshot** <0/1>
+
+Force all players to take a screenshot of the match intermission screen. Default 0 (no)
+
+**g_select_empty** <0/1>
+
+All clients to "use" a weapon without ammo for it. Default 0 (no)
+
+**g_skin_lock** <0/1>
+
+Lock team skins so they can't be changed. Default 0 (no, allow change)
+
+**g_team1_name** <string>
+
+The name of team1. Default `Red`
+
+**g_team1_skin** <string>
+
+The skin used for team1. Default `female/r2red`
+
+**g_team2_name** <string>
+
+The name of team2. Default `Blue`
+
+**g_team2_skin** <string>
+
+The skin used for team2. Default `male/r2blue`
+
+**g_team3_name** <string>
+
+The name of team3. Default `Green`
+
+**g_team3_skin** <string>
+
+The skin used for team3. Default `female/r2dgre`
+
+**g_team4_name** <string>
+
+The name of team4. Default `Yellow`
+
+**g_team4_skin** <string>
+
+The skin used for team4. Default `male/r2yell`
+
+**g_team5_name** <string>
+
+The name of team5. Default `Aqua`
+
+**g_team5_skin** <string>
+
+The skin used for team5. Default `female/r2aqua`
+
+**g_team_balance** <0/1>
+
+Require teams to be balanced with equal players. Default 0 (allow unbalanced)
+
+**g_team_count** <2-5>
+
+The default number of teams per arena. Default 2
+
+**g_team_reset** <0/1>
+
+Remove all players from teams at the end of the match. Default 0 (teams remain)
+
+**g_teamspec_name** <string>
+
+The name of the spectator "team". Default `Spectators`
+
+**g_teleporter_nofreeze** <0/1>
+
+Quake 2-style vs Quake 3-style teleporters. Default 0 (q2 style)
+
+**g_timein_time** <integer>
+
+Time in seconds for time-in countdown. Default 11
+
+**g_timeout_time** <integer>
+
+Time in seconds for time-outs. Default 180
+
+**g_vote_threshold** <integer>
+
+Percentage of players required to pass a vote. Default 51
+
+**g_vote_time** <integer>
+
+Time in seconds for how long a vote will last. Default 30
+
+**g_weapon_flags** <bitmask>
+
+Bitmask for what weapons are allowed, add them up. Default 1023 (all except for BFG)
+
+| Index | Weapon |
+| ----: | :----- |
+| 2 | Shotgun |
+| 4 | Super Shotgun |
+| 8 | Machinegun |
+| 16 | Chaingun |
+| 32 | Grenades |
+| 64 | Grenade Launcher |
+| 128 | Hyperblaster |
+| 256 | Rocket Launcher |
+| 512 | Railgun |
+| 1024 | BFG |
 
 
+Very Simple Example Server Config
+---------------------
+```
+set hostname         "My Awesome OpenRA2 Server"
+set net_port         "27910" // use "port" for r1q2, "net_port" for q2pro
+set rcon_password    "<insert rcon pwd here>"
+set g_admin_password "<insert admin pwd here>"
+set g_team_count     "2"
+set g_health_start   "110"
+set g_armor_start    "30"
+```
 
+Example Map Config
+---------------------
+
+For ra2map27, this file would be named `mapcfg/ra2map27.cfg`
+```
+{
+    arena 1
+    weapons +all -bfg
+    rounds 3
+    damage -all +self +team
+    health 115
+    armor 12
+    teams 2
+    timelimit 120
+}
+
+{
+    arena 2
+    weapons -all +ssg:12 +rl:10
+    rounds 5
+    damage 8
+}
+
+{
+    arena 3
+    weapons +all
+    rounds 5
+}
+
+{
+    arena 4
+    weapons -all +rg:inf
+    rounds 5
+}
+
+{
+    arena 5
+    teams 5
+}
+```
