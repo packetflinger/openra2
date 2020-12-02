@@ -194,7 +194,7 @@ static void Cmd_Arena_f(edict_t *ent) {
 	}
 	
 	uint8_t newarena = atoi(gi.argv(1));
-	clamp(newarena, 1, MAX_ARENAS);
+	clamp(newarena, 1, level.arena_count);
 	
 	G_ChangeArena(ent->client, &level.arenas[newarena]);
 }
