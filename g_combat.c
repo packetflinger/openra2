@@ -87,11 +87,15 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
 }
 
 
-/*
-============
-Killed
-============
-*/
+/**
+ * Called from T_Damage if targ's health falls below to 0 or below
+ *
+ * targ = who died
+ * inflictor = edict that did the killing (rocket, grenade)
+ * attacker = edict who owns inflictor
+ * damage = the amount of damage applied
+ * point = where it happened
+ */
 static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
     if (targ->health < -999)
@@ -99,6 +103,11 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
 
     targ->enemy = attacker;
     targ->die(targ, inflictor, attacker, damage, point);
+
+    // craters, lasers, lifts, etc are not clients but can be attackers
+    if (!attacker->client) {
+    	return;
+    }
 	
 	if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
 		SetChaseTarget(targ, attacker);
