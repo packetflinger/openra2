@@ -114,7 +114,7 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
     }
 	
 	//if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
-		SetChaseTarget(targ, attacker);
+		//SetChaseTarget(targ, attacker);
 	//}
 }
 
