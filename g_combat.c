@@ -108,10 +108,14 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
     if (!attacker->client) {
     	return;
     }
+
+    if (targ == attacker) {
+    	return;
+    }
 	
-	if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
+	//if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
 		SetChaseTarget(targ, attacker);
-	}
+	//}
 }
 
 
@@ -413,7 +417,7 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         	}
         }
 
-        if (targ->health <= 0) {
+        if (targ->health <= 0 && targ->deadflag != DEAD_DEAD) {
             if (client)
                 targ->flags |= FL_NO_KNOCKBACK;
             Killed(targ, inflictor, attacker, take, point);
