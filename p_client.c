@@ -756,7 +756,6 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
             }
             r = rand_byte() & 3;
             gi.sound(self, CHAN_VOICE, level.sounds.death[r], 1, ATTN_NORM, 0);
-            CopyToBodyQue(self);
         }
     }
 
@@ -1117,8 +1116,15 @@ void InitBodyQue(void)
 void respawn(edict_t *self)
 {
     // spectator's don't leave bodies
-    //if (self->movetype != MOVETYPE_NOCLIP)
-        //CopyToBodyQue(self);
+    if (self->movetype != MOVETYPE_NOCLIP) {
+        CopyToBodyQue(self);
+    }
+
+    if (ARENA(self)->state > ARENA_STATE_WARMUP) {
+    	SetChaseTarget(self, self->killer);
+    	return;
+    }
+
     PutClientInServer(self);
 
     // add a teleportation effect
@@ -1989,6 +1995,12 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
 
     // fire weapon from final position if needed
     if (client->latched_buttons & BUTTON_ATTACK) {
+
+    	if (ARENA(ent)->state == ARENA_STATE_PLAY && ent->health < 1) {
+    		client->latched_buttons = 0;
+    		respawn(ent);
+    	}
+
         if (client->pers.connected == CONN_PREGAME) {
             //spectator_respawn(ent, CONN_SPAWNED);
         } else if (client->pers.connected == CONN_SPECTATOR) {

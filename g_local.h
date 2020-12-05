@@ -1497,6 +1497,8 @@ struct edict_s {
 	
 	// list testing
 	list_t		entry;
+
+	edict_t 	*killer;
 };
 
 //

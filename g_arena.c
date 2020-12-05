@@ -1580,6 +1580,7 @@ void G_RespawnPlayers(arena_t *a) {
 			if (ent && ent->inuse) {
 				ent->client->resp.damage_given = 0;
 				ent->client->resp.damage_recvd = 0;
+				ent->killer = NULL;
 				G_RefillInventory(ent);
 				spectator_respawn(ent, CONN_SPAWNED);
 			}

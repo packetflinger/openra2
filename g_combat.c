@@ -104,6 +104,8 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
     targ->enemy = attacker;
     targ->die(targ, inflictor, attacker, damage, point);
 
+    targ->killer = attacker;
+
     // craters, lasers, lifts, etc are not clients but can be attackers
     if (!attacker->client) {
     	return;
