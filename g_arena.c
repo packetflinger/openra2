@@ -1212,6 +1212,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
 	G_BuildScoreboard(a->oldscores, NULL, a);
 
 	G_bprintf(a, PRINT_HIGH, "Match finished\n");
+	G_ArenaSound(a, level.sounds.horn);
 
 	G_SecsToString(roundtime, a->timelimit);
 	G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));

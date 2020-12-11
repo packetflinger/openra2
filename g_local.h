@@ -552,6 +552,7 @@ typedef struct {
 		int		yousuck;
 		int		impressive;
 		int		flawless;
+		int     horn;
     } sounds;
 
     struct {

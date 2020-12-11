@@ -1297,6 +1297,7 @@ void SP_worldspawn(edict_t *ent)
     level.sounds.yousuck = gi.soundindex("yousuck.wav");
     level.sounds.impressive = gi.soundindex("impressive.wav");
     level.sounds.flawless = gi.soundindex("flawless.wav");
+    level.sounds.horn = gi.soundindex("horn2.wav");
 
     // sexed sounds
     level.sounds.death[0] = gi.soundindex("*death1.wav");
