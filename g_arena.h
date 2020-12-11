@@ -189,6 +189,7 @@ typedef struct {
 	int32_t         round_intermission_start;    // frame round intermission started
 	int32_t         round_intermission_end;      // frame we should end round intermission
 	int32_t         teams_alive;                 // how many teams have players alive
+	uint32_t        countdown_start_frame;       // frame number when the count started
 } arena_t;
 
 

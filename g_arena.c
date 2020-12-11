@@ -288,9 +288,11 @@ void G_CheckArenaRules(arena_t *a) {
 
 	uint8_t previous, i;
 
-	if (!a)
+	if (!a) {
 		return;
+	}
 
+	// watch for players disconnecting mid match
 	if (a->state > ARENA_STATE_WARMUP && a->state < ARENA_STATE_INTERMISSION) {
 		previous = a->teams[0].player_count;
 
@@ -345,21 +347,25 @@ void G_ArenaThink(arena_t *a)
 		G_BeginRoundIntermission(a);
 	}
 
-	// start a round
+	// countdown to start
 	if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
 		int framesleft = a->round_start_frame - level.framenum;
 
 		if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-
-			//gi.configstring(CS_ARENA_ROUNDS + a->number, G_RoundToString(a));
-			//G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 			a->countdown = FRAMES_TO_SECS(framesleft);
 		} else if (framesleft == 0) {
-
 			G_StartRound(a);
 			return;
 		}
 	}
+
+	/*
+	if (a->state == ARENA_STATE_COUNTDOWN) {
+		if (level.framenum - a->round_start_frame == 20) {
+			G_ArenaSound(a, level.sounds.round[a->current_round]);
+		}
+	}
+	*/
 
 	// pregame
 	if (a->state == ARENA_STATE_WARMUP) {
@@ -1043,7 +1049,7 @@ void G_CheckTimers(arena_t *a)
 	if (a->state == ARENA_STATE_COUNTDOWN) {
 		remaining = (a->round_start_frame - level.framenum) * FRAMETIME;
 
-		if (remaining > 0 && remaining <= 10) {
+		if (remaining > 0 && remaining <= 10 && remaining < ((int) g_round_countdown->value - 2)) {
 			G_ArenaSound(a, level.sounds.countdown[remaining]);
 		}
 	}
