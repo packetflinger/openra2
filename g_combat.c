@@ -102,22 +102,8 @@ static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int dam
         targ->health = -999;
 
     targ->enemy = attacker;
-    targ->die(targ, inflictor, attacker, damage, point);
-
     targ->killer = attacker;
-
-    // craters, lasers, lifts, etc are not clients but can be attackers
-    if (!attacker->client) {
-    	return;
-    }
-
-    if (targ == attacker) {
-    	return;
-    }
-	
-	//if (ARENA(attacker)->state > ARENA_STATE_WARMUP) {
-		//SetChaseTarget(targ, attacker);
-	//}
+    targ->die(targ, inflictor, attacker, damage, point);
 }
 
 
