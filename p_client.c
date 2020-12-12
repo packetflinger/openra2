@@ -1167,7 +1167,7 @@ void spectator_respawn(edict_t *ent, int connected)
         //gi.bprintf(PRINT_HIGH, "%s moved to the sidelines (%d player%s)\n",
         //           ent->client->pers.netname, total, total == 1 ? "" : "s");
 
-        TossClientWeapon(ent);
+        //TossClientWeapon(ent);
 
 #if USE_SQLITE
         G_BeginLogging();
