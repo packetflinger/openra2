@@ -323,9 +323,14 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
 {
     int     n;
 		
-    if (ent->deadflag || ent->s.modelindex != 255) { // VWep animations screw up corpses
+    if (ent->deadflag || ent->s.modelindex != 255) // VWep animations screw up corpsesa
         return;
-    }
+
+    if (ent->client->newweapon && g_fast_weapon_change->value)        // fast weapon change
+     {
+         ChangeWeapon(ent);
+         return;
+     }
 
     if (ent->client->weaponstate == WEAPON_DROPPING) {
         if (ent->client->weaponframe == FRAME_DEACTIVATE_LAST) {
