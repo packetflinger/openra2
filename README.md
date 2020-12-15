@@ -32,8 +32,7 @@ little more credit.
 * Score by damage dealt
 
 
-Client commands
----------------
+### Client commands
 
 **accuracy**  
     See your current accuracy statistics
@@ -86,13 +85,58 @@ Client commands
 **team**  
 	Alias for **join**
 	
-**vote** *<xxx|yes|no>*  
+**vote** *<proposal [args]>|yes|no>*  
     Call a vote or cast your vote
 
+| Proposal | Arguments | Description |
+| :---- | :------ | :---------- |
+| kick | ID | Kick a player identified by id (use `players` command to get ID |
+| mute | ID | Mute a player "" |
+| map | mapname | Change map to mapname.bsp |
+| teams | &lt;2-5&gt; | The number of teams between 2 and 5 |
+| weapons | weapstring | What weapons to enable (see below) - can use "random" to randomize items/ammo |
+| damage | dmgstring | What damage does not hurt (see below) |
+| rounds | int | The number of rounds in a match |
+| health | int | The amount of health points given to players |
+| armor | int | The amount of body armor given to players |
+| reset |  | Reset all arena settings to default | 
+**weapstring** is a space-separated list of weapons (and ammo) to include or exclude:
+Prepend  any of the following with a `+` to include or a `-` to exclude. To specify ammo quantities, add `:[integer]` to the end of each weapon. 
+| Name | Weapon |
+| :---- | :------|
+| sg | shotgun |
+| ssg | super shotgun |
+| mg | machinegun |
+| cg | chaingun |
+| gl | grenade launcher |
+| hb | hyperblaster |
+| rl | rocket launcher |
+| rg | railgun |
+| bfg | bfg10k |
+| all | all guns |
+
+*Examples*: 
+- `-all +rg:5 +cg:600 +gl:3` (only rail with 5 slugs, chaingun with 600 bullets and grenade launcher with 3 nades)
+- `+all -sg -hb` (everything minus shotgun and hyperblaster)
+- You can use `:inf` to specify infinite ammo for a particular gun.
+- You can also use `random` for the weapstring in voting to randomly assign guns/ammo for an arena
+
+**dmgstring** is a space-separated list of damage flags specifying what damage **does not** affects the player - prepended with a `+` to include or `-` to exclude
+| Flag | Description |
+| :---- | :--------|
+| self | You can't hurt your own health (splash damage) |
+| aself | You can't hurt your armor |
+| team | You can't hurt your team mates' health (splash and direct hit) |
+| ateam | You can't damage your team mates' armor |
+| falling | No falling damage |
+| all | Nothing hurts except for enemy attacks |
+
+Examples
+- `-all` (everything hurts)
+- `-all +self +team` (you can't damage your health or team health, armor is vulnerable though)
+
 	
-	
-Admin commands
---------------
+### Admin commands
 
 Administrators are granted access to a number of privileged client
 commands.
@@ -116,31 +160,30 @@ commands.
 **bans**  
     Show the current ban list.
 
-**kick <player>**  
+**kick** [player]
     Kick _player_ from the server.
 
 **kickban**  
     Kick _player_ from the server and ban his IP address for 1 hour.
 	
-**mute <player>**  
+**mute** [player]
     Disallow _player_ to talk during the match.
 
 **muteall**  
     Globally disable chat during the match.
 
-**unban <ip-mask>**  
+**unban** [ip-mask]  
     Remove IP address specified by _ip-mask_ from the ban list. Permanent bans
     added by server operator can't be removed.
 	
-**unmute <player>**  
+**unmute** [player]  
     Allow _player_ to talk during the match.
 	
 **unmuteall**  
     Globally enable chat during the match.
 
 
-Map Config (optional)
---------------------
+### Map Config (optional)
 
 Each map can have it's own config file to override the default settings. These files
 need to be named [mapname].cfg and saved in the *openra2/mapcfg* folder. Each file 
@@ -177,19 +220,19 @@ and armor are applied to each player.
 
 Possible options:
 
-**arena** <integer>
+**arena** [integer]
 
 The arena number this config block applies to
 
-**teams** <integer>
+**teams** [integer]
 
 The initial number of teams
 
-**damage** <dmgstring>
+**damage** [dmgstring]
 
 What damage can be done to you
 
-**weapons** <weapstring>
+**weapons** [weapstring]
 
 What weapons and ammo are provided by default. weapstring is a space-separated list, each
 item prefixed with a + to include or a - to exclude. Ammo quantities can be suffixed with a colon. Options: **all**, **bfg**, **hb**, **rg**, **rl**, **gl**, **cg**, **mg**, **ssg**, **sg**.
@@ -204,65 +247,64 @@ Examples:
 
 `-all +cg:inf` (only a chaingun with infinite bullets)
 
-**round** <integer>
+**round** [integer]
 
 The default number of rounds per match
 
-**health** <integer>
+**health** [integer]
 
 How much health each player in this arena gets
 
-**armor** <integer>
+**armor** [integer]
 
 How much bodyarmor each player in this arena gets
 
-**timelimit** <integer>
+**timelimit** [integer]
 
 Number of seconds the rounds should last
 
 
 
 
-Server CVARS
---------------------
+### Server CVARS
 
-**g_admin_password** <string>
+**g_admin_password** [string]
 
 The password used with the `admin` command to enable privileged commands
 
-**g_ammo_bullets** <integer>
+**g_ammo_bullets** [integer]
 
 The default quantity of bullets players will be assigned if they have a Machinegun or Chaingun. Default: 100
 
-**g_ammo_cells** <integer>
+**g_ammo_cells** [integer]
 
 The default quantity of cells players will be assigned if they have a Hyperblaster or BFG. Default: 50
 
-**g_ammo_grenades** <integer>
+**g_ammo_grenades** [integer]
 
 The default quantity of grenades players will be assigned. Default: 20
 
-**g_ammo_rockets** <integer>
+**g_ammo_rockets** [integer]
 
 The default quantity of rockets players will be assigned. Default: 20
 
-**g_ammo_shells** <integer>
+**g_ammo_shells** [integer]
 
 The default quantity of shells players will be assigned. Default: 14
 
-**g_ammo_slugs** <integer>
+**g_ammo_slugs** [integer]
 
 The default quantity of slugs players will be assigned. Default: 10
 
-**g_armor_start** <integer>
+**g_armor_start** [integer]
 
 The default quantity of bodyarmor players will start with. Default: 100
 
-**g_bugs** <0/1/2>
+**g_bugs** [0/1/2]
 
 Fix gameplay bugs. Default: 0
 
-**g_damage_flags** <bitmask>
+**g_damage_flags** [bitmask]
 
 Bitmask for damage immunities, add them up. Default: 0 (everything hurts)
 
@@ -276,7 +318,7 @@ Bitmask for damage immunities, add them up. Default: 0 (everything hurts)
 | 16 | Fall | Falling from high distances will NOT hurt |
 | 31 | All | None of the above will hurt |
 
-**g_default_arena** <0/1/2>
+**g_default_arena** [0/1/2]
 
 When a player connects to the server, they're immediately added to an arena, this setting controls which. Default: 1
 | Value | Meaning | Description |
@@ -285,135 +327,166 @@ When a player connects to the server, they're immediately added to an arena, thi
 | 1 | Popular | Join which ever arena has the most players |
 | 2 | Random | Join a random arena |
 
-**g_demo** <0/1>
+**g_demo** [0/1]
 
 Force players to record demos of their rounds/matches. Default 0 - don't force
 
-**g_drop_allowed** <0/1>
+**g_drop_allowed** [0/1]
 
 Allow players to drop weapons/ammo. Default 1 - allowed
 
-**g_frag_drop** <0/1>
+**g_fast_weapon_change** [0/1]
+
+Allows switching weapons **very** quickly. Default 1 (enabled)
+
+**g_frag_drop** [0/1]
 
 Players toss their weapon when killed. Default 1 - enabled
 
-**g_health_start** <integer>
+**g_health_start** [integer]
 
 The quantity of health each player will be assigned. Default: 100
 
-**g_idle_time** <integer>
+**g_idle_time** [integer]
 
 Number of seconds to consider a team player idle and remove them from the team. Default: 0 (disabled)
 
-**g_intermission_time** <integer>
+**g_intermission_time** [integer]
 
 The length in seconds match intermission should last. Default: 10
 
-**g_round_countdown** <integer>
+**g_round_countdown** [integer]
 
 The number of seconds for a round countdown. Default: 12
 
-**g_round_end_time** <integer>
+**g_round_end_time** [integer]
 
 The number of seconds the round intermission screen will be up before starting the next round. Default: 5
 
-**g_round_limit** <integer>
+**g_round_limit** [integer]
 
 The default number of rounds per match. Default: 7
 
-**g_round_timelimit** <integer>
+**g_round_timelimit** [integer]
 
 The default number of seconds each round can last. Default: 180
 
-**g_screenshot** <0/1>
+**g_screenshot** [0/1]
 
 Force all players to take a screenshot of the match intermission screen. Default 0 (no)
 
-**g_select_empty** <0/1>
+**g_select_empty** [0/1]
 
 All clients to "use" a weapon without ammo for it. Default 0 (no)
 
-**g_skin_lock** <0/1>
+**g_skin_lock** [0/1]
 
 Lock team skins so they can't be changed. Default 0 (no, allow change)
 
-**g_team1_name** <string>
+**g_team1_name** [string]
 
 The name of team1. Default `Red`
 
-**g_team1_skin** <string>
+**g_team1_skin** [string]
 
 The skin used for team1. Default `female/r2red`
 
-**g_team2_name** <string>
+**g_team2_name** [string]
 
 The name of team2. Default `Blue`
 
-**g_team2_skin** <string>
+**g_team2_skin** [string]
 
 The skin used for team2. Default `male/r2blue`
 
-**g_team3_name** <string>
+**g_team3_name** [string]
 
 The name of team3. Default `Green`
 
-**g_team3_skin** <string>
+**g_team3_skin** [string]
 
 The skin used for team3. Default `female/r2dgre`
 
-**g_team4_name** <string>
+**g_team4_name** [string]
 
 The name of team4. Default `Yellow`
 
-**g_team4_skin** <string>
+**g_team4_skin** [string]
 
 The skin used for team4. Default `male/r2yell`
 
-**g_team5_name** <string>
+**g_team5_name** [string]
 
 The name of team5. Default `Aqua`
 
-**g_team5_skin** <string>
+**g_team5_skin** [string]
 
 The skin used for team5. Default `female/r2aqua`
 
-**g_team_balance** <0/1>
+**g_team_balance** [0/1]
 
 Require teams to be balanced with equal players. Default 0 (allow unbalanced)
 
-**g_team_count** <2-5>
+**g_team_count** [2-5]
 
 The default number of teams per arena. Default 2
 
-**g_team_reset** <0/1>
+**g_team_reset** [0/1]
 
 Remove all players from teams at the end of the match. Default 0 (teams remain)
 
-**g_teamspec_name** <string>
+**g_teamspec_name** [string]
 
 The name of the spectator "team". Default `Spectators`
 
-**g_teleporter_nofreeze** <0/1>
+**g_teleporter_nofreeze** [0/1]
 
 Quake 2-style vs Quake 3-style teleporters. Default 0 (q2 style)
 
-**g_timein_time** <integer>
+**g_timein_time** [integer]
 
 Time in seconds for time-in countdown. Default 11
 
-**g_timeout_time** <integer>
+**g_timeout_time** [integer]
 
 Time in seconds for time-outs. Default 180
 
-**g_vote_threshold** <integer>
+**g_vote_flags** [bitmask]
+
+The flags that enable certain voting features. Default: **11** (enabled, show, change). Add them up:
+| Value | Feature |
+| ----: | :------|
+| 1 | Enable - globally enable voting |
+| 2 | Show - show the vote in the player hud |
+| 4 | Specs - allow spectators to vote |
+| 8 | Change - allow voters to change their already-cast vote |
+
+**g_vote_mask** [bitmask]
+
+The vote proposals allowed on this server. Default: **1023** (everything). Items with a scope of `server` affect everyone in all arenas at the same time. A scope of `arena` will only affect the particular arena the vote was in. Add the values up:
+| Value | Scope | Proposal |
+| ----: | :-----: | :------|
+| 1 | Server | Kick  - Removing players from server |
+| 2 | Server | Mute - Preventing players from talking |
+| 4 | Server | Map - Changing the map |
+| 8 | Arena | Teams - the number of teams |
+| 16 | Arena | Weapons - setting weapons |
+| 32 | Arena | Damage - setting damage |
+| 64 | Arena | Rounds - settings rounds per match |
+| 128 | Arena | Health - changing initial health |
+| 256 | Arena | Armor - changing initial armor |
+| 512 | Arena | Reset - defaulting all settings |
+
+**g_vote_threshold** [integer]
 
 Percentage of players required to pass a vote. Default 51
+Admin decisions end votes immediately regardless of this threshold.
 
-**g_vote_time** <integer>
+**g_vote_time** [integer]
 
 Time in seconds for how long a vote will last. Default 30
 
-**g_weapon_flags** <bitmask>
+**g_weapon_flags** [bitmask]
 
 Bitmask for what weapons are allowed, add them up. Default 1023 (all except for BFG)
 
@@ -431,21 +504,20 @@ Bitmask for what weapons are allowed, add them up. Default 1023 (all except for 
 | 1024 | BFG |
 
 
-Very Simple Example Server Config
----------------------
+### Very Simple Example Server Config
 ```
 set hostname         "My Awesome OpenRA2 Server"
-set net_port         "27910" // use "port" for r1q2, "net_port" for q2pro
+set net_port         "27910"      // use "port" for r1q2, "net_port" for q2pro
+set sv_public        "1"          // use "public" for r1q2, "sv_public" for q2pro
 set rcon_password    "<insert rcon pwd here>"
 set g_admin_password "<insert admin pwd here>"
 set g_team_count     "2"
 set g_health_start   "110"
 set g_armor_start    "30"
+setmaster master.q2servers.com
 ```
 
-Example Map Config
----------------------
-
+### Example Map Config
 For ra2map27, this file would be named `mapcfg/ra2map27.cfg`
 ```
 {
