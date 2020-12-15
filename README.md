@@ -100,6 +100,7 @@ little more credit.
 | health | int | The amount of health points given to players |
 | armor | int | The amount of body armor given to players |
 | reset |  | Reset all arena settings to default | 
+
 **weapstring** is a space-separated list of weapons (and ammo) to include or exclude:
 Prepend  any of the following with a `+` to include or a `-` to exclude. To specify ammo quantities, add `:[integer]` to the end of each weapon. 
 | Name | Weapon |
