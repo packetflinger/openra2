@@ -947,7 +947,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
  */
 void G_ChangeArena(gclient_t *cl, arena_t *arena)
 {
-	int index = 0;
+    int index = 0;
 
     // leave the old arena
     if (cl->pers.arena) {
