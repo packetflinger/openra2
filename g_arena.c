@@ -970,7 +970,7 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena)
 
     index = arena_find_cl_slot(arena);
 
-    // reset arena back to defaults if we're the last to leave
+    // reset arena back to defaults
     if (arena->modified && arena->client_count == 0) {
         G_ApplyDefaults(arena);
     }
