@@ -323,14 +323,9 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
 {
     int     n;
 		
-    if (ent->deadflag || ent->s.modelindex != 255) // VWep animations screw up corpsesa
+    if (ent->deadflag || ent->s.modelindex != 255) { // VWep animations screw up corpses
         return;
-
-    if (ent->client->newweapon && g_fast_weapon_change->value)        // fast weapon change
-     {
-         ChangeWeapon(ent);
-         return;
-     }
+    }
 
     if (ent->client->weaponstate == WEAPON_DROPPING) {
         if (ent->client->weaponframe == FRAME_DEACTIVATE_LAST) {
@@ -353,6 +348,10 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
     }
 
     if (ent->client->weaponstate == WEAPON_ACTIVATING) {
+        if (g_fast_weapon_change->value) {
+            ent->client->weaponframe = FRAME_ACTIVATE_LAST;
+        }
+
         if (ent->client->weaponframe == FRAME_ACTIVATE_LAST) {
             ent->client->weaponstate = WEAPON_READY;
             ent->client->weaponframe = FRAME_IDLE_FIRST;
@@ -365,7 +364,13 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
 
     if ((ent->client->newweapon) && (ent->client->weaponstate != WEAPON_FIRING)) {
         ent->client->weaponstate = WEAPON_DROPPING;
-        ent->client->weaponframe = FRAME_DEACTIVATE_FIRST;
+
+        if (g_fast_weapon_change->value) {
+            ChangeWeapon (ent);
+            return;
+        } else {
+            ent->client->weaponframe = FRAME_DEACTIVATE_FIRST;
+        }
 
         if ((FRAME_DEACTIVATE_LAST - FRAME_DEACTIVATE_FIRST) < 4) {
             ent->client->anim_priority = ANIM_REVERSE;
@@ -410,8 +415,9 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
             if (pause_frames) {
                 for (n = 0; pause_frames[n]; n++) {
                     if (ent->client->weaponframe == pause_frames[n]) {
-                        if (rand_byte() & 15)
+                        if (rand_byte() & 15) {
                             return;
+                        }
                     }
                 }
             }
@@ -424,19 +430,31 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
     if (ent->client->weaponstate == WEAPON_FIRING) {
         for (n = 0; fire_frames[n]; n++) {
             if (ent->client->weaponframe == fire_frames[n]) {
-                if (ent->client->quad_framenum > level.framenum)
+                if (ent->client->quad_framenum > level.framenum) {
                     gi.sound(ent, CHAN_ITEM, gi.soundindex("items/damage3.wav"), 1, ATTN_NORM, 0);
+                }
 
                 fire(ent);
                 break;
             }
         }
 
-        if (!fire_frames[n])
+        if (!fire_frames[n]) {
             ent->client->weaponframe++;
+            if (ent->client->newweapon && g_fast_weapon_change->value) {
+                ChangeWeapon(ent);
+                return;
+            }
+        } else {
+            if (ent->client->newweapon && g_fast_weapon_change->value) {
+                ChangeWeapon(ent);
+                return;
+            }
+        }
 
-        if (ent->client->weaponframe == FRAME_IDLE_FIRST + 1)
+        if (ent->client->weaponframe == FRAME_IDLE_FIRST + 1) {
             ent->client->weaponstate = WEAPON_READY;
+        }
     }
 }
 
