@@ -410,23 +410,24 @@ typedef struct {
 } game_locals_t;
 
 // vote scopes
-#define VOTE_SCOPE_NONE		(-1)	// no vote
-#define VOTE_SCOPE_GLOBAL	(0)		// vote affects the whole server
-#define VOTE_SCOPE_ARENA	(1)		// vote affects only one arena
+#define VOTE_SCOPE_NONE     (-1)    // no vote
+#define VOTE_SCOPE_GLOBAL   (0)     // vote affects the whole server
+#define VOTE_SCOPE_ARENA    (1)     // vote affects only one arena
 
 // vote proposals
-#define VOTE_KICK       (1 << 0)	// global
-#define VOTE_MUTE       (1 << 1) 	// global
-#define VOTE_MAP        (1 << 2)	// global
-#define VOTE_TEAMS		(1 << 3) 	// local (arena)
-#define VOTE_WEAPONS	(1 << 4)	// local
-#define VOTE_DAMAGE		(1 << 5)	// local
-#define VOTE_ROUNDS		(1 << 6)	// local
-#define VOTE_HEALTH		(1 << 7)	// local
-#define VOTE_ARMOR		(1 << 8)	// local
-#define VOTE_ALL		(VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
-						VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
-						VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR)
+#define VOTE_KICK       (1 << 0)    // global
+#define VOTE_MUTE       (1 << 1)    // global
+#define VOTE_MAP        (1 << 2)    // global
+#define VOTE_TEAMS      (1 << 3)    // local (arena)
+#define VOTE_WEAPONS    (1 << 4)    // local
+#define VOTE_DAMAGE     (1 << 5)    // local
+#define VOTE_ROUNDS     (1 << 6)    // local
+#define VOTE_HEALTH     (1 << 7)    // local
+#define VOTE_ARMOR      (1 << 8)    // local
+#define VOTE_RESET      (1 << 9)    // local
+#define VOTE_ALL        (VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
+                        VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
+                        VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | VOTE_RESET)
 
 // vote flags
 #define VF_ENABLED	1		// globally allow voting on this server

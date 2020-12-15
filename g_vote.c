@@ -383,6 +383,11 @@ qboolean G_CheckArenaVote(arena_t *a) {
 			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a->damage_flags));
 			break;
 
+		case VOTE_RESET:
+		    G_ApplyDefaults(a);
+		    G_bprintf(a, PRINT_HIGH, "Local vote passed: all settings reset\n");
+		    break;
+
 		default:
 			break;
 		}
@@ -435,6 +440,9 @@ static void G_BuildProposal(char *buffer, arena_t *a)
     case VOTE_ARMOR:
 		sprintf(buffer, "armor %d", a->vote.value);
 		break;
+    case VOTE_RESET:
+        sprintf(buffer, "reset all settings");
+        break;
     default:
         strcpy(buffer, "unknown");
         break;
@@ -617,6 +625,10 @@ static qboolean vote_armor(edict_t *ent) {
 	return qtrue;
 }
 
+static qboolean vote_reset(edict_t *ent) {
+    return true;
+}
+
 typedef struct {
     const char  *name;
     int         bit;
@@ -624,16 +636,17 @@ typedef struct {
 } vote_proposal_t;
 
 static const vote_proposal_t vote_proposals[] = {
-    { "kick",       VOTE_KICK,          vote_victim     },
-    { "mute",       VOTE_MUTE,          vote_victim     },
-    { "map",        VOTE_MAP,           vote_map        },
-    { "teams",		VOTE_TEAMS,			vote_teams		},
-	{ "weapons",	VOTE_WEAPONS,		vote_weapons	},
-	{ "damage",		VOTE_DAMAGE,		vote_damage		},
-	{ "rounds",		VOTE_ROUNDS,		vote_rounds		},
-	{ "health",		VOTE_HEALTH,		vote_health		},
-	{ "armor",		VOTE_ARMOR,			vote_armor		},
-    { NULL }
+    {"kick",    VOTE_KICK,    vote_victim},
+    {"mute",    VOTE_MUTE,    vote_victim},
+    {"map",     VOTE_MAP,     vote_map},
+    {"teams",   VOTE_TEAMS,   vote_teams},
+    {"weapons", VOTE_WEAPONS, vote_weapons},
+    {"damage",  VOTE_DAMAGE,  vote_damage},
+    {"rounds",  VOTE_ROUNDS,  vote_rounds},
+    {"health",  VOTE_HEALTH,  vote_health},
+    {"armor",   VOTE_ARMOR,   vote_armor},
+    {"reset",   VOTE_RESET,   vote_reset},
+    {NULL}
 };
 
 void Cmd_Vote_f(edict_t *ent)
@@ -729,6 +742,10 @@ void Cmd_Vote_f(edict_t *ent)
             gi.cprintf(ent, PRINT_HIGH,
                        " armor <count>                  Change the starting armor for everyone in this arena\n");
         }
+        if (mask & VOTE_RESET) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " reset                          Set all arena settings back to default\n");
+        }
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"
                    " yes/no                         Accept/deny current vote\n"
@@ -789,7 +806,7 @@ void Cmd_Vote_f(edict_t *ent)
         return;
     }
 
-    if (argc < 3) {
+    if (argc < 3 && v->bit != VOTE_RESET) {
         if (v->bit == VOTE_MAP) {
             map_entry_t *map;
             char buffer[MAX_STRING_CHARS];
