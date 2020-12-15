@@ -811,7 +811,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     char        *token;
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;
-	arena_entry_t arena_settings[MAX_ARENAS];
 	size_t		parsed_arenas;
 
 #if USE_SQLITE
@@ -869,8 +868,8 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     G_ParseString();
     G_FindTeams();	// teamed entities not player teams
 
-    memset(&arena_settings, 0, sizeof(arena_entry_t) * MAX_ARENAS);
-    parsed_arenas = G_ParseMapSettings(arena_settings, mapname);
+    memset(&level.arena_defaults, 0, sizeof(arena_entry_t) * MAX_ARENAS);
+    parsed_arenas = G_ParseMapSettings(level.arena_defaults, mapname);
 
 	// find arenas
 	List_Init(&g_arenalist);
@@ -897,7 +896,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 		
 		// apply overrides for default flags
-		G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
+		G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
 
 		// setup the teams
 		G_InitArenaTeams(&level.arenas[j]);
@@ -925,7 +924,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
 		
 		if (parsed_arenas > 0) {
-			G_MergeArenaSettings(&level.arenas[j], &arena_settings[j]);
+			G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
 		} else {
 			G_MergeArenaSettings(&level.arenas[j], NULL);
 		}

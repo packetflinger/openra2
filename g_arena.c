@@ -941,8 +941,8 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 }
 
 // move client to a different arena
-void G_ChangeArena(gclient_t *cl, arena_t *arena) {
-
+void G_ChangeArena(gclient_t *cl, arena_t *arena)
+{
 	int index = 0;
 
 	// leave the old arena
@@ -958,6 +958,11 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena) {
 			G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
 					cl->pers.netname);
 		}
+
+        // reset arena back to defaults if we're the last to leave
+        if (arena->modified && cl->pers.arena->client_count == 0) {
+            G_ApplyDefaults(arena);
+        }
 	}
 
 	if (!arena) {
@@ -1903,6 +1908,8 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
 	memcpy(a->defaultinfinite, a->infinite, sizeof(a->defaultinfinite));
 	a->original_damage_flags = a->damage_flags;
 	a->original_weapon_flags = a->weapon_flags;
+
+	a->modified = false;
 }
 
 qboolean G_Teammates(edict_t *p1, edict_t *p2) {
@@ -2783,4 +2790,23 @@ void G_EndRoundIntermission(arena_t *a)
 	a->round_intermission_end = 0;
 
 	G_EndRound(a, NULL);
+}
+
+/**
+ * Reset this arena back to the defaults
+ */
+void G_ApplyDefaults(arena_t *a)
+{
+    uint8_t i;
+
+    if (!a) {
+        return;
+    }
+
+    for (i=0; i<a->team_count; i++) {
+        G_RemoveAllTeamPlayers(&a->teams[i], qtrue);
+    }
+
+    G_MergeArenaSettings(a, &level.arena_defaults[a->number]);
+    G_InitArenaTeams(a);
 }
