@@ -940,60 +940,64 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
 	}
 }
 
-// move client to a different arena
+/**
+ * Move a client to a different arena.
+ * cl - the client moving
+ * arena - the new (destination) arena
+ */
 void G_ChangeArena(gclient_t *cl, arena_t *arena)
 {
 	int index = 0;
 
-	// leave the old arena
-	if (cl->pers.arena) {
-		index = arena_find_cl_index(cl);
+    // leave the old arena
+    if (cl->pers.arena) {
+        index = arena_find_cl_index(cl);
 
-		cl->pers.arena->clients[index] = NULL;
-		cl->pers.arena->client_count--;
+        cl->pers.arena->clients[index] = NULL;
+        cl->pers.arena->client_count--;
 
-		G_TeamPart(cl->edict, true);
+        G_TeamPart(cl->edict, true);
 
-		if (arena) {
-			G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
-					cl->pers.netname);
-		}
-
-        // reset arena back to defaults if we're the last to leave
-        if (arena->modified && cl->pers.arena->client_count == 0) {
-            G_ApplyDefaults(arena);
+        if (arena) {
+            G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
+                    cl->pers.netname);
         }
-	}
+    }
 
-	if (!arena) {
-		return;
-	}
+    if (!arena) {
+        return;
+    }
 
-	index = arena_find_cl_slot(arena);
+    index = arena_find_cl_slot(arena);
 
-	arena->client_count++;
-	arena->clients[index] = cl->edict;
+    // reset arena back to defaults if we're the last to leave
+    if (arena->modified && arena->client_count == 0) {
+        G_ApplyDefaults(arena);
+    }
 
-	cl->pers.arena = arena;
+    arena->client_count++;
+    arena->clients[index] = cl->edict;
 
-	cl->pers.connected = CONN_SPECTATOR;
-	cl->pers.ready = false;
+    cl->pers.arena = arena;
 
-	G_SpectatorsJoin(cl->edict);
+    cl->pers.connected = CONN_SPECTATOR;
+    cl->pers.ready = false;
 
-	// send all current player skins to this new player
-	G_UpdateSkins(cl->edict);
+    G_SpectatorsJoin(cl->edict);
 
-	PutClientInServer(cl->edict);
-	G_ArenaSound(arena, level.sounds.teleport);
+    // send all current player skins to this new player
+    G_UpdateSkins(cl->edict);
 
-	G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
+    PutClientInServer(cl->edict);
+    G_ArenaSound(arena, level.sounds.teleport);
 
-	// hold in place briefly
-	cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
-	cl->ps.pmove.pm_time = 14;
+    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
 
-	cl->respawn_framenum = level.framenum;
+    // hold in place briefly
+    cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    cl->ps.pmove.pm_time = 14;
+
+    cl->respawn_framenum = level.framenum;
 }
 
 /**
