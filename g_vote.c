@@ -707,7 +707,7 @@ void Cmd_Vote_f(edict_t *ent)
         }
         if (mask & VOTE_TEAMS) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " teams <2-%d>                   Change the number of teams for this arena\n", MAX_TEAMS);
+                       " teams <2-%d>                    Change the number of teams for this arena\n", MAX_TEAMS);
         }
         if (mask & VOTE_WEAPONS) {
             gi.cprintf(ent, PRINT_HIGH,
