@@ -73,25 +73,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //==================================================================
 // for setting which weapons are allowed in arenas - all weaps == 2046
-#define ARENAWEAPON_SHOTGUN			2
-#define ARENAWEAPON_SUPERSHOTGUN	4
-#define ARENAWEAPON_MACHINEGUN		8
-#define ARENAWEAPON_CHAINGUN		16
-#define ARENAWEAPON_GRENADE			32
-#define ARENAWEAPON_GRENADELAUNCHER	64
-#define ARENAWEAPON_HYPERBLASTER	128
-#define ARENAWEAPON_ROCKETLAUNCHER	256
-#define ARENAWEAPON_RAILGUN			512
-#define ARENAWEAPON_BFG				1024
-#define ARENAWEAPON_ALL				2046
+#define ARENAWEAPON_SHOTGUN         2
+#define ARENAWEAPON_SUPERSHOTGUN    4
+#define ARENAWEAPON_MACHINEGUN      8
+#define ARENAWEAPON_CHAINGUN        16
+#define ARENAWEAPON_GRENADE         32
+#define ARENAWEAPON_GRENADELAUNCHER 64
+#define ARENAWEAPON_HYPERBLASTER    128
+#define ARENAWEAPON_ROCKETLAUNCHER  256
+#define ARENAWEAPON_RAILGUN         512
+#define ARENAWEAPON_BFG             1024
+#define ARENAWEAPON_ALL             2046
 
 // All damage apples by default except when below flags are applied
-#define ARENADAMAGE_SELF			1	// no self health damage
-#define ARENADAMAGE_SELF_ARMOR		2	// no self armor dmg (requires health protection)
-#define ARENADAMAGE_TEAM			4	// no team damage
-#define ARENADAMAGE_TEAM_ARMOR		8	// no team armor
-#define ARENADAMAGE_FALL			16	// no falling damage
-#define ARENADAMAGE_ALL				31
+#define ARENADAMAGE_SELF            1   // no self health damage
+#define ARENADAMAGE_SELF_ARMOR      2   // no self armor dmg (requires health protection)
+#define ARENADAMAGE_TEAM            4   // no team damage
+#define ARENADAMAGE_TEAM_ARMOR      8   // no team armor
+#define ARENADAMAGE_FALL            16  // no falling damage
+#define ARENADAMAGE_ALL             31
 
 // view pitching times
 #define DAMAGE_TIME     0.5
@@ -430,11 +430,11 @@ typedef struct {
                         VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | VOTE_RESET)
 
 // vote flags
-#define VF_ENABLED	1		// globally allow voting on this server
-#define VF_SHOW     2		// show the vote in the player hud
-#define VF_SPECS    4		// allow spectators to vote
-#define VF_CHANGE   8		// allow users to change their vote
-#define VF_DEFAULT	(VF_ENABLED | VF_SHOW | VF_CHANGE)
+#define VF_ENABLED  1       // globally allow voting on this server
+#define VF_SHOW     2       // show the vote in the player hud
+#define VF_SPECS    4       // allow spectators to vote
+#define VF_CHANGE   8       // allow users to change their vote
+#define VF_DEFAULT  (VF_ENABLED | VF_SHOW | VF_CHANGE)
 
 #define VF(x)       (((int)g_vote_flags->value & VF_##x) != 0)
 
@@ -541,19 +541,19 @@ typedef struct {
         int     count;
         int     xian;
         int     makron;
-		int		teleport;
-		int		countdown[15];
-		int		fight[6];
-		int		round[21];
-		int		finalround;
-		int		timeout;
-		int		timein;
-		int		winner;
-		int		loser;
-		int		yousuck;
-		int		impressive;
-		int		flawless;
-		int     horn;
+        int     teleport;
+        int     countdown[15];
+        int     fight[6];
+        int     round[21];
+        int     finalround;
+        int     timeout;
+        int     timein;
+        int     winner;
+        int     loser;
+        int     yousuck;
+        int     impressive;
+        int     flawless;
+        int     horn;
     } sounds;
 
     struct {
@@ -577,12 +577,12 @@ typedef struct {
     edict_t     *current_entity;    // entity running from G_RunFrame
     int         body_que;           // dead bodies
 	
-	arena_t		arenas[MAX_ARENAS];
-	int			arena_count;
-	int			default_arena;
-	arena_entry_t arena_defaults[MAX_ARENAS];
+    arena_t     arenas[MAX_ARENAS];
+    int         arena_count;
+    int         default_arena;
+    arena_entry_t arena_defaults[MAX_ARENAS];
 
-	map_entry_t	*map;
+    map_entry_t *map;
 } level_locals_t;
 
 
@@ -1050,23 +1050,23 @@ double genrand_float32_notone(void);
 
 // playerstate->stat[] indexes (0-31)
 #define STAT_HEALTH_ICON        0
-#define STAT_HEALTH             1	// used by client, server
+#define STAT_HEALTH             1   // used by client, server
 #define STAT_AMMO_ICON          2
-#define STAT_AMMO               3	// used by client
+#define STAT_AMMO               3   // used by client
 #define STAT_ARMOR_ICON         4
-#define STAT_ARMOR              5	// used by client
-#define STAT_SELECTED_ICON      6 	// ?
+#define STAT_ARMOR              5   // used by client
+#define STAT_SELECTED_ICON      6   // ?
 #define STAT_PICKUP_ICON        7   // remove
 #define STAT_PICKUP_STRING      8   // remove
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
 #define STAT_ROUNDTIME          11  // old STAT_HELPICON
-#define STAT_SELECTED_ITEM      12	// used by client
-#define STAT_LAYOUTS            13	// used by client
-#define STAT_FRAGS              14	// used by server
-#define STAT_FLASHES            15	// used by client, cleared each frame, 1 = health, 2 = armor
+#define STAT_SELECTED_ITEM      12  // used by client
+#define STAT_LAYOUTS            13  // used by client
+#define STAT_FRAGS              14  // used by server
+#define STAT_FLASHES            15  // used by client, cleared each frame, 1 = health, 2 = armor
 #define STAT_CHASE              16
-#define STAT_SPECTATOR          17	// ? possibly use different hud
+#define STAT_SPECTATOR          17  // ? possibly use different hud
 #define STAT_AMMO_SHELLS        18
 #define STAT_AMMO_BULLETS       19
 #define STAT_AMMO_GRENADES      20
@@ -1076,11 +1076,11 @@ double genrand_float32_notone(void);
 #define STAT_VIEWID             24
 #define STAT_VOTE_PROPOSAL      25
 #define STAT_VOTE_COUNT         26
-#define STAT_TIMEOUT            27	// remove
+#define STAT_TIMEOUT            27  // remove
 #define STAT_ROUND              28
 #define STAT_COUNTDOWN          29
 #define STAT_READY              30
-#define STAT_MATCH_STATUS       31	// warmup, time, timeout, countdown, etc
+#define STAT_MATCH_STATUS       31  // warmup, time, timeout, countdown, etc
 
 // client_t->anim_priority
 #define ANIM_BASIC      0       // stand / run
@@ -1148,7 +1148,7 @@ typedef enum {
     LAYOUT_SCORES,
     LAYOUT_OLDSCORES,
     LAYOUT_MENU,
-	LAYOUT_PLAYERS
+    LAYOUT_PLAYERS
 } layout_t;
 
 typedef enum {
@@ -1205,14 +1205,14 @@ typedef struct {
     gender_t    	gender;
     int         	uf;
     conn_t      	connected;
-    qboolean    	loopback: 1,
-					mvdspec: 1,
-					admin: 1,
-					noviewid: 1,
-					muted: 1;
-	qboolean		ready;
-	arena_t			*arena;
-	arena_team_t	*team;
+    qboolean        loopback: 1,
+                    mvdspec: 1,
+                    admin: 1,
+                    noviewid: 1,
+                    muted: 1;
+    qboolean        ready;
+    arena_t         *arena;
+    arena_team_t    *team;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,
@@ -1496,14 +1496,14 @@ struct edict_s {
     // hack for proper s.old_origin updates
     vec3_t      old_origin;
 	
-	int			arena;
-	int			override;
-	int			version;
-	
-	// list testing
-	list_t		entry;
+    int         arena;
+    int         override;
+    int         version;
 
-	edict_t 	*killer;
+    // list testing
+    list_t      entry;
+
+    edict_t     *killer;
 };
 
 //
@@ -1569,21 +1569,18 @@ void G_CloseDatabase(void);
 #define WEAPON_MAX 	(10)
 #define DAMAGE_MAX	(5)
 
-typedef struct weaponvote_s
-{
-	const char		*names[2];
-	unsigned		value;		// arena weapon bitmask value
-	int				itemindex;	// q2 item index value
-	int				ammoindex;	// q2 item index value for ammo
+typedef struct weaponvote_s {
+    const char  *names[2];
+    unsigned    value;		// arena weapon bitmask value
+    int         itemindex;	// q2 item index value
+    int         ammoindex;	// q2 item index value for ammo
 } weaponinfo_t;
 
 
-typedef struct damagevote_s
-{
-	const char		*name;
-	uint16_t		value;
+typedef struct damagevote_s {
+	const char  *name;
+	uint16_t    value;
 } damagevote_t;
 
-extern const weaponinfo_t	weaponvotes[WEAPON_MAX];
-extern const damagevote_t damagevotes[DAMAGE_MAX];
-
+extern const weaponinfo_t   weaponvotes[WEAPON_MAX];
+extern const damagevote_t   damagevotes[DAMAGE_MAX];
