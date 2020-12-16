@@ -133,6 +133,11 @@ static void Cmd_Ready_f(edict_t *ent) {
 	
 	p = &ent->client->pers;
 	
+	if (ARENA(ent)->current_round > 1) {
+	    gi.cprintf(ent, PRINT_HIGH, "Can't change ready status mid-match\n");
+	    return;
+	}
+
 	if (!p->ready) {
 		p->ready = qtrue;
 		G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
