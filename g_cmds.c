@@ -1840,6 +1840,11 @@ static void Cmd_ReadyTeam_f(edict_t *ent)
     if (!TEAM(ent))
         return;
     
+    if (ARENA(ent)->current_round > 1) {
+        gi.cprintf(ent, PRINT_HIGH, "Can't change ready status mid-match\n");
+        return;
+    }
+
     arena_team_t *team = TEAM(ent);
     
     if (team->captain != ent) {
