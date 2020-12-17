@@ -1258,7 +1258,6 @@ void G_ForceScreenshot(arena_t *arena)
 void G_EndMatch(arena_t *a, arena_team_t *winner)
 {
     uint8_t i;
-    char roundtime[10];
 
     if (winner) {
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -1275,17 +1274,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
 
     G_bprintf(a, PRINT_HIGH, "Match finished\n");
     G_ArenaSound(a, level.sounds.horn);
-
-    G_SecsToString(roundtime, a->timelimit);
-    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
-    G_ConfigString(a, CS_ROUND, G_RoundToString(a));
-
-    for (i = 0; i < a->team_count; i++) {
-        G_ForceReady(&a->teams[i], qfalse);
-    }
-    
     BeginIntermission(a);
-    
     G_ForceScreenshot(a);
     G_ForceDemo(a);
 }
@@ -2259,13 +2248,19 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent)
 void G_ResetArena(arena_t *a)
 {
     uint8_t i;
+    char roundtime[6];
     
     a->intermission_framenum = 0;
     a->intermission_exit = 0;
     a->state = ARENA_STATE_WARMUP;
     a->ready = qfalse;
     a->teams_alive = a->team_count;
+    a->current_round = 1;
     
+    G_SecsToString(roundtime, a->timelimit);
+    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+    G_ConfigString(a, CS_ROUND, G_RoundToString(a));
+
     for (i=0; i<a->team_count; i++) {
         G_ResetTeam(&a->teams[i]);
     }
