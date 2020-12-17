@@ -1629,6 +1629,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
         } else {
             playernum = (ent - g_edicts) - 1;
             gi.configstring(CS_PLAYERNAMES + playernum, name);
+            G_bprintf(ARENA(ent), PRINT_HIGH, "%s changed their name to %s\n", NAME(ent), name);
             strcpy(client->pers.netname, name);
         }
     }
