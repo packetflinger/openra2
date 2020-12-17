@@ -660,10 +660,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
@@ -822,10 +820,8 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
@@ -903,10 +899,8 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
