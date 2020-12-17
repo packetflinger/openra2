@@ -638,6 +638,7 @@ void G_SetStats(edict_t *ent)
         item = INDEX_ITEM(ent->client->ammo_index);
         ent->client->ps.stats[STAT_AMMO_ICON] = gi.imageindex(item->icon);
         ent->client->ps.stats[STAT_AMMO] = ent->client->inventory[ent->client->ammo_index];
+        ent->client->ps.stats[STAT_WEAPON_ICON] = gi.imageindex(ent->client->weapon->icon);
     }
 
     //
@@ -667,14 +668,6 @@ void G_SetStats(edict_t *ent)
     } else {
         ent->client->ps.stats[STAT_ARMOR_ICON] = 0;
         ent->client->ps.stats[STAT_ARMOR] = 0;
-    }
-
-    //
-    // pickup message
-    //
-    if (level.framenum > ent->client->pickup_framenum) {
-        ent->client->ps.stats[STAT_PICKUP_ICON] = 0;
-        ent->client->ps.stats[STAT_PICKUP_STRING] = 0;
     }
 
     //

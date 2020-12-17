@@ -1056,7 +1056,7 @@ double genrand_float32_notone(void);
 #define STAT_ARMOR_ICON         4
 #define STAT_ARMOR              5   // used by client
 #define STAT_SELECTED_ICON      6   // ?
-#define STAT_PICKUP_ICON        7   // remove
+#define STAT_WEAPON_ICON        7   // the current gun
 #define STAT_PICKUP_STRING      8   // remove
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10

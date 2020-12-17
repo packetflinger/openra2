@@ -2593,7 +2593,7 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
             "xv 100 "
             "anum "
             "xv 150 "
-            "pic 2 "
+            "pic 7 " // STAT_WEAPON_ICON
         "endif "
 
         // armor
@@ -2605,16 +2605,6 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
         "endif "
 
         "yb -50 "
-
-        // picked up item
-        "if 7 "
-            "xv 0 "
-            "pic 7 "
-            "xv 26 "
-            "yb -42 "
-            "stat_string 8 "
-            "yb -50 "
-        "endif "
 
         // timer 1 (quad, enviro, breather)
         "if 9 "
