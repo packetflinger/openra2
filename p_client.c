@@ -539,6 +539,10 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
         return;
     }
 
+    if (ARENA(targ)->state == ARENA_STATE_WARMUP) {
+        return;
+    }
+
     frag = mod_to_frag[meansOfDeath & ~MOD_FRIENDLY_FIRE];
     if (frag < FRAG_BLASTER || frag > FRAG_BFG) {
         return; // only care about weapons
