@@ -139,6 +139,7 @@ static void Cmd_Ready_f(edict_t *ent)
 {
     uint8_t i;
     client_persistant_t *p;
+    char roundtime[6];
 
     if (!ent->client)
         return;
@@ -179,6 +180,8 @@ static void Cmd_Ready_f(edict_t *ent)
             p->arena->state = ARENA_STATE_WARMUP;
             G_bprintf(ARENA(ent), PRINT_HIGH, "Countdown aborted, ", NAME(ent));
             G_ArenaStuff(ARENA(ent), "stopsound");
+            G_SecsToString(roundtime, ARENA(ent)->timelimit);
+            G_ConfigString(ARENA(ent), CS_MATCH_STATUS, va("Warmup %s", roundtime));
         }
         
         G_bprintf(ARENA(ent), PRINT_HIGH, "%s is not ready\n", NAME(ent));
