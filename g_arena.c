@@ -2288,11 +2288,12 @@ void G_CheckIntermission(arena_t *a)
 
         delta = level.framenum - a->intermission_framenum;
         if (delta == SECS_TO_FRAMES(1)) {
+            /*
             if (rand_byte() > 127) {
                 G_StartSound(level.sounds.xian);
             } else {
                 G_StartSound(level.sounds.makron);
-            }
+            }*/
             
             for (i = 0, ent = &g_edicts[1]; i < game.maxclients; i++, ent++) {
                 if (ent->client->pers.connected > CONN_CONNECTED) {
