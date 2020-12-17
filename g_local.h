@@ -1041,12 +1041,12 @@ double genrand_float32_notone(void);
 #define CS_READY            (CS_GENERAL + 7)
 #define CS_READY_WAIT       (CS_GENERAL + 8)
 #define CS_READY_BALANCED   (CS_GENERAL + 9)
-#define CS_PLAYERNAMES      (CS_GENERAL + 10)
-#define CS_MATCH_STATUS     (CS_GENERAL + 11)
-#define CS_ARENA_TIMEOUT    (CS_GENERAL + MAX_CLIENTS)
-#define CS_ROUND            (CS_ARENA_TIMEOUT + MAX_ARENAS)
-#define CS_ARENA_COUNTDOWN  (CS_ROUND + MAX_ARENAS)
-#define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
+#define CS_MATCH_STATUS     (CS_GENERAL + 10)
+#define CS_ARENA_TIMEOUT    (CS_GENERAL + 11)
+#define CS_ROUND            (CS_GENERAL + 12)
+#define CS_ARENA_COUNTDOWN  (CS_GENERAL + 13)
+#define CS_PLAYERNAMES      (CS_GENERAL + 14)
+#define CS_PRIVATE          (CS_PLAYERNAMES + MAX_CLIENTS)
 
 // playerstate->stat[] indexes (0-31)
 #define STAT_HEALTH_ICON        0
