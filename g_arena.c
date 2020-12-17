@@ -2273,7 +2273,7 @@ void G_ResetArena(arena_t *a)
  */
 void G_CheckIntermission(arena_t *a)
 {
-    int32_t i;
+    int32_t i, duration, exit_frame;
     edict_t *ent;
     
     if (a->intermission_exit) {
@@ -2281,26 +2281,18 @@ void G_CheckIntermission(arena_t *a)
             G_ResetArena(a); // in case gamemap failed
         }
     } else if (a->intermission_framenum) {
-        int32_t delta, exit_delta;
-        exit_delta = SECS_TO_FRAMES(g_intermission_time->value);
+        exit_frame = SECS_TO_FRAMES(g_intermission_time->value);
 
-        clamp(exit_delta, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
+        clamp(exit_frame, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
 
-        delta = level.framenum - a->intermission_framenum;
-        if (delta == SECS_TO_FRAMES(1)) {
-            /*
-            if (rand_byte() > 127) {
-                G_StartSound(level.sounds.xian);
-            } else {
-                G_StartSound(level.sounds.makron);
-            }*/
-            
+        duration = level.framenum - a->intermission_framenum;
+        if (duration == SECS_TO_FRAMES(1)) {
             for (i = 0, ent = &g_edicts[1]; i < game.maxclients; i++, ent++) {
                 if (ent->client->pers.connected > CONN_CONNECTED) {
                     G_ArenaScoreboardMessage(ent, qtrue);
                 }
             }    
-        } else if (delta == exit_delta) {
+        } else if (duration == exit_frame) {
             G_ResetArena(a);
         }
     }
