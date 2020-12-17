@@ -985,15 +985,17 @@ static void G_Init(void) {
 
 	g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
 	g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);	// default: all except bfg
-	g_damage_flags = gi.cvar("g_damage_flags", "0", CVAR_LATCH);	// everything hurts
+	g_damage_flags = gi.cvar("g_damage_flags", va("%d", ARENADAMAGE_SELF | ARENADAMAGE_TEAM |
+                                                        ARENADAMAGE_TEAM_ARMOR |
+                                                        ARENADAMAGE_FALL), CVAR_LATCH);
 	g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
 	g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_GENERAL);
-	g_ammo_slugs = gi.cvar("g_ammo_slugs", "10", CVAR_LATCH);
-	g_ammo_rockets = gi.cvar("g_ammo_rockets", "20", CVAR_LATCH);
-	g_ammo_cells = gi.cvar("g_ammo_cells", "50", CVAR_LATCH);
-	g_ammo_grenades = gi.cvar("g_ammo_grenades", "20", CVAR_LATCH);
-	g_ammo_bullets = gi.cvar("g_ammo_bullets", "100", CVAR_LATCH);
-	g_ammo_shells = gi.cvar("g_ammo_shells", "14", CVAR_LATCH);
+	g_ammo_slugs = gi.cvar("g_ammo_slugs", "50", CVAR_LATCH);
+	g_ammo_rockets = gi.cvar("g_ammo_rockets", "50", CVAR_LATCH);
+	g_ammo_cells = gi.cvar("g_ammo_cells", "200", CVAR_LATCH);
+	g_ammo_grenades = gi.cvar("g_ammo_grenades", "50", CVAR_LATCH);
+	g_ammo_bullets = gi.cvar("g_ammo_bullets", "200", CVAR_LATCH);
+	g_ammo_shells = gi.cvar("g_ammo_shells", "50", CVAR_LATCH);
 	g_timein_time = gi.cvar("g_timein_time", "11", CVAR_GENERAL);
 	g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
 	g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
