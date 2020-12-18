@@ -985,7 +985,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
  */
 void G_ChangeArena(edict_t *ent, arena_t *arena)
 {
-    int index = 0;
+    int index = 0, i;
     char roundtime[6];
 
     if (!ent) {
@@ -1006,7 +1006,17 @@ void G_ChangeArena(edict_t *ent, arena_t *arena)
         G_TeamPart(ent, true);
 
         if (arena) {
-            G_bprintf(ARENA(ent), PRINT_HIGH, "%s left this arena\n", NAME(ent));
+            for (i=0; i<ARENA(ent)->client_count; i++) {
+                if (!ARENA(ent)->clients[i]) {
+                    continue;
+                }
+
+                if (ARENA(ent)->clients[i] == ent) {
+                    continue;   // don't bother sending to the one moving
+                }
+
+                gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s left this arena\n", NAME(ent));
+            }
         }
     }
 
@@ -1042,7 +1052,17 @@ void G_ChangeArena(edict_t *ent, arena_t *arena)
     PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
 
-    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", NAME(ent));
+    for (i=0; i<ARENA(ent)->client_count; i++) {
+        if (!ARENA(ent)->clients[i]) {
+            continue;
+        }
+
+        if (ARENA(ent)->clients[i] == ent) {
+            continue;   // don't bother sending to the one moving
+        }
+
+        gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s joined this arena\n", NAME(ent));
+    }
 
     // hold in place briefly
     ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
