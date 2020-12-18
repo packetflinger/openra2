@@ -2086,3 +2086,17 @@ void ClientBeginServerFrame(edict_t *ent)
     }
 }
 
+/**
+ * Send a configstring to a single client
+ */
+void ClientString(edict_t *ent, uint16_t index, const char *str)
+{
+    if (!ent || index > MAX_CONFIGSTRINGS || !str) {
+        return;
+    }
+
+    gi.WriteByte(SVC_CONFIGSTRING);
+    gi.WriteShort(index);
+    gi.WriteString(str);
+    gi.unicast(ent, qtrue);
+}

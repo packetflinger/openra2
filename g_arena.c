@@ -660,7 +660,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
                 sv_hostname->string
         );
 
@@ -820,7 +820,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
                 sv_hostname->string
         );
 
@@ -899,7 +899,7 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s\"",
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
                 sv_hostname->string
         );
 
@@ -986,6 +986,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
 void G_ChangeArena(gclient_t *cl, arena_t *arena)
 {
     int index = 0;
+    char roundtime[6];
 
     // leave the old arena
     if (cl->pers.arena) {
@@ -1022,6 +1023,11 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena)
     cl->pers.ready = false;
 
     G_SpectatorsJoin(cl->edict);
+
+    ClientString(cl->edict, CS_ROUND, G_RoundToString(ARENA(cl->edict)));
+
+    G_SecsToString(roundtime, arena->timelimit);
+    ClientString(cl->edict, CS_MATCH_STATUS, va("Warmup %s", roundtime));
 
     // send all current player skins to this new player
     G_UpdateSkins(cl->edict);
@@ -1648,8 +1654,8 @@ void G_RespawnPlayers(arena_t *a)
  */
 char *G_RoundToString(arena_t *a)
 {
-    static char round_buffer[32];
-    sprintf(round_buffer, "%d/%d", a->current_round, a->round_limit);
+    static char round_buffer[12];
+    sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
 
     return round_buffer;
 }
@@ -2633,10 +2639,8 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
 
         // view id
         "if 24 "
-            "xv -100 "
-            "yb -80 "
-            "string Viewing "
-            "xv -36 "
+            "xv 150 "
+            "yb -35 "
             "stat_string 24 "
         "endif "
 
@@ -2649,17 +2653,17 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
             "stat_string 26 "
         "endif "
 
-        // status
+        // match status
         "if 31 "
-            "yb -60 "
-            "xv 0 "
+            "yb -35 "
+            "xl 8 "
             "stat_string 31 "
         "endif "
 
         // round
         "if 28 "
-            "xr -24 "
-            "yt 30 "
+            "yb -35 "
+            "xr -96 "
             "stat_string 28 "
         "endif "
         "%s"
