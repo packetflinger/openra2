@@ -1447,7 +1447,7 @@ void ClientBegin(edict_t *ent)
 
     arena = &level.arenas[anum];
 
-	G_ChangeArena(ent->client, arena);
+	G_ChangeArena(ent, arena);
 
     if (level.intermission_framenum) {
         MoveClientToIntermission(ent);
@@ -1742,7 +1742,7 @@ void ClientDisconnect(edict_t *ent)
         return;
     }
 
-    G_ChangeArena(ent->client, NULL);
+    G_ChangeArena(ent, NULL);
 	
     connected = ent->client->pers.connected;
     ent->client->pers.connected = CONN_DISCONNECTED;

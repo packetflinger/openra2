@@ -222,7 +222,7 @@ static void Cmd_Arena_f(edict_t *ent)
     uint8_t newarena = atoi(gi.argv(1));
     clamp(newarena, 1, level.arena_count);
     
-    G_ChangeArena(ent->client, &level.arenas[newarena]);
+    G_ChangeArena(ent, &level.arenas[newarena]);
 }
 
 /**
@@ -1565,7 +1565,7 @@ static void select_arena(edict_t *ent)
     int selected = ent->client->menu.cur;
     
     if (selected >= 2 && selected < 12) {
-        G_ChangeArena(ent->client, &level.arenas[selected-1]);
+        G_ChangeArena(ent, &level.arenas[selected-1]);
     }
 }
 

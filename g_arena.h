@@ -235,7 +235,7 @@ qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
 void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
 void G_CheckTimers(arena_t *a);
-void G_ChangeArena(gclient_t *cl, arena_t *arena);
+void G_ChangeArena(edict_t *ent, arena_t *arena);
 void G_ClearRoundInfo(arena_t *a);
 void G_ConfigString(arena_t *arena, uint16_t index, const char *string);
 const char *G_CreatePlayerStatusBar(edict_t *player);

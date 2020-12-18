@@ -983,23 +983,30 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
  * cl - the client moving
  * arena - the new (destination) arena
  */
-void G_ChangeArena(gclient_t *cl, arena_t *arena)
+void G_ChangeArena(edict_t *ent, arena_t *arena)
 {
     int index = 0;
     char roundtime[6];
 
+    if (!ent) {
+        return;
+    }
+
+    if (!ent->client) {
+        return;
+    }
+
     // leave the old arena
-    if (cl->pers.arena) {
-        index = arena_find_cl_index(cl);
+    if (ARENA(ent)) {
+        index = arena_find_cl_index(ent->client);
 
-        cl->pers.arena->clients[index] = NULL;
-        cl->pers.arena->client_count--;
+        ARENA(ent)->clients[index] = NULL;
+        ARENA(ent)->client_count--;
 
-        G_TeamPart(cl->edict, true);
+        G_TeamPart(ent, true);
 
         if (arena) {
-            G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
-                    cl->pers.netname);
+            G_bprintf(ARENA(ent), PRINT_HIGH, "%s left this arena\n", NAME(ent));
         }
     }
 
@@ -1015,33 +1022,33 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena)
     }
 
     arena->client_count++;
-    arena->clients[index] = cl->edict;
+    arena->clients[index] = ent;
 
-    cl->pers.arena = arena;
+    ARENA(ent) = arena;
 
-    cl->pers.connected = CONN_SPECTATOR;
-    cl->pers.ready = false;
+    ent->client->pers.connected = CONN_SPECTATOR;
+    ent->client->pers.ready = false;
 
-    G_SpectatorsJoin(cl->edict);
+    G_SpectatorsJoin(ent);
 
-    ClientString(cl->edict, CS_ROUND, G_RoundToString(ARENA(cl->edict)));
+    ClientString(ent, CS_ROUND, G_RoundToString(ARENA(ent)));
 
     G_SecsToString(roundtime, arena->timelimit);
-    ClientString(cl->edict, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+    ClientString(ent, CS_MATCH_STATUS, va("Warmup %s", roundtime));
 
     // send all current player skins to this new player
-    G_UpdateSkins(cl->edict);
+    G_UpdateSkins(ent);
 
-    PutClientInServer(cl->edict);
+    PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
 
-    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
+    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", NAME(ent));
 
     // hold in place briefly
-    cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
-    cl->ps.pmove.pm_time = 14;
+    ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    ent->client->ps.pmove.pm_time = 14;
 
-    cl->respawn_framenum = level.framenum;
+    ent->client->respawn_framenum = level.framenum;
 }
 
 /**
