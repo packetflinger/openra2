@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static void SetChaseStats(gclient_t *client)
 {
+    qboolean teammate;
     edict_t *targ = client->chase_target;
     int playernum = (targ - g_edicts) - 1;
 
@@ -42,7 +43,7 @@ static void SetChaseStats(gclient_t *client)
     if (client->pers.noviewid) {
         client->ps.stats[STAT_VIEWID] = 0;
     } else if (targ->client->pers.noviewid) {
-        client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(targ);
+        client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(targ, &teammate);
     }
 }
 

@@ -594,7 +594,10 @@ static edict_t *find_by_angles(edict_t *ent)
     return NULL;
 }
 
-int G_GetPlayerIdView(edict_t *ent)
+/**
+ *
+ */
+int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
 {
     edict_t *target;
 
@@ -604,6 +607,10 @@ int G_GetPlayerIdView(edict_t *ent)
         if (!target) {
             return 0;
         }
+    }
+
+    if (G_Teammates(ent, target)) {
+        *teammate = qtrue;
     }
 
     return CS_PLAYERNAMES + (target - g_edicts) - 1;
@@ -621,6 +628,7 @@ void G_SetStats(edict_t *ent)
     const gitem_t   *item;
     int             index, cells;
     int             power_armor_type;
+    qboolean        teammate = qfalse;
 
     //
     // health
@@ -763,8 +771,10 @@ void G_SetStats(edict_t *ent)
         }
         if (ent->client->pers.noviewid) {
             ent->client->ps.stats[STAT_VIEWID] = 0;
+            ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
         } else {
-            ent->client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(ent);
+            ent->client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(ent, &teammate);
+            ent->client->ps.stats[STAT_VIEWID_TEAM] = (teammate) ? 1 : 0;
         }
     }
 

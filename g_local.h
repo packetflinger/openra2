@@ -983,7 +983,7 @@ void IntermissionEndServerFrame(edict_t *ent);
 //
 void MoveClientToIntermission(edict_t *client);
 void G_PrivateString(edict_t *ent, int index, const char *string);
-int G_GetPlayerIdView(edict_t *ent);
+int G_GetPlayerIdView(edict_t *ent, qboolean *teammate);
 void G_SetStats(edict_t *ent);
 int G_CalcRanks(gclient_t **ranks);
 void ScoreboardMessage(edict_t *ent, qboolean reliable);
@@ -1058,7 +1058,7 @@ double genrand_float32_notone(void);
 #define STAT_ARMOR              5   // used by client
 #define STAT_SELECTED_ICON      6   // ?
 #define STAT_WEAPON_ICON        7   // the current gun
-#define STAT_PICKUP_STRING      8   // remove
+#define STAT_VIEWID_TEAM        8
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
 #define STAT_ROUNDTIME          11  // old STAT_HELPICON
