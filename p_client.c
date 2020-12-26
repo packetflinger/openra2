@@ -539,6 +539,10 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
         return;
     }
 
+    if (ARENA(targ)->state == ARENA_STATE_WARMUP) {
+        return;
+    }
+
     frag = mod_to_frag[meansOfDeath & ~MOD_FRIENDLY_FIRE];
     if (frag < FRAG_BLASTER || frag > FRAG_BFG) {
         return; // only care about weapons
@@ -1443,7 +1447,7 @@ void ClientBegin(edict_t *ent)
 
     arena = &level.arenas[anum];
 
-	G_ChangeArena(ent->client, arena);
+	G_ChangeArena(ent, arena);
 
     if (level.intermission_framenum) {
         MoveClientToIntermission(ent);
@@ -1625,6 +1629,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
         } else {
             playernum = (ent - g_edicts) - 1;
             gi.configstring(CS_PLAYERNAMES + playernum, name);
+            G_bprintf(ARENA(ent), PRINT_HIGH, "%s changed their name to %s\n", NAME(ent), name);
             strcpy(client->pers.netname, name);
         }
     }
@@ -1737,7 +1742,7 @@ void ClientDisconnect(edict_t *ent)
         return;
     }
 
-    G_ChangeArena(ent->client, NULL);
+    G_ChangeArena(ent, NULL);
 	
     connected = ent->client->pers.connected;
     ent->client->pers.connected = CONN_DISCONNECTED;
@@ -2073,19 +2078,25 @@ void ClientBeginServerFrame(edict_t *ent)
         }
 
         if (ent->deadflag) {
-            // wait for any button just going down
-            if (level.framenum > client->respawn_framenum && client->pers.arena->state < ARENA_STATE_PLAY) {
-                // in deathmatch, only wait for attack button
-                if ((client->latched_buttons & BUTTON_ATTACK) ||
-                    (DF(FORCE_RESPAWN) && level.framenum - client->respawn_framenum > 2 * HZ)) {
-                    respawn(ent);
-                    client->latched_buttons = 0;
-                }
+            if (level.framenum > client->respawn_framenum && ARENA(ent)->state < ARENA_STATE_PLAY) {
+                respawn(ent);
             }
             return;
         }
     }
-
-    client->latched_buttons = 0;
 }
 
+/**
+ * Send a configstring to a single client
+ */
+void ClientString(edict_t *ent, uint16_t index, const char *str)
+{
+    if (!ent || index > MAX_CONFIGSTRINGS || !str) {
+        return;
+    }
+
+    gi.WriteByte(SVC_CONFIGSTRING);
+    gi.WriteShort(index);
+    gi.WriteString(str);
+    gi.unicast(ent, qtrue);
+}

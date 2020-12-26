@@ -660,10 +660,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
@@ -822,10 +820,8 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
@@ -903,10 +899,8 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
 
     // add server info
     if (sv_hostname && sv_hostname->string[0]) {
-        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -37 string2 \"%s - %s %s\"",
-                sv_hostname->string,
-                GAMEVERSION,
-                OPENRA2_VERSION
+        len = Q_scnprintf(entry, sizeof(entry), "xl 8 yb -45 string2 \"%s\"",
+                sv_hostname->string
         );
 
         if (total + len < MAX_STRING_CHARS) {
@@ -989,22 +983,40 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
  * cl - the client moving
  * arena - the new (destination) arena
  */
-void G_ChangeArena(gclient_t *cl, arena_t *arena)
+void G_ChangeArena(edict_t *ent, arena_t *arena)
 {
-    int index = 0;
+    int index = 0, i;
+    char roundtime[6];
+
+    if (!ent) {
+        return;
+    }
+
+    if (!ent->client) {
+        return;
+    }
 
     // leave the old arena
-    if (cl->pers.arena) {
-        index = arena_find_cl_index(cl);
+    if (ARENA(ent)) {
+        index = arena_find_cl_index(ent->client);
 
-        cl->pers.arena->clients[index] = NULL;
-        cl->pers.arena->client_count--;
+        ARENA(ent)->clients[index] = NULL;
+        ARENA(ent)->client_count--;
 
-        G_TeamPart(cl->edict, true);
+        G_TeamPart(ent, true);
 
         if (arena) {
-            G_bprintf(cl->pers.arena, PRINT_HIGH, "%s left this arena\n",
-                    cl->pers.netname);
+            for (i=0; i<ARENA(ent)->client_count; i++) {
+                if (!ARENA(ent)->clients[i]) {
+                    continue;
+                }
+
+                if (ARENA(ent)->clients[i] == ent) {
+                    continue;   // don't bother sending to the one moving
+                }
+
+                gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s left this arena\n", NAME(ent));
+            }
         }
     }
 
@@ -1020,28 +1032,43 @@ void G_ChangeArena(gclient_t *cl, arena_t *arena)
     }
 
     arena->client_count++;
-    arena->clients[index] = cl->edict;
+    arena->clients[index] = ent;
 
-    cl->pers.arena = arena;
+    ARENA(ent) = arena;
 
-    cl->pers.connected = CONN_SPECTATOR;
-    cl->pers.ready = false;
+    ent->client->pers.connected = CONN_SPECTATOR;
+    ent->client->pers.ready = false;
 
-    G_SpectatorsJoin(cl->edict);
+    G_SpectatorsJoin(ent);
+
+    ClientString(ent, CS_ROUND, G_RoundToString(ARENA(ent)));
+
+    G_SecsToString(roundtime, arena->timelimit);
+    ClientString(ent, CS_MATCH_STATUS, va("Warmup %s", roundtime));
 
     // send all current player skins to this new player
-    G_UpdateSkins(cl->edict);
+    G_UpdateSkins(ent);
 
-    PutClientInServer(cl->edict);
+    PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
 
-    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", cl->pers.netname);
+    for (i=0; i<ARENA(ent)->client_count; i++) {
+        if (!ARENA(ent)->clients[i]) {
+            continue;
+        }
+
+        if (ARENA(ent)->clients[i] == ent) {
+            continue;   // don't bother sending to the one moving
+        }
+
+        gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s joined this arena\n", NAME(ent));
+    }
 
     // hold in place briefly
-    cl->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
-    cl->ps.pmove.pm_time = 14;
+    ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    ent->client->ps.pmove.pm_time = 14;
 
-    cl->respawn_framenum = level.framenum;
+    ent->client->respawn_framenum = level.framenum;
 }
 
 /**
@@ -1258,7 +1285,6 @@ void G_ForceScreenshot(arena_t *arena)
 void G_EndMatch(arena_t *a, arena_team_t *winner)
 {
     uint8_t i;
-    char roundtime[10];
 
     if (winner) {
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -1275,17 +1301,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
 
     G_bprintf(a, PRINT_HIGH, "Match finished\n");
     G_ArenaSound(a, level.sounds.horn);
-
-    G_SecsToString(roundtime, a->timelimit);
-    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
-    G_ConfigString(a, CS_ROUND, G_RoundToString(a));
-
-    for (i = 0; i < a->team_count; i++) {
-        G_ForceReady(&a->teams[i], qfalse);
-    }
-    
     BeginIntermission(a);
-    
     G_ForceScreenshot(a);
     G_ForceDemo(a);
 }
@@ -1665,8 +1681,8 @@ void G_RespawnPlayers(arena_t *a)
  */
 char *G_RoundToString(arena_t *a)
 {
-    static char round_buffer[32];
-    sprintf(round_buffer, "%d/%d", a->current_round, a->round_limit);
+    static char round_buffer[12];
+    sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
 
     return round_buffer;
 }
@@ -2259,13 +2275,19 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent)
 void G_ResetArena(arena_t *a)
 {
     uint8_t i;
+    char roundtime[6];
     
     a->intermission_framenum = 0;
     a->intermission_exit = 0;
     a->state = ARENA_STATE_WARMUP;
     a->ready = qfalse;
     a->teams_alive = a->team_count;
+    a->current_round = 1;
     
+    G_SecsToString(roundtime, a->timelimit);
+    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+    G_ConfigString(a, CS_ROUND, G_RoundToString(a));
+
     for (i=0; i<a->team_count; i++) {
         G_ResetTeam(&a->teams[i]);
     }
@@ -2278,7 +2300,7 @@ void G_ResetArena(arena_t *a)
  */
 void G_CheckIntermission(arena_t *a)
 {
-    int32_t i;
+    int32_t i, duration, exit_frame;
     edict_t *ent;
     
     if (a->intermission_exit) {
@@ -2286,25 +2308,18 @@ void G_CheckIntermission(arena_t *a)
             G_ResetArena(a); // in case gamemap failed
         }
     } else if (a->intermission_framenum) {
-        int32_t delta, exit_delta;
-        exit_delta = SECS_TO_FRAMES(g_intermission_time->value);
+        exit_frame = SECS_TO_FRAMES(g_intermission_time->value);
 
-        clamp(exit_delta, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
+        clamp(exit_frame, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
 
-        delta = level.framenum - a->intermission_framenum;
-        if (delta == SECS_TO_FRAMES(1)) {
-            if (rand_byte() > 127) {
-                G_StartSound(level.sounds.xian);
-            } else {
-                G_StartSound(level.sounds.makron);
-            }
-            
+        duration = level.framenum - a->intermission_framenum;
+        if (duration == SECS_TO_FRAMES(1)) {
             for (i = 0, ent = &g_edicts[1]; i < game.maxclients; i++, ent++) {
                 if (ent->client->pers.connected > CONN_CONNECTED) {
                     G_ArenaScoreboardMessage(ent, qtrue);
                 }
             }    
-        } else if (delta == exit_delta) {
+        } else if (duration == exit_frame) {
             G_ResetArena(a);
         }
     }
@@ -2593,7 +2608,7 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
             "xv 100 "
             "anum "
             "xv 150 "
-            "pic 2 "
+            "pic 7 " // STAT_WEAPON_ICON
         "endif "
 
         // armor
@@ -2605,16 +2620,6 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
         "endif "
 
         "yb -50 "
-
-        // picked up item
-        "if 7 "
-            "xv 0 "
-            "pic 7 "
-            "xv 26 "
-            "yb -42 "
-            "stat_string 8 "
-            "yb -50 "
-        "endif "
 
         // timer 1 (quad, enviro, breather)
         "if 9 "
@@ -2661,11 +2666,13 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
 
         // view id
         "if 24 "
-            "xv -100 "
-            "yb -80 "
-            "string Viewing "
-            "xv -36 "
+            "xv 150 "
+            "yb -35 "
             "stat_string 24 "
+            "if 8 " // viewid teammate
+                "xv 134 "
+                "string2 * "
+            "endif "
         "endif "
 
         // vote proposal
@@ -2677,17 +2684,17 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
             "stat_string 26 "
         "endif "
 
-        // status
+        // match status
         "if 31 "
-            "yb -60 "
-            "xv 0 "
+            "yb -35 "
+            "xl 8 "
             "stat_string 31 "
         "endif "
 
         // round
         "if 28 "
-            "xr -24 "
-            "yt 30 "
+            "yb -35 "
+            "xr -96 "
             "stat_string 28 "
         "endif "
         "%s"

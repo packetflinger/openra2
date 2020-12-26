@@ -957,6 +957,7 @@ void G_SetDeltaAngles(edict_t *ent, vec3_t angles);
 void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
 edict_t *SelectIntermissionPoint(arena_t *a);
+void ClientString(edict_t *ent, uint16_t index, const char *str);
 
 
 
@@ -982,7 +983,7 @@ void IntermissionEndServerFrame(edict_t *ent);
 //
 void MoveClientToIntermission(edict_t *client);
 void G_PrivateString(edict_t *ent, int index, const char *string);
-int G_GetPlayerIdView(edict_t *ent);
+int G_GetPlayerIdView(edict_t *ent, qboolean *teammate);
 void G_SetStats(edict_t *ent);
 int G_CalcRanks(gclient_t **ranks);
 void ScoreboardMessage(edict_t *ent, qboolean reliable);
@@ -1041,12 +1042,12 @@ double genrand_float32_notone(void);
 #define CS_READY            (CS_GENERAL + 7)
 #define CS_READY_WAIT       (CS_GENERAL + 8)
 #define CS_READY_BALANCED   (CS_GENERAL + 9)
-#define CS_PLAYERNAMES      (CS_GENERAL + 10)
-#define CS_MATCH_STATUS     (CS_GENERAL + 11)
-#define CS_ARENA_TIMEOUT    (CS_GENERAL + MAX_CLIENTS)
-#define CS_ROUND            (CS_ARENA_TIMEOUT + MAX_ARENAS)
-#define CS_ARENA_COUNTDOWN  (CS_ROUND + MAX_ARENAS)
-#define CS_PRIVATE          (CS_GENERAL + MAX_GENERAL - PCS_TOTAL)
+#define CS_MATCH_STATUS     (CS_GENERAL + 10)
+#define CS_ARENA_TIMEOUT    (CS_GENERAL + 11)
+#define CS_ROUND            (CS_GENERAL + 12)
+#define CS_ARENA_COUNTDOWN  (CS_GENERAL + 13)
+#define CS_PLAYERNAMES      (CS_GENERAL + 14)
+#define CS_PRIVATE          (CS_PLAYERNAMES + MAX_CLIENTS)
 
 // playerstate->stat[] indexes (0-31)
 #define STAT_HEALTH_ICON        0
@@ -1056,8 +1057,8 @@ double genrand_float32_notone(void);
 #define STAT_ARMOR_ICON         4
 #define STAT_ARMOR              5   // used by client
 #define STAT_SELECTED_ICON      6   // ?
-#define STAT_PICKUP_ICON        7   // remove
-#define STAT_PICKUP_STRING      8   // remove
+#define STAT_WEAPON_ICON        7   // the current gun
+#define STAT_VIEWID_TEAM        8
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
 #define STAT_ROUNDTIME          11  // old STAT_HELPICON

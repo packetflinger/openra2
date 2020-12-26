@@ -594,7 +594,10 @@ static edict_t *find_by_angles(edict_t *ent)
     return NULL;
 }
 
-int G_GetPlayerIdView(edict_t *ent)
+/**
+ *
+ */
+int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
 {
     edict_t *target;
 
@@ -604,6 +607,10 @@ int G_GetPlayerIdView(edict_t *ent)
         if (!target) {
             return 0;
         }
+    }
+
+    if (G_Teammates(ent, target)) {
+        *teammate = qtrue;
     }
 
     return CS_PLAYERNAMES + (target - g_edicts) - 1;
@@ -621,6 +628,7 @@ void G_SetStats(edict_t *ent)
     const gitem_t   *item;
     int             index, cells;
     int             power_armor_type;
+    qboolean        teammate = qfalse;
 
     //
     // health
@@ -638,6 +646,7 @@ void G_SetStats(edict_t *ent)
         item = INDEX_ITEM(ent->client->ammo_index);
         ent->client->ps.stats[STAT_AMMO_ICON] = gi.imageindex(item->icon);
         ent->client->ps.stats[STAT_AMMO] = ent->client->inventory[ent->client->ammo_index];
+        ent->client->ps.stats[STAT_WEAPON_ICON] = gi.imageindex(ent->client->weapon->icon);
     }
 
     //
@@ -667,14 +676,6 @@ void G_SetStats(edict_t *ent)
     } else {
         ent->client->ps.stats[STAT_ARMOR_ICON] = 0;
         ent->client->ps.stats[STAT_ARMOR] = 0;
-    }
-
-    //
-    // pickup message
-    //
-    if (level.framenum > ent->client->pickup_framenum) {
-        ent->client->ps.stats[STAT_PICKUP_ICON] = 0;
-        ent->client->ps.stats[STAT_PICKUP_STRING] = 0;
     }
 
     //
@@ -770,8 +771,10 @@ void G_SetStats(edict_t *ent)
         }
         if (ent->client->pers.noviewid) {
             ent->client->ps.stats[STAT_VIEWID] = 0;
+            ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
         } else {
-            ent->client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(ent);
+            ent->client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(ent, &teammate);
+            ent->client->ps.stats[STAT_VIEWID_TEAM] = (teammate) ? 1 : 0;
         }
     }
 
