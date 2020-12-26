@@ -547,8 +547,8 @@ typedef struct {
         int     makron;
         int     teleport;
         int     countdown[15];
-        int     fight[6];
-        int     round[21];
+        int     fight[7];
+        int     round[22];
         int     finalround;
         int     timeout;
         int     timein;
