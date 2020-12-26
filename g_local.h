@@ -23,7 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "q_shared.h"
 #include "q_list.h"
 #include <glib.h>
+
+#ifdef _WIN32
 #include "GitRevisionInfo.h" // Derived from template via GitWCRev
+#endif // _WIN32
 
 #define true 		1
 #define false		0
