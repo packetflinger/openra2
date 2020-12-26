@@ -1643,7 +1643,7 @@ static const pmenu_entry_t arena_menu[MAX_MENU_ENTRIES] = {
     { NULL },
     { NULL },
     { NULL },
-    { "*OpenRA2" OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
+    { "*OpenRA2 " OPENRA2_VERSION, PMENU_ALIGN_RIGHT }
 };
 
 /**

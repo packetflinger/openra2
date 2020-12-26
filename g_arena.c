@@ -684,7 +684,7 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
     char status[MAX_QPATH];
     char timebuf[16];
     size_t total, len;
-    int i, j, k, numranks;
+    int i, j = 0, k, numranks;
     int y, sec;
     gclient_t *ranks[MAX_CLIENTS];
     gclient_t *c;
