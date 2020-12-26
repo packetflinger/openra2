@@ -122,9 +122,7 @@
     <None Include="game.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="GitRevisionInfo.tmpl">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="GitRevisionInfo.tmpl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="openra2.rc">
