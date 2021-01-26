@@ -199,7 +199,7 @@ const char *DemoName(edict_t *ent)
 /**
  * Periodically count players to make sure none got lost
  */
-static void update_playercounts(arena_t *a)
+void update_playercounts(arena_t *a)
 {
     int i;
     int count = 0;

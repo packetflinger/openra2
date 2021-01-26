@@ -154,6 +154,8 @@ static void Cmd_Ready_f(edict_t *ent)
         return;
     }
 
+    update_playercounts(ARENA(ent));
+
     if (!p->ready) {
         p->ready = qtrue;
         G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
@@ -1847,6 +1849,8 @@ static void Cmd_ReadyTeam_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "Can't change ready status mid-match\n");
         return;
     }
+
+    update_playercounts(ARENA(ent));
 
     arena_team_t *team = TEAM(ent);
     

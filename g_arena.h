@@ -285,5 +285,6 @@ char *G_WeaponFlagsToString(arena_t *a);
 void G_BeginRoundIntermission(arena_t *a);
 void G_EndRoundIntermission(arena_t *a);
 void G_ApplyDefaults(arena_t *a);
+void update_playercounts(arena_t *a);
 
 #endif // ARENA_H
