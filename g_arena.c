@@ -1149,8 +1149,12 @@ void G_UpdateConfigStrings(arena_t *a)
 
     buf[0] = 0;
 
-    //G_SecsToString(roundtime, (a->round_frame - a->round_start_frame) * FRAMETIME);
-    G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
+    // no timelimit given, so count up, otherwise count down
+    if (!a->timelimit) {
+        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_frame - a->round_start_frame));
+    } else {
+        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
+    }
 
     switch (a->state) {
     case ARENA_STATE_COUNTDOWN:
