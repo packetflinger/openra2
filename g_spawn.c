@@ -844,6 +844,9 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         client->clientNum = i;
         client->pers.connected = CONN_CONNECTED;
 
+        client->pers.arena = NULL;
+        client->pers.team = NULL;
+
         // combine name and skin into a configstring
         Q_concat(playerskin, sizeof(playerskin),
                  client->pers.netname, "\\", client->pers.skin, NULL);
@@ -875,7 +878,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 	List_Init(&g_arenalist);
 	ent = NULL;
 	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
-		
 		if (!ent->arena || ent->arena >= MAX_ARENAS) {
 			continue;
 		}
@@ -931,6 +933,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
 		G_InitArenaTeams(&(level.arenas[j]));
 		level.arena_count++;
+		List_Append(&g_arenalist, &level.arenas[j].entry);
 	}
 	
 	G_BuildMenu();
