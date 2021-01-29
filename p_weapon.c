@@ -442,11 +442,13 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
         if (!fire_frames[n]) {
             ent->client->weaponframe++;
             if (ent->client->newweapon && g_fast_weapon_change->value) {
+                ent->client->weapon_sound = 0;
                 ChangeWeapon(ent);
                 return;
             }
         } else {
             if (ent->client->newweapon && g_fast_weapon_change->value) {
+                ent->client->weapon_sound = 0;
                 ChangeWeapon(ent);
                 return;
             }
