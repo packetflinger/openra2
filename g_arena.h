@@ -186,6 +186,7 @@ typedef struct {
     int32_t         round_intermission_end;      // frame we should end round intermission
     int32_t         teams_alive;                 // how many teams have players alive
     uint32_t        countdown_start_frame;       // frame number when the count started
+    qboolean        fastswitch;                 // enable fast weapon switching
 } arena_t;
 
 
@@ -201,6 +202,7 @@ typedef struct {
     uint32_t    health;
     uint32_t    armor;
     uint32_t    timelimit;
+    qboolean    fastswitch;
     // ammo
     uint32_t    slugs;
     uint32_t    rockets;
