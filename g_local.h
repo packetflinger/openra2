@@ -97,6 +97,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ARENADAMAGE_FALL            16  // no falling damage
 #define ARENADAMAGE_ALL             31
 
+#define NOHURT(ent, d)    (ARENA(ent)->damage_flags & ARENADAMAGE_##d)
+
 // view pitching times
 #define DAMAGE_TIME     0.5
 #define FALL_TIME       0.3
@@ -429,9 +431,11 @@ typedef struct {
 #define VOTE_HEALTH     (1 << 7)    // local
 #define VOTE_ARMOR      (1 << 8)    // local
 #define VOTE_RESET      (1 << 9)    // local
+#define VOTE_SWITCH     (1 << 10)   // local
 #define VOTE_ALL        (VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
                         VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
-                        VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | VOTE_RESET)
+                        VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | \
+                        VOTE_RESET | VOTE_SWITCH)
 
 // vote flags
 #define VF_ENABLED  1       // globally allow voting on this server
@@ -717,7 +721,6 @@ extern  edict_t     *g_edicts;
 extern  cvar_t  *maxentities;
 extern  cvar_t  *dmflags;
 extern  cvar_t  *skill;
-extern  cvar_t  *fraglimit;
 extern  cvar_t  *timelimit;
 extern  cvar_t  *g_select_empty;
 extern  cvar_t  *g_idle_time;

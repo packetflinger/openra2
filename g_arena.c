@@ -199,7 +199,7 @@ const char *DemoName(edict_t *ent)
 /**
  * Periodically count players to make sure none got lost
  */
-static void update_playercounts(arena_t *a)
+void update_playercounts(arena_t *a)
 {
     int i;
     int count = 0;
@@ -1149,8 +1149,12 @@ void G_UpdateConfigStrings(arena_t *a)
 
     buf[0] = 0;
 
-    //G_SecsToString(roundtime, (a->round_frame - a->round_start_frame) * FRAMETIME);
-    G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
+    // no timelimit given, so count up, otherwise count down
+    if (!a->timelimit) {
+        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_frame - a->round_start_frame));
+    } else {
+        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
+    }
 
     switch (a->state) {
     case ARENA_STATE_COUNTDOWN:
@@ -1910,6 +1914,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
         a->ammo[ITEM_SHELLS] = (int) g_ammo_shells->value;
         a->team_count = (int) g_team_count->value;
         a->timelimit = (int) g_round_timelimit->value;
+        a->fastswitch = (int) g_fast_weapon_change->value;
         memset(&a->infinite, 0, sizeof(a->infinite));
         return;
     }
@@ -1989,6 +1994,8 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
     if (m->timelimit) {
         a->timelimit = m->timelimit;
     }
+
+    a->fastswitch = m->fastswitch;
 
     memcpy(a->infinite, m->infinite, sizeof(a->infinite));
 
@@ -2074,6 +2081,9 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
                 }
 
                 count++;
+
+                // tough seeing "0" as a value set vs not included
+                entry[arena_num].fastswitch = (int) g_fast_weapon_change->value;
             }
 
             if (Q_strcasecmp(token, "teams") == 0 && inarena) {
@@ -2130,6 +2140,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
 
             if (Q_strcasecmp(token, "timelimit") == 0 && inarena) {
                 entry[arena_num].timelimit = atoi(COM_Parse(&fp_data));
+            }
+
+            if (Q_strcasecmp(token, "fastswitch") == 0 && inarena) {
+                entry[arena_num].fastswitch = atoi(COM_Parse(&fp_data));
             }
         }
 

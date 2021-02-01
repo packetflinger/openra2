@@ -388,6 +388,12 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		    G_bprintf(a, PRINT_HIGH, "Local vote passed: all settings reset\n");
 		    break;
 
+		case VOTE_SWITCH:
+		    a->modified = qtrue;
+		    a->fastswitch = a->vote.value;
+		    G_bprintf(a, PRINT_HIGH, "Local vote passed: fast weapon switching now %sabled\n", (a->vote.value) ? "en" : "dis");
+		    break;
+
 		default:
 			break;
 		}
@@ -442,6 +448,9 @@ static void G_BuildProposal(char *buffer, arena_t *a)
 		break;
     case VOTE_RESET:
         sprintf(buffer, "reset all settings");
+        break;
+    case VOTE_SWITCH:
+        sprintf(buffer, "%sable fast weapon switching", (a->vote.value) ? "En" : "Dis");
         break;
     default:
         strcpy(buffer, "unknown");
@@ -629,6 +638,15 @@ static qboolean vote_reset(edict_t *ent) {
     return true;
 }
 
+static qboolean vote_fastswitch(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned value = strtoul(arg, NULL, 10);
+    clamp(value, 0, 1);
+    ARENA(ent)->vote.value = value;
+    return qtrue;
+}
+
 typedef struct {
     const char  *name;
     int         bit;
@@ -636,16 +654,17 @@ typedef struct {
 } vote_proposal_t;
 
 static const vote_proposal_t vote_proposals[] = {
-    {"kick",    VOTE_KICK,    vote_victim},
-    {"mute",    VOTE_MUTE,    vote_victim},
-    {"map",     VOTE_MAP,     vote_map},
-    {"teams",   VOTE_TEAMS,   vote_teams},
-    {"weapons", VOTE_WEAPONS, vote_weapons},
-    {"damage",  VOTE_DAMAGE,  vote_damage},
-    {"rounds",  VOTE_ROUNDS,  vote_rounds},
-    {"health",  VOTE_HEALTH,  vote_health},
-    {"armor",   VOTE_ARMOR,   vote_armor},
-    {"reset",   VOTE_RESET,   vote_reset},
+    {"kick",        VOTE_KICK,      vote_victim},
+    {"mute",        VOTE_MUTE,      vote_victim},
+    {"map",         VOTE_MAP,       vote_map},
+    {"teams",       VOTE_TEAMS,     vote_teams},
+    {"weapons",     VOTE_WEAPONS,   vote_weapons},
+    {"damage",      VOTE_DAMAGE,    vote_damage},
+    {"rounds",      VOTE_ROUNDS,    vote_rounds},
+    {"health",      VOTE_HEALTH,    vote_health},
+    {"armor",       VOTE_ARMOR,     vote_armor},
+    {"reset",       VOTE_RESET,     vote_reset},
+    {"fastswitch",  VOTE_SWITCH,    vote_fastswitch},
     {NULL}
 };
 
@@ -745,6 +764,10 @@ void Cmd_Vote_f(edict_t *ent)
         if (mask & VOTE_RESET) {
             gi.cprintf(ent, PRINT_HIGH,
                        " reset                          Set all arena settings back to default\n");
+        }
+        if (mask & VOTE_SWITCH) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " fastswitch <0/1>               Disable or enable fast weapon switching\n");
         }
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"

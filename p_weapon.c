@@ -348,7 +348,7 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
     }
 
     if (ent->client->weaponstate == WEAPON_ACTIVATING) {
-        if (g_fast_weapon_change->value) {
+        if (ARENA(ent)->fastswitch) {
             ent->client->weaponframe = FRAME_ACTIVATE_LAST;
         }
 
@@ -365,7 +365,7 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
     if ((ent->client->newweapon) && (ent->client->weaponstate != WEAPON_FIRING)) {
         ent->client->weaponstate = WEAPON_DROPPING;
 
-        if (g_fast_weapon_change->value) {
+        if (ARENA(ent)->fastswitch) {
             ChangeWeapon (ent);
             return;
         } else {
@@ -441,12 +441,14 @@ static void Weapon_Generic(edict_t *ent, int FRAME_ACTIVATE_LAST, int FRAME_FIRE
 
         if (!fire_frames[n]) {
             ent->client->weaponframe++;
-            if (ent->client->newweapon && g_fast_weapon_change->value) {
+            if (ent->client->newweapon && ARENA(ent)->fastswitch) {
+                ent->client->weapon_sound = 0;
                 ChangeWeapon(ent);
                 return;
             }
         } else {
-            if (ent->client->newweapon && g_fast_weapon_change->value) {
+            if (ent->client->newweapon && ARENA(ent)->fastswitch) {
+                ent->client->weapon_sound = 0;
                 ChangeWeapon(ent);
                 return;
             }

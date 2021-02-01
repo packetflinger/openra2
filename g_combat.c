@@ -267,10 +267,10 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     int         asave;
     int         psave;
     int         te_sparks;
-    int			adf;
 
-    if (!targ->takedamage)
+    if (!targ->takedamage) {
         return;
+    }
 
     // friendly fire avoidance
     // if enabled you can't hurt teammates (but you can hurt yourself)
@@ -289,15 +289,17 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
 
     client = targ->client;
 
-    if (dflags & DAMAGE_BULLET)
+    if (dflags & DAMAGE_BULLET) {
         te_sparks = TE_BULLET_SPARKS;
-    else
+    } else {
         te_sparks = TE_SPARKS;
+    }
 
     VectorNormalize(dir);
 
-    if (targ->flags & FL_NO_KNOCKBACK)
+    if (targ->flags & FL_NO_KNOCKBACK) {
         knockback = 0;
+    }
 
     // figure momentum add
     if (!(dflags & DAMAGE_NO_KNOCKBACK)) {
@@ -305,18 +307,30 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
             float   mass;
             float push;
 
-            if (targ->mass < 50)
+            if (targ->mass < 50) {
                 mass = 50;
-            else
+            } else {
                 mass = targ->mass;
+            }
 
-            if (targ->client  && attacker == targ)
+            if (targ->client && attacker == targ) {
                 push = 1600.0f * ((float)knockback / mass);
-            else
+            } else {
                 push = 500.0f * ((float)knockback / mass);
+            }
 
             VectorMA(targ->velocity, push, dir, targ->velocity);
         }
+    }
+
+    // nothing hurts us
+    if (targ == attacker && NOHURT(targ, SELF) && NOHURT(targ, SELF_ARMOR)) {
+        return;
+    }
+
+    // nothing hurts our teammates
+    if (G_Teammates(targ, attacker) && NOHURT(targ, TEAM) && NOHURT(targ, TEAM_ARMOR)) {
+        return;
     }
 
     take = damage;
@@ -345,16 +359,15 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     asave = 0;
 
     if (client) {
-    	adf = client->pers.arena->damage_flags;
 
 		// check if self damage should take armor away
-		if (targ == attacker && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+    	if (targ == attacker && !(NOHURT(targ, SELF_ARMOR))) {
 			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
 			take -= asave;
 		}
 
 		// check if team damage should take armor away
-		if (targ != attacker && G_Teammates(targ, attacker) && !((adf & ARENADAMAGE_SELF_ARMOR) && (adf & ARENADAMAGE_SELF))) {
+    	if (targ != attacker && G_Teammates(targ, attacker) && !(NOHURT(targ, TEAM_ARMOR))) {
 			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
 			take -= asave;
 		}
@@ -370,8 +383,9 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     asave += save;
 
     // team damage avoidance
-    if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage(targ, attacker))
+    if (!(dflags & DAMAGE_NO_PROTECTION) && CheckTeamDamage(targ, attacker)) {
         return;
+    }
 
     // add to client weapon statistics
     if (attacker->client && targ->client && !targ->deadflag && inflictor != world) {
@@ -380,45 +394,50 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
 
     // do the damage
     if (take) {
-        if (client)
-            if (targ == attacker)
+        if (client) {
+            if (targ == attacker) {
                 SpawnDamage(TE_BLOOD, targ->s.origin, normal);
-            else
+            } else {
                 SpawnDamage(TE_BLOOD, point, normal);
-        else if (targ == attacker)
+            }
+        } else if (targ == attacker) {
             SpawnDamage(TE_SPARKS, targ->s.origin, normal);
-        else
+        } else {
             SpawnDamage(TE_SPARKS, point, normal);
+        }
 
         // hurting someone else
         if (targ != attacker) {
         	if (!G_Teammates(targ, attacker)) {
         		targ->health -= take;
         	} else {
-        		if (!(adf & ARENADAMAGE_TEAM)) {
+        		if (!NOHURT(targ, TEAM)) {
         			targ->health -= take;
         		}
         	}
         } else {
-        	if (!(adf & ARENADAMAGE_SELF)) {
+        	if (!NOHURT(targ, SELF)) {
         		targ->health -= take;
         	}
         }
 
         if (targ->health <= 0 && targ->deadflag != DEAD_DEAD) {
-            if (client)
+            if (client) {
                 targ->flags |= FL_NO_KNOCKBACK;
+            }
             Killed(targ, inflictor, attacker, take, point);
             return;
         }
     }
 
     if (client) {
-        if (!(targ->flags & FL_GODMODE) && (take))
+        if (!(targ->flags & FL_GODMODE) && (take)) {
             targ->pain(targ, attacker, knockback, take);
+        }
     } else if (take) {
-        if (targ->pain)
+        if (targ->pain) {
             targ->pain(targ, attacker, knockback, take);
+        }
     }
 
     // add to the damage inflicted on a player this frame

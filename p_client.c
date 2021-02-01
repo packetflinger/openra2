@@ -1124,7 +1124,7 @@ void respawn(edict_t *self)
         CopyToBodyQue(self);
     }
 
-    if (ARENA(self)->state > ARENA_STATE_WARMUP) {
+    if (ARENA(self)->state > ARENA_STATE_COUNTDOWN) {
     	SetChaseTarget(self, self->killer);
     	return;
     }

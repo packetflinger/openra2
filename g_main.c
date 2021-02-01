@@ -38,7 +38,6 @@ pmenu_arena_t menu_lookup[MAX_ARENAS];
 
 cvar_t *dmflags;
 cvar_t *skill;
-cvar_t *fraglimit;
 cvar_t *timelimit;
 cvar_t *maxclients;
 cvar_t *maxentities;
@@ -911,7 +910,6 @@ static void G_Init(void) {
 			| DF_MODELTEAMS;
 	dmflags = gi.cvar("dmflags", va("%d", df), CVAR_SERVERINFO);
 
-	fraglimit = gi.cvar("fraglimit", "0", CVAR_SERVERINFO);
 	timelimit = gi.cvar("timelimit", "0", CVAR_SERVERINFO);
 
 	gi.cvar("time_remaining", "", CVAR_SERVERINFO);
