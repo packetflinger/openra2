@@ -33,7 +33,7 @@ ifdef CONFIG_WINDOWS
     LDFLAGS += -mconsole
     LDFLAGS += -Wl,--nxcompat,--dynamicbase
 else
-    CFLAGS += -fPIC -fvisibility=hidden
+    CFLAGS += -fPIC -fvisibility=hidden 
     LDFLAGS += -Wl,--no-undefined
 endif
 
@@ -116,7 +116,7 @@ endif
 
 $(TARGET): $(OBJS)
 	$(E) [LD] $@
-	$(Q)$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+	$(Q)$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 clean:
 	$(E) [CLEAN]

@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "q_list.h"
 #include <glib.h>
 
+#ifdef _WIN32
+#include "GitRevisionInfo.h" // Derived from template via GitWCRev
+#endif // _WIN32
+
 #define true 		1
 #define false		0
 
@@ -547,8 +551,8 @@ typedef struct {
         int     makron;
         int     teleport;
         int     countdown[15];
-        int     fight[6];
-        int     round[21];
+        int     fight[7];
+        int     round[22];
         int     finalround;
         int     timeout;
         int     timein;
