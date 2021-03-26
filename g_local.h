@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "q_list.h"
 #include <glib.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) && !(defined(___MINGW32__) || defined(__MINGW64__))
 #include "GitRevisionInfo.h" // Derived from template via GitWCRev
 #endif // _WIN32
 
