@@ -432,10 +432,13 @@ typedef struct {
 #define VOTE_ARMOR      (1 << 8)    // local
 #define VOTE_RESET      (1 << 9)    // local
 #define VOTE_SWITCH     (1 << 10)   // local
+#define VOTE_TIMELIMIT  (1 << 11)   // local
+#define VOTE_MODE       (1 << 12)   // local
 #define VOTE_ALL        (VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
                         VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
                         VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | \
-                        VOTE_RESET | VOTE_SWITCH)
+                        VOTE_RESET | VOTE_SWITCH | VOTE_TIMELIMIT | \
+                        VOTE_MODE)
 
 // vote flags
 #define VF_ENABLED  1       // globally allow voting on this server

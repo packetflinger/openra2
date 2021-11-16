@@ -120,6 +120,12 @@ typedef enum {
 } arena_default_t;
 
 
+typedef enum {
+    ARENA_MODE_NORMAL,
+	ARENA_MODE_REDROVER,
+} arena_mode_t;
+
+
 typedef struct {
     char       name[MAX_TEAM_NAME];
     char       skin[MAX_TEAM_SKIN];
@@ -186,7 +192,8 @@ typedef struct {
     int32_t         round_intermission_end;      // frame we should end round intermission
     int32_t         teams_alive;                 // how many teams have players alive
     uint32_t        countdown_start_frame;       // frame number when the count started
-    qboolean        fastswitch;                 // enable fast weapon switching
+    qboolean        fastswitch;                  // enable fast weapon switching
+    arena_mode_t    mode;                        // gameplay mode
 } arena_t;
 
 

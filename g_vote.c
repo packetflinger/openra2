@@ -394,6 +394,18 @@ qboolean G_CheckArenaVote(arena_t *a) {
 		    G_bprintf(a, PRINT_HIGH, "Local vote passed: fast weapon switching now %sabled\n", (a->vote.value) ? "en" : "dis");
 		    break;
 
+		case VOTE_TIMELIMIT:
+		    a->modified = qtrue;
+		    a->timelimit = a->vote.value;
+		    G_bprintf(a, PRINT_HIGH, "Local vote passed: timelimit %d \n", a->vote.value);
+		    break;
+
+		case VOTE_MODE:
+			a->modified = qtrue;
+			a->mode = a->vote.value;
+			G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", (a->vote.value) ? "red rover" : "normal");
+			break;
+
 		default:
 			break;
 		}
@@ -451,6 +463,12 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         break;
     case VOTE_SWITCH:
         sprintf(buffer, "%sable fast weapon switching", (a->vote.value) ? "En" : "Dis");
+        break;
+    case VOTE_TIMELIMIT:
+        sprintf(buffer, "timelimit %d", a->vote.value);
+        break;
+    case VOTE_MODE:
+        sprintf(buffer, "%s mode", (a->vote.value) ? "red rover" : "normal");
         break;
     default:
         strcpy(buffer, "unknown");
@@ -647,6 +665,22 @@ static qboolean vote_fastswitch(edict_t *ent)
     return qtrue;
 }
 
+static qboolean vote_timelimit(edict_t *ent) {
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 1, 20);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
+}
+
+static qboolean vote_mode(edict_t *ent) {
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 0, 1);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
+}
+
 typedef struct {
     const char  *name;
     int         bit;
@@ -665,6 +699,8 @@ static const vote_proposal_t vote_proposals[] = {
     {"armor",       VOTE_ARMOR,     vote_armor},
     {"reset",       VOTE_RESET,     vote_reset},
     {"fastswitch",  VOTE_SWITCH,    vote_fastswitch},
+	{"timelimit",   VOTE_TIMELIMIT, vote_timelimit},
+	{"mode",        VOTE_MODE,      vote_mode},
     {NULL}
 };
 
@@ -768,6 +804,14 @@ void Cmd_Vote_f(edict_t *ent)
         if (mask & VOTE_SWITCH) {
             gi.cprintf(ent, PRINT_HIGH,
                        " fastswitch <0/1>               Disable or enable fast weapon switching\n");
+        }
+        if (mask & VOTE_TIMELIMIT) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " timelimit <minutes>            Limit rounds to this amount of time\n");
+        }
+        if (mask & VOTE_MODE) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " mode <0/1>                     Gameplay mode, 0=regular, 1=redrover\n");
         }
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"
