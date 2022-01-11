@@ -2539,19 +2539,21 @@ void G_RandomizeAmmo(uint16_t *out)
  */
 const char *G_CreatePlayerStatusBar(edict_t *player)
 {
-    static char    *statusbar;
+    static char *statusbar;
     static char weaponhud[175];        // the weapon icons
     static char ammohud[135];        // the ammo counts
-    int            hud_x, hud_y;
+    int         hud_x,
+                hud_y;
 
-    if (!player->client)
+    if (!player->client) {
         return "";
+    }
 
     hud_y = 0;
     hud_x = -25;
 
     weaponhud[0] = 0;
-    ammohud[0] = 0;
+    ammohud[0]   = 0;
 
     // set x position at first for all weapon icons, to save the chars since CS max is 1000
     strcpy(weaponhud, va("xr %d ", hud_x));
