@@ -1662,7 +1662,6 @@ void G_RefillPlayers(arena_t *a)
 
     // for each team
     for (i = 0; i < a->team_count; i++) {
-
         // for each player
         for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
             ent = a->teams[i].players[j];
@@ -1673,6 +1672,7 @@ void G_RefillPlayers(arena_t *a)
         }
     }
 }
+
 
 /**
  * Respawn all players resetting their inventory
