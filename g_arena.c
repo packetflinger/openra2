@@ -552,8 +552,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
     tm = localtime(&t);
     len = strftime(status, sizeof(status), DATE_FORMAT, tm);
 
-    if (len < 1)
+    if (len < 1) {
         strcpy(status, "???");
+    }
 
     if (!client) {
         Q_snprintf(entry, sizeof(entry),
@@ -609,11 +610,13 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
                     c->ping
             );
 
-            if (len >= sizeof(entry))
+            if (len >= sizeof(entry)) {
                 continue;
+            }
 
-            if (total + len >= MAX_STRING_CHARS)
+            if (total + len >= MAX_STRING_CHARS) {
                 break;
+            }
 
             memcpy(buffer + total, entry, len);
             total += len;
@@ -632,14 +635,17 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     for (i = 0; i < arena->spectator_count; i++) {
         ent = arena->spectators[i];
-        if (!ent)
+        if (!ent) {
             continue;
+        }
 
-        if (!ent->client)
+        if (!ent->client) {
             continue;
+        }
 
-        if (ent->client->pers.mvdspec)
+        if (ent->client->pers.mvdspec) {
             continue;
+        }
 
         // spec is following someone, show who
         if (ent->client->chase_target) {
@@ -653,11 +659,13 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
                 "yt %d cstring \"%s\"", y,
                 va("%s:%d %s", NAME(ent), ent->client->ping, status));
 
-        if (len >= sizeof(entry))
+        if (len >= sizeof(entry)) {
             continue;
+        }
 
-        if (total + len >= MAX_STRING_CHARS)
+        if (total + len >= MAX_STRING_CHARS) {
             break;
+        }
 
         memcpy(buffer + total, entry, len);
 
