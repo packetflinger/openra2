@@ -2739,10 +2739,11 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
  */
 const char *G_CreateSpectatorStatusBar(edict_t *player)
 {
-    static char    *statusbar;
+    static char *statusbar;
 
-    if (!player->client)
+    if (!player->client) {
         return "";
+    }
 
     statusbar = va(
         "yb -24 "
