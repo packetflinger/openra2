@@ -900,8 +900,9 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
     for (i = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
 
-        if (!c || c->pers.connected <= CONN_CONNECTED)
+        if (!c || c->pers.connected <= CONN_CONNECTED) {
             continue;
+        }
 
         a = c->pers.arena;
 
@@ -909,11 +910,13 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
                 "yt %d cstring \"%-15s %-20s %4d\"", y,
                 c->pers.netname, va("%d:%s", a->number, a->name), c->ping);
 
-        if (len >= sizeof(entry))
+        if (len >= sizeof(entry)) {
             continue;
+        }
 
-        if (total + len >= MAX_STRING_CHARS)
+        if (total + len >= MAX_STRING_CHARS) {
             break;
+        }
 
         memcpy(buffer + total, entry, len);
 
