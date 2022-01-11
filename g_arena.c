@@ -1256,7 +1256,6 @@ void G_ForceDemo(arena_t *arena)
     }
     
     if (arena->recording) {
-
         for (i=0; i<arena->team_count; i++) {
             team = &arena->teams[i];
             for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
@@ -1266,11 +1265,8 @@ void G_ForceDemo(arena_t *arena)
                 }
             }
         }
-        
         arena->recording = qfalse;
-        
     } else {
-
         for (i=0; i<arena->team_count; i++) {
             team = &arena->teams[i];
             for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
@@ -1280,7 +1276,6 @@ void G_ForceDemo(arena_t *arena)
                 }
             }
         }
-        
         arena->recording = qtrue;
     }
 }
