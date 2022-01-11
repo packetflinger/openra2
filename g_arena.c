@@ -1412,8 +1412,9 @@ void G_FreezePlayers(arena_t *a, qboolean freeze)
  */
 void G_GiveItems(edict_t *ent)
 {
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
     
     int flags;
     arena_t *a;
@@ -1440,8 +1441,9 @@ void G_GiveItems(edict_t *ent)
 
     flags = a->weapon_flags;
 
-    if (flags < 2)
+    if (flags < 2) {
         flags = ARENAWEAPON_ALL;
+    }
 
     // weapons and armor
     if (flags & ARENAWEAPON_SHOTGUN) {
@@ -1489,10 +1491,7 @@ void G_GiveItems(edict_t *ent)
         ent->client->inventory[ITEM_CELLS] = a->ammo[ITEM_CELLS];
     }
 
-    // armor
     ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
-    
-    // health
     ent->health = a->health;
 }
 
