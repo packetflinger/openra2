@@ -489,14 +489,17 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...)
     for (i = 1; i <= game.maxclients; i++) {
         other = &g_edicts[i];
 
-        if (!other->inuse)
+        if (!other->inuse) {
             continue;
+        }
 
-        if (!other->client)
+        if (!other->client) {
             continue;
+        }
 
-        if (arena != ARENA(other))
+        if (arena != ARENA(other)) {
             continue;
+        }
 
         gi.cprintf(other, level, "%s", string);
     }
