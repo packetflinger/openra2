@@ -1502,8 +1502,9 @@ void G_GiveItems(edict_t *ent)
  */
 void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
 {
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
 
     arena_t *arena = ARENA(ent);
     arena_team_t *team = FindTeam(arena, type);
@@ -1560,6 +1561,7 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
     // remove them from the spectator list
     G_SpectatorsPart(ent);
 
+    // captainless team, promote this player
     if (!team->captain) {
         team->captain = ent;
     }
@@ -1568,8 +1570,6 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
 
     // force the skin
     G_SetSkin(ent, team->skin);
-
-    //G_SendStatusBar(ent);
 
     // throw them into the game
     spectator_respawn(ent, CONN_SPAWNED);
