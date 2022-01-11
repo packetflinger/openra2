@@ -1812,26 +1812,14 @@ void G_StartRound(arena_t *a)
  */
 void G_StartingWeapon(edict_t *ent)
 {
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
 
     ent->client->newweapon = FindItem("rocket launcher");
     ChangeWeapon(ent);
 }
 
-
-/**
- * find the team this guy is on and record the death
- */
-void G_TeamMemberDeath(edict_t *ent)
-{
-    int i = 0;
-    arena_team_t *team = ent->client->pers.team;
-
-    if (i && team)
-        return;
-
-}
 
 /**
  * do stuff if this arena is currently in a timeout
