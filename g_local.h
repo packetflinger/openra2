@@ -98,6 +98,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ARENADAMAGE_ALL             31
 
 #define NOHURT(ent, d)    (ARENA(ent)->damage_flags & ARENADAMAGE_##d)
+#define MATCHPLAYING(a)   \
+    (a->state > ARENA_STATE_WARMUP && a->state < ARENA_STATE_INTERMISSION)
 
 // view pitching times
 #define DAMAGE_TIME     0.5
