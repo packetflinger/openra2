@@ -1584,13 +1584,15 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     arena_team_t *oldteam;
     int i;
 
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
 
     oldteam = TEAM(ent);
 
-    if (!oldteam)
+    if (!oldteam) {
         return;
+    }
 
     // remove player
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -1602,7 +1604,6 @@ void G_TeamPart(edict_t *ent, qboolean silent)
 
     // we're the captain, reassign to next player
     if (oldteam->captain == ent) {
-
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
             if (oldteam->players[i]) {
                 oldteam->captain = oldteam->players[i];
