@@ -292,17 +292,18 @@ void G_ArenaSound(arena_t *a, int index)
  */
 void G_ArenaStuff(arena_t *a, const char *command)
 {
-    if (!a)
+    if (!a) {
         return;
+    }
 
     int i;
     gclient_t *cl;
 
     for (i = 0; i < game.maxclients; i++) {
-
         cl = &game.clients[i];
-        if (!cl)
+        if (!cl) {
             continue;
+        }
 
         if (cl->pers.arena == a) {
             gi.WriteByte(SVC_STUFFTEXT);
