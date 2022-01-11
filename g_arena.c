@@ -1904,8 +1904,9 @@ arena_team_t *G_GetWinningTeam(arena_t *a)
  */
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
 {
-    if (!a)
+    if (!a) {
         return;
+    }
 
     // for maps not in the list, there will be no arenas listed
     // just inject cvar defaults
