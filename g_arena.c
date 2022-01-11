@@ -2168,11 +2168,13 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
  */
 void G_SelectBestWeapon(edict_t *ent)
 {
-    if (!ent)
+    if (!ent) {
         return;
+    }
 
-    if (!ent->client)
+    if (!ent->client) {
         return;
+    }
 
     if (ent->client->inventory[ITEM_RAILGUN] > 0) {
         ent->client->newweapon = FindItem("railgun");
