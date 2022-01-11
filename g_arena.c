@@ -268,17 +268,18 @@ void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable)
  */
 void G_ArenaSound(arena_t *a, int index)
 {
-    if (!a)
+    if (!a) {
         return;
+    }
 
     int i;
     gclient_t *cl;
 
     for (i = 0; i < game.maxclients; i++) {
-
         cl = &game.clients[i];
-        if (!cl)
+        if (!cl) {
             continue;
+        }
 
         if (cl->pers.arena == a) {
             gi.sound(cl->edict, CHAN_AUTO, index, 1, ATTN_NORM, 0);
