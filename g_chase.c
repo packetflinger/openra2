@@ -167,14 +167,9 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
         ent->client->clientNum = (targ - g_edicts) - 1;
         ent->client->ps.pmove.pm_flags = 0;
         ent->client->ps.pmove.pm_type = PM_SPECTATOR;
-
-        // chase when you die mid game, so hide us
-        if (ARENA(ent)->state > ARENA_STATE_COUNTDOWN) {
-            ent->flags |= FL_HIDDEN;
-            ent->solid = SOLID_NOT;
-            ent->s.modelindex = 0;
-        }
-
+        ent->solid = SOLID_NOT;
+        ent->flags |= FL_HIDDEN;
+        ent->s.modelindex = 0;
         ChaseEndServerFrame(ent);
     }
 }
