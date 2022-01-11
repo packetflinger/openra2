@@ -2926,7 +2926,7 @@ void G_EndRoundIntermission(arena_t *a)
     }
 
     a->round_intermission_start = 0;
-    a->round_intermission_end = 0;
+    a->round_intermission_end   = 0;
 
     G_EndRound(a, NULL);
 }
