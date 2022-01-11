@@ -2525,12 +2525,12 @@ char *G_DamageFlagsToString(uint32_t df)
  */
 void G_RandomizeAmmo(uint16_t *out)
 {
-    out[ITEM_SHELLS] = genrand_int32() & 0xF;
-    out[ITEM_BULLETS] = genrand_int32() & 0xFF;
+    out[ITEM_SHELLS]   = genrand_int32() & 0xF;
+    out[ITEM_BULLETS]  = genrand_int32() & 0xFF;
     out[ITEM_GRENADES] = genrand_int32() & 0xF;
-    out[ITEM_CELLS] = genrand_int32() & 0xFF;
-    out[ITEM_ROCKETS] = genrand_int32() & 0xF;
-    out[ITEM_SLUGS] = genrand_int32() & 0xF;
+    out[ITEM_CELLS]    = genrand_int32() & 0xFF;
+    out[ITEM_ROCKETS]  = genrand_int32() & 0xF;
+    out[ITEM_SLUGS]    = genrand_int32() & 0xF;
 }
 
 /**
