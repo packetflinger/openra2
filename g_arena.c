@@ -1347,8 +1347,9 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
         update_playercounts(a);    // for sanity
 
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-            if (!winner->players[i])
+            if (!winner->players[i]) {
                 continue;
+            }
 
             winner->players[i]->client->resp.round_score++;
         }
