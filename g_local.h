@@ -28,8 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GitRevisionInfo.h" // Derived from template via GitWCRev
 #endif // _WIN32
 
-#define true 		1
-#define false		0
+#define true        1
+#define false       0
 
 #define TAG_GAME    765     // clear when unloading the dll
 #define TAG_LEVEL   766     // clear when loading a new level
@@ -159,13 +159,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 // memory tags to allow dynamic memory to be cleaned up
-#define TAG_GAME    765     // clear when unloading the dll
-#define TAG_LEVEL   766     // clear when loading a new level
+#define TAG_GAME        765     // clear when unloading the dll
+#define TAG_LEVEL       766     // clear when loading a new level
 
 
 #define MELEE_DISTANCE  80
 
-#define BODY_QUEUE_SIZE     8
+#define BODY_QUEUE_SIZE 8
 
 #define MAX_NETNAME     16
 #define MAX_SKINNAME    24
@@ -734,24 +734,24 @@ extern  cvar_t  *g_vote_threshold;
 extern  cvar_t  *g_vote_limit;
 extern  cvar_t  *g_vote_flags;
 
-extern	cvar_t	*g_frag_drop;
-extern	cvar_t	*g_team_balance;
-extern	cvar_t	*g_team_count;
-extern	cvar_t	*g_teamspec_name;
-extern 	cvar_t	*g_team1_name;
-extern	cvar_t	*g_team1_skin;
-extern 	cvar_t	*g_team2_name;
-extern	cvar_t	*g_team2_skin;
-extern 	cvar_t	*g_team3_name;
-extern	cvar_t	*g_team3_skin;
-extern 	cvar_t	*g_team4_name;
-extern	cvar_t	*g_team4_skin;
-extern 	cvar_t	*g_team5_name;
-extern	cvar_t	*g_team5_skin;
-extern	cvar_t	*g_round_end_time;
-extern	cvar_t	*g_default_arena;
-extern	cvar_t	*g_round_limit;
-extern	cvar_t	*g_timeout_time;
+extern  cvar_t  *g_frag_drop;
+extern  cvar_t  *g_team_balance;
+extern  cvar_t  *g_team_count;
+extern  cvar_t  *g_teamspec_name;
+extern  cvar_t  *g_team1_name;
+extern  cvar_t  *g_team1_skin;
+extern  cvar_t  *g_team2_name;
+extern  cvar_t  *g_team2_skin;
+extern  cvar_t  *g_team3_name;
+extern  cvar_t  *g_team3_skin;
+extern  cvar_t  *g_team4_name;
+extern  cvar_t  *g_team4_skin;
+extern  cvar_t  *g_team5_name;
+extern  cvar_t  *g_team5_skin;
+extern  cvar_t  *g_round_end_time;
+extern  cvar_t  *g_default_arena;
+extern  cvar_t  *g_round_limit;
+extern  cvar_t  *g_timeout_time;
 extern  cvar_t  *g_intermission_time;
 extern  cvar_t  *g_admin_password;
 extern  cvar_t  *g_item_ban;
@@ -798,24 +798,24 @@ extern  cvar_t  *flood_infos;
 extern  cvar_t  *flood_perinfo;
 extern  cvar_t  *flood_infodelay;
 
-extern	cvar_t	*g_round_countdown;
-extern	cvar_t	*g_weapon_flags;
-extern	cvar_t	*g_damage_flags;
-extern	cvar_t	*g_health_start;
-extern	cvar_t	*g_armor_start;
-extern	cvar_t	*g_drop_allowed;
-extern	cvar_t	*g_skin_lock;
-extern	cvar_t	*g_ammo_slugs;
-extern	cvar_t	*g_ammo_rockets;
-extern	cvar_t	*g_ammo_cells;
-extern	cvar_t	*g_ammo_grenades;
-extern	cvar_t	*g_ammo_bullets;
-extern	cvar_t	*g_ammo_shells;
-extern	cvar_t	*g_timein_time;
-extern	cvar_t	*g_screenshot;
-extern	cvar_t	*g_demo;
-extern	cvar_t	*g_team_reset;
-extern	cvar_t	*g_all_chat;
+extern  cvar_t  *g_round_countdown;
+extern  cvar_t  *g_weapon_flags;
+extern  cvar_t  *g_damage_flags;
+extern  cvar_t  *g_health_start;
+extern  cvar_t  *g_armor_start;
+extern  cvar_t  *g_drop_allowed;
+extern  cvar_t  *g_skin_lock;
+extern  cvar_t  *g_ammo_slugs;
+extern  cvar_t  *g_ammo_rockets;
+extern  cvar_t  *g_ammo_cells;
+extern  cvar_t  *g_ammo_grenades;
+extern  cvar_t  *g_ammo_bullets;
+extern  cvar_t  *g_ammo_shells;
+extern  cvar_t  *g_timein_time;
+extern  cvar_t  *g_screenshot;
+extern  cvar_t  *g_demo;
+extern  cvar_t  *g_team_reset;
+extern  cvar_t  *g_all_chat;
 extern  cvar_t  *g_round_timelimit;
 extern  cvar_t  *g_fast_weapon_change;
 
@@ -901,8 +901,8 @@ char    *G_CopyString(const char *in);
 float   *tv(float x, float y, float z);
 char    *vtos(vec3_t v);
 
-float vectoyaw(vec3_t vec);
-void vectoangles(vec3_t vec, vec3_t angles);
+float   vectoyaw(vec3_t vec);
+void    vectoangles(vec3_t vec, vec3_t angles);
 qboolean match(char *pattern, char *haystack);
 
 //
@@ -1036,11 +1036,11 @@ double genrand_float32_notone(void);
 
 
 // private strings (unicast configstrings)
-#define PCS_DAMAGE	0
-#define PCS_DELTA	1
-#define PCS_RANK	2
-#define PCS_VOTE	3
-#define PCS_TOTAL	4
+#define PCS_DAMAGE  0
+#define PCS_DELTA   1
+#define PCS_RANK    2
+#define PCS_VOTE    3
+#define PCS_TOTAL   4
 
 // configstring indexes
 #define CS_OBSERVE          (CS_GENERAL + 1)
@@ -1208,14 +1208,14 @@ typedef struct flood_s {
 
 // client data that stays across multiple level loads
 typedef struct {
-    char        	netname[MAX_NETNAME];
-    char        	skin[MAX_SKINNAME];
-    char        	ip[32];
-    int         	hand;
-    float       	fov;
-    gender_t    	gender;
-    int         	uf;
-    conn_t      	connected;
+    char            netname[MAX_NETNAME];
+    char            skin[MAX_SKINNAME];
+    char            ip[32];
+    int             hand;
+    float           fov;
+    gender_t        gender;
+    int             uf;
+    conn_t          connected;
     qboolean        loopback: 1,
                     mvdspec: 1,
                     admin: 1,
@@ -1232,8 +1232,8 @@ typedef struct {
     int         enter_framenum;     // level.framenum the client entered the game
     int         activity_framenum;  // level.framenum last activity was seen
     int         score;              // frags, etc
-	int			round_score;		// rounds won
-	int			match_score;		// matches won
+    int         round_score;        // rounds won
+    int         match_score;        // matches won
     int         deaths;
     fragstat_t  frags[FRAG_TOTAL];
     itemstat_t  items[ITEM_TOTAL];
@@ -1506,7 +1506,7 @@ struct edict_s {
 
     // hack for proper s.old_origin updates
     vec3_t      old_origin;
-	
+
     int         arena;
     int         override;
     int         version;
@@ -1577,8 +1577,8 @@ qboolean G_OpenDatabase(void);
 void G_CloseDatabase(void);
 #endif
 
-#define WEAPON_MAX 	(10)
-#define DAMAGE_MAX	(5)
+#define WEAPON_MAX  (10)
+#define DAMAGE_MAX  (5)
 
 typedef struct weaponvote_s {
     const char  *names[2];
@@ -1589,8 +1589,8 @@ typedef struct weaponvote_s {
 
 
 typedef struct damagevote_s {
-	const char  *name;
-	uint16_t    value;
+    const char  *name;
+    uint16_t    value;
 } damagevote_t;
 
 extern const weaponinfo_t   weaponvotes[WEAPON_MAX];
