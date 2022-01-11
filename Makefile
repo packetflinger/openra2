@@ -81,12 +81,10 @@ endif
 
 ifdef CONFIG_WINDOWS
     OBJS += openra2.o
-    #TARGET := game$(CPU)-openra2-$(VER).dll
-    TARGET := game$(CPU).dll
+    TARGET ?= game$(CPU)-openra2-$(VER).dll
 else
     LIBS += -lm
-    #TARGET := game$(CPU)-openra2-$(VER).so
-    TARGET := game$(CPU).so
+    TARGET ?= game$(CPU)-openra2-$(VER).so
 endif
 
 all: $(TARGET)
