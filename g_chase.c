@@ -171,8 +171,8 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
         // chase when you die mid game, so hide us
         if (ARENA(ent)->state > ARENA_STATE_COUNTDOWN) {
             ent->flags |= FL_HIDDEN;
-            //ent->svflags |= SVF_NOCLIENT;
             ent->solid = SOLID_NOT;
+            ent->s.modelindex = 0;
         }
 
         ChaseEndServerFrame(ent);
