@@ -1878,8 +1878,9 @@ arena_team_t *G_GetWinningTeam(arena_t *a)
     static uint8_t alivecount = 0;
     static arena_team_t *winner;
 
-    if (!a)
+    if (!a) {
         return NULL;
+    }
 
     for (i=0; i<a->team_count; i++) {
         if (a->teams[i].players_alive > 0) {
