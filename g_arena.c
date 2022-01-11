@@ -1383,8 +1383,9 @@ void G_FreezePlayers(arena_t *a, qboolean freeze)
     edict_t *ent;
     arena_team_t *team;
 
-    if (!a)
+    if (!a) {
         return;
+    }
 
     pmtype_t type;
 
