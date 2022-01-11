@@ -451,11 +451,13 @@ void G_ConfigString(arena_t *arena, uint16_t index, const char *string)
 
     for (i=0; i<game.maxclients; i++) {
         ent = arena->clients[i];
-        if (!ent)
+        if (!ent) {
             continue;
+        }
 
-        if (!ent->client)
+        if (!ent->client) {
             continue;
+        }
 
         gi.WriteByte(SVC_CONFIGSTRING);
         gi.WriteShort(index);
