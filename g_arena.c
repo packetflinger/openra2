@@ -1638,12 +1638,12 @@ void G_RefillInventory(edict_t *ent)
     a = ARENA(ent);
     
     // ammo
-    ent->client->inventory[ITEM_SLUGS] = a->ammo[ITEM_SLUGS];
-    ent->client->inventory[ITEM_ROCKETS] = a->ammo[ITEM_ROCKETS];
-    ent->client->inventory[ITEM_CELLS] = a->ammo[ITEM_CELLS];
+    ent->client->inventory[ITEM_SLUGS]    = a->ammo[ITEM_SLUGS];
+    ent->client->inventory[ITEM_ROCKETS]  = a->ammo[ITEM_ROCKETS];
+    ent->client->inventory[ITEM_CELLS]    = a->ammo[ITEM_CELLS];
     ent->client->inventory[ITEM_GRENADES] = a->ammo[ITEM_GRENADES];
-    ent->client->inventory[ITEM_BULLETS] = a->ammo[ITEM_BULLETS];
-    ent->client->inventory[ITEM_SHELLS] = a->ammo[ITEM_SHELLS];
+    ent->client->inventory[ITEM_BULLETS]  = a->ammo[ITEM_BULLETS];
+    ent->client->inventory[ITEM_SHELLS]   = a->ammo[ITEM_SHELLS];
 
     // armor
     ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
