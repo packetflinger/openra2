@@ -1217,10 +1217,8 @@ void G_UpdateSkins(edict_t *ent)
 
     // each team
     for (i=0; i<ARENA(ent)->team_count; i++) {
-
         // each player
         for (j=0; j<ARENA(ent)->teams[i].player_count; j++) {
-
             gi.WriteByte(SVC_CONFIGSTRING);
             gi.WriteShort(CS_PLAYERSKINS + (ARENA(ent)->teams[i].players[j] - g_edicts) - 1);
             gi.WriteString(ARENA(ent)->teams[i].skin);
