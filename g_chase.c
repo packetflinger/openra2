@@ -168,8 +168,10 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
         ent->client->ps.pmove.pm_flags = 0;
         ent->client->ps.pmove.pm_type = PM_SPECTATOR;
         ent->solid = SOLID_NOT;
-        ent->flags |= FL_HIDDEN;
-        ent->s.modelindex = 0;
+        if (!g_showchasebody->value) {
+            ent->flags |= FL_HIDDEN;
+            ent->s.modelindex = 0;
+        }
         ChaseEndServerFrame(ent);
     }
 }
