@@ -1623,24 +1623,6 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     spectator_respawn(ent, CONN_SPECTATOR);
 }
 
-/**
- * Client quit, remove them from the specs
- */
-void G_SpectatorRemove(edict_t *ent)
-{
-    if (!ent) {
-        return;
-    }
-
-    if (!ent->client) {
-        return;
-    }
-
-    uint8_t idx = arena_find_sp_index(ent);
-    ARENA(ent)->spectators[idx] = NULL;
-    ARENA(ent)->spectator_count--;
-}
-
 
 /**
  * Give back all the ammo, health and armor for start of a round
