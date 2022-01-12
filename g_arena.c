@@ -1039,6 +1039,8 @@ void G_ChangeArena(edict_t *ent, arena_t *arena)
                 gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s left this arena\n", NAME(ent));
             }
         }
+
+        G_SpectatorsPart(ent);
     }
 
     if (!arena) {
@@ -1616,7 +1618,7 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     ent->client->pers.ready = false;
     ent->client->pers.team = 0;
 
-    //SpectatorsJoin(ent);
+    G_SpectatorsJoin(ent);
 
     spectator_respawn(ent, CONN_SPECTATOR);
 }
