@@ -295,5 +295,6 @@ void G_BeginRoundIntermission(arena_t *a);
 void G_EndRoundIntermission(arena_t *a);
 void G_ApplyDefaults(arena_t *a);
 void update_playercounts(arena_t *a);
+void G_SpectatorRemove(edict_t *ent);
 
 #endif // ARENA_H

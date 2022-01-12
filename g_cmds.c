@@ -1188,6 +1188,7 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 static void Cmd_Observe_f(edict_t *ent)
 {
     G_TeamPart(ent, false);
+    G_SpectatorsJoin(ent);
     
     if (ent->client->pers.connected == CONN_PREGAME) {
         ent->client->pers.connected = CONN_SPECTATOR;

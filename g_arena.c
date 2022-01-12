@@ -319,7 +319,7 @@ void G_ArenaStuff(arena_t *a, const char *command)
  */
 void G_CheckArenaRules(arena_t *a)
 {
-    uint8_t previous, i, count;
+    uint8_t i;
 
     if (!a) {
         return;
@@ -327,17 +327,11 @@ void G_CheckArenaRules(arena_t *a)
 
     // watch for players disconnecting mid match
     if (MATCHPLAYING(a)) {
-        previous = a->teams[0].player_count;
-
-        for (i=1; i<a->team_count; i++) {
-            count = a->teams[i].player_count;
-            if ((count != previous && g_team_balance->value > 0) || count == 0) {
-                a->current_round = a->round_limit;
+        for (i=0; i<a->team_count; i++) {
+            if (a->teams[i].player_count == 0) {
                 G_EndRound(a, NULL);
                 return;
             }
-
-            previous = a->teams[i].player_count;
         }
     }
 
@@ -1622,9 +1616,27 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     ent->client->pers.ready = false;
     ent->client->pers.team = 0;
 
-    G_SpectatorsJoin(ent);
+    //SpectatorsJoin(ent);
 
     spectator_respawn(ent, CONN_SPECTATOR);
+}
+
+/**
+ * Client quit, remove them from the specs
+ */
+void G_SpectatorRemove(edict_t *ent)
+{
+    if (!ent) {
+        return;
+    }
+
+    if (!ent->client) {
+        return;
+    }
+
+    uint8_t idx = arena_find_sp_index(ent);
+    ARENA(ent)->spectators[idx] = NULL;
+    ARENA(ent)->spectator_count--;
 }
 
 
