@@ -495,15 +495,17 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
             if (ff) {
                 attacker->client->resp.score--;
+                TEAM(attacker)->frags--;
             } else {
-				if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
-					frag = mod_to_frag[mod];
-					attacker->client->resp.score++;
-					attacker->client->resp.frags[frag].kills++;
-					self->client->resp.deaths++;
-					self->client->resp.frags[frag].deaths++;
-					AccountItemKills(attacker);
-				}
+                if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
+                    frag = mod_to_frag[mod];
+                    attacker->client->resp.score++;
+                    TEAM(attacker)->frags++;
+                    attacker->client->resp.frags[frag].kills++;
+                    self->client->resp.deaths++;
+                    self->client->resp.frags[frag].deaths++;
+                    AccountItemKills(attacker);
+                }
             }
             G_ScoreChanged(attacker);
             G_UpdateRanks();
@@ -514,8 +516,8 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
     gi.bprintf(PRINT_MEDIUM, "%s died.\n", self->client->pers.netname);
     frag = mod_to_frag[mod];
 	if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
-		self->client->resp.score--;
-		self->client->resp.frags[frag].suicides++;
+        self->client->resp.score--;
+        self->client->resp.frags[frag].suicides++;
 	}
 
     G_ScoreChanged(self);
@@ -667,8 +669,8 @@ player_die...
 void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
 {
     int     n;
-    arena_t *arena = self->client->pers.arena;
-    arena_team_t *team = self->client->pers.team;
+    arena_t         *arena = self->client->pers.arena;
+    arena_team_t    *team = self->client->pers.team;
 
     VectorClear(self->avelocity);
 
@@ -689,13 +691,13 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     self->svflags |= SVF_DEADMONSTER;
 
     if (!self->deadflag) {
-		if (arena && team && arena->state >= ARENA_STATE_PLAY) {
-			TEAM(self)->players_alive--;
-			if (TEAM(self)->players_alive == 0) {
-				ARENA(self)->teams_alive--;
-			}
-		}
-		
+        if (arena && team && arena->state >= ARENA_STATE_PLAY) {
+            TEAM(self)->players_alive--;
+            if (TEAM(self)->players_alive == 0) {
+                ARENA(self)->teams_alive--;
+            }
+        }
+
         self->client->respawn_framenum = level.framenum + 1 * HZ;
         LookAtKiller(self, inflictor, attacker);
         self->client->ps.pmove.pm_type = PM_DEAD;
@@ -705,7 +707,7 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
         // show scores
         if (!self->client->layout) {
             self->client->layout = LAYOUT_SCORES;
-			G_ArenaScoreboardMessage(self, false);
+            G_ArenaScoreboardMessage(self, false);
         }
 
         // clear inventory

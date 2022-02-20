@@ -127,18 +127,20 @@ typedef enum {
 
 
 typedef struct {
-    char       name[MAX_TEAM_NAME];
-    char       skin[MAX_TEAM_SKIN];
-    edict_t    *players[MAX_ARENA_TEAM_PLAYERS];
-    edict_t    *captain;
+    char        name[MAX_TEAM_NAME];
+    char        skin[MAX_TEAM_SKIN];
+    edict_t     *players[MAX_ARENA_TEAM_PLAYERS];
+    edict_t     *captain;
     arena_team_type_t  type;
-    int8_t     player_count;
-    int8_t     players_alive;
-    qboolean   locked;
-    qboolean   ready;
-    uint32_t   damage_dealt;
-    uint32_t   damage_taken;
-    list_t     entry;
+    int8_t      player_count;
+    int8_t      players_alive;
+    qboolean    locked;
+    qboolean    ready;
+    uint32_t    damage_dealt;
+    uint32_t    damage_taken;
+    int32_t    frags;
+    int32_t    suicides;
+    list_t      entry;
 } arena_team_t;
 
 
