@@ -565,10 +565,11 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
     for (k=0; k<arena->team_count; k++) {
         total += Q_scnprintf(buffer + total, MAX_STRING_CHARS, "xv 0 %s "
                 "yt %d "
-                "cstring \"Team %s - %d\" "
+                "cstring \"Team %s - %d (%d)\" "
                 "yt %d "
-                "cstring2 \"Name                 Damage     Time Ping\"", entry, y,
+                "cstring2 \"Name            Score   Damage     Time Ping\"", entry, y,
                 arena->teams[k].name,
+                arena->teams[k].frags,
                 arena->teams[k].damage_dealt,
                 y + LAYOUT_LINE_HEIGHT
         );
@@ -597,8 +598,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
             }
 
             len = Q_snprintf(entry, sizeof(entry),
-                    "yt %d cstring \"%-21s %6d     %4s %4d\"", y,
+                    "yt %d cstring \"%-15s %5d   %6d     %4s %4d\"", y,
                     c->pers.netname,
+                    c->resp.score,
                     c->resp.damage_given,
                     timebuf,
                     c->ping

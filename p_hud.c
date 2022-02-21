@@ -735,7 +735,8 @@ void G_SetStats(edict_t *ent)
     //
     // frags
     //
-    ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.damage_given;
+    //ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.damage_given;
+    ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.score;
 
     //
     // help icon / current weapon if not shown
