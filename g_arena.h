@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2016-2021 Packetflinger.com
+Copyright (C) 2016-2023 Packetflinger.com
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -74,11 +74,12 @@ typedef enum {
 
 typedef enum {
     TEAM_SPECTATORS,
-    TEAM_RED,
-    TEAM_BLUE,
+    TEAM_RED,           // default
+    TEAM_BLUE,          // default
     TEAM_GREEN,
     TEAM_YELLOW,
-    TEAM_AQUA
+    TEAM_AQUA,
+    TEAM_LPS            // only used in LPS mode
 } arena_team_type_t;
 
 
@@ -121,8 +122,9 @@ typedef enum {
 
 
 typedef enum {
-    ARENA_MODE_NORMAL,
-	ARENA_MODE_REDROVER,
+    ARENA_MODE_TEAMS,      // teams, 1 death per round
+    ARENA_MODE_LPS,         // last player standing
+	ARENA_MODE_REDROVER,    // teams, alternating teams
 } arena_mode_t;
 
 
@@ -138,8 +140,8 @@ typedef struct {
     qboolean    ready;
     uint32_t    damage_dealt;
     uint32_t    damage_taken;
-    int32_t    frags;
-    int32_t    suicides;
+    int32_t     frags;
+    int32_t     suicides;
     list_t      entry;
 } arena_team_t;
 
@@ -172,6 +174,7 @@ typedef struct {
     arena_team_t    teams[MAX_TEAMS];            // [team_count]
     uint8_t         team_count;                  // how many teams are enabled
     uint8_t         player_count;
+    uint8_t         players_alive;
     uint16_t        ammo[MAX_INVENTORY];
     uint16_t        defaultammo[MAX_INVENTORY];
     qboolean        infinite[MAX_INVENTORY];
@@ -196,6 +199,7 @@ typedef struct {
     uint32_t        countdown_start_frame;       // frame number when the count started
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
+    edict_t         *clock;                      // the game clock
 } arena_t;
 
 
@@ -297,5 +301,9 @@ void G_BeginRoundIntermission(arena_t *a);
 void G_EndRoundIntermission(arena_t *a);
 void G_ApplyDefaults(arena_t *a);
 void update_playercounts(arena_t *a);
+
+void G_LPSMode_Think(arena_t *a);
+void G_TeamMode_Think(arena_t *a);
+void G_RoverMode_Think(arena_t *a);
 
 #endif // ARENA_H

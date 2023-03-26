@@ -1518,6 +1518,7 @@ struct edict_s {
     list_t      entry;
 
     edict_t     *killer;
+    uint32_t    seconds;  // for clock functionality
 };
 
 //

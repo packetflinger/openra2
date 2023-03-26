@@ -367,48 +367,19 @@ void G_ArenaThink(arena_t *a)
         G_TimeoutFrame(a);
         return;
     }
-    
-    G_CheckIntermission(a);
-    
-    // end of round
-    if (ROUNDOVER(a)) {
-        G_BeginRoundIntermission(a);
+
+    // game-mode think
+    switch (a->mode) {
+    case ARENA_MODE_LPS:
+        G_LPSMode_Think(a);
+        break;
+    case ARENA_MODE_REDROVER:
+        G_RoverMode_Think(a);
+        break;
+    case ARENA_MODE_TEAMS:
+        G_TeamMode_Think(a);
+        break;
     }
-
-    // countdown to start
-    if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
-        int framesleft = a->round_start_frame - level.framenum;
-
-        if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-            a->countdown = FRAMES_TO_SECS(framesleft);
-        } else if (framesleft == 0) {
-            G_StartRound(a);
-            return;
-        }
-    }
-
-    // pregame
-    if (a->state == ARENA_STATE_WARMUP) {
-        if (a->ready) {    // is everyone ready?
-            a->state = ARENA_STATE_COUNTDOWN;
-            
-            G_ClearRoundInfo(a);
-            
-            a->round_start_frame = level.framenum
-                    + SECS_TO_FRAMES((int) g_round_countdown->value);
-            a->round_frame = a->round_start_frame;
-            a->match_frame = a->round_start_frame;
-
-            a->countdown = (int) g_round_countdown->value;
-
-            G_RespawnPlayers(a);
-            G_ForceDemo(a);
-        }
-    }
-
-    G_CheckTimers(a);
-    G_UpdateArenaVote(a);
-    G_CheckArenaRules(a);
 
     if (a->state > ARENA_STATE_WARMUP) {
         a->round_frame++;
