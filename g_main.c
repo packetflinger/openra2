@@ -987,7 +987,7 @@ static void G_Init(void) {
     g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
     g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
     g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
-    g_round_timelimit = gi.cvar("g_round_timelimit", "180", CVAR_GENERAL);
+    g_round_timelimit = gi.cvar("g_round_timelimit", "0", CVAR_GENERAL);
     g_fast_weapon_change = gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
     g_showchasebody = gi.cvar("g_show_chase_body", "0", CVAR_GENERAL); // just a gag
 

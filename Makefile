@@ -51,9 +51,7 @@ OBJS := \
 	g_items.o \
 	g_main.o \
 	g_misc.o \
-	g_mode_lps.o \
-	g_mode_rover.o \
-	g_mode_teams.o \
+	g_mode.o \
 	g_phys.o \
 	g_random.o \
 	g_spawn.o \

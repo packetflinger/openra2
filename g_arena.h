@@ -221,6 +221,7 @@ typedef struct {
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
     arena_clock_t   clock;                       // the arena clock
+    void            (*think)(void *p);           // function pointer for each frame
 } arena_t;
 
 // maps contain multiple arenas
@@ -280,6 +281,7 @@ const char *G_CreatePlayerStatusBar(edict_t *player);
 char *G_DamageFlagsToString(uint32_t df);
 void G_EndMatch(arena_t *a, arena_team_t *winner);
 void G_EndRound(arena_t *a, arena_team_t *winner);
+void G_FFAFrame(void *p);
 void G_FinishArenaVote(arena_t *a);
 void G_ForceDemo(arena_t *arena);
 void G_ForceReady(arena_team_t *team, qboolean ready);
@@ -304,6 +306,7 @@ void G_ResetArena(arena_t *a);
 void G_ResetTeam(arena_team_t *t);
 void G_RespawnPlayers(arena_t *a);
 char *G_RoundToString(arena_t *a);
+void G_RoverFrame(void *p);
 void G_SecsToString(char *out, int seconds);
 void G_SelectBestWeapon(edict_t *ent);
 void G_SendStatusBar(edict_t *ent);
@@ -315,6 +318,7 @@ void G_StartingWeapon(edict_t *ent);
 void G_StartRound(arena_t *a);
 void G_TeamCast(arena_team_t *t, qboolean reliable);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
+void G_TeamFrame(void *p);
 void G_TimeoutFrame(arena_t *a);
 void G_UpdateArenaVote(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
@@ -327,7 +331,6 @@ void G_ApplyDefaults(arena_t *a);
 void update_playercounts(arena_t *a);
 
 void G_LPSMode_Think(arena_t *a);
-void G_TeamMode_Think(arena_t *a);
 void G_RoverMode_Think(arena_t *a);
 
 

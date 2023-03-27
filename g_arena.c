@@ -368,25 +368,13 @@ void G_ArenaThink(arena_t *a)
         return;
     }
 
-    // game-mode think
-    switch (a->mode) {
-    case ARENA_MODE_LPS:
-        G_LPSMode_Think(a);
-        break;
-    case ARENA_MODE_REDROVER:
-        G_RoverMode_Think(a);
-        break;
-    case ARENA_MODE_TEAMS:
-        G_TeamMode_Think(a);
-        break;
-    }
+    a->think(a);
+    G_ClockTick(a);
 
     if (a->state > ARENA_STATE_WARMUP) {
         a->round_frame++;
         a->match_frame++;
     }
-
-    G_ClockTick(a);
 }
 
 /**
@@ -1141,7 +1129,7 @@ void G_CheckTimers(arena_t *a)
  */
 void G_UpdateConfigStrings(arena_t *a)
 {
-    char countdown[10];
+    //char countdown[10];
     char roundtime[10];
     char timeouttime[10];
     char buf[0xff];
@@ -1157,8 +1145,9 @@ void G_UpdateConfigStrings(arena_t *a)
 
     switch (a->state) {
     case ARENA_STATE_COUNTDOWN:
-        G_SecsToString(countdown, (a->round_start_frame - level.framenum) * FRAMETIME);
-        strcat(buf, va("Starting in %s", countdown));
+        //G_SecsToString(countdown, (a->round_start_frame - level.framenum) * FRAMETIME);
+        //strcat(buf, va("Starting in %s", countdown));
+        strcat(buf, va("Starting in %s", a->clock.string));
         break;
 
     case ARENA_STATE_PLAY:
@@ -2282,7 +2271,7 @@ void G_ResetArena(arena_t *a)
     a->current_round = 1;
     
     G_SecsToString(roundtime, a->timelimit);
-    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", (a->timelimit != 0) ? roundtime : ""));
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 
     for (i=0; i<a->team_count; i++) {
@@ -2950,11 +2939,15 @@ void G_ClockThink(void *p)
             return;
         }
         G_SecsToString(c->string, c->value);
+        if (c->value < 10) {
+            G_ArenaSound(a, level.sounds.countdown[c->value]);
+        }
         break;
     }
 
     gi.dprintf("%s\n", c->string);
     c->nextthink = level.framenum + SECS_TO_FRAMES(1);
+    G_UpdateConfigStrings(a);
 }
 
 /**
@@ -2982,6 +2975,7 @@ void G_ClockTick(arena_t *a)
  */
 void G_InitArena(arena_t *a)
 {
+    a->think = G_TeamFrame;
     a->round_limit = (int) g_round_limit->value;
     a->weapon_flags = (int) g_weapon_flags->value;
     a->damage_flags = (int) g_damage_flags->value;
@@ -2994,11 +2988,11 @@ void G_InitArena(arena_t *a)
     // create this arena's clock
     memset(&a->clock, 0, sizeof(clock_t));
     //a->clock.type = CLOCK_ELAPSE;
-    a->clock.type = CLOCK_COUNTDOWN;
-    a->clock.value = 15;
-    a->clock.think = G_ClockThink;
+    //a->clock.type = CLOCK_COUNTDOWN;
+    //a->clock.value = 15;
+    //a->clock.think = G_ClockThink;
     //a->clock.complete = G_AlarmTest;
-    a->clock.nextthink = 0;
+    //a->clock.nextthink = 0;
 }
 
 /**
