@@ -977,7 +977,7 @@ static void G_Init(void) {
     g_ammo_shells = gi.cvar("g_ammo_shells", "50", CVAR_LATCH);
     g_timein_time = gi.cvar("g_timein_time", "11", CVAR_GENERAL);
     g_timeout_time = gi.cvar("g_timeout_time", "180", CVAR_LATCH);
-    g_round_limit = gi.cvar("g_round_limit", "7", CVAR_LATCH);
+    g_round_limit = gi.cvar("g_round_limit", "11", CVAR_LATCH);
     g_team_balance = gi.cvar("g_team_balance", "0", CVAR_GENERAL);
     g_health_start = gi.cvar("g_health_start", "100", CVAR_LATCH);
     g_armor_start = gi.cvar("g_armor_start", "100", CVAR_LATCH);
@@ -988,7 +988,7 @@ static void G_Init(void) {
     g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
     g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
     g_round_timelimit = gi.cvar("g_round_timelimit", "180", CVAR_GENERAL);
-    g_fast_weapon_change =gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
+    g_fast_weapon_change = gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
     g_showchasebody = gi.cvar("g_show_chase_body", "0", CVAR_GENERAL); // just a gag
 
     // Sane limits
