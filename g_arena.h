@@ -127,6 +127,27 @@ typedef enum {
 	ARENA_MODE_REDROVER,    // teams, alternating teams
 } arena_mode_t;
 
+typedef enum {
+    CLOCK_NONE,         // nothing changes per "tick"
+    CLOCK_COUNTUP,      // value counts up, away from starting point
+    CLOCK_COUNTDOWN,    // value counts down to zero
+} clock_type_t;
+
+/**
+ * Each arena has it's own clock. This can be in the form of:
+ * 1. A countdown (prior to round start, timeout, round limit)
+ * 2. A generic counter (timing how long a round/match is lasting)
+ *
+ * "complete" pointer only makes sense in the context of a countdown
+ */
+typedef struct {
+    clock_type_t    type;
+    uint32_t        nextthink;              // think on or after this frame
+    uint32_t        value;                  // seconds
+    char            string[15];             // string representation
+    void            (*think)(void *a);      // function to run per second
+    void            (*complete)(void *a);   // run when timer is finished
+} arena_clock_t;
 
 typedef struct {
     char        name[MAX_TEAM_NAME];
@@ -199,9 +220,8 @@ typedef struct {
     uint32_t        countdown_start_frame;       // frame number when the count started
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
-    edict_t         *clock;                      // the game clock
+    arena_clock_t   clock;                       // the arena clock
 } arena_t;
-
 
 // maps contain multiple arenas
 typedef struct {
@@ -230,6 +250,7 @@ typedef struct {
 
 void change_arena(edict_t *self);
 const char *DemoName(edict_t *ent);
+void G_AlarmTest(void *p);
 void G_ArenaCast(arena_t *a, qboolean reliable);
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
@@ -245,6 +266,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
 size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
+void G_ClockTick(arena_t *a);
+void G_ClockThink(void *a);
 void G_CheckArenaRules(arena_t *a);
 qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
 void G_CheckIntermission(arena_t *a);
@@ -264,6 +287,7 @@ void G_FreezePlayers(arena_t *a, qboolean freeze);
 arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
+void G_InitArena(arena_t *a);
 void G_InitArenaTeams(arena_t *arena);    // in g_spawn.c
 void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
@@ -305,5 +329,6 @@ void update_playercounts(arena_t *a);
 void G_LPSMode_Think(arena_t *a);
 void G_TeamMode_Think(arena_t *a);
 void G_RoverMode_Think(arena_t *a);
+
 
 #endif // ARENA_H

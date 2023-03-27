@@ -385,6 +385,8 @@ void G_ArenaThink(arena_t *a)
         a->round_frame++;
         a->match_frame++;
     }
+
+    G_ClockTick(a);
 }
 
 /**
@@ -1834,7 +1836,7 @@ void G_SecsToString(char *out, int seconds)
     mins = seconds / 60;
     seconds -= (mins * 60);
 
-    sprintf(out, "%d:%.2d", mins, seconds);
+    sprintf(out, "%.2d:%.2d", mins, seconds);
 }
 
 /**
@@ -2918,3 +2920,94 @@ void G_ApplyDefaults(arena_t *a)
     G_MergeArenaSettings(a, &level.arena_defaults[a->number]);
     G_InitArenaTeams(a);
 }
+
+/**
+ * Each arena clock runs this once per second
+ */
+void G_ClockThink(void *p)
+{
+    arena_t *a = (arena_t *)p;
+    arena_clock_t *c = &a->clock;
+
+    switch (c->type) {
+    case CLOCK_NONE:
+        if (c->string[0] == 0) {
+            strncpy(c->string, "00:00", sizeof(c->string));
+        }
+        return;
+    case CLOCK_COUNTUP:
+        c->value++;
+        G_SecsToString(c->string, c->value);
+        break;
+    case CLOCK_COUNTDOWN:
+        c->value--;
+        if (c->value == 0) {
+            if (c->complete) {
+                c->complete(p);
+                c->complete = NULL;
+            }
+            c->type = CLOCK_NONE;
+            return;
+        }
+        G_SecsToString(c->string, c->value);
+        break;
+    }
+
+    gi.dprintf("%s\n", c->string);
+    c->nextthink = level.framenum + SECS_TO_FRAMES(1);
+}
+
+/**
+ * Advance the arena's clock
+ */
+void G_ClockTick(arena_t *a)
+{
+    if (!a) {
+        return;
+    }
+
+    if (!a->clock.think) {
+        return;
+    }
+
+    if (a->clock.nextthink > level.framenum) {
+        return;
+    }
+
+    a->clock.think(a);
+}
+
+/**
+ * Setup some defaults. Called from G_SpawnEntities()
+ */
+void G_InitArena(arena_t *a)
+{
+    a->round_limit = (int) g_round_limit->value;
+    a->weapon_flags = (int) g_weapon_flags->value;
+    a->damage_flags = (int) g_damage_flags->value;
+    a->armor = (int) g_armor_start->value;
+    a->health = (int) g_health_start->value;
+    a->team_count = (int) g_team_count->value;
+    a->timelimit = (int) g_round_timelimit->value;
+    a->fastswitch = (int) g_fast_weapon_change->value;
+
+    // create this arena's clock
+    memset(&a->clock, 0, sizeof(clock_t));
+    //a->clock.type = CLOCK_ELAPSE;
+    a->clock.type = CLOCK_COUNTDOWN;
+    a->clock.value = 15;
+    a->clock.think = G_ClockThink;
+    //a->clock.complete = G_AlarmTest;
+    a->clock.nextthink = 0;
+}
+
+/**
+ * A simple test function to run at the end of a countdown clock
+ */
+void G_AlarmTest(void *p)
+{
+    arena_t *a = (arena_t *)p;
+    gi.dprintf("COUNTDOWN OVER! (arena %d)\n", a->number);
+}
+
+
