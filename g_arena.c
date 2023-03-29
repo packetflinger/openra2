@@ -1298,6 +1298,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
 void G_EndRound(arena_t *a, arena_team_t *winner)
 {
     int i;
+
     a->round_start_frame = 0;
     
     if (winner) {
@@ -1329,7 +1330,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
 
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
     G_HideScores(a);
-    G_RespawnPlayers(a);
+    G_StartRoundCountdown(a);
 }
 
 
@@ -1748,9 +1749,12 @@ void G_HideScores(arena_t *a)
 /**
  * Begin a round
  *
+ * Arg is a void pointer but in reality is an arena_t
+ *
  */
-void G_StartRound(arena_t *a)
+void G_StartRound(void *p)
 {
+    arena_t *a = (arena_t *)p;
     uint8_t i;
 
     for (i=0; i<a->team_count; i++) {
@@ -2868,10 +2872,20 @@ void G_BeginRoundIntermission(arena_t *a)
         return;
     }
 
+    arena_clock_t *c = &a->clock;
+
     a->state = ARENA_STATE_ROUNDPAUSE;
     a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
     a->round_intermission_start = level.framenum;
     a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
+
+    // set a timer
+    memset(c, 0, sizeof(arena_clock_t));
+    c->type = CLOCK_COUNTDOWN;
+    c->think = G_RoundIntermissionThink;
+    c->complete = G_EndRoundIntermission;
+    c->nextthink = 0;
+    c->value = (int)g_intermission_time->value;
 
     G_ShowScores(a);
 }
@@ -2879,8 +2893,10 @@ void G_BeginRoundIntermission(arena_t *a)
 /**
  * Round intermission is over, reset and proceed to next round
  */
-void G_EndRoundIntermission(arena_t *a)
+void G_EndRoundIntermission(void *p)
 {
+    arena_t *a = (arena_t*)p;
+
     if (a->state != ARENA_STATE_ROUNDPAUSE) {
         return;
     }
@@ -2911,66 +2927,6 @@ void G_ApplyDefaults(arena_t *a)
 }
 
 /**
- * Each arena clock runs this once per second
- */
-void G_ClockThink(void *p)
-{
-    arena_t *a = (arena_t *)p;
-    arena_clock_t *c = &a->clock;
-
-    switch (c->type) {
-    case CLOCK_NONE:
-        if (c->string[0] == 0) {
-            strncpy(c->string, "00:00", sizeof(c->string));
-        }
-        return;
-    case CLOCK_COUNTUP:
-        c->value++;
-        G_SecsToString(c->string, c->value);
-        break;
-    case CLOCK_COUNTDOWN:
-        c->value--;
-        if (c->value == 0) {
-            if (c->complete) {
-                c->complete(p);
-                c->complete = NULL;
-            }
-            c->type = CLOCK_NONE;
-            return;
-        }
-        G_SecsToString(c->string, c->value);
-        if (c->value < 10) {
-            G_ArenaSound(a, level.sounds.countdown[c->value]);
-        }
-        break;
-    }
-
-    gi.dprintf("%s\n", c->string);
-    c->nextthink = level.framenum + SECS_TO_FRAMES(1);
-    G_UpdateConfigStrings(a);
-}
-
-/**
- * Advance the arena's clock
- */
-void G_ClockTick(arena_t *a)
-{
-    if (!a) {
-        return;
-    }
-
-    if (!a->clock.think) {
-        return;
-    }
-
-    if (a->clock.nextthink > level.framenum) {
-        return;
-    }
-
-    a->clock.think(a);
-}
-
-/**
  * Setup some defaults. Called from G_SpawnEntities()
  */
 void G_InitArena(arena_t *a)
@@ -2985,23 +2941,39 @@ void G_InitArena(arena_t *a)
     a->timelimit = (int) g_round_timelimit->value;
     a->fastswitch = (int) g_fast_weapon_change->value;
 
-    // create this arena's clock
     memset(&a->clock, 0, sizeof(clock_t));
-    //a->clock.type = CLOCK_ELAPSE;
-    //a->clock.type = CLOCK_COUNTDOWN;
-    //a->clock.value = 15;
-    //a->clock.think = G_ClockThink;
-    //a->clock.complete = G_AlarmTest;
-    //a->clock.nextthink = 0;
 }
 
 /**
- * A simple test function to run at the end of a countdown clock
+ *
  */
-void G_AlarmTest(void *p)
+void G_StartMatch(arena_t *a)
 {
-    arena_t *a = (arena_t *)p;
-    gi.dprintf("COUNTDOWN OVER! (arena %d)\n", a->number);
+    a->match_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
+    G_bprintf(a, PRINT_HIGH, "Match starting...\n");
+    G_StartRoundCountdown(a);
 }
 
+/**
+ *
+ */
+void G_StartRoundCountdown(arena_t *a)
+{
+    a->state = ARENA_STATE_COUNTDOWN;
 
+    G_ClearRoundInfo(a);
+
+    a->countdown = (int)g_round_countdown->value;
+    a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
+    a->round_frame = a->round_start_frame;
+
+    a->clock.type = CLOCK_COUNTDOWN;
+    a->clock.think = G_RoundCountdownThink;
+    a->clock.nextthink = 0;
+    a->clock.value = (int)g_round_countdown->value;
+    a->clock.complete = G_StartRound;
+
+    // reset entities? (lifts, etc)
+    G_RespawnPlayers(a);
+    G_ForceDemo(a);
+}

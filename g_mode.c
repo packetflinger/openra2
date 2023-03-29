@@ -10,7 +10,20 @@ void G_TeamFrame(void *p)
 {
     arena_t *a = (arena_t *)p;
 
+    // start match countdown
+    if (a->state == ARENA_STATE_WARMUP) {
+        if (a->ready) {    // is everyone ready?
+            G_StartMatch(a);
+        }
+    }
+
     // end of round
+    if (ROUNDOVER(a)) {
+        G_BeginRoundIntermission(a);
+    }
+
+    // end of round
+    /*
     if (a->players_alive <= 1 && MATCHPLAYING(a)) {
         G_BeginRoundIntermission(a);
     }
@@ -27,7 +40,7 @@ void G_TeamFrame(void *p)
         if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
             a->countdown = FRAMES_TO_SECS(framesleft);
         } else if (framesleft == 0) {
-            G_StartRound(a);
+            //G_StartRound(a);
             return;
         }
     }
@@ -35,26 +48,7 @@ void G_TeamFrame(void *p)
     // start match countdown
     if (a->state == ARENA_STATE_WARMUP) {
         if (a->ready) {    // is everyone ready?
-            a->state = ARENA_STATE_COUNTDOWN;
-
-            G_ClearRoundInfo(a);
-
-            a->round_start_frame = level.framenum
-                    + SECS_TO_FRAMES((int) g_round_countdown->value);
-            a->round_frame = a->round_start_frame;
-            a->match_frame = a->round_start_frame;
-
-            a->countdown = (int) g_round_countdown->value;
-
-            a->clock.type = CLOCK_COUNTDOWN;
-            a->clock.think = G_ClockThink;
-            a->clock.nextthink = 0;
-            a->clock.value = (int)g_round_countdown->value;
-            //a->clock.complete = G_StartRound;
-
-            // reset entities? (lifts, etc)
-            G_RespawnPlayers(a);
-            G_ForceDemo(a);
+            G_StartRoundCountdown(a);
         }
     }
 
@@ -68,6 +62,7 @@ void G_TeamFrame(void *p)
     //G_CheckTimers(a);
     G_UpdateArenaVote(a);
     G_CheckArenaRules(a);
+    */
 }
 
 /**
