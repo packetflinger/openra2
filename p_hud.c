@@ -786,32 +786,32 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_VOTE_PROPOSAL] = 0;
         ent->client->ps.stats[STAT_VOTE_COUNT] = 0;
     }
-	
-	if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
-		if (TEAM(ent)) {
-			if (!ent->client->pers.ready) {
-				ent->client->ps.stats[STAT_READY] = CS_READY;
-			} else {
-				ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
-			}
-		} else {
-			ent->client->ps.stats[STAT_READY] = 0;
-		}
-	} else {
-		ent->client->ps.stats[STAT_READY] = 0;
-	}
 
-	ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
+    if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
+        if (TEAM(ent)) {
+            if (!ent->client->pers.ready) {
+                ent->client->ps.stats[STAT_READY] = CS_READY;
+            } else {
+                ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
+            }
+        } else {
+            ent->client->ps.stats[STAT_READY] = 0;
+        }
+    } else {
+        ent->client->ps.stats[STAT_READY] = 0;
+    }
 
-	if (TEAM(ent)) {
-		ent->client->ps.stats[STAT_AMMO_BULLETS] = ent->client->inventory[ITEM_BULLETS];
-		ent->client->ps.stats[STAT_AMMO_SHELLS] = ent->client->inventory[ITEM_SHELLS];
-		ent->client->ps.stats[STAT_AMMO_GRENADES] = ent->client->inventory[ITEM_GRENADES];
-		ent->client->ps.stats[STAT_AMMO_CELLS] = ent->client->inventory[ITEM_CELLS];
-		ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
-		ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
-	}
+    ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
 
-	ent->client->ps.stats[STAT_ROUND] = CS_ROUND;
+    if (TEAM(ent)) {
+        ent->client->ps.stats[STAT_AMMO_BULLETS] = ent->client->inventory[ITEM_BULLETS];
+        ent->client->ps.stats[STAT_AMMO_SHELLS] = ent->client->inventory[ITEM_SHELLS];
+        ent->client->ps.stats[STAT_AMMO_GRENADES] = ent->client->inventory[ITEM_GRENADES];
+        ent->client->ps.stats[STAT_AMMO_CELLS] = ent->client->inventory[ITEM_CELLS];
+        ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
+        ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
+    }
+
+    ent->client->ps.stats[STAT_ROUND] = CS_ROUND;
 }
 
