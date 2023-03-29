@@ -347,9 +347,10 @@ void BeginIntermission(arena_t *a)
     int        i;
     edict_t    *ent, *client;
 
-	if (!a)
-		return;
-	
+    if (!a) {
+        return;
+    }
+
     if (a->intermission) {
         return;
     }
@@ -362,18 +363,18 @@ void BeginIntermission(arena_t *a)
     // respawn any dead clients
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-		
+
         if (!client->inuse) {
             continue;
-		}
-		
+        }
+
         if (client->health <= 0 && ARENA(client) == a) {
             respawn(client);
-		}
+        }
     }
 
-	ent = SelectIntermissionPoint(a);
-	
+    ent = SelectIntermissionPoint(a);
+
     if (ent) {
         VectorCopy(ent->s.origin, a->intermission_origin);
         VectorCopy(ent->s.angles, a->intermission_angle);
@@ -382,14 +383,13 @@ void BeginIntermission(arena_t *a)
     // move all clients in this arena to the intermission point
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-		
         if (!client->inuse) {
             continue;
-		}
-		
-		if (ARENA(client) == a) {
-			MoveClientToIntermission(client);
-		}
+        }
+
+        if (ARENA(client) == a) {
+            MoveClientToIntermission(client);
+        }
     }
 }
 
