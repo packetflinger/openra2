@@ -230,7 +230,7 @@ void Think_Weapon(edict_t *ent)
 	}
 	
 	// don't allow firing during round intermissions
-	if (ARENA(ent)->round_intermission_start) {
+	if (ARENA(ent)->intermission) {
 		ent->client->buttons &= ~BUTTON_ATTACK;
 		ent->client->latched_buttons &= ~BUTTON_ATTACK;
 	}

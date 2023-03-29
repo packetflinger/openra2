@@ -350,11 +350,12 @@ void BeginIntermission(arena_t *a)
 	if (!a)
 		return;
 	
-    if (a->intermission_framenum)
+    if (a->intermission) {
         return;
+    }
 
     a->state = ARENA_STATE_INTERMISSION;
-    a->intermission_framenum = level.framenum;
+    a->intermission = qtrue;
 
     G_FinishVote(); // ? maybe not
 
@@ -749,7 +750,7 @@ void G_SetStats(edict_t *ent)
     ent->client->ps.stats[STAT_SPECTATOR] = 0;
     ent->client->ps.stats[STAT_CHASE] = 0;
 
-    if (level.intermission_framenum || ARENA(ent)->round_intermission_start) {
+    if (level.intermission_framenum || ARENA(ent)->intermission) {
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
 
