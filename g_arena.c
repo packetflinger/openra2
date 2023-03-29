@@ -2958,6 +2958,7 @@ void G_StartRoundCountdown(arena_t *a)
     a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
     a->round_frame = a->round_start_frame;
 
+    memset(&a->clock, 0, sizeof(arena_clock_t));
     a->clock.type = CLOCK_COUNTDOWN;
     a->clock.think = G_RoundCountdownThink;
     a->clock.nextthink = 0;
