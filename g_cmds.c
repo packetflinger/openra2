@@ -2154,8 +2154,9 @@ void ClientCommand(edict_t *ent)
         return;
     }
 
-    if (ARENA(ent)->intermission_framenum)
+    if (ARENA(ent)->intermission) {
         return;
+    }
 
     if (Q_stricmp(cmd, "score") == 0 || Q_stricmp(cmd, "help") == 0)
         Cmd_Score_f(ent);

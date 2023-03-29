@@ -205,8 +205,6 @@ typedef struct {
     qboolean        ready;                       // are all team players ready?
     int32_t         timer_last_frame;            // the frame we last ran timers
     qboolean        recording;                   // were players forced to start recording demos?
-    uint32_t        intermission_framenum;       // time the intermission was started
-    uint32_t        intermission_exit;           // time the intermission was exited
     vec3_t          intermission_origin;         // intermission spot
     vec3_t          intermission_angle;          // view angle from ^ spot
     uint32_t        version;                     // map version
@@ -214,8 +212,7 @@ typedef struct {
     arena_vote_t    vote;                        // the current local vote
     qboolean        modified;                    // defaults have been changed via votes
     uint32_t        timelimit;                   // how long to allow each round
-    int32_t         round_intermission_start;    // frame round intermission started
-    int32_t         round_intermission_end;      // frame we should end round intermission
+    qboolean        intermission;                // is this arena current in intermission?
     int32_t         teams_alive;                 // how many teams have players alive
     uint32_t        countdown_start_frame;       // frame number when the count started
     qboolean        fastswitch;                  // enable fast weapon switching

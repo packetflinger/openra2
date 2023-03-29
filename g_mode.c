@@ -18,7 +18,7 @@ void G_TeamFrame(void *p)
     }
 
     // end of round
-    if (ROUNDOVER(a)) {
+    if (ROUNDOVER(a) && !a->intermission) {
         G_BeginRoundIntermission(a);
     }
 

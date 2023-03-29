@@ -335,12 +335,6 @@ void G_CheckArenaRules(arena_t *a)
         }
     }
 
-    // round intermission just expired
-    if (a->round_intermission_start && level.framenum == a->round_intermission_end) {
-        G_EndRoundIntermission(a);
-        return;
-    }
-
     // round timelimit hit
     if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
         G_BeginRoundIntermission(a);
@@ -2266,9 +2260,7 @@ void G_ResetArena(arena_t *a)
 {
     uint8_t i;
     char roundtime[6];
-    
-    a->intermission_framenum = 0;
-    a->intermission_exit = 0;
+
     a->state = ARENA_STATE_WARMUP;
     a->ready = qfalse;
     a->teams_alive = a->team_count;
@@ -2290,9 +2282,10 @@ void G_ResetArena(arena_t *a)
  */
 void G_CheckIntermission(arena_t *a)
 {
-    int32_t i, duration, exit_frame;
-    edict_t *ent;
+    //int32_t i, duration, exit_frame;
+    //edict_t *ent;
     
+    /*
     if (a->intermission_exit) {
         if (level.framenum > a->intermission_exit + 5) {
             G_ResetArena(a); // in case gamemap failed
@@ -2313,6 +2306,7 @@ void G_CheckIntermission(arena_t *a)
             G_ResetArena(a);
         }
     }
+    */
 }
 
 
@@ -2875,9 +2869,8 @@ void G_BeginRoundIntermission(arena_t *a)
     arena_clock_t *c = &a->clock;
 
     a->state = ARENA_STATE_ROUNDPAUSE;
+    a->intermission = qtrue;
     a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
-    a->round_intermission_start = level.framenum;
-    a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
 
     // set a timer
     memset(c, 0, sizeof(arena_clock_t));
@@ -2901,9 +2894,7 @@ void G_EndRoundIntermission(void *p)
         return;
     }
 
-    a->round_intermission_start = 0;
-    a->round_intermission_end   = 0;
-
+    a->intermission = qfalse;
     G_EndRound(a, NULL);
 }
 
