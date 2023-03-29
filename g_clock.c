@@ -84,8 +84,6 @@ void G_RoundCountdownThink(void *p)
         return;
     }
 
-    G_Centerprintf(a, "%d", c->value);
-
     if (c->value < 10) {
         G_ArenaSound(a, level.sounds.countdown[c->value]);
     }

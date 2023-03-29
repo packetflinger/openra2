@@ -758,7 +758,7 @@ void G_SetStats(edict_t *ent)
 			
 			// countdown
 			if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
-				ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->countdown;
+				ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->clock.value;
 			} else {
 				ent->client->ps.stats[STAT_COUNTDOWN] = 0;
 			}
