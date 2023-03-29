@@ -755,16 +755,12 @@ void G_SetStats(edict_t *ent)
     } else {
 
         if (ent->client->pers.connected == CONN_SPAWNED) {
-			
-			// countdown
-			if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
-				ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->clock.value;
-			} else {
-				ent->client->ps.stats[STAT_COUNTDOWN] = 0;
-			}
-			
+            if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
+                ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->clock.value;
+            } else {
+                ent->client->ps.stats[STAT_COUNTDOWN] = 0;
+            }
         } else {
-
             if (ent->client->pers.connected == CONN_SPECTATOR) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
             } else {
