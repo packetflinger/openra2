@@ -173,8 +173,6 @@ typedef struct {
     arena_state_t   state;
     uint32_t        match_frame;                 // total frames this match
     uint32_t        round_frame;                 // current frame this round
-    uint32_t        round_start_frame;           // when this round started
-    uint32_t        round_end_frame;             // when this round ended
     uint32_t        timeout_frame;               // when timeout was called
     uint32_t        timein_frame;                // when timeout will end
     edict_t         *timeout_caller;             // player who called it

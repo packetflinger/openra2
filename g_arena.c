@@ -334,11 +334,6 @@ void G_CheckArenaRules(arena_t *a)
             }
         }
     }
-
-    // round timelimit hit
-    if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
-        G_BeginRoundIntermission(a);
-    }
 }
 
 /**
@@ -1103,19 +1098,7 @@ void G_CheckTimers(arena_t *a)
     
     a->timer_last_frame = level.framenum;
     
-    uint32_t remaining;
-    
     G_UpdateConfigStrings(a);
-    
-    if (a->state == ARENA_STATE_COUNTDOWN) {
-        remaining = (a->round_start_frame - level.framenum) * FRAMETIME;
-
-        if (remaining > 0 && remaining <= 10 && remaining < ((int) g_round_countdown->value - 2)) {
-            G_ArenaSound(a, level.sounds.countdown[remaining]);
-        }
-    }
-
-    // timeout countdown handled in G_TimeoutFrame()
 }
 
 /**
@@ -1123,34 +1106,21 @@ void G_CheckTimers(arena_t *a)
  */
 void G_UpdateConfigStrings(arena_t *a)
 {
-    //char countdown[10];
-    char roundtime[10];
-    char timeouttime[10];
     char buf[0xff];
 
     buf[0] = 0;
 
-    // no timelimit given, so count up, otherwise count down
-    if (!a->timelimit) {
-        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_frame - a->round_start_frame));
-    } else {
-        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
-    }
-
     switch (a->state) {
     case ARENA_STATE_COUNTDOWN:
-        //G_SecsToString(countdown, (a->round_start_frame - level.framenum) * FRAMETIME);
-        //strcat(buf, va("Starting in %s", countdown));
         strcat(buf, va("Starting in %s", a->clock.string));
         break;
 
     case ARENA_STATE_PLAY:
-        strcat(buf, va("Playing %s", roundtime));
+        strcat(buf, va("Playing %s", a->clock.string));
         break;
 
     case ARENA_STATE_TIMEOUT:
-        G_SecsToString(timeouttime, (a->timein_frame - level.framenum) * FRAMETIME);
-        strcat(buf, va("Timeout %s   (%s)", timeouttime, roundtime));
+        strcat(buf, va("Timeout %s", a->clock.string));
         break;
 
     default:
@@ -1264,6 +1234,7 @@ void G_ForceScreenshot(arena_t *arena)
 void G_EndMatch(arena_t *a, arena_team_t *winner)
 {
     uint8_t i;
+    gi.dprintf("G_EndMatch called\n");
 
     if (winner) {
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
@@ -1292,8 +1263,8 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
 void G_EndRound(arena_t *a, arena_team_t *winner)
 {
     int i;
-
-    a->round_start_frame = 0;
+    gi.dprintf("G_EndRound called\n");
+    //a->round_start_frame = 0;
     
     if (winner) {
         G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
@@ -1310,16 +1281,17 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
         }
     }
 
+    gi.dprintf("%d == %d?\n", a->current_round, a->round_limit);
     if (a->current_round == a->round_limit) {
         G_EndMatch(a, winner);
         return;
     }
 
     a->current_round++;
-    a->state = ARENA_STATE_COUNTDOWN;
-    a->countdown = (int) g_round_countdown->value;
-    a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-    a->round_end_frame = 0;
+    //a->state = ARENA_STATE_COUNTDOWN;
+    //a->countdown = (int) g_round_countdown->value;
+    //a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
+    //a->round_end_frame = 0;
     a->teams_alive = a->team_count;
 
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
@@ -1751,13 +1723,12 @@ void G_StartRound(void *p)
     arena_t *a = (arena_t *)p;
     uint8_t i;
 
+    gi.dprintf("G_StartRound called\n");
     for (i=0; i<a->team_count; i++) {
         a->teams[i].players_alive = a->teams[i].player_count;
     }
 
     a->state = ARENA_STATE_PLAY;
-    a->round_start_frame = a->round_frame - SECS_TO_FRAMES(1);
-    a->round_end_frame = a->round_start_frame + SECS_TO_FRAMES(a->timelimit);
 
     G_Centerprintf(a, "Fight!");
     G_ArenaSound(a, level.sounds.secret);
@@ -2870,7 +2841,6 @@ void G_BeginRoundIntermission(arena_t *a)
 
     a->state = ARENA_STATE_ROUNDPAUSE;
     a->intermission = qtrue;
-    a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
 
     // set a timer
     memset(c, 0, sizeof(arena_clock_t));
@@ -2890,6 +2860,7 @@ void G_EndRoundIntermission(void *p)
 {
     arena_t *a = (arena_t*)p;
 
+    gi.dprintf("G_EndRoundIntermission called\n");
     if (a->state != ARENA_STATE_ROUNDPAUSE) {
         return;
     }
@@ -2941,6 +2912,7 @@ void G_InitArena(arena_t *a)
 void G_StartMatch(arena_t *a)
 {
     a->match_frame = level.framenum + SECS_TO_FRAMES((int)g_round_countdown->value);
+    a->current_round = 1;
     G_bprintf(a, PRINT_HIGH, "Match starting...\n");
     G_StartRoundCountdown(a);
 }
@@ -2950,13 +2922,14 @@ void G_StartMatch(arena_t *a)
  */
 void G_StartRoundCountdown(arena_t *a)
 {
+    gi.dprintf("G_StartRoundCountdown called\n");
     a->state = ARENA_STATE_COUNTDOWN;
 
-    G_ClearRoundInfo(a);
+    //G_ClearRoundInfo(a);
 
-    a->countdown = (int)g_round_countdown->value;
-    a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-    a->round_frame = a->round_start_frame;
+    //a->countdown = (int)g_round_countdown->value;
+    //a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
+    //a->round_frame = a->round_start_frame;
 
     memset(&a->clock, 0, sizeof(arena_clock_t));
     a->clock.type = CLOCK_COUNTDOWN;

@@ -176,7 +176,6 @@ static void Cmd_Ready_f(edict_t *ent)
         ARENA(ent)->ready = qfalse;
 
         if (p->arena->state == ARENA_STATE_COUNTDOWN) {
-            p->arena->round_start_frame = 0;
             p->arena->state = ARENA_STATE_WARMUP;
             G_bprintf(ARENA(ent), PRINT_HIGH, "Countdown aborted, ", NAME(ent));
             G_ArenaStuff(ARENA(ent), "stopsound");

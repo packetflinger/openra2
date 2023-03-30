@@ -18,7 +18,8 @@ void G_TeamFrame(void *p)
     }
 
     // end of round
-    if (ROUNDOVER(a) && !a->intermission) {
+    if (ROUNDOVER(a)) {
+        gi.dprintf("Should start intermission\n");
         G_BeginRoundIntermission(a);
     }
 
@@ -71,61 +72,7 @@ void G_TeamFrame(void *p)
  */
 void G_FFAFrame(void *p)
 {
-    arena_t *a = (arena_t *)p;
-
-    gi.dprintf("lpsthink\n");
-    // end of round
-    if (a->players_alive <= 1) {
-        G_BeginRoundIntermission(a);
-    }
-
-    // check vote timeout
-    if (level.vote.proposal) {
-        G_UpdateVote();
-    }
-
-    // start match
-    if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
-        int framesleft = a->round_start_frame - level.framenum;
-
-        if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-            a->countdown = FRAMES_TO_SECS(framesleft);
-        } else if (framesleft == 0) {
-            G_StartRound(a);
-            return;
-        }
-    }
-
-    // start match countdown
-    if (a->state == ARENA_STATE_WARMUP) {
-        if (a->ready) {    // is everyone ready?
-            a->state = ARENA_STATE_COUNTDOWN;
-
-            G_ClearRoundInfo(a);
-
-            a->round_start_frame = level.framenum
-                    + SECS_TO_FRAMES((int) g_round_countdown->value);
-            a->round_frame = a->round_start_frame;
-            a->match_frame = a->round_start_frame;
-
-            a->countdown = (int) g_round_countdown->value;
-
-            // reset entities? (lifts, etc)
-            G_RespawnPlayers(a);
-            G_ForceDemo(a);
-        }
-    }
-
-    G_CheckIntermission(a);
-
-    // end of round
-    if (ROUNDOVER(a)) {
-        G_BeginRoundIntermission(a);
-    }
-
-    G_CheckTimers(a);
-    G_UpdateArenaVote(a);
-    G_CheckArenaRules(a);
+    //arena_t *a = (arena_t *)p;
 }
 
 /**
@@ -136,58 +83,5 @@ void G_FFAFrame(void *p)
  */
 void G_RoverFrame(void *p)
 {
-    arena_t *a = (arena_t *)p;
-
-    // end of round
-    if (a->players_alive <= 1) {
-        G_BeginRoundIntermission(a);
-    }
-
-    // check vote timeout
-    if (level.vote.proposal) {
-        G_UpdateVote();
-    }
-
-    // start match
-    if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
-        int framesleft = a->round_start_frame - level.framenum;
-
-        if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-            a->countdown = FRAMES_TO_SECS(framesleft);
-        } else if (framesleft == 0) {
-            G_StartRound(a);
-            return;
-        }
-    }
-
-    // start match countdown
-    if (a->state == ARENA_STATE_WARMUP) {
-        if (a->ready) {    // is everyone ready?
-            a->state = ARENA_STATE_COUNTDOWN;
-
-            G_ClearRoundInfo(a);
-
-            a->round_start_frame = level.framenum
-                    + SECS_TO_FRAMES((int) g_round_countdown->value);
-            a->round_frame = a->round_start_frame;
-            a->match_frame = a->round_start_frame;
-
-            a->countdown = (int) g_round_countdown->value;
-
-            // reset entities? (lifts, etc)
-            G_RespawnPlayers(a);
-            G_ForceDemo(a);
-        }
-    }
-
-    G_CheckIntermission(a);
-
-    // end of round
-    if (ROUNDOVER(a)) {
-        G_BeginRoundIntermission(a);
-    }
-
-    G_CheckTimers(a);
-    G_UpdateArenaVote(a);
-    G_CheckArenaRules(a);
+    //arena_t *a = (arena_t *)p;
 }
