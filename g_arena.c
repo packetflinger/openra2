@@ -343,6 +343,7 @@ void G_CheckArenaRules(arena_t *a)
  */
 void G_ArenaThink(arena_t *a)
 {
+    /*
     if (!a) {
         return;
     }
@@ -364,6 +365,7 @@ void G_ArenaThink(arena_t *a)
         a->round_frame++;
         a->match_frame++;
     }
+    */
 }
 
 /**

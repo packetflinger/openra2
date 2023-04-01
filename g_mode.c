@@ -15,6 +15,8 @@ void G_TeamFrame(void *p)
         return;
     }
 
+    G_ClockTick(a);
+
     // start match countdown
     if (a->state == ARENA_STATE_WARMUP) {
         if (a->ready) {    // is everyone ready?
@@ -28,7 +30,7 @@ void G_TeamFrame(void *p)
         G_BeginRoundIntermission(a);
     }
 
-    G_ClockTick(a);
+
 
     if (a->state > ARENA_STATE_WARMUP) {
         a->round_frame++;
