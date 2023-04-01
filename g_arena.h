@@ -332,5 +332,7 @@ void update_playercounts(arena_t *a);
 void G_LPSMode_Think(arena_t *a);
 void G_RoverMode_Think(arena_t *a);
 
+void Debug(arena_t *a);
+
 
 #endif // ARENA_H

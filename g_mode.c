@@ -10,6 +10,11 @@ void G_TeamFrame(void *p)
 {
     arena_t *a = (arena_t *)p;
 
+    // don't bother if nobody is here
+    if (a->player_count == 0) {
+        return;
+    }
+
     // start match countdown
     if (a->state == ARENA_STATE_WARMUP) {
         if (a->ready) {    // is everyone ready?
@@ -21,6 +26,13 @@ void G_TeamFrame(void *p)
     if (ROUNDOVER(a)) {
         gi.dprintf("Should start intermission\n");
         G_BeginRoundIntermission(a);
+    }
+
+    G_ClockTick(a);
+
+    if (a->state > ARENA_STATE_WARMUP) {
+        a->round_frame++;
+        a->match_frame++;
     }
 
     // end of round

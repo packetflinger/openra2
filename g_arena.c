@@ -2927,10 +2927,6 @@ void G_StartRoundCountdown(arena_t *a)
 
     //G_ClearRoundInfo(a);
 
-    //a->countdown = (int)g_round_countdown->value;
-    //a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-    //a->round_frame = a->round_start_frame;
-
     memset(&a->clock, 0, sizeof(arena_clock_t));
     a->clock.type = CLOCK_COUNTDOWN;
     a->clock.think = G_RoundCountdownThink;
@@ -2941,4 +2937,11 @@ void G_StartRoundCountdown(arena_t *a)
     // reset entities? (lifts, etc)
     G_RespawnPlayers(a);
     G_ForceDemo(a);
+}
+
+void Debug(arena_t *a)
+{
+    gi.dprintf("\tArena state\t%d\n", a->state);
+    gi.dprintf("\tTeam Count\t%d\n", a->team_count);
+    gi.dprintf("\tPlayers Alive\t %d:%d\n", a->teams[0].players_alive, a->teams[1].players_alive);
 }
