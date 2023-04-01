@@ -30,8 +30,6 @@ void G_TeamFrame(void *p)
         G_BeginRoundIntermission(a);
     }
 
-
-
     if (a->state > ARENA_STATE_WARMUP) {
         a->round_frame++;
         a->match_frame++;
