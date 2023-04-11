@@ -672,8 +672,6 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     arena_t         *arena = self->client->pers.arena;
     arena_team_t    *team = self->client->pers.team;
 
-    Debug(arena);
-
     VectorClear(self->avelocity);
 
     self->takedamage = DAMAGE_YES;

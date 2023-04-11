@@ -787,7 +787,6 @@ void G_RunFrame(void)
 
     // let each arena think in turn
     FOR_EACH_ARENA(a) {
-        //G_ArenaThink(a);
         a->think(a);
     }
 

@@ -66,7 +66,8 @@ void G_RoundCountdownThink(void *p)
 {
     arena_t *a = (arena_t *)p;
     arena_clock_t *c = &a->clock;
-
+    Debug(a);
+    gi.dprintf("roundcountdown top (%d)\n", c->type);
     if (c->type == CLOCK_NONE) {
         return;
     }
@@ -75,18 +76,21 @@ void G_RoundCountdownThink(void *p)
 
     G_SecsToString(c->string, c->value);
 
+    gi.dprintf("roundcountdown mid\n");
+
     if (c->value < 1) {
-        c->type = CLOCK_NONE;
         if (c->complete) {
             c->complete(p);
-            c->complete = NULL;
         }
+        G_ClockClear(a);
         return;
     }
 
     if (c->value < 10) {
         G_ArenaSound(a, level.sounds.countdown[c->value]);
     }
+
+    gi.dprintf("roundcountdown bottom\n");
 
     c->nextthink = level.framenum + SECS_TO_FRAMES(1);
     G_UpdateConfigStrings(a);
@@ -110,12 +114,10 @@ void G_RoundIntermissionThink(void *p)
     G_SecsToString(c->string, c->value);
 
     if (c->value < 1) {
-        c->type = CLOCK_NONE;
         if (c->complete) {
             c->complete(p);
-            c->complete = NULL;
         }
-        c->type = CLOCK_NONE;
+        G_ClockClear(a);
         return;
     }
 
@@ -131,4 +133,11 @@ void G_AlarmTest(void *p)
     gi.dprintf("COUNTDOWN OVER! (arena %d)\n", a->number);
 }
 
-
+/**
+ *
+ */
+void G_ClockClear(arena_t *a)
+{
+    arena_clock_t *c = &a->clock;
+    memset(c, 0, sizeof(arena_clock_t));
+}

@@ -15,7 +15,7 @@ void G_TeamFrame(void *p)
         return;
     }
 
-    G_ClockTick(a);
+
 
     // start match countdown
     if (a->state == ARENA_STATE_WARMUP) {
@@ -35,6 +35,7 @@ void G_TeamFrame(void *p)
         a->match_frame++;
     }
 
+    G_ClockTick(a);
     // end of round
     /*
     if (a->players_alive <= 1 && MATCHPLAYING(a)) {

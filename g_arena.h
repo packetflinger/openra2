@@ -262,6 +262,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena);
 size_t G_BuildScoreboard_V(char *buffer, gclient_t *client, arena_t *arena);
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
+void G_ClockClear(arena_t *a);
 void G_ClockTick(arena_t *a);
 void G_ClockThink(void *a);
 void G_CheckArenaRules(arena_t *a);

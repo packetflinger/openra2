@@ -375,7 +375,6 @@ void G_ClearRoundInfo(arena_t *a)
 {
     uint8_t i;
 
-    a->current_round = 1;
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
 
     for (i=0; i<a->team_count; i++) {
@@ -1266,7 +1265,6 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
 {
     int i;
     gi.dprintf("G_EndRound called\n");
-    //a->round_start_frame = 0;
     
     if (winner) {
         G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
@@ -1283,17 +1281,12 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
         }
     }
 
-    gi.dprintf("%d == %d?\n", a->current_round, a->round_limit);
     if (a->current_round == a->round_limit) {
         G_EndMatch(a, winner);
         return;
     }
 
     a->current_round++;
-    //a->state = ARENA_STATE_COUNTDOWN;
-    //a->countdown = (int) g_round_countdown->value;
-    //a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-    //a->round_end_frame = 0;
     a->teams_alive = a->team_count;
 
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
@@ -1479,6 +1472,10 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
     TEAM(ent) = team;
     team->player_count++;
 
+    if (type != TEAM_SPECTATORS) {
+        ARENA(ent)->player_count++;
+    }
+
     int i;
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {    // free player slot, take it
@@ -1542,6 +1539,10 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     }
 
     oldteam->player_count--;
+
+    if (oldteam != TEAM_SPECTATORS) {
+        ARENA(ent)->player_count--;
+    }
 
     if (!silent) {
         G_bprintf(ARENA(ent), PRINT_HIGH, "%s left team %s\n",
@@ -1734,6 +1735,8 @@ void G_StartRound(void *p)
 
     G_Centerprintf(a, "Fight!");
     G_ArenaSound(a, level.sounds.secret);
+
+    G_ClockClear(a);
 }
 
 
@@ -2905,7 +2908,7 @@ void G_InitArena(arena_t *a)
     a->timelimit = (int) g_round_timelimit->value;
     a->fastswitch = (int) g_fast_weapon_change->value;
 
-    memset(&a->clock, 0, sizeof(clock_t));
+    memset(&a->clock, 0, sizeof(arena_clock_t));
 }
 
 /**
@@ -2917,6 +2920,7 @@ void G_StartMatch(arena_t *a)
     a->current_round = 1;
     G_bprintf(a, PRINT_HIGH, "Match starting...\n");
     G_StartRoundCountdown(a);
+    G_ForceDemo(a);
 }
 
 /**
@@ -2924,26 +2928,31 @@ void G_StartMatch(arena_t *a)
  */
 void G_StartRoundCountdown(arena_t *a)
 {
+    Debug(a);
+    arena_clock_t *c = &a->clock;
     gi.dprintf("G_StartRoundCountdown called\n");
     a->state = ARENA_STATE_COUNTDOWN;
 
-    //G_ClearRoundInfo(a);
+    G_ClearRoundInfo(a);
 
-    memset(&a->clock, 0, sizeof(arena_clock_t));
-    a->clock.type = CLOCK_COUNTDOWN;
-    a->clock.think = G_RoundCountdownThink;
-    a->clock.nextthink = 0;
-    a->clock.value = (int)g_round_countdown->value;
-    a->clock.complete = G_StartRound;
+    memset(c, 0, sizeof(arena_clock_t));
+
+    c->type = CLOCK_COUNTDOWN;
+    c->think = G_RoundCountdownThink;
+    c->nextthink = 0;
+    c->value = (int)g_round_countdown->value;
+    c->complete = G_StartRound;
 
     // reset entities? (lifts, etc)
     G_RespawnPlayers(a);
-    G_ForceDemo(a);
+    Debug(a);
 }
 
 void Debug(arena_t *a)
 {
-    gi.dprintf("\tArena state\t%d\n", a->state);
-    gi.dprintf("\tTeam Count\t%d\n", a->team_count);
-    gi.dprintf("\tPlayers Alive\t %d:%d\n", a->teams[0].players_alive, a->teams[1].players_alive);
+    gi.dprintf("clock type:        %d\n", a->clock.type);
+    gi.dprintf("clock val:         %d\n", a->clock.value);
+    gi.dprintf("clock nextthink:   %d\n", a->clock.nextthink);
+    gi.dprintf("clock think:       %p\n", a->clock.think);
+    gi.dprintf("clock complete:    %p\n", a->clock.complete);
 }

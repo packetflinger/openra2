@@ -2050,7 +2050,8 @@ static void Cmd_NotImplYet_f(edict_t *ent)
  */
 static void Cmd_Test_f(edict_t *ent)
 {
-
+    gi.dprintf("arena clients:\t%d\n",ARENA(ent)->client_count);
+    gi.dprintf("arena players:\t%d\n",ARENA(ent)->player_count);
 }
 
 /**
@@ -2248,7 +2249,7 @@ void ClientCommand(edict_t *ent)
         Cmd_Sound_f(ent);
     else if (Q_stricmp(cmd, "test") == 0) {
         Cmd_Test_f(ent);
-        Cmd_NotImplYet_f(ent);
+        //Cmd_NotImplYet_f(ent);
     }
     else    // anything that doesn't match a command will be a chat
         Cmd_Say_f(ent, CHAT_MISC);
