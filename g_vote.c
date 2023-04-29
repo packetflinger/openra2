@@ -668,7 +668,7 @@ static qboolean vote_fastswitch(edict_t *ent)
 static qboolean vote_timelimit(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
-    clamp(count, 1, 20);
+    clamp(count, 0, 20);
     ARENA(ent)->vote.value = count;
     return qtrue;
 }
