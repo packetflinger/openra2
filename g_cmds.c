@@ -2051,7 +2051,6 @@ static void Cmd_NotImplYet_f(edict_t *ent)
  */
 static void Cmd_Test_f(edict_t *ent)
 {
-
 }
 
 /**
