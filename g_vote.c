@@ -23,25 +23,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //the ordering of weapons must match ITEM_ defines too!
 const weaponinfo_t	weaponvotes[WEAPON_MAX] =
 {
-	{{"shot", "sg"}, ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN, ITEM_SHELLS},
-	{{"sup", "ssg"}, ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN, ITEM_SHELLS},
-	{{"mac", "mg"}, ARENAWEAPON_MACHINEGUN, ITEM_MACHINEGUN, ITEM_BULLETS},
-	{{"cha", "cg"}, ARENAWEAPON_CHAINGUN, ITEM_CHAINGUN, ITEM_BULLETS},
-	{{"han", "hg"}, ARENAWEAPON_GRENADE, ITEM_GRENADES, ITEM_GRENADES},
-	{{"gre", "gl"}, ARENAWEAPON_GRENADELAUNCHER, ITEM_GRENADELAUNCHER, ITEM_GRENADES},
-	{{"roc", "rl"}, ARENAWEAPON_ROCKETLAUNCHER, ITEM_ROCKETLAUNCHER, ITEM_ROCKETS},
-	{{"hyper", "hb"}, ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER, ITEM_CELLS},
-	{{"rail", "rg"}, ARENAWEAPON_RAILGUN, ITEM_RAILGUN, ITEM_SLUGS},
-	{{"bfg", "10k"}, ARENAWEAPON_BFG, ITEM_BFG, ITEM_CELLS},
+    {{"shot", "sg"},    ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN, ITEM_SHELLS},
+    {{"sup", "ssg"},    ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN, ITEM_SHELLS},
+    {{"mac", "mg"},     ARENAWEAPON_MACHINEGUN, ITEM_MACHINEGUN, ITEM_BULLETS},
+    {{"cha", "cg"},     ARENAWEAPON_CHAINGUN, ITEM_CHAINGUN, ITEM_BULLETS},
+    {{"han", "hg"},     ARENAWEAPON_GRENADE, ITEM_GRENADES, ITEM_GRENADES},
+    {{"gre", "gl"},     ARENAWEAPON_GRENADELAUNCHER, ITEM_GRENADELAUNCHER, ITEM_GRENADES},
+    {{"roc", "rl"},     ARENAWEAPON_ROCKETLAUNCHER, ITEM_ROCKETLAUNCHER, ITEM_ROCKETS},
+    {{"hyper", "hb"},   ARENAWEAPON_HYPERBLASTER, ITEM_HYPERBLASTER, ITEM_CELLS},
+    {{"rail", "rg"},    ARENAWEAPON_RAILGUN, ITEM_RAILGUN, ITEM_SLUGS},
+    {{"bfg", "10k"},    ARENAWEAPON_BFG, ITEM_BFG, ITEM_CELLS},
 };
 
 const damagevote_t damagevotes[DAMAGE_MAX] =
 {
-		{"self", ARENADAMAGE_SELF},
-		{"aself", ARENADAMAGE_SELF_ARMOR},
-		{"team", ARENADAMAGE_TEAM},
-		{"ateam", ARENADAMAGE_TEAM_ARMOR},
-		{"falling", ARENADAMAGE_FALL},
+    {"self",    ARENADAMAGE_SELF},
+    {"aself",   ARENADAMAGE_SELF_ARMOR},
+    {"team",    ARENADAMAGE_TEAM},
+    {"ateam",   ARENADAMAGE_TEAM_ARMOR},
+    {"falling", ARENADAMAGE_FALL},
 };
 
 
@@ -49,14 +49,13 @@ const damagevote_t damagevotes[DAMAGE_MAX] =
 #define MAY_VOTE(c) \
     (VF(ENABLED) && (c->pers.team || c->pers.admin))
 
-
 void G_FinishArenaVote(arena_t *a) {
-	if (VF(SHOW)) {
-		G_ConfigString(a, CS_VOTE_PROPOSAL, "");
-	}
-	a->vote.proposal = 0;
-	a->vote.framenum = level.framenum;
-	a->vote.victim = NULL;
+    if (VF(SHOW)) {
+        G_ConfigString(a, CS_VOTE_PROPOSAL, "");
+    }
+    a->vote.proposal = 0;
+    a->vote.framenum = level.framenum;
+    a->vote.victim = NULL;
 }
 
 static int G_CalcVote(int *votes, arena_t *a)
@@ -68,62 +67,62 @@ static int G_CalcVote(int *votes, arena_t *a)
     votes[0] = votes[1] = 0;
 
     if (a && a->vote.proposal) {
-    	for (i=0; i<a->client_count; i++) {
-    		if (!a->clients[i])
-    			continue;
+        for (i=0; i<a->client_count; i++) {
+            if (!a->clients[i])
+                continue;
 
-    		if (!a->clients[i]->client)
-    			continue;
+            if (!a->clients[i]->client)
+                continue;
 
-    		c = a->clients[i]->client;
+            c = a->clients[i]->client;
 
-			if (c->pers.mvdspec) {
-				continue;
-			}
+            if (c->pers.mvdspec) {
+                continue;
+            }
 
-			if (!MAY_VOTE(c)) {
-				continue; // don't count spectators
-			}
+            if (!MAY_VOTE(c)) {
+                continue; // don't count spectators
+            }
 
-			total++;
-			if (c->level.vote.index != a->vote.index) {
-				continue; // not voted yet
-			}
+            total++;
+            if (c->level.vote.index != a->vote.index) {
+                continue; // not voted yet
+            }
 
-			if (c->pers.admin) {
-				// admin vote decides immediately
-				votes[c->level.vote.accepted    ] = game.maxclients;
-				votes[c->level.vote.accepted ^ 1] = 0;
-				break;
-			}
+            if (c->pers.admin) {
+                // admin vote decides immediately
+                votes[c->level.vote.accepted    ] = game.maxclients;
+                votes[c->level.vote.accepted ^ 1] = 0;
+                break;
+            }
 
-			// count normal vote
-			votes[c->level.vote.accepted]++;
-		}
+            // count normal vote
+            votes[c->level.vote.accepted]++;
+        }
     } else {
-		for (c = game.clients; c < game.clients + game.maxclients; c++) {
-			if (c->pers.mvdspec) {
-				continue;
-			}
-			if (!MAY_VOTE(c)) {
-				continue; // don't count spectators
-			}
+        for (c = game.clients; c < game.clients + game.maxclients; c++) {
+            if (c->pers.mvdspec) {
+                continue;
+            }
+            if (!MAY_VOTE(c)) {
+                continue; // don't count spectators
+            }
 
-			total++;
-			if (c->level.vote.index != level.vote.index) {
-				continue; // not voted yet
-			}
+            total++;
+            if (c->level.vote.index != level.vote.index) {
+                continue; // not voted yet
+            }
 
-			if (c->pers.admin) {
-				// admin vote decides immediately
-				votes[c->level.vote.accepted    ] = game.maxclients;
-				votes[c->level.vote.accepted ^ 1] = 0;
-				break;
-			}
+            if (c->pers.admin) {
+                // admin vote decides immediately
+                votes[c->level.vote.accepted    ] = game.maxclients;
+                votes[c->level.vote.accepted ^ 1] = 0;
+                break;
+            }
 
-			// count normal vote
-			votes[c->level.vote.accepted]++;
-		}
+            // count normal vote
+            votes[c->level.vote.accepted]++;
+        }
     }
 
     return total;
@@ -153,38 +152,40 @@ void G_FinishVote(void)
  * Arena specific votes
  */
 void G_UpdateArenaVote(arena_t *a) {
-	char buffer[MAX_QPATH];
-	uint8_t total;
-	uint32_t remaining;
-	int votes[2];
+    char buffer[MAX_QPATH];
+    uint8_t total;
+    uint32_t remaining;
+    int votes[2];
 
-	if (!a)
-		return;
+    if (!a) {
+        return;
+    }
 
-	if (!a->vote.proposal)
-		return;
+    if (!a->vote.proposal) {
+        return;
+    }
 
-	// check timeout
-	if (level.framenum >= a->vote.framenum) {
-		G_bprintf(a, PRINT_HIGH, "Local vote timed out.\n");
-		G_FinishArenaVote(a);
-		return;
-	}
+    // check timeout
+    if (level.framenum >= a->vote.framenum) {
+        G_bprintf(a, PRINT_HIGH, "Local vote timed out.\n");
+        G_FinishArenaVote(a);
+        return;
+    }
 
-	if (!VF(SHOW)) {
-		return;
-	}
+    if (!VF(SHOW)) {
+        return;
+    }
 
-	remaining = a->vote.framenum - level.framenum;
-	if (remaining % HZ) {
-		return;
-	}
+    remaining = a->vote.framenum - level.framenum;
+    if (remaining % HZ) {
+        return;
+    }
 
-	total = _G_CalcVote(votes, a);
-	Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
-			   votes[1], total, votes[0], remaining / HZ);
+    total = _G_CalcVote(votes, a);
+    Q_snprintf(buffer, sizeof(buffer), "Yes: %d (%d) No: %d [%02d sec]",
+               votes[1], total, votes[0], remaining / HZ);
 
-	G_ConfigString(a, CS_VOTE_COUNT, buffer);
+    G_ConfigString(a, CS_VOTE_COUNT, buffer);
 }
 
 /**
@@ -239,7 +240,7 @@ qboolean G_CheckVote(void)
 
     // is vote initiator gone?
     if (!level.vote.initiator->pers.connected) {
-    	gi.bprintf(PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
+        gi.bprintf(PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
         goto finish;
     }
 
@@ -293,141 +294,141 @@ finish:
     return qtrue;
 }
 
-qboolean G_CheckArenaVote(arena_t *a) {
+qboolean G_CheckArenaVote(arena_t *a)
+{
+    int threshold = (int) g_vote_threshold->value;
+    int votes[2], total;
+    int acc, rej;
 
-	int threshold = (int) g_vote_threshold->value;
-	int votes[2], total;
-	int acc, rej;
+    if (!a) {
+        return qfalse;
+    }
 
-	if (!a) {
-		return qfalse;
-	}
+    if (!a->vote.proposal) {
+        return qfalse;
+    }
 
-	if (!a->vote.proposal) {
-		return qfalse;
-	}
+    // is vote initiator gone?
+    if (!a->vote.initiator->client->pers.connected) {
+        G_bprintf(a, PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
+        goto finish;
+    }
 
-	// is vote initiator gone?
-	if (!a->vote.initiator->client->pers.connected) {
-		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
-		goto finish;
-	}
+    // is vote victim gone?
+    if (a->vote.victim && !a->vote.victim->client->pers.connected) {
+        G_bprintf(a, PRINT_HIGH, "Vote aborted due to the victim disconnect.\n");
+        goto finish;
+    }
 
-	// is vote victim gone?
-	if (a->vote.victim && !a->vote.victim->client->pers.connected) {
-		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the victim disconnect.\n");
-		goto finish;
-	}
+    // are there any players?
+    total = G_CalcVote(votes, a);
+    if (!total) {
+        G_bprintf(a, PRINT_HIGH, "Vote aborted due to the absence of players.\n");
+        goto finish;
+    }
 
-	// are there any players?
-	total = G_CalcVote(votes, a);
-	if (!total) {
-		G_bprintf(a, PRINT_HIGH, "Vote aborted due to the absence of players.\n");
-		goto finish;
-	}
+    rej = votes[0] * 100 / total;
+    acc = votes[1] * 100 / total;
 
-	rej = votes[0] * 100 / total;
-	acc = votes[1] * 100 / total;
+    uint32_t from;
 
-	uint32_t from;
+    if (acc > threshold) {
+        switch (a->vote.proposal) {
 
-	if (acc > threshold) {
-		switch (a->vote.proposal) {
+        case VOTE_TEAMS:
+            a->modified = qtrue;
+            from = a->team_count;
+            a->team_count = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed from %d to %d\n", from, a->vote.value);
+            G_RecreateArena(a);
+            break;
 
-		case VOTE_TEAMS:
-			a->modified = qtrue;
-			from = a->team_count;
-			a->team_count = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: team count changed from %d to %d\n", from, a->vote.value);
-			G_RecreateArena(a);
-			break;
+        case VOTE_HEALTH:
+            a->modified = qtrue;
+            from = a->health;
+            a->health = a->vote.value;
+            G_RefillPlayers(a);
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: max health changed from %d to %d\n", from, a->vote.value);
+            break;
 
-		case VOTE_HEALTH:
-			a->modified = qtrue;
-			from = a->health;
-			a->health = a->vote.value;
-			G_RefillPlayers(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: max health changed from %d to %d\n", from, a->vote.value);
-			break;
+        case VOTE_ARMOR:
+            a->modified = qtrue;
+            from = a->armor;
+            a->armor = a->vote.value;
+            G_RefillPlayers(a);
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: max armor changed from %d to %d\n", from, a->vote.value);
+            break;
 
-		case VOTE_ARMOR:
-			a->modified = qtrue;
-			from = a->armor;
-			a->armor = a->vote.value;
-			G_RefillPlayers(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: max armor changed from %d to %d\n", from, a->vote.value);
-			break;
+        case VOTE_ROUNDS:
+            a->modified = qtrue;
+            from = a->round_limit;
+            a->round_limit = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: round count changed from %d to %d\n", from, a->vote.value);
+            break;
 
-		case VOTE_ROUNDS:
-			a->modified = qtrue;
-			from = a->round_limit;
-			a->round_limit = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: round count changed from %d to %d\n", from, a->vote.value);
-			break;
+        case VOTE_WEAPONS:
+            a->modified = qtrue;
+            a->weapon_flags = a->vote.value;
 
-		case VOTE_WEAPONS:
-			a->modified = qtrue;
-			a->weapon_flags = a->vote.value;
+            memcpy(a->ammo, a->vote.items, sizeof(a->ammo));
+            memcpy(a->infinite, a->vote.infinite, sizeof(a->infinite));
 
-			memcpy(a->ammo, a->vote.items, sizeof(a->ammo));
-			memcpy(a->infinite, a->vote.infinite, sizeof(a->infinite));
+            G_RefillPlayers(a);
+            G_UpdatePlayerStatusBars(a);
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
+            break;
 
-			G_RefillPlayers(a);
-			G_UpdatePlayerStatusBars(a);
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: weapons changed to '%s'\n", G_WeaponFlagsToString(a));
-			break;
+        case VOTE_DAMAGE:
+            a->modified = qtrue;
+            a->damage_flags = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a->damage_flags));
+            break;
 
-		case VOTE_DAMAGE:
-			a->modified = qtrue;
-			a->damage_flags = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: damage protection changed to '%s'\n", G_DamageFlagsToString(a->damage_flags));
-			break;
+        case VOTE_RESET:
+            G_ApplyDefaults(a);
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: all settings reset\n");
+            break;
 
-		case VOTE_RESET:
-		    G_ApplyDefaults(a);
-		    G_bprintf(a, PRINT_HIGH, "Local vote passed: all settings reset\n");
-		    break;
+        case VOTE_SWITCH:
+            a->modified = qtrue;
+            a->fastswitch = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: fast weapon switching now %sabled\n", (a->vote.value) ? "en" : "dis");
+            break;
 
-		case VOTE_SWITCH:
-		    a->modified = qtrue;
-		    a->fastswitch = a->vote.value;
-		    G_bprintf(a, PRINT_HIGH, "Local vote passed: fast weapon switching now %sabled\n", (a->vote.value) ? "en" : "dis");
-		    break;
+        case VOTE_TIMELIMIT:
+            a->modified = qtrue;
+            a->timelimit = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: timelimit %d \n", a->vote.value);
+            break;
 
-		case VOTE_TIMELIMIT:
-		    a->modified = qtrue;
-		    a->timelimit = a->vote.value;
-		    G_bprintf(a, PRINT_HIGH, "Local vote passed: timelimit %d \n", a->vote.value);
-		    break;
+        case VOTE_MODE:
+            a->modified = qtrue;
+            a->mode = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", (a->vote.value) ? "red rover" : "normal");
+            break;
 
-		case VOTE_MODE:
-			a->modified = qtrue;
-			a->mode = a->vote.value;
-			G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", (a->vote.value) ? "red rover" : "normal");
-			break;
+        default:
+            break;
+        }
+        goto finish;
+    }
 
-		default:
-			break;
-		}
-		goto finish;
-	}
+    if (rej > threshold) {
+        G_bprintf(a, PRINT_HIGH, "Vote failed.\n");
+        goto finish;
+    }
 
-	if (rej > threshold) {
-		G_bprintf(a, PRINT_HIGH, "Vote failed.\n");
-		goto finish;
-	}
-
-	return qfalse;
+    return qfalse;
 
 finish:
-	G_FinishArenaVote(a);
-	return qtrue;
+    G_FinishArenaVote(a);
+    return qtrue;
 }
 
 static void G_BuildProposal(char *buffer, arena_t *a)
 {
-	uint32_t proposal;
-	proposal = (level.vote.proposal) ? level.vote.proposal : (a->vote.proposal) ? a->vote.proposal : 0;
+    uint32_t proposal;
+    proposal = (level.vote.proposal) ? level.vote.proposal : (a->vote.proposal) ? a->vote.proposal : 0;
 
     switch (proposal) {
 
@@ -444,20 +445,20 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         sprintf(buffer, "teams %d", a->vote.value);
         break;
     case VOTE_WEAPONS:
-    	sprintf(buffer, "%s", a->vote.original);
-		break;
+        sprintf(buffer, "%s", a->vote.original);
+        break;
     case VOTE_DAMAGE:
-    	sprintf(buffer, "%s", a->vote.original);
-		break;
+        sprintf(buffer, "%s", a->vote.original);
+        break;
     case VOTE_ROUNDS:
-		sprintf(buffer, "rounds %d", a->vote.value);
-		break;
+        sprintf(buffer, "rounds %d", a->vote.value);
+        break;
     case VOTE_HEALTH:
-    	sprintf(buffer, "health %d", a->vote.value);
-    	break;
+        sprintf(buffer, "health %d", a->vote.value);
+        break;
     case VOTE_ARMOR:
-		sprintf(buffer, "armor %d", a->vote.value);
-		break;
+        sprintf(buffer, "armor %d", a->vote.value);
+        break;
     case VOTE_RESET:
         sprintf(buffer, "reset all settings");
         break;
@@ -476,8 +477,8 @@ static void G_BuildProposal(char *buffer, arena_t *a)
     }
 }
 
-void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
-
+void Cmd_CastVote_f(edict_t *ent, qboolean accepted)
+{
     if (!level.vote.proposal && !ARENA(ent)->vote.proposal) {
         gi.cprintf(ent, PRINT_HIGH, "No vote in progress.\n");
         return;
@@ -497,16 +498,14 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
         gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
 
     } else if (ent->client->level.vote.index == ARENA(ent)->vote.index && ARENA(ent)->vote.proposal) {
-    	if (ent->client->level.vote.accepted == accepted) {
-			gi.cprintf(ent, PRINT_HIGH, "You've already voted %s.\n", accepted ? "YES" : "NO");
-			return;
-		}
+        if (ent->client->level.vote.accepted == accepted) {
+            gi.cprintf(ent, PRINT_HIGH, "You've already voted %s.\n", accepted ? "YES" : "NO");
+            return;
+        }
 
-		gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
-
+        gi.bprintf(PRINT_HIGH, "%s changed his vote to %s.\n", NAME(ent), accepted ? "YES" : "NO");
     } else {
-
-    	gi.bprintf(PRINT_HIGH, "%s voted %s.\n", NAME(ent), accepted ? "YES" : "NO");
+        gi.bprintf(PRINT_HIGH, "%s voted %s.\n", NAME(ent), accepted ? "YES" : "NO");
     }
 
     ent->client->level.vote.index = (ARENA(ent)->vote.proposal) ? ARENA(ent)->vote.index : level.vote.index;
@@ -517,25 +516,26 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
 }
 
 uint8_t weapon_vote_index(const char *name) {
-	uint8_t i;
-	for (i=0; i<WEAPON_MAX; i++) {
-		if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
-			return i;
-		}
-	}
+    uint8_t i;
+    for (i=0; i<WEAPON_MAX; i++) {
+        if (str_equal(name, weaponvotes[i].names[0]) || str_equal(name, weaponvotes[i].names[1])) {
+            return i;
+        }
+    }
 
-	return -1;
+    return -1;
 }
 
-uint8_t damage_vote_index(const char *name) {
-	uint8_t i;
-	for (i=0; i<DAMAGE_MAX; i++) {
-		if (str_equal(name, damagevotes[i].name)) {
-			return i;
-		}
-	}
+uint8_t damage_vote_index(const char *name)
+{
+    uint8_t i;
+    for (i=0; i<DAMAGE_MAX; i++) {
+        if (str_equal(name, damagevotes[i].name)) {
+            return i;
+        }
+    }
 
-	return -1;
+    return -1;
 }
 
 static qboolean vote_victim(edict_t *ent)
@@ -574,85 +574,89 @@ static qboolean vote_map(edict_t *ent)
     return qtrue;
 }
 
-
-static qboolean vote_teams(edict_t *ent) {
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 2, MAX_TEAMS);
-	ARENA(ent)->vote.value = count;
-	return qtrue;
+static qboolean vote_teams(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 2, MAX_TEAMS);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
 }
 
-static qboolean vote_weapons(edict_t *ent) {
+static qboolean vote_weapons(edict_t *ent)
+{
+    const char *input = gi.args();
+    arena_t *arena = ARENA(ent);
+    temp_weaponflags_t temp;
 
-	const char *input = gi.args();
-	arena_t *arena = ARENA(ent);
-	temp_weaponflags_t temp;
+    strncpy(arena->vote.original, input, sizeof(arena->vote.original));
 
-	strncpy(arena->vote.original, input, sizeof(arena->vote.original));
+    COM_Parse(&input);	// remove "weapon" from command
 
-	COM_Parse(&input);	// remove "weapon" from command
+    // start the vote with what we've already got
+    arena->vote.value = arena->weapon_flags;
+    memcpy(arena->vote.items, arena->ammo, sizeof(arena->vote.items));
+    memcpy(arena->vote.infinite, arena->infinite, sizeof(arena->vote.infinite));
 
-	// start the vote with what we've already got
-	arena->vote.value = arena->weapon_flags;
-	memcpy(arena->vote.items, arena->ammo, sizeof(arena->vote.items));
-	memcpy(arena->vote.infinite, arena->infinite, sizeof(arena->vote.infinite));
+    if (G_ParseWeaponString(arena, ent, &input, &temp)) {
+        arena->vote.value = temp.weaponflags;
+        memcpy(arena->vote.items, temp.ammo, sizeof(arena->vote.items));
+        memcpy(arena->vote.infinite, temp.infinite, sizeof(arena->vote.infinite));
+        return qtrue;
+    }
 
-	if (G_ParseWeaponString(arena, ent, &input, &temp)) {
-		arena->vote.value = temp.weaponflags;
-		memcpy(arena->vote.items, temp.ammo, sizeof(arena->vote.items));
-		memcpy(arena->vote.infinite, temp.infinite, sizeof(arena->vote.infinite));
-		return qtrue;
-	}
-
-	return qfalse;
+    return qfalse;
 }
 
-static qboolean vote_damage(edict_t *ent) {
+static qboolean vote_damage(edict_t *ent)
+{
+    const char *input = gi.args();
+    arena_t *arena = ARENA(ent);
+    uint32_t output = 0;
 
-	const char *input = gi.args();
-	arena_t *arena = ARENA(ent);
-	uint32_t output = 0;
+    arena->vote.value = arena->damage_flags;
 
-	arena->vote.value = arena->damage_flags;
+    strncpy(arena->vote.original, input, sizeof(arena->vote.original));
 
-	strncpy(arena->vote.original, input, sizeof(arena->vote.original));
+    COM_Parse(&input);	// get rid of the word "weapon" from the head
 
-	COM_Parse(&input);	// get rid of the word "weapon" from the head
+    if (G_ParseDamageString(arena, ent, &input, &output)) {
+        arena->vote.value = output;
+        return qtrue;
+    }
 
-	if (G_ParseDamageString(arena, ent, &input, &output)) {
-		arena->vote.value = output;
-		return qtrue;
-	}
-
-	return qfalse;
+    return qfalse;
 }
 
-static qboolean vote_rounds(edict_t *ent) {
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 1, MAX_ROUNDS);
-	ARENA(ent)->vote.value = count;
-	return qtrue;
+static qboolean vote_rounds(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 1, MAX_ROUNDS);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
 }
 
-static qboolean vote_health(edict_t *ent) {
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 1, 999);
-	ARENA(ent)->vote.value = count;
-	return qtrue;
+static qboolean vote_health(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 1, 999);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
 }
 
-static qboolean vote_armor(edict_t *ent) {
-	char *arg = gi.argv(2);
-	unsigned count = strtoul(arg, NULL, 10);
-	clamp(count, 0, 999);
-	ARENA(ent)->vote.value = count;
-	return qtrue;
+static qboolean vote_armor(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 0, 999);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
 }
 
-static qboolean vote_reset(edict_t *ent) {
+static qboolean vote_reset(edict_t *ent)
+{
     return true;
 }
 
@@ -665,7 +669,8 @@ static qboolean vote_fastswitch(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_timelimit(edict_t *ent) {
+static qboolean vote_timelimit(edict_t *ent)
+{
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, 20);
@@ -673,7 +678,8 @@ static qboolean vote_timelimit(edict_t *ent) {
     return qtrue;
 }
 
-static qboolean vote_mode(edict_t *ent) {
+static qboolean vote_mode(edict_t *ent)
+{
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, 1);
@@ -730,23 +736,23 @@ void Cmd_Vote_f(edict_t *ent)
         G_BuildProposal(buffer, a);
         total = _G_CalcVote(votes, a);
         if (a->vote.proposal) {
-        	gi.cprintf(ent, PRINT_HIGH,
-					   "Proposal:   %s\n"
-					   "Yes/No:     %d/%d [%d]\n"
-					   "Timeout:    %d sec\n"
-					   "Initiator:  %s\n",
-					   buffer, votes[1], votes[0], total,
-					   (a->vote.framenum - level.framenum) / HZ,
-					   a->vote.initiator->client->pers.netname);
+            gi.cprintf(ent, PRINT_HIGH,
+                       "Proposal:   %s\n"
+                       "Yes/No:     %d/%d [%d]\n"
+                       "Timeout:    %d sec\n"
+                       "Initiator:  %s\n",
+                       buffer, votes[1], votes[0], total,
+                       (a->vote.framenum - level.framenum) / HZ,
+                       a->vote.initiator->client->pers.netname);
         } else {
-			gi.cprintf(ent, PRINT_HIGH,
-					   "Proposal:   %s\n"
-					   "Yes/No:     %d/%d [%d]\n"
-					   "Timeout:    %d sec\n"
-					   "Initiator:  %s\n",
-					   buffer, votes[1], votes[0], total,
-					   (level.vote.framenum - level.framenum) / HZ,
-					   level.vote.initiator->pers.netname);
+            gi.cprintf(ent, PRINT_HIGH,
+                       "Proposal:   %s\n"
+                       "Yes/No:     %d/%d [%d]\n"
+                       "Timeout:    %d sec\n"
+                       "Initiator:  %s\n",
+                       buffer, votes[1], votes[0], total,
+                       (level.vote.framenum - level.framenum) / HZ,
+                       level.vote.initiator->pers.netname);
         }
         return;
     }
@@ -908,26 +914,26 @@ void Cmd_Vote_f(edict_t *ent)
         return;
     }
 
-    if (v->bit <= VOTE_MAP) {	// global
-		level.vote.initiator = ent->client;
-		level.vote.proposal = v->bit;
-		level.vote.framenum = level.framenum + g_vote_time->value * HZ;
-		level.vote.index++;
-    } else {	// per arena
-    	a->vote.initiator = ent;
-		a->vote.proposal = v->bit;
-		a->vote.framenum = level.framenum + SECS_TO_FRAMES(g_vote_time->value);
-		a->vote.index++;
+    if (v->bit <= VOTE_MAP) {   // global
+        level.vote.initiator = ent->client;
+        level.vote.proposal = v->bit;
+        level.vote.framenum = level.framenum + g_vote_time->value * HZ;
+        level.vote.index++;
+    } else {    // per arena
+        a->vote.initiator = ent;
+        a->vote.proposal = v->bit;
+        a->vote.framenum = level.framenum + SECS_TO_FRAMES(g_vote_time->value);
+        a->vote.index++;
     }
 
     G_BuildProposal(buffer, a);
 
     if (a->vote.proposal) {
-    	G_bprintf(a, PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
-    	ent->client->level.vote.index = a->vote.index;
+        G_bprintf(a, PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
+        ent->client->level.vote.index = a->vote.index;
     } else {
-    	gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
-    	ent->client->level.vote.index = level.vote.index;
+        gi.bprintf(PRINT_HIGH, "%s has initiated a vote: %s\n", NAME(ent), buffer);
+        ent->client->level.vote.index = level.vote.index;
     }
 
     ent->client->level.vote.accepted = qtrue;
@@ -947,4 +953,3 @@ void Cmd_Vote_f(edict_t *ent)
         }
     }
 }
-
