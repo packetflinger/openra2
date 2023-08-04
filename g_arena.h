@@ -40,6 +40,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TEAM(e)   (e->client->pers.team)
 #define ARENA(e)  (e->client->pers.arena)
 
+#define IS_PLAYER(e)     (TEAM(e) && (TEAM(e)->type != TEAM_SPECTATORS))
+#define IS_SPECTATOR(e)  (TEAM(e) && (TEAM(e)->type == TEAM_SPECTATORS))
+
 #define ROUNDOVER(a) (a->state == ARENA_STATE_PLAY && a->teams_alive == 1)
 
 #define WEAPONFLAG_MASK          0x7FF
@@ -225,6 +228,7 @@ typedef struct {
 void change_arena(edict_t *self);
 const char *DemoName(edict_t *ent);
 void G_ArenaCast(arena_t *a, qboolean reliable);
+qboolean G_Arenamates(edict_t *p1, edict_t *p2);
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaSound(arena_t *a, int index);

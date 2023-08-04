@@ -2031,6 +2031,18 @@ qboolean G_Teammates(edict_t *p1, edict_t *p2)
 }
 
 /**
+ * Are the two players in the same arena?
+ */
+qboolean G_Arenamates(edict_t *p1, edict_t *p2)
+{
+    if (!(p1->client && p2->client)) {
+        return qfalse;
+    }
+
+    return ARENA(p1) == ARENA(p2);
+}
+
+/**
  * Read in the per-arena map config file and fill in the arena_entry structure
  *
  * return the number of arenas found in the file.
