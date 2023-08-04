@@ -874,18 +874,18 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     memset(&level.arena_defaults, 0, sizeof(arena_entry_t) * MAX_ARENAS);
     parsed_arenas = G_ParseMapSettings(level.arena_defaults, mapname);
 
-	// find arenas
-	List_Init(&g_arenalist);
-	ent = NULL;
-	while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
-		if (!ent->arena || ent->arena >= MAX_ARENAS) {
-			continue;
-		}
-		
-		j = ent->arena;
+    // find arenas
+    List_Init(&g_arenalist);
+    ent = NULL;
+    while ((ent = G_Find(ent, FOFS(classname), "info_player_intermission")) != NULL) {
+        if (!ent->arena || ent->arena >= MAX_ARENAS) {
+            continue;
+        }
 
-		memset(&level.arenas[j], 0, sizeof(arena_t));
-		
+        j = ent->arena;
+
+        memset(&level.arenas[j], 0, sizeof(arena_t));
+
         level.arenas[j].number = ent->arena;
         level.arenas[j].round_limit = (int) g_round_limit->value;
         level.arenas[j].weapon_flags = (int) g_weapon_flags->value;
@@ -897,69 +897,69 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         level.arenas[j].fastswitch = (int) g_fast_weapon_change->value;
         level.arenas[j].mode = ARENA_MODE_NORMAL;
 
-		Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
-		
-		// apply overrides for default flags
-		G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
+        Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 
-		// setup the teams
-		G_InitArenaTeams(&level.arenas[j]);
+        // apply overrides for default flags
+        G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
 
-		level.arena_count++;
-		List_Append(&g_arenalist, &level.arenas[j].entry);
+        // setup the teams
+        G_InitArenaTeams(&level.arenas[j]);
+
+        level.arena_count++;
+        List_Append(&g_arenalist, &level.arenas[j].entry);
     }
-	
-	// find the default arena
-	ent = NULL;
-	while ((ent = G_Find(ent, FOFS(classname), "worldspawn")) != NULL) {
-		if (ent->arena) {
-			level.default_arena = ent->arena;
-			break;
-		}
-	}
-	
-	// not an ra2 map, make the map arena #1
-	if (level.arena_count == 0) {
-		j = 1;
-		notra2map = qtrue;
-		
-		gi.dprintf("%s is not a native arena map, emulating a single arena...\n", mapname);
-		level.arenas[j].number = j;
-		Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
-		
-		if (parsed_arenas > 0) {
-			G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
-		} else {
-			G_MergeArenaSettings(&level.arenas[j], NULL);
-		}
 
-		G_InitArenaTeams(&(level.arenas[j]));
-		level.arena_count++;
-		List_Append(&g_arenalist, &level.arenas[j].entry);
-	}
-	
-	G_BuildMenu();
-	
-	level.map = G_FindMap(mapname);
-	
+    // find the default arena
+    ent = NULL;
+    while ((ent = G_Find(ent, FOFS(classname), "worldspawn")) != NULL) {
+        if (ent->arena) {
+            level.default_arena = ent->arena;
+            break;
+        }
+    }
+
+    // not an ra2 map, make the map arena #1
+    if (level.arena_count == 0) {
+        j = 1;
+        notra2map = qtrue;
+
+        gi.dprintf("%s is not a native arena map, emulating a single arena...\n", mapname);
+        level.arenas[j].number = j;
+        Q_strlcpy(level.arenas[j].name, mapname, sizeof(level.arenas[j].name));
+
+        if (parsed_arenas > 0) {
+            G_MergeArenaSettings(&level.arenas[j], &level.arena_defaults[j]);
+        } else {
+            G_MergeArenaSettings(&level.arenas[j], NULL);
+        }
+
+        G_InitArenaTeams(&(level.arenas[j]));
+        level.arena_count++;
+        List_Append(&g_arenalist, &level.arenas[j].entry);
+    }
+
+    G_BuildMenu();
+
+    level.map = G_FindMap(mapname);
+
     // find spawnpoints
     ent = NULL;
     while ((ent = G_Find(ent, FOFS(classname), "info_player_deathmatch")) != NULL) {
-		if (notra2map) {
-			ent->arena = 1;
-		}
-		
-		// hide it
-		ent->flags |= FL_HIDDEN;
-		ent->svflags |= SVF_NOCLIENT;
-		ent->solid = SOLID_NOT;
-			
+        if (notra2map) {
+            ent->arena = 1;
+        }
+
+        // hide it
+        ent->flags |= FL_HIDDEN;
+        ent->svflags |= SVF_NOCLIENT;
+        ent->solid = SOLID_NOT;
+
         level.spawns[level.numspawns++] = ent;
         if (level.numspawns == MAX_SPAWNS) {
             break;
         }
     }
-	
+
     gi.dprintf("%d spawn points\n", level.numspawns);
     gi.dprintf("%d arena%s\n", level.arena_count, (level.arena_count > 1) ? "s":"");
 }
