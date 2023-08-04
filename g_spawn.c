@@ -714,7 +714,7 @@ static void G_ParseString(void)
     int         inhibit = 0;
     char        *token;
 
-// parse ents
+    // parse ents
     while (1) {
         // parse the opening brace
         token = COM_Parse(&entities);
@@ -732,24 +732,21 @@ static void G_ParseString(void)
             inhibit++;
             continue;
         }
-		
-		
-		// Inhibit most if not all entities from spawning
-		if ((strstr(ent->classname, "ammo_") || 
-			strstr(ent->classname, "weapon_") ||
-			strstr(ent->classname, "item_")) && !ent->override) {
 
-			G_FreeEdict(ent);
-			inhibit++;
-		}
-		
+        // Inhibit most if not all entities from spawning
+        if ((strstr(ent->classname, "ammo_") ||
+            strstr(ent->classname, "weapon_") ||
+            strstr(ent->classname, "item_")) && !ent->override) {
+            G_FreeEdict(ent);
+            inhibit++;
+        }
+
         ent->spawnflags &= ~INHIBIT_MASK;
 
         ED_CallSpawn(ent);
     }
 
     gi.dprintf("%i entities inhibited\n", inhibit);
-
 }
 
 void G_InitArenaTeams(arena_t *arena)
