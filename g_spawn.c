@@ -752,46 +752,46 @@ static void G_ParseString(void)
 
 }
 
-void G_InitArenaTeams(arena_t *arena) {
-	
-	arena_team_t *team;
-	uint8_t i = 0;
-	
-	// team 1
-	team = &arena->teams[i++];
-	team->type = TEAM_RED;
-	Q_strlcpy(team->skin, g_team1_skin->string, sizeof(team->skin));
-	Q_strlcpy(team->name, g_team1_name->string, sizeof(team->name));
-	
-	// team 2
-	team = &arena->teams[i++];
-	team->type = TEAM_BLUE;
-	Q_strlcpy(team->skin, g_team2_skin->string, sizeof(team->skin));
-	Q_strlcpy(team->name, g_team2_name->string, sizeof(team->name));
+void G_InitArenaTeams(arena_t *arena)
+{
+    arena_team_t *team;
+    uint8_t i = 0;
 
-	// team 3
-	if (arena->team_count >= i) {
-		team = &arena->teams[i++];
-		team->type = TEAM_GREEN;
-		Q_strlcpy(team->skin, g_team3_skin->string, sizeof(team->skin));
-		Q_strlcpy(team->name, g_team3_name->string, sizeof(team->name));
-	}
+    // team 1
+    team = &arena->teams[i++];
+    team->type = TEAM_RED;
+    Q_strlcpy(team->skin, g_team1_skin->string, sizeof(team->skin));
+    Q_strlcpy(team->name, g_team1_name->string, sizeof(team->name));
 
-	// team 4
-	if (arena->team_count >= i) {
-		team = &arena->teams[i++];
-		team->type = TEAM_YELLOW;
-		Q_strlcpy(team->skin, g_team4_skin->string, sizeof(team->skin));
-		Q_strlcpy(team->name, g_team4_name->string, sizeof(team->name));
-	}
+    // team 2
+    team = &arena->teams[i++];
+    team->type = TEAM_BLUE;
+    Q_strlcpy(team->skin, g_team2_skin->string, sizeof(team->skin));
+    Q_strlcpy(team->name, g_team2_name->string, sizeof(team->name));
 
-	// team 5
-	if (arena->team_count >= i) {
-		team = &arena->teams[i++];
-		team->type = TEAM_AQUA;
-		Q_strlcpy(team->skin, g_team5_skin->string, sizeof(team->skin));
-		Q_strlcpy(team->name, g_team5_name->string, sizeof(team->name));
-	}
+    // team 3
+    if (arena->team_count >= i) {
+        team = &arena->teams[i++];
+        team->type = TEAM_GREEN;
+        Q_strlcpy(team->skin, g_team3_skin->string, sizeof(team->skin));
+        Q_strlcpy(team->name, g_team3_name->string, sizeof(team->name));
+    }
+
+    // team 4
+    if (arena->team_count >= i) {
+        team = &arena->teams[i++];
+        team->type = TEAM_YELLOW;
+        Q_strlcpy(team->skin, g_team4_skin->string, sizeof(team->skin));
+        Q_strlcpy(team->name, g_team4_name->string, sizeof(team->name));
+    }
+
+    // team 5
+    if (arena->team_count >= i) {
+        team = &arena->teams[i++];
+        team->type = TEAM_AQUA;
+        Q_strlcpy(team->skin, g_team5_skin->string, sizeof(team->skin));
+        Q_strlcpy(team->name, g_team5_name->string, sizeof(team->name));
+    }
 }
 
 /*
