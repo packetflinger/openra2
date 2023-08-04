@@ -131,11 +131,7 @@ static void UpdateChaseCam(gclient_t *client)
         client->ps.fov = client->pers.fov;
     }
     client->ps.pmove.pm_flags |= PMF_NO_PREDICTION;
-    /*if (targ->deadflag) {
-        client->ps.pmove.pm_type = PM_DEAD;
-    } else*/ {
-        client->ps.pmove.pm_type = PM_FREEZE;
-    }
+    client->ps.pmove.pm_type = PM_FREEZE;
 
     VectorCopy(ent->client->ps.viewangles, ent->s.angles);
     VectorCopy(ent->client->ps.viewangles, ent->client->v_angle);
@@ -205,46 +201,82 @@ void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
     }
 }
 
+/**
+ * Should ent be allowed to chase targ?
+ * targ must be:
+ * 1. in the same arena as ent
+ * 2. on a player team
+ * 3. a teammate of ent (if in competition mode)
+ */
+static qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
+{
+    qboolean allowed = qtrue;
+    if (!G_Arenamates(ent, targ)) {
+        allowed = qfalse;
+    }
+
+    if (!IS_PLAYER(targ)) {
+        allowed = qfalse;
+    }
+
+    if (ARENA(ent)->mode == ARENA_MODE_COMPETITION) {
+        if (!G_Teammates(ent, targ)) {
+            allowed = qfalse;
+        }
+    }
+    return allowed;
+}
+
+/**
+ * Find the next player in the list (forward) to chase
+ */
 void ChaseNext(edict_t *ent)
 {
     int i;
     edict_t *e, *targ = ent->client->chase_target;
 
-    if (!targ)
+    if (!targ) {
         return;
+    }
 
     i = targ - g_edicts;
     do {
         i++;
-        if (i > game.maxclients)
+        if (i > game.maxclients) {
             i = 1;
+        }
         e = g_edicts + i;
         if (e == targ) {
             return;
         }
-    } while (!G_Arenamates(ent, e) && IS_SPECTATOR(e));
+    } while (!ValidChaseTarget(ent, e));
 
     SetChaseTarget(ent, e);
 }
 
+/**
+ * Find the next player in the list (backwards) to chase
+ */
 void ChasePrev(edict_t *ent)
 {
     int i;
     edict_t *e, *targ = ent->client->chase_target;
 
-    if (!targ)
+    if (!targ) {
         return;
+    }
 
     i = targ - g_edicts;
     do {
         i--;
-        if (i < 1)
+        if (i < 1) {
             i = game.maxclients;
+        }
         e = g_edicts + i;
         if (e == targ) {
             return;
         }
-    } while (!G_Arenamates(ent, e) && IS_SPECTATOR(e));
+    } while (!ValidChaseTarget(ent, e));
 
     SetChaseTarget(ent, e);
 }
