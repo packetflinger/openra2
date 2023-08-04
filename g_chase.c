@@ -220,7 +220,7 @@ static qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
     }
 
     if (ARENA(ent)->mode == ARENA_MODE_COMPETITION) {
-        if (!G_Teammates(ent, targ)) {
+        if (IS_PLAYER(ent) && !G_Teammates(ent, targ)) {
             allowed = qfalse;
         }
     }
