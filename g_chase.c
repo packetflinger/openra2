@@ -143,11 +143,14 @@ static void UpdateChaseCam(gclient_t *client)
     ent->viewheight = targ->viewheight;
 }
 
+/**
+ * Chase target selected already, make it happen
+ */
 void SetChaseTarget(edict_t *ent, edict_t *targ)
 {
-	if (!ent->client) {
-		return;
-	}
+    if (!ent->client) {
+        return;
+    }
 
     ent->client->chase_target = targ;
 
@@ -176,6 +179,10 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
     }
 }
 
+/**
+ * When a chase mode is set, the target changes as the game is played.
+ * Not arena-aware
+ */
 void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
 {
     edict_t *other;
