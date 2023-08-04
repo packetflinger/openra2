@@ -125,6 +125,7 @@ typedef enum {
 
 typedef enum {
     ARENA_MODE_NORMAL,
+    ARENA_MODE_COMPETITION,
 	ARENA_MODE_REDROVER,
 } arena_mode_t;
 
@@ -213,6 +214,7 @@ typedef struct {
     uint32_t    armor;
     uint32_t    timelimit;
     qboolean    fastswitch;
+    uint32_t    mode;       // normal, redrover, comp, etc
     // ammo
     uint32_t    slugs;
     uint32_t    rockets;

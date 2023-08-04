@@ -1925,6 +1925,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
         a->team_count = (int) g_team_count->value;
         a->timelimit = (int) g_round_timelimit->value;
         a->fastswitch = (int) g_fast_weapon_change->value;
+        a->mode = ARENA_MODE_NORMAL;
         memset(&a->infinite, 0, sizeof(a->infinite));
         return;
     }
@@ -2006,6 +2007,9 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
     }
 
     a->fastswitch = m->fastswitch;
+    if (m->mode) {
+        a->mode = m->mode;
+    }
 
     memcpy(a->infinite, m->infinite, sizeof(a->infinite));
 
@@ -2166,6 +2170,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
 
             if (Q_strcasecmp(token, "fastswitch") == 0 && inarena) {
                 entry[arena_num].fastswitch = atoi(COM_Parse(&fp_data));
+            }
+
+            if (Q_strcasecmp(token, "mode") == 0 && inarena) {
+                entry[arena_num].mode = atoi(COM_Parse(&fp_data));
             }
         }
 
