@@ -1926,6 +1926,7 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
         a->timelimit = (int) g_round_timelimit->value;
         a->fastswitch = (int) g_fast_weapon_change->value;
         a->mode = ARENA_MODE_NORMAL;
+        a->corpseview = qfalse;
         memset(&a->infinite, 0, sizeof(a->infinite));
         return;
     }
@@ -2011,6 +2012,9 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
         a->mode = m->mode;
     }
 
+    if (m->corpseview) {
+        a->corpseview = m->corpseview;
+    }
     memcpy(a->infinite, m->infinite, sizeof(a->infinite));
 
     // save defaults for voting
@@ -2174,6 +2178,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
 
             if (Q_strcasecmp(token, "mode") == 0 && inarena) {
                 entry[arena_num].mode = atoi(COM_Parse(&fp_data));
+            }
+
+            if (Q_strcasecmp(token, "corpseview") == 0 && inarena) {
+                entry[arena_num].corpseview = atoi(COM_Parse(&fp_data));
             }
         }
 

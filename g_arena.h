@@ -198,6 +198,7 @@ typedef struct {
     uint32_t        countdown_start_frame;       // frame number when the count started
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
+    qboolean        corpseview;                  // gag, see chasers
 } arena_t;
 
 
@@ -215,6 +216,7 @@ typedef struct {
     uint32_t    timelimit;
     qboolean    fastswitch;
     uint32_t    mode;       // normal, redrover, comp, etc
+    qboolean    corpseview; // gag, see players chasing
     // ammo
     uint32_t    slugs;
     uint32_t    rockets;
