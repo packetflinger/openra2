@@ -181,12 +181,12 @@ void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
     edict_t *other;
     int i;
 
-    for (i = 0; i < ARENA(targ)->client_count; i++) {
+    for (i = 0; i < game.maxclients; i++) {
         other = &g_edicts[ i + 1 ];
         if (!other->inuse) {
             continue;
         }
-        if (TEAM(other) == TEAM_SPECTATORS) {
+        if (other->client->pers.connected != CONN_SPECTATOR) {
             continue;
         }
         if (other->client->chase_mode != mode) {
@@ -212,17 +212,6 @@ void ChaseNext(edict_t *ent)
         if (i > game.maxclients)
             i = 1;
         e = g_edicts + i;
-
-        if (ARENA(e) != ARENA(ent)) {
-            continue;
-        }
-
-        if ((int)g_teamspec_only->value) {
-            if (!G_Teammates(ent, e)) {
-                continue;
-            }
-        }
-
         if (e == targ) {
             return;
         }
@@ -245,17 +234,6 @@ void ChasePrev(edict_t *ent)
         if (i < 1)
             i = game.maxclients;
         e = g_edicts + i;
-
-        if (ARENA(e) != ARENA(ent)) {
-            continue;
-        }
-
-        if ((int)g_teamspec_only->value) {
-            if (!G_Teammates(ent, e)) {
-                continue;
-            }
-        }
-
         if (e == targ) {
             return;
         }
@@ -284,9 +262,6 @@ qboolean GetChaseTarget(edict_t *ent, chase_mode_t mode)
             continue;
         }
         if (!PLAYER_SPAWNED(other)) {
-            continue;
-        }
-        if (ARENA(ent) != ARENA(other)) {
             continue;
         }
         switch (mode) {
@@ -346,4 +321,3 @@ void ChaseEndServerFrame(edict_t *ent)
     // stats
     SetChaseStats(c);
 }
-

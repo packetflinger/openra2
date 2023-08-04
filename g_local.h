@@ -764,7 +764,6 @@ extern  cvar_t  *g_spawn_mode;
 extern  cvar_t  *g_team_chat;
 extern  cvar_t  *g_mute_chat;
 extern  cvar_t  *g_protection_time;
-extern  cvar_t  *g_teamspec_only;
 extern  cvar_t  *dedicated;
 
 #if USE_SQLITE

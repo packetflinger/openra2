@@ -109,7 +109,6 @@ cvar_t *g_round_end_time;
 cvar_t *g_round_countdown;
 cvar_t *g_team_count;
 cvar_t *g_teamspec_name;
-cvar_t *g_teamspec_only;
 cvar_t *g_team1_name;
 cvar_t *g_team1_skin;
 cvar_t *g_team2_name;
@@ -991,7 +990,6 @@ static void G_Init(void) {
     g_round_timelimit = gi.cvar("g_round_timelimit", "180", CVAR_GENERAL);
     g_fast_weapon_change =gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
     g_showchasebody = gi.cvar("g_show_chase_body", "0", CVAR_GENERAL); // just a gag
-    g_teamspec_only = gi.cvar("g_teamspec_only", "0", CVAR_GENERAL);
 
     // Sane limits
     clamp(g_round_countdown->value, 3, 30);
