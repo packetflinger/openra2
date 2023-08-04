@@ -222,7 +222,7 @@ void ChaseNext(edict_t *ent)
         if (e == targ) {
             return;
         }
-    } while (e->client->pers.connected != CONN_SPAWNED);
+    } while (!G_Arenamates(ent, e) && IS_SPECTATOR(e));
 
     SetChaseTarget(ent, e);
 }
@@ -244,7 +244,7 @@ void ChasePrev(edict_t *ent)
         if (e == targ) {
             return;
         }
-    } while (e->client->pers.connected != CONN_SPAWNED);
+    } while (!G_Arenamates(ent, e) && IS_SPECTATOR(e));
 
     SetChaseTarget(ent, e);
 }
