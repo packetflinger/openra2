@@ -407,6 +407,13 @@ qboolean G_CheckArenaVote(arena_t *a)
             G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", (a->vote.value) ? "red rover" : "normal");
             break;
 
+        case VOTE_CORPSE:
+            a->modified = qtrue;
+            a->corpseview = a->vote.value;
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: corpse view now %s\n", (a->corpseview) ? "ON" : "OFF");
+            G_RecreateArena(a);
+            break;
+
         default:
             break;
         }
@@ -470,6 +477,9 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         break;
     case VOTE_MODE:
         sprintf(buffer, "%s mode", (a->vote.value) ? "red rover" : "normal");
+        break;
+    case VOTE_CORPSE:
+        sprintf(buffer, "corpse-view %s", (a->vote.value) ? "on" : "off");
         break;
     default:
         strcpy(buffer, "unknown");
@@ -682,6 +692,15 @@ static qboolean vote_mode(edict_t *ent)
 {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
+    clamp(count, 0, ARENA_MODE_MAX);
+    ARENA(ent)->vote.value = count;
+    return qtrue;
+}
+
+static qboolean vote_corpseview(edict_t *ent)
+{
+    char *arg = gi.argv(2);
+    unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, 1);
     ARENA(ent)->vote.value = count;
     return qtrue;
@@ -705,11 +724,15 @@ static const vote_proposal_t vote_proposals[] = {
     {"armor",       VOTE_ARMOR,     vote_armor},
     {"reset",       VOTE_RESET,     vote_reset},
     {"fastswitch",  VOTE_SWITCH,    vote_fastswitch},
-	{"timelimit",   VOTE_TIMELIMIT, vote_timelimit},
-	{"mode",        VOTE_MODE,      vote_mode},
+    {"timelimit",   VOTE_TIMELIMIT, vote_timelimit},
+    {"mode",        VOTE_MODE,      vote_mode},
+    {"corpseview",  VOTE_CORPSE,    vote_corpseview},
     {NULL}
 };
 
+/**
+ * A client used the "vote" command in console...
+ */
 void Cmd_Vote_f(edict_t *ent)
 {
     char buffer[MAX_STRING_CHARS];
@@ -817,8 +840,11 @@ void Cmd_Vote_f(edict_t *ent)
         }
         if (mask & VOTE_MODE) {
             gi.cprintf(ent, PRINT_HIGH,
-                       " mode <0/1>                     Gameplay mode, 0=regular, 1=redrover\n");
+                       " mode <0/1>                     Gameplay mode, 0=regular, 1=competition\n");
         }
+
+        // leave corpseview out of help
+
         gi.cprintf(ent, PRINT_HIGH,
                    "Available commands:\n"
                    " yes/no                         Accept/deny current vote\n"

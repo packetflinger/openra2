@@ -126,7 +126,8 @@ typedef enum {
 typedef enum {
     ARENA_MODE_NORMAL,
     ARENA_MODE_COMPETITION,
-	ARENA_MODE_REDROVER,
+    ARENA_MODE_REDROVER,
+    ARENA_MODE_MAX,
 } arena_mode_t;
 
 

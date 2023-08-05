@@ -436,6 +436,7 @@ typedef struct {
 #define VOTE_SWITCH     (1 << 10)   // local
 #define VOTE_TIMELIMIT  (1 << 11)   // local
 #define VOTE_MODE       (1 << 12)   // local
+#define VOTE_CORPSE     (1 << 13)   // local, easter egg
 #define VOTE_ALL        (VOTE_KICK | VOTE_MUTE | VOTE_MAP | \
                         VOTE_TEAMS | VOTE_WEAPONS | VOTE_DAMAGE | \
                         VOTE_ROUNDS | VOTE_HEALTH | VOTE_ARMOR | \
