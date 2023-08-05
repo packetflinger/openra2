@@ -1208,14 +1208,7 @@ static void Cmd_Chase_f(edict_t *ent)
     if (gi.argc() == 2) {
         char *who = gi.argv(1);
 
-        if (!Q_stricmp(who, "quad")) {
-            mode = CHASE_QUAD;
-        } else if (!Q_stricmp(who, "inv") ||
-                   !Q_stricmp(who, "pent")) {
-            mode = CHASE_INVU;
-        } else if (!Q_stricmp(who, "top") ||
-                   !Q_stricmp(who, "topfragger") ||
-                   !Q_stricmp(who, "leader")) {
+        if (!Q_stricmp(who, "top") || !Q_stricmp(who, "leader")) {
             mode = CHASE_LEADER;
         } else {
             target = G_SetPlayer(ent, 1);
@@ -1223,10 +1216,8 @@ static void Cmd_Chase_f(edict_t *ent)
                 return;
             }
 
-            if (!PLAYER_SPAWNED(target)) {
-                gi.cprintf(ent, PRINT_HIGH,
-                           "Player '%s' is not in the game.\n",
-                           target->client->pers.netname);
+            if (!IS_PLAYER(target)) {
+                gi.cprintf(ent, PRINT_HIGH, "'%s' is a spectator\n", NAME(target));
                 return;
             }
         }
