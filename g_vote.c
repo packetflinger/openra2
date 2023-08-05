@@ -404,7 +404,7 @@ qboolean G_CheckArenaVote(arena_t *a)
         case VOTE_MODE:
             a->modified = qtrue;
             a->mode = a->vote.value;
-            G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", (a->vote.value) ? "red rover" : "normal");
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: gameplay mode changed to %s \n", G_ArenaModeString(a));
             break;
 
         case VOTE_CORPSE:

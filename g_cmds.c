@@ -1403,8 +1403,8 @@ void Cmd_Settings_f(edict_t *ent)
     gi.cprintf(ent, PRINT_HIGH, "Health:        %d\n", ARENA(ent)->health);
     gi.cprintf(ent, PRINT_HIGH, "Body Armor:    %d\n", ARENA(ent)->armor);
     gi.cprintf(ent, PRINT_HIGH, "Timelimit:     %d\n", ARENA(ent)->timelimit);
-    gi.cprintf(ent, PRINT_HIGH, "Fast Switch:   %d\n", ARENA(ent)->fastswitch);
-    gi.cprintf(ent, PRINT_HIGH, "Mode:          %d\n", ARENA(ent)->mode);
+    gi.cprintf(ent, PRINT_HIGH, "Fast Switch:   %s\n", (ARENA(ent)->fastswitch) ? "on" : "off");
+    gi.cprintf(ent, PRINT_HIGH, "Mode:          %s\n", G_ArenaModeString(ARENA(ent)));
     gi.cprintf(ent, PRINT_HIGH, "Corpse View:   %s\n", (ARENA(ent)->corpseview) ? "on" : "off");
 }
 

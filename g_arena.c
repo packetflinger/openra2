@@ -2977,3 +2977,20 @@ void G_ApplyDefaults(arena_t *a)
     G_MergeArenaSettings(a, &level.arena_defaults[a->number]);
     G_InitArenaTeams(a);
 }
+
+/**
+ * Get a string value for the arena mode
+ */
+char *G_ArenaModeString(arena_t *a)
+{
+    switch (a->mode) {
+    case ARENA_MODE_COMPETITION:
+        return va("competition");
+        break;
+    case ARENA_MODE_REDROVER:
+        return va("red rover");
+        break;
+    default:
+        return va("normal");
+    }
+}

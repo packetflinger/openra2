@@ -234,6 +234,7 @@ void change_arena(edict_t *self);
 const char *DemoName(edict_t *ent);
 void G_ArenaCast(arena_t *a, qboolean reliable);
 qboolean G_Arenamates(edict_t *p1, edict_t *p2);
+char *G_ArenaModeString(arena_t *a);
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable);
 void G_ArenaSound(arena_t *a, int index);
