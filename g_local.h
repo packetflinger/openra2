@@ -1539,6 +1539,7 @@ void ChasePrev(edict_t *ent);
 qboolean GetChaseTarget(edict_t *ent, chase_mode_t mode);
 void SetChaseTarget(edict_t *ent, edict_t *targ);
 void UpdateChaseTargets(chase_mode_t mode, edict_t *targ);
+qboolean ValidChaseTarget(edict_t *ent, edict_t *targ);
 
 //
 // g_vote.c

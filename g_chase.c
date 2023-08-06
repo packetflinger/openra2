@@ -208,7 +208,7 @@ void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
  * 2. on a player team
  * 3. a teammate of ent (if in competition mode)
  */
-static qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
+qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
 {
     qboolean allowed = qtrue;
     if (!G_Arenamates(ent, targ)) {

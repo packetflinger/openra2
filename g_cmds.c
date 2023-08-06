@@ -1097,8 +1097,8 @@ edict_t *G_SetPlayer(edict_t *ent, int arg)
         }
 
         other = &g_edicts[ i + 1 ];
-        if (!other->client || other->client->pers.connected <= CONN_CONNECTED) {
-            gi.cprintf(ent, PRINT_HIGH, "Client %d is not active.\n", i);
+        if (!ValidChaseTarget(ent, other)) {
+            gi.cprintf(ent, PRINT_HIGH, "You're unable to chase %s now\n", NAME(ent));
             return NULL;
         }
         return other;
@@ -1113,15 +1113,17 @@ edict_t *G_SetPlayer(edict_t *ent, int arg)
             continue;
         }
 
-        if (other->client->pers.connected <= CONN_CONNECTED) {
-            continue;
-        }
-
-        if (!Q_stricmp(other->client->pers.netname, s)) {
+        if (!Q_stricmp(NAME(other), s)) {
+            if (!ValidChaseTarget(ent, other)) {
+                continue;
+            }
             return other; // exact match
         }
 
-        if (Q_stristr(other->client->pers.netname, s)) {
+        if (Q_stristr(NAME(other), s)) {
+            if (!ValidChaseTarget(ent, other)) {
+                continue;
+            }
             match = other; // partial match
             count++;
         }
