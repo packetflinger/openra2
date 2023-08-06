@@ -699,23 +699,6 @@ void G_SetStats(edict_t *ent)
     }
 
     //
-    // timer 2 (pent)
-    //
-    /*
-    ent->client->ps.stats[STAT_TIMER2_ICON] = 0;
-    ent->client->ps.stats[STAT_TIMER2] = 0;
-    if (ent->client->invincible_framenum > level.framenum) {
-        if (ent->client->ps.stats[STAT_TIMER_ICON]) {
-            ent->client->ps.stats[STAT_TIMER2_ICON] = level.images.invulnerability;
-            ent->client->ps.stats[STAT_TIMER2] = (ent->client->invincible_framenum - level.framenum) / HZ;
-        } else {
-            ent->client->ps.stats[STAT_TIMER_ICON] = level.images.invulnerability;
-            ent->client->ps.stats[STAT_TIMER] = (ent->client->invincible_framenum - level.framenum) / HZ;
-        }
-    }
-    */
-
-    //
     // selected item
     //
     if (ent->client->selected_item == -1) {
@@ -740,14 +723,6 @@ void G_SetStats(edict_t *ent)
     //
     ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.damage_given;
 
-    //
-    // help icon / current weapon if not shown
-    //
-    //if ((ent->client->pers.hand == CENTER_HANDED || ent->client->ps.fov > 91) && ent->client->weapon)
-    //    ent->client->ps.stats[STAT_HELPICON] = gi.imageindex(ent->client->weapon->icon);
-    //else
-    //    ent->client->ps.stats[STAT_HELPICON] = 0;
-
     ent->client->ps.stats[STAT_SPECTATOR] = 0;
     ent->client->ps.stats[STAT_CHASE] = 0;
 
@@ -756,16 +731,13 @@ void G_SetStats(edict_t *ent)
     } else {
 
         if (ent->client->pers.connected == CONN_SPAWNED) {
-			
-			// countdown
-			if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
-				ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->countdown;
-			} else {
-				ent->client->ps.stats[STAT_COUNTDOWN] = 0;
-			}
-			
+            // countdown
+            if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
+                ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->countdown;
+            } else {
+                ent->client->ps.stats[STAT_COUNTDOWN] = 0;
+            }
         } else {
-
             if (ent->client->pers.connected == CONN_SPECTATOR) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
             } else {
@@ -797,32 +769,31 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_VOTE_PROPOSAL] = 0;
         ent->client->ps.stats[STAT_VOTE_COUNT] = 0;
     }
-	
-	if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
-		if (TEAM(ent)) {
-			if (!ent->client->pers.ready) {
-				ent->client->ps.stats[STAT_READY] = CS_READY;
-			} else {
-				ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
-			}
-		} else {
-			ent->client->ps.stats[STAT_READY] = 0;
-		}
-	} else {
-		ent->client->ps.stats[STAT_READY] = 0;
-	}
 
-	ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
+    if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
+        if (TEAM(ent)) {
+            if (!ent->client->pers.ready) {
+                ent->client->ps.stats[STAT_READY] = CS_READY;
+            } else {
+                ent->client->ps.stats[STAT_READY] = CS_READY_WAIT;
+            }
+        } else {
+            ent->client->ps.stats[STAT_READY] = 0;
+        }
+    } else {
+        ent->client->ps.stats[STAT_READY] = 0;
+    }
 
-	if (TEAM(ent)) {
-		ent->client->ps.stats[STAT_AMMO_BULLETS] = ent->client->inventory[ITEM_BULLETS];
-		ent->client->ps.stats[STAT_AMMO_SHELLS] = ent->client->inventory[ITEM_SHELLS];
-		ent->client->ps.stats[STAT_AMMO_GRENADES] = ent->client->inventory[ITEM_GRENADES];
-		ent->client->ps.stats[STAT_AMMO_CELLS] = ent->client->inventory[ITEM_CELLS];
-		ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
-		ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
-	}
+    ent->client->ps.stats[STAT_MATCH_STATUS] = CS_MATCH_STATUS;
 
-	ent->client->ps.stats[STAT_ROUND] = CS_ROUND;
+    if (TEAM(ent)) {
+        ent->client->ps.stats[STAT_AMMO_BULLETS] = ent->client->inventory[ITEM_BULLETS];
+        ent->client->ps.stats[STAT_AMMO_SHELLS] = ent->client->inventory[ITEM_SHELLS];
+        ent->client->ps.stats[STAT_AMMO_GRENADES] = ent->client->inventory[ITEM_GRENADES];
+        ent->client->ps.stats[STAT_AMMO_CELLS] = ent->client->inventory[ITEM_CELLS];
+        ent->client->ps.stats[STAT_AMMO_ROCKETS] = ent->client->inventory[ITEM_ROCKETS];
+        ent->client->ps.stats[STAT_AMMO_SLUGS] = ent->client->inventory[ITEM_SLUGS];
+    }
+
+    ent->client->ps.stats[STAT_ROUND] = CS_ROUND;
 }
-
