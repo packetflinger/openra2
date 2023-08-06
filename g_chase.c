@@ -27,10 +27,11 @@ static void SetChaseStats(gclient_t *client)
 
     memcpy(client->ps.stats, targ->client->ps.stats, sizeof(client->ps.stats));
 
-    // layouts are independant in chasecam mode
+    // layouts are independent in chasecam mode
     client->ps.stats[STAT_LAYOUTS] = 0;
-    if (client->layout)
+    if (client->layout) {
         client->ps.stats[STAT_LAYOUTS] |= 1;
+    }
 
     client->ps.stats[STAT_CHASE] = CS_PLAYERNAMES + playernum;
     client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
