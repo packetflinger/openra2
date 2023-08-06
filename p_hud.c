@@ -595,7 +595,9 @@ static edict_t *find_by_angles(edict_t *ent)
 }
 
 /**
- *
+ * Figure out which player ent is looking at.
+ * Returns that player's configstring index and sets
+ * the teammate pointer appropriately.
  */
 int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
 {
@@ -629,6 +631,7 @@ void G_SetStats(edict_t *ent)
     int             index, cells;
     int             power_armor_type;
     qboolean        teammate = qfalse;
+    int             viewid = 0;
 
     //
     // health
@@ -773,8 +776,14 @@ void G_SetStats(edict_t *ent)
             ent->client->ps.stats[STAT_VIEWID] = 0;
             ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
         } else {
-            ent->client->ps.stats[STAT_VIEWID] = G_GetPlayerIdView(ent, &teammate);
-            ent->client->ps.stats[STAT_VIEWID_TEAM] = (teammate) ? 1 : 0;
+            viewid = G_GetPlayerIdView(ent, &teammate);
+            if (teammate) {
+                ent->client->ps.stats[STAT_VIEWID] = viewid;
+                ent->client->ps.stats[STAT_VIEWID_TEAM] = 1;
+            } else {
+                ent->client->ps.stats[STAT_VIEWID] = 0;
+                ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
+            }
         }
     }
 
