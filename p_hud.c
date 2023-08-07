@@ -766,8 +766,8 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_VOTE_PROPOSAL] = CS_VOTE_PROPOSAL;
         ent->client->ps.stats[STAT_VOTE_COUNT] = CS_VOTE_COUNT;
     } else if (ARENA(ent)->vote.proposal) {
-    	ent->client->ps.stats[STAT_VOTE_PROPOSAL] = CS_VOTE_PROPOSAL;
-    	ent->client->ps.stats[STAT_VOTE_COUNT] = CS_VOTE_COUNT;
+        ent->client->ps.stats[STAT_VOTE_PROPOSAL] = CS_VOTE_PROPOSAL;
+        ent->client->ps.stats[STAT_VOTE_COUNT] = CS_VOTE_COUNT;
     } else {
         ent->client->ps.stats[STAT_VOTE_PROPOSAL] = 0;
         ent->client->ps.stats[STAT_VOTE_COUNT] = 0;
