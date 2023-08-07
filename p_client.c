@@ -1074,17 +1074,18 @@ Chooses a player start, deathmatch start, coop start, etc
 static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
 {
     edict_t *spot = NULL;
-	spot = SelectArenaSpawnPoint(ent);
-	
+    spot = SelectArenaSpawnPoint(ent);
+
     if (!spot && level.numspawns && PLAYER_SPAWNED(ent)) {
         spot = SelectDeathmatchSpawnPoint();
     }
-	
+
     // find a single player start spot
     if (!spot) {
         while ((spot = G_Find(spot, FOFS(classname), "info_player_start")) != NULL) {
-            if (!spot->targetname)
+            if (!spot->targetname) {
                 break;
+            }
         }
 
         if (!spot) {
