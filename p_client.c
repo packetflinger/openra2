@@ -186,8 +186,8 @@ int G_UpdateRanks(void)
 void G_ScoreChanged(edict_t *ent)
 {
     char buffer[MAX_QPATH];
-	Q_snprintf(buffer, sizeof(buffer), "%5d",
-		ent->client->resp.damage_given);
+    Q_snprintf(buffer, sizeof(buffer), "%5d",
+        ent->client->resp.damage_given);
 
     G_PrivateString(ent, PCS_DAMAGE, buffer);
 }
