@@ -425,18 +425,18 @@ size_t COM_strclr(char *s)
  * This version ganked from Quetoo
  */
 char *va(const char *format, ...) {
-	static char strings[8][MAX_STRING_CHARS];
-	static uint16_t index;
+    static char strings[8][MAX_STRING_CHARS];
+    static uint16_t index;
 
-	char *string = strings[index++ % 8];
+    char *string = strings[index++ % 8];
 
-	va_list args;
+    va_list args;
 
-	va_start(args, format);
-	vsnprintf(string, MAX_STRING_CHARS, format, args);
-	va_end(args);
+    va_start(args, format);
+    vsnprintf(string, MAX_STRING_CHARS, format, args);
+    va_end(args);
 
-	return string;
+    return string;
 }
 
 static char     com_token[4][MAX_TOKEN_CHARS];
