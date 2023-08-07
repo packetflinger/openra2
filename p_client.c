@@ -689,13 +689,13 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     self->svflags |= SVF_DEADMONSTER;
 
     if (!self->deadflag) {
-		if (arena && team && arena->state >= ARENA_STATE_PLAY) {
-			TEAM(self)->players_alive--;
-			if (TEAM(self)->players_alive == 0) {
-				ARENA(self)->teams_alive--;
-			}
-		}
-		
+        if (arena && team && arena->state >= ARENA_STATE_PLAY) {
+            TEAM(self)->players_alive--;
+            if (TEAM(self)->players_alive == 0) {
+                ARENA(self)->teams_alive--;
+            }
+        }
+
         self->client->respawn_framenum = level.framenum + 1 * HZ;
         LookAtKiller(self, inflictor, attacker);
         self->client->ps.pmove.pm_type = PM_DEAD;
