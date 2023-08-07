@@ -1239,8 +1239,8 @@ void PutClientInServer(edict_t *ent)
     index = ent - g_edicts - 1;
     client = ent->client;
 
-	ent->health = 0;
-	SelectSpawnPoint(ent, spawn_origin, spawn_angles);
+    ent->health = 0;
+    SelectSpawnPoint(ent, spawn_origin, spawn_angles);
     PMenu_Close(ent);
 
     // deathmatch wipes most client data every spawn
@@ -1358,16 +1358,16 @@ void PutClientInServer(edict_t *ent)
         // could't spawn in?
     }
 
-	// give the player all the guns and ammo they need
-	G_GiveItems(ent);
-	
-	// Create a statusbar and send it
-	G_SendStatusBar(ent);
+    // give the player all the guns and ammo they need
+    G_GiveItems(ent);
+
+    // Create a statusbar and send it
+    G_SendStatusBar(ent);
 
     // force the current weapon up
-	if (!client->newweapon) {
-		client->newweapon = client->weapon;
-	}
+    if (!client->newweapon) {
+        client->newweapon = client->weapon;
+    }
     ChangeWeapon(ent);
 
     if (g_protection_time->value > 0) {
@@ -1397,19 +1397,20 @@ void G_WriteTime(int remaining)
 
 // get the arena with the most current players
 static int arena_num_popular(void) {
-	int i, winner;
+    int i, winner;
 
-	winner = 1;
-	for (i=1; i<MAX_ARENAS; i++) {
-		if (!&level.arenas[i])
-			continue;
+    winner = 1;
+    for (i=1; i<MAX_ARENAS; i++) {
+        if (!&level.arenas[i]) {
+            continue;
+        }
 
-		if (level.arenas[i].client_count > level.arenas[winner].client_count) {
-			winner = level.arenas[i].number;
-		}
-	}
+        if (level.arenas[i].client_count > level.arenas[winner].client_count) {
+            winner = level.arenas[i].number;
+        }
+    }
 
-	return winner;
+    return winner;
 }
 
 /*
@@ -1422,8 +1423,8 @@ to be placed into the game.  This will happen every level load.
 */
 void ClientBegin(edict_t *ent)
 {
-	arena_t *arena;
-	
+    arena_t *arena;
+
     ent->client = game.clients + (ent - g_edicts - 1);
     ent->client->edict = ent;
 
@@ -1438,20 +1439,20 @@ void ClientBegin(edict_t *ent)
 
     int anum = level.default_arena;
     switch ((int)g_default_arena->value) {
-	case ARENA_DEFAULT_FIRST:
-		anum = 1;
-		break;
-	case ARENA_DEFAULT_POPULAR:
-		anum = arena_num_popular();
-		break;
-	case ARENA_DEFAULT_RANDOM:
-		anum = (int)((random() * level.arena_count) + 1);
-		break;
-	}
+    case ARENA_DEFAULT_FIRST:
+        anum = 1;
+        break;
+    case ARENA_DEFAULT_POPULAR:
+        anum = arena_num_popular();
+        break;
+    case ARENA_DEFAULT_RANDOM:
+        anum = (int)((random() * level.arena_count) + 1);
+        break;
+    }
 
     arena = &level.arenas[anum];
 
-	G_ChangeArena(ent, arena);
+    G_ChangeArena(ent, arena);
 
     if (level.intermission_framenum) {
         MoveClientToIntermission(ent);
@@ -1475,9 +1476,9 @@ void ClientBegin(edict_t *ent)
         gi.unicast(ent, qfalse);
 
         ent->client->level.first_time = qfalse;
-		
-		// Show the menu
-		Cmd_Menu_f(ent);
+
+        // Show the menu
+        Cmd_Menu_f(ent);
     }
 
     // make sure all view stuff is valid
@@ -1622,7 +1623,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
 
     // don't allow anyone to change skin using the "skin" cmd or updating userinfo
     if (strcmp(skin, client->pers.skin) && TEAM(ent)) {
-    	G_SetSkin(ent, TEAM(ent)->skin);
+        G_SetSkin(ent, TEAM(ent)->skin);
     }
 
     if (!client->pers.mvdspec && changed) {
@@ -1668,11 +1669,11 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     // flags
     s = Info_ValueForKey(userinfo, "uf");
     client->pers.uf = *s ? atoi(s) : UF_LOCALFOV;
-	
-	// force team skins
-	if (ent->client->pers.team && changed) {
-		G_SetSkin(ent, ent->client->pers.team->skin);
-	}
+
+    // force team skins
+    if (ent->client->pers.team && changed) {
+        G_SetSkin(ent, ent->client->pers.team->skin);
+    }
 }
 
 
@@ -1713,7 +1714,6 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
     ent->client->level.first_time = qtrue;
     ent->client->pers.loopback = !strcmp(s, "loopback");
     ent->client->pers.muted = action == IPA_MUTE;
-	//ent->client->pers.arena = 1;
 
     // save ip
     Q_strlcpy(ent->client->pers.ip, s, sizeof(ent->client->pers.ip));
@@ -1747,7 +1747,7 @@ void ClientDisconnect(edict_t *ent)
     }
 
     G_ChangeArena(ent, NULL);
-	
+
     connected = ent->client->pers.connected;
     ent->client->pers.connected = CONN_DISCONNECTED;
     ent->client->ps.stats[STAT_FRAGS] = 0;
@@ -1886,18 +1886,18 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         client->ps.pmove.pm_type = PM_FREEZE;
         return;
     }
-	
-    // no moving during timeout
-	if (client->pers.arena->state == ARENA_STATE_TIMEOUT) {
-		client->ps.pmove.pm_type = PM_FREEZE;
-		return;
-	}
 
-	// no moving during arena intermission
-	if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
-		client->ps.pmove.pm_type = PM_FREEZE;
-		return;
-	}
+    // no moving during timeout
+    if (client->pers.arena->state == ARENA_STATE_TIMEOUT) {
+        client->ps.pmove.pm_type = PM_FREEZE;
+        return;
+    }
+
+    // no moving during arena intermission
+    if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
+        client->ps.pmove.pm_type = PM_FREEZE;
+        return;
+    }
 
     if (!ent->client->chase_target) {
         // set up for pmove
@@ -2005,10 +2005,10 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
     // fire weapon from final position if needed
     if (client->latched_buttons & BUTTON_ATTACK) {
 
-    	if (ARENA(ent)->state == ARENA_STATE_PLAY && ent->health < 1) {
-    		client->latched_buttons = 0;
-    		respawn(ent);
-    	}
+        if (ARENA(ent)->state == ARENA_STATE_PLAY && ent->health < 1) {
+            client->latched_buttons = 0;
+            respawn(ent);
+        }
 
         if (client->pers.connected == CONN_PREGAME) {
             //spectator_respawn(ent, CONN_SPAWNED);
