@@ -833,32 +833,32 @@ static float PlayersRangeFromSpot(edict_t *spot)
  *
  */
 static edict_t *SelectArenaSpawnPoint(edict_t *player) {
-	edict_t *spot = NULL;
-	edict_t *spawns[MAX_SPAWNS];
-	int i;
-	float range;
-	
-	for (i = 0; i < level.numspawns; i++) {
+    edict_t *spot = NULL;
+    edict_t *spawns[MAX_SPAWNS];
+    int i;
+    float range;
+
+    for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
     }
-	
-	G_ShuffleArray(spawns, level.numspawns);
-	
-	for (i = 0; i < level.numspawns; i++) {
+
+    G_ShuffleArray(spawns, level.numspawns);
+
+    for (i = 0; i < level.numspawns; i++) {
         spot = spawns[i];
-		
-		// the spawn is in players's current arena...
+
+        // the spawn is in players's current arena...
         if (spot->arena == ARENA(player)->number) {
-			
-			range = PlayersRangeFromSpot(spot);
-			if (range > 64) {
-				return spot;
-			}
-		}
+
+            range = PlayersRangeFromSpot(spot);
+            if (range > 64) {
+                return spot;
+            }
+        }
     }
-	
-	// we couldn't find a clear spawn, just return the last one and telefrag
-	return spot;
+
+    // we couldn't find a clear spawn, just return the last one and telefrag
+    return spot;
 }
 
 edict_t *SelectIntermissionPoint(arena_t *a) {
