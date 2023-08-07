@@ -1143,7 +1143,7 @@ static const char statusbar[] =
 
 // status
 "if 31 "
-	"yb -60 "
+	"yb -76 "
 	"xv 0 "
 	"stat_string 31 "
 "endif "
