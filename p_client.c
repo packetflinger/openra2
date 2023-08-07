@@ -1124,9 +1124,12 @@ void respawn(edict_t *self)
         CopyToBodyQue(self);
     }
 
+    // there is no respawning during a match, so just chase if possible
     if (ARENA(self)->state > ARENA_STATE_COUNTDOWN) {
-    	SetChaseTarget(self, self->killer);
-    	return;
+        if (ValidChaseTarget(self, self->killer)) {
+            SetChaseTarget(self, self->killer);
+        }
+        return;
     }
 
     PutClientInServer(self);
