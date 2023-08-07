@@ -289,10 +289,10 @@ INTERMISSION
 
 void MoveClientToIntermission(edict_t *ent)
 {
-	arena_t *a = ARENA(ent);
-	
+    arena_t *a = ARENA(ent);
+
     PMenu_Close(ent);
-	
+
     ent->client->layout = LAYOUT_SCORES;
     VectorCopy(a->intermission_origin, ent->s.origin);
     ent->client->ps.pmove.origin[0] = a->intermission_origin[0] * 8;
@@ -347,11 +347,13 @@ void BeginIntermission(arena_t *a)
     int        i;
     edict_t    *ent, *client;
 
-	if (!a)
-		return;
-	
-    if (a->intermission_framenum)
+    if (!a) {
         return;
+    }
+
+    if (a->intermission_framenum) {
+        return;
+    }
 
     a->state = ARENA_STATE_INTERMISSION;
     a->intermission_framenum = level.framenum;
@@ -361,18 +363,18 @@ void BeginIntermission(arena_t *a)
     // respawn any dead clients
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-		
+
         if (!client->inuse) {
             continue;
-		}
-		
+        }
+
         if (client->health <= 0 && ARENA(client) == a) {
             respawn(client);
-		}
+        }
     }
 
-	ent = SelectIntermissionPoint(a);
-	
+    ent = SelectIntermissionPoint(a);
+
     if (ent) {
         VectorCopy(ent->s.origin, a->intermission_origin);
         VectorCopy(ent->s.angles, a->intermission_angle);
@@ -381,14 +383,14 @@ void BeginIntermission(arena_t *a)
     // move all clients in this arena to the intermission point
     for (i = 0; i < game.maxclients; i++) {
         client = g_edicts + 1 + i;
-		
+
         if (!client->inuse) {
             continue;
-		}
-		
-		if (ARENA(client) == a) {
-			MoveClientToIntermission(client);
-		}
+        }
+
+        if (ARENA(client) == a) {
+            MoveClientToIntermission(client);
+        }
     }
 }
 
@@ -523,8 +525,9 @@ static edict_t *find_by_tracing(edict_t *ent)
             continue;
         }
 
-        if (tr.ent == world || tr.fraction == 1.0f)
+        if (tr.ent == world || tr.fraction == 1.0f) {
             break;
+        }
 
         // we hit something that's a player and it's alive!
         // note, we trace twice so we hit water planes
@@ -553,15 +556,21 @@ static edict_t *find_by_angles(edict_t *ent)
 
     // if trace was unsuccessful, try guessing based on angles
     for (who = g_edicts + 1; who <= g_edicts + game.maxclients; who++) {
-        if (!who->inuse)
+        if (!who->inuse) {
             continue;
-        if (!PLAYER_SPAWNED(who))
-            continue;
-        if (who->health <= 0)
-            continue;
+        }
 
-        if (who == ent)
+        if (!PLAYER_SPAWNED(who)) {
             continue;
+        }
+
+        if (who->health <= 0) {
+            continue;
+        }
+
+        if (who == ent) {
+            continue;
+        }
 
         VectorSubtract(who->s.origin, ent->s.origin, dir);
         distance = VectorLength(dir);
@@ -617,8 +626,6 @@ int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
 
     return CS_PLAYERNAMES + (target - g_edicts) - 1;
 }
-
-
 
 /*
 ===============
@@ -729,7 +736,6 @@ void G_SetStats(edict_t *ent)
     if (level.intermission_framenum || ARENA(ent)->round_intermission_start) {
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
-
         if (ent->client->pers.connected == CONN_SPAWNED) {
             // countdown
             if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
