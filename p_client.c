@@ -382,15 +382,15 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
         if ((int)dedicated->value) {
             gi.dprintf("%s %s.\n", self->client->pers.netname, message);
         }
-		if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
-			frag = mod_to_frag[mod];
-			self->client->resp.score--;
-			self->client->resp.frags[frag].suicides++;
-			self->enemy = NULL;
-			G_ScoreChanged(self);
-			G_UpdateRanks();
-		}
-		return;
+        if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
+            frag = mod_to_frag[mod];
+            self->client->resp.score--;
+            self->client->resp.frags[frag].suicides++;
+            self->enemy = NULL;
+            G_ScoreChanged(self);
+            G_UpdateRanks();
+        }
+        return;
     }
 
     self->enemy = attacker;
@@ -496,14 +496,14 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
             if (ff) {
                 attacker->client->resp.score--;
             } else {
-				if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
-					frag = mod_to_frag[mod];
-					attacker->client->resp.score++;
-					attacker->client->resp.frags[frag].kills++;
-					self->client->resp.deaths++;
-					self->client->resp.frags[frag].deaths++;
-					AccountItemKills(attacker);
-				}
+                if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
+                    frag = mod_to_frag[mod];
+                    attacker->client->resp.score++;
+                    attacker->client->resp.frags[frag].kills++;
+                    self->client->resp.deaths++;
+                    self->client->resp.frags[frag].deaths++;
+                    AccountItemKills(attacker);
+                }
             }
             G_ScoreChanged(attacker);
             G_UpdateRanks();
@@ -513,10 +513,10 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
     gi.bprintf(PRINT_MEDIUM, "%s died.\n", self->client->pers.netname);
     frag = mod_to_frag[mod];
-	if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
-		self->client->resp.score--;
-		self->client->resp.frags[frag].suicides++;
-	}
+    if (self->client->pers.arena->state == ARENA_STATE_PLAY) {
+        self->client->resp.score--;
+        self->client->resp.frags[frag].suicides++;
+    }
 
     G_ScoreChanged(self);
     G_UpdateRanks();
@@ -534,7 +534,7 @@ void G_BeginDamage(void)
 void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int points)
 {
     frag_t frag;
-	
+
     if (!damaging) {
         return;
     }
@@ -552,16 +552,16 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     if (targ == attacker) {
         return; // no credit for shooting yourself
     }
-	
-	if (!G_Teammates(attacker, targ)) {
-		attacker->client->resp.damage_given += points;
-		TEAM(attacker)->damage_dealt += points;
-		TEAM(targ)->damage_taken += points;
-	} else {
-		attacker->client->resp.damage_given -= points;
-		TEAM(attacker)->damage_dealt -= points;
-		TEAM(targ)->damage_taken += points;
-	}
+
+    if (!G_Teammates(attacker, targ)) {
+        attacker->client->resp.damage_given += points;
+        TEAM(attacker)->damage_dealt += points;
+        TEAM(targ)->damage_taken += points;
+    } else {
+        attacker->client->resp.damage_given -= points;
+        TEAM(attacker)->damage_dealt -= points;
+        TEAM(targ)->damage_taken += points;
+    }
 
     // don't count multiple damage as multiple hits (but railgun still counts)
     if (damaging == 1 || frag == FRAG_RAILGUN) {
@@ -569,8 +569,8 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     }
 
     damaging++;
-	
-	G_ScoreChanged(attacker);
+
+    G_ScoreChanged(attacker);
 }
 
 void G_EndDamage(void)
@@ -605,7 +605,7 @@ static void TossClientWeapon(edict_t *self)
     } else {
         spread = 0.0;
     }*/
-	
+
     if (item && g_frag_drop->value) {
         self->client->v_angle[YAW] -= spread;
         drop = Drop_Item(self, item);
@@ -705,7 +705,7 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
         // show scores
         if (!self->client->layout) {
             self->client->layout = LAYOUT_SCORES;
-			G_ArenaScoreboardMessage(self, false);
+            G_ArenaScoreboardMessage(self, false);
         }
 
         // clear inventory
