@@ -1071,7 +1071,7 @@ double genrand_float32_notone(void);
 #define STAT_ARMOR              5   // used by client
 #define STAT_SELECTED_ICON      6   // ?
 #define STAT_WEAPON_ICON        7   // the current gun
-#define STAT_VIEWID_TEAM        8
+#define STAT_UNUSED8            8   // available
 #define STAT_TIMER_ICON         9
 #define STAT_TIMER              10
 #define STAT_ROUNDTIME          11  // old STAT_HELPICON

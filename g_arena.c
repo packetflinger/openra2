@@ -2725,10 +2725,6 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
             "xv 150 "
             "yb -35 "
             "stat_string 24 "
-            "if 8 " // viewid teammate
-                "xv 134 "
-                "string2 * "
-            "endif "
         "endif "
 
         // vote proposal

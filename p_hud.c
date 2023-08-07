@@ -752,15 +752,12 @@ void G_SetStats(edict_t *ent)
         }
         if (ent->client->pers.noviewid) {
             ent->client->ps.stats[STAT_VIEWID] = 0;
-            ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
         } else {
             viewid = G_GetPlayerIdView(ent, &teammate);
             if (teammate) {
                 ent->client->ps.stats[STAT_VIEWID] = viewid;
-                ent->client->ps.stats[STAT_VIEWID_TEAM] = 1;
             } else {
                 ent->client->ps.stats[STAT_VIEWID] = 0;
-                ent->client->ps.stats[STAT_VIEWID_TEAM] = 0;
             }
         }
     }
