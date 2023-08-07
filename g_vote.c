@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 //the ordering of weapons must match ITEM_ defines too!
-const weaponinfo_t	weaponvotes[WEAPON_MAX] =
+const weaponinfo_t weaponvotes[WEAPON_MAX] =
 {
     {{"shot", "sg"},    ARENAWEAPON_SHOTGUN, ITEM_SHOTGUN, ITEM_SHELLS},
     {{"sup", "ssg"},    ARENAWEAPON_SUPERSHOTGUN, ITEM_SUPERSHOTGUN, ITEM_SHELLS},
@@ -601,7 +601,7 @@ static qboolean vote_weapons(edict_t *ent)
 
     strncpy(arena->vote.original, input, sizeof(arena->vote.original));
 
-    COM_Parse(&input);	// remove "weapon" from command
+    COM_Parse(&input);  // remove "weapon" from command
 
     // start the vote with what we've already got
     arena->vote.value = arena->weapon_flags;
@@ -628,7 +628,7 @@ static qboolean vote_damage(edict_t *ent)
 
     strncpy(arena->vote.original, input, sizeof(arena->vote.original));
 
-    COM_Parse(&input);	// get rid of the word "weapon" from the head
+    COM_Parse(&input);  // get rid of the word "weapon" from the head
 
     if (G_ParseDamageString(arena, ent, &input, &output)) {
         arena->vote.value = output;
@@ -973,9 +973,9 @@ void Cmd_Vote_f(edict_t *ent)
         }
 
         if (level.vote.proposal) {
-        	gi.bprintf(PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
+            gi.bprintf(PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
         } else {
-        	G_bprintf(ARENA(ent), PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
+            G_bprintf(ARENA(ent), PRINT_MEDIUM, "Type 'yes' in the console to accept or 'no' to deny.\n");
         }
     }
 }
