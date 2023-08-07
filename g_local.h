@@ -475,10 +475,10 @@ typedef struct map_entry_s {
     int     max_players;
     int     flags;
     float   weight;
-    int     num_hits, num_in, num_out; // for statistics
+    int     num_hits, num_in, num_out;      // for statistics
     char    name[1];
-	arena_entry_t arenas[MAX_ARENAS];
-	char	extra_ents[MAX_STRING_CHARS];	// additional entities from <mapname>.ent file
+    arena_entry_t arenas[MAX_ARENAS];
+    char    extra_ents[MAX_STRING_CHARS];   // additional entities from <mapname>.ent file
 } map_entry_t;
 
 //
@@ -590,7 +590,7 @@ typedef struct {
 
     edict_t     *current_entity;    // entity running from G_RunFrame
     int         body_que;           // dead bodies
-	
+
     arena_t     arenas[MAX_ARENAS];
     int         arena_count;
     int         default_arena;
@@ -671,7 +671,7 @@ extern  game_import_t   gi;
 extern  game_export_t   globals;
 extern  spawn_temp_t    st;
 
-extern	pmenu_arena_t	menu_lookup[MAX_ARENAS];
+extern  pmenu_arena_t   menu_lookup[MAX_ARENAS];
 
 // means of death
 #define MOD_UNKNOWN         0
@@ -1586,9 +1586,9 @@ void G_CloseDatabase(void);
 
 typedef struct weaponvote_s {
     const char  *names[2];
-    unsigned    value;		// arena weapon bitmask value
-    int         itemindex;	// q2 item index value
-    int         ammoindex;	// q2 item index value for ammo
+    unsigned    value;      // arena weapon bitmask value
+    int         itemindex;  // q2 item index value
+    int         ammoindex;  // q2 item index value for ammo
 } weaponinfo_t;
 
 
