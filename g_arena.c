@@ -363,6 +363,10 @@ void G_ArenaThink(arena_t *a)
         return;
     }
 
+    if (a->clock) {
+        ClockThink(a->clock);
+    }
+
     if (a->state == ARENA_STATE_TIMEOUT) {
         G_TimeoutFrame(a);
         return;
@@ -375,6 +379,27 @@ void G_ArenaThink(arena_t *a)
         G_BeginRoundIntermission(a);
     }
 
+    switch (a->state) {
+    case ARENA_STATE_WARMUP:
+        if (a->ready) {
+            G_StartRoundCountdown(a);
+        }
+        break;
+    case ARENA_STATE_COUNTDOWN:
+        a->countdown = a->clock->value;
+        break;
+    case ARENA_STATE_PLAY:
+        break;
+    case ARENA_STATE_OVERTIME:
+        break;
+    case ARENA_STATE_ROUNDPAUSE:
+        break;
+    case ARENA_STATE_INTERMISSION:
+        break;
+    case ARENA_STATE_TIMEOUT:
+        break;
+    }
+    /*
     // countdown to start
     if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
         int framesleft = a->round_start_frame - level.framenum;
@@ -405,10 +430,11 @@ void G_ArenaThink(arena_t *a)
             G_ForceDemo(a);
         }
     }
+    */
 
-    G_CheckTimers(a);
-    G_UpdateArenaVote(a);
-    G_CheckArenaRules(a);
+    //G_CheckTimers(a);
+    //G_UpdateArenaVote(a);
+    //G_CheckArenaRules(a);
 
     if (a->state > ARENA_STATE_WARMUP) {
         a->round_frame++;
@@ -1865,7 +1891,7 @@ void G_SecsToString(char *out, int seconds)
     mins = seconds / 60;
     seconds -= (mins * 60);
 
-    sprintf(out, "%d:%.2d", mins, seconds);
+    sprintf(out, "%02d:%.2d", mins, seconds);
 }
 
 /**
@@ -2989,4 +3015,17 @@ char *G_ArenaModeString(arena_t *a)
     default:
         return va("normal");
     }
+}
+
+void G_StartRoundCountdown(arena_t *a)
+{
+    ClockInit(a->clock, a, "countdown", (int)g_round_countdown->value, 0, CLOCK_DOWN);
+    a->clock->finish = (void *)G_StartRound;
+
+    a->state = ARENA_STATE_COUNTDOWN;
+    G_ClearRoundInfo(a);
+    //a->countdown = (int) g_round_countdown->value;
+    G_RespawnPlayers(a);
+    G_ForceDemo(a);
+    ClockStart(a->clock);
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "q_shared.h"
 #include "q_list.h"
+#include "g_clock.h"
 #include <glib.h>
 
 #if defined(_WIN32) && !(defined(__MINGW32__) || defined(__MINGW64__))

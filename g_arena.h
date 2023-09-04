@@ -200,6 +200,7 @@ typedef struct {
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
     qboolean        corpseview;                  // gag, see chasers
+    arena_clock_t   *clock;
 } arena_t;
 
 
@@ -293,6 +294,7 @@ void G_SpectatorsJoin(edict_t *ent);
 void G_SpectatorsPart(edict_t *ent);
 void G_StartingWeapon(edict_t *ent);
 void G_StartRound(arena_t *a);
+void G_StartRoundCountdown(arena_t *a);
 void G_TeamCast(arena_team_t *t, qboolean reliable);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
 void G_TimeoutFrame(arena_t *a);

@@ -45,6 +45,7 @@ OBJS := \
 	g_arena.o \
 	g_bans.o \
 	g_chase.o \
+	g_clock.o \
 	g_cmds.o \
 	g_combat.o \
 	g_func.o \

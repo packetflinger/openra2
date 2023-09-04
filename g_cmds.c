@@ -2046,7 +2046,17 @@ static void Cmd_NotImplYet_f(edict_t *ent)
  */
 static void Cmd_Test_f(edict_t *ent)
 {
-
+    static arena_clock_t *c;
+    c = G_Malloc(sizeof(arena_clock_t));
+    gi.dprintf("clock location: %p\n", c);
+    ARENA(ent)->clock = c;
+    ClockInit(c, ARENA(ent), "test_clock", 10, 0, CLOCK_DOWN);
+    //c->startvalue = 10;
+    //c->value = 10;
+    //c->endvalue = 0;
+    c->postthink = (void *)ClockTestPostThink;
+    c->finish = (void *)ClockTestFinish;
+    ClockStart(c);
 }
 
 /**
