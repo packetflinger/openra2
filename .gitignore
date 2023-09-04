@@ -2,3 +2,6 @@
 Debug/
 Release/
 GitRevisionInfo.h
+*.d
+*.o
+*.so
