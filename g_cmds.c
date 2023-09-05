@@ -2061,13 +2061,6 @@ void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
         return;
     }
 
-    /*
-    if (!TDM_ValidateModelSkin(gi.argv(1))) {
-        gi.cprintf(ent, PRINT_HIGH, "Invalid model/skin.\n");
-        return;
-    }
-    */
-
     if (team) {
         strncpy(ent->client->pers.teamskin, gi.argv(1),
                 sizeof(ent->client->pers.teamskin) - 1);
@@ -2077,8 +2070,6 @@ void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
                 sizeof(ent->client->pers.enemyskin) - 1);
         G_SetESkin(ent);
     }
-
-    //G_SetTeamSkins(ent, NULL);
 }
 /**
  * For testing stuff
