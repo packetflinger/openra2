@@ -2031,7 +2031,7 @@ static void Cmd_TeamSkin_f(edict_t *ent)
         if (!team->players[i])
             continue;
         
-        G_SetSkin(team->players[i], skin);
+        G_SetSkin(team->players[i]);
     }
 }
 

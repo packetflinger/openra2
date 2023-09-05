@@ -289,7 +289,7 @@ void G_SelectBestWeapon(edict_t *ent);
 void G_SendStatusBar(edict_t *ent);
 void G_SetCustomSkinView(edict_t *viewee);
 void G_SetESkin(edict_t *target);
-void G_SetSkin(edict_t *ent, const char *skin);
+void G_SetSkin(edict_t *skinfor);
 void G_SetTSkin(edict_t *target);
 void G_ShowScores(arena_t *a);
 void G_SpectatorsJoin(edict_t *ent);

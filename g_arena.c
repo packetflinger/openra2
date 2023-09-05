@@ -1565,10 +1565,11 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
     G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", NAME(ent), team->name);
 
     // Send default team skin to everyone for this player
-    G_SetSkin(ent, team->skin);
+    //G_SetSkin(ent, team->skin);
 
     // Setup custom skin view for players specifying tskin and/or eskin
-    G_SetCustomSkinView(ent);
+    //G_SetCustomSkinView(ent);
+    G_SetSkin(ent);
 
     // throw them into the game
     spectator_respawn(ent, CONN_SPAWNED);
@@ -1711,32 +1712,6 @@ char *G_RoundToString(arena_t *a)
 
     return round_buffer;
 }
-
-
-/**
- * Force a particular skin on a player.
- *
- * Possibly deprecated due to teamskin/enemyskin functionality.
- */
-void G_SetSkin(edict_t *ent, const char *skin)
-{
-    if (!ent->client) {
-        return;
-    }
-
-    strcpy(ent->client->pers.skin, skin);
-
-    // let everyone know this player's new skin
-    G_ConfigString(
-        ARENA(ent),
-        CS_PLAYERSKINS + (ent - g_edicts) - 1,
-        va("%s\\%s",
-            NAME(ent),
-            skin
-        )
-    );
-}
-
 
 /**
  * Display scores layout to all arena players
@@ -3080,5 +3055,49 @@ void G_SetCustomSkinView(edict_t *viewee)
             gi.WriteString(va("%s\\%s", NAME(viewee), ent->client->pers.teamskin));
             gi.unicast(ent, true);
         }
+    }
+}
+
+/**
+ * Force a particular skin on a player.
+ *
+ */
+void G_SetSkin(edict_t *skinfor)
+{
+    edict_t *ent;
+    char *string;
+
+    if (!skinfor->client) {
+        return;
+    }
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!G_Arenamates(ent, skinfor)) {
+            continue;
+        }
+
+        // the default skin associated with skinfor's team
+        string = va("%s\\%s", NAME(skinfor), TEAM(skinfor)->skin);
+
+        if (G_Teammates(ent, skinfor) && ent->client->pers.teamskin[0]) {
+            string = va("%s\\%s", NAME(skinfor), ent->client->pers.teamskin);
+            gi.dprintf("  Should set team skin\n");
+        }
+
+        if (!G_Teammates(ent, skinfor) && ent->client->pers.enemyskin[0]) {
+            string = va("%s\\%s", NAME(skinfor), ent->client->pers.enemyskin);
+            gi.dprintf("  Should set enemy skin\n");
+        }
+
+        gi.WriteByte(SVC_CONFIGSTRING);
+        gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
+        gi.WriteString(string);
+        gi.unicast(ent, qtrue);
+
+        gi.dprintf("sending skin: %s (%s) -> %s\n", NAME(skinfor), string, NAME(ent));
     }
 }

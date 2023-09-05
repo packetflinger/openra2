@@ -1623,7 +1623,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
 
     // don't allow anyone to change skin using the "skin" cmd or updating userinfo
     if (strcmp(skin, client->pers.skin) && TEAM(ent)) {
-        G_SetSkin(ent, TEAM(ent)->skin);
+        G_SetSkin(ent);
     }
 
     if (!client->pers.mvdspec && changed) {
@@ -1672,7 +1672,7 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
 
     // force team skins
     if (ent->client->pers.team && changed) {
-        G_SetSkin(ent, ent->client->pers.team->skin);
+        G_SetSkin(ent);
     }
 }
 
