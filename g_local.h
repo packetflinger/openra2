@@ -1227,6 +1227,8 @@ typedef struct {
     qboolean        ready;
     arena_t         *arena;
     arena_team_t    *team;
+    char            teamskin[MAX_SKINNAME];
+    char            enemyskin[MAX_SKINNAME];
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,

@@ -1564,8 +1564,11 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
 
     G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", NAME(ent), team->name);
 
-    // force the skin
+    // Send default team skin to everyone for this player
     G_SetSkin(ent, team->skin);
+
+    // Setup custom skin view for players specifying tskin and/or eskin
+    G_SetCustomSkinView(ent);
 
     // throw them into the game
     spectator_respawn(ent, CONN_SPAWNED);
@@ -1711,8 +1714,9 @@ char *G_RoundToString(arena_t *a)
 
 
 /**
- * Force a particular skin on a player
+ * Force a particular skin on a player.
  *
+ * Possibly deprecated due to teamskin/enemyskin functionality.
  */
 void G_SetSkin(edict_t *ent, const char *skin)
 {
@@ -2988,5 +2992,177 @@ char *G_ArenaModeString(arena_t *a)
         break;
     default:
         return va("normal");
+    }
+}
+
+/**
+ * Send configstrings to "cl" so they see the proper skins.
+ *
+ */
+void G_SetTeamSkins (edict_t *cl, edict_t *target)
+{
+    edict_t *ent;
+    const char *teamskin, *enemyskin;
+
+    //not using teamskins
+    if (!cl->client->pers.teamskin[0] && !cl->client->pers.enemyskin[0]) {
+        return;
+    }
+
+    teamskin = cl->client->pers.teamskin;
+    enemyskin = cl->client->pers.enemyskin;
+
+    if (!enemyskin[0]) {
+        //don't care about enemyskin
+        if (!strcmp(teamskin, g_team1_skin->string)) {
+            enemyskin = g_team2_skin->string;
+        } else {
+            enemyskin = g_team1_skin->string;
+        }
+    } else if (!teamskin[0]) {
+        //don't care about teamskin
+        if (!strcmp (enemyskin, g_team1_skin->string)) {
+            teamskin = g_team2_skin->string;
+        } else {
+            teamskin = g_team1_skin->string;
+        }
+    }
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (target && ent != target) {
+            continue;
+        }
+
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!G_Arenamates(ent, cl)) {
+            continue;
+        }
+
+        if (IS_SPECTATOR(ent)) {
+            continue;
+        }
+
+        gi.WriteByte(SVC_CONFIGSTRING);
+        gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
+
+        if (G_Teammates(ent, cl)) {
+            gi.WriteString(va("%s\\%s", NAME(ent), teamskin));
+        } else {
+            gi.WriteString(va("%s\\%s", NAME(ent), enemyskin));
+        }
+
+        gi.unicast(cl, true);
+    }
+}
+
+/**
+ * Sends target's skin to everyone in the same arena so
+ * they can see it.
+ */
+void G_SetAllTeamSkins(edict_t *target)
+{
+    edict_t *ent;
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!G_Arenamates(ent, target)) {
+            continue;
+        }
+
+        G_SetTeamSkins (ent, target);
+    }
+}
+
+void G_SetTSkin(edict_t *target)
+{
+    edict_t *ent;
+
+    if (!target->client->pers.teamskin[0]) {
+        return;
+    }
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!G_Teammates(ent, target)) {
+            continue;
+        }
+
+        gi.WriteByte(SVC_CONFIGSTRING);
+        gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
+        gi.WriteString(va("%s\\%s", NAME(ent), target->client->pers.teamskin));
+        gi.unicast(target, true);
+    }
+}
+
+void G_SetESkin(edict_t *target)
+{
+    edict_t *ent;
+
+    if (!target->client->pers.enemyskin[0]) {
+        return;
+    }
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!IS_PLAYER(ent)) {
+            continue;
+        }
+
+        if (G_Teammates(ent, target)) {
+            continue;
+        }
+
+        gi.WriteByte(SVC_CONFIGSTRING);
+        gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
+        gi.WriteString(va("%s\\%s", NAME(ent), target->client->pers.enemyskin));
+        gi.unicast(target, true);
+    }
+}
+
+/**
+ * Viewee joined a team, update everyone with tskin or eskin set
+ */
+void G_SetCustomSkinView(edict_t *viewee)
+{
+    edict_t *ent;
+
+    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
+        if (!ent->inuse) {
+            continue;
+        }
+
+        if (!G_Arenamates(ent, viewee)) {
+            continue;
+        }
+
+        if (!IS_PLAYER(ent)) {
+            continue;
+        }
+
+        if (ent->client->pers.enemyskin[0] && !G_Teammates(ent, viewee)) {
+            gi.WriteByte(SVC_CONFIGSTRING);
+            gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
+            gi.WriteString(va("%s\\%s", NAME(viewee), ent->client->pers.enemyskin));
+            gi.unicast(ent, true);
+        }
+
+        if (ent->client->pers.teamskin[0] && G_Teammates(ent, viewee)) {
+            gi.WriteByte(SVC_CONFIGSTRING);
+            gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
+            gi.WriteString(va("%s\\%s", NAME(viewee), ent->client->pers.teamskin));
+            gi.unicast(ent, true);
+        }
     }
 }

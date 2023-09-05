@@ -2042,6 +2042,45 @@ static void Cmd_NotImplYet_f(edict_t *ent)
 }
 
 /**
+ * Set custom skins per player.
+ * Called by issuing "tskin" or "eskin" commands
+ */
+void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
+{
+    char *val;
+
+    if (gi.argc() < 2) {
+        if (team) {
+            val = ent->client->pers.teamskin;
+            gi.cprintf(ent, PRINT_HIGH, "Current team skin: %s\n", (!val[0])? TEAM(ent)->skin : val);
+        } else {
+            val = ent->client->pers.enemyskin;
+            gi.cprintf(ent, PRINT_HIGH, "Current enemy skin: %s\n", (!val[0])? "<unset>" : val);
+        }
+
+        return;
+    }
+
+    /*
+    if (!TDM_ValidateModelSkin(gi.argv(1))) {
+        gi.cprintf(ent, PRINT_HIGH, "Invalid model/skin.\n");
+        return;
+    }
+    */
+
+    if (team) {
+        strncpy(ent->client->pers.teamskin, gi.argv(1),
+                sizeof(ent->client->pers.teamskin) - 1);
+        G_SetTSkin(ent);
+    } else {
+        strncpy(ent->client->pers.enemyskin, gi.argv(1),
+                sizeof(ent->client->pers.enemyskin) - 1);
+        G_SetESkin(ent);
+    }
+
+    //G_SetTeamSkins(ent, NULL);
+}
+/**
  * For testing stuff
  */
 static void Cmd_Test_f(edict_t *ent)
@@ -2235,6 +2274,10 @@ void ClientCommand(edict_t *ent)
         Cmd_PickTeammate_f(ent);
     else if (Q_stricmp(cmd, "teamskin") == 0)    // captain cmd
         Cmd_TeamSkin_f(ent);
+    else if (Q_stricmp(cmd, "tskin") == 0)
+        Cmd_TeamEnemySkin_f(ent, true);
+    else if (Q_stricmp(cmd, "eskin") == 0)
+        Cmd_TeamEnemySkin_f(ent, false);
     else if (Q_stricmp(cmd, "layout") == 0) // test
         Cmd_Layout_f(ent);
     else if (Q_stricmp(cmd, "teams") == 0) // test
