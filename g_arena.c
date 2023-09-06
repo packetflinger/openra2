@@ -3094,7 +3094,7 @@ void G_SetSkin(edict_t *skinfor)
         }
 
         gi.WriteByte(SVC_CONFIGSTRING);
-        gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) - 1);
+        gi.WriteShort(CS_PLAYERSKINS + (skinfor - g_edicts) - 1);
         gi.WriteString(string);
         gi.unicast(ent, qtrue);
 
