@@ -3085,19 +3085,15 @@ void G_SetSkin(edict_t *skinfor)
 
         if (G_Teammates(ent, skinfor) && ent->client->pers.teamskin[0]) {
             string = va("%s\\%s", NAME(skinfor), ent->client->pers.teamskin);
-            gi.dprintf("  Should set team skin\n");
         }
 
         if (!G_Teammates(ent, skinfor) && ent->client->pers.enemyskin[0]) {
             string = va("%s\\%s", NAME(skinfor), ent->client->pers.enemyskin);
-            gi.dprintf("  Should set enemy skin\n");
         }
 
         gi.WriteByte(SVC_CONFIGSTRING);
         gi.WriteShort(CS_PLAYERSKINS + (skinfor - g_edicts) - 1);
         gi.WriteString(string);
         gi.unicast(ent, qtrue);
-
-        gi.dprintf("sending skin: %s (%s) -> %s\n", NAME(skinfor), string, NAME(ent));
     }
 }
