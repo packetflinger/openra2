@@ -287,7 +287,6 @@ char *G_RoundToString(arena_t *a);
 void G_SecsToString(char *out, int seconds);
 void G_SelectBestWeapon(edict_t *ent);
 void G_SendStatusBar(edict_t *ent);
-void G_SetCustomSkinView(edict_t *viewee);
 void G_SetESkin(edict_t *target);
 void G_SetSkin(edict_t *skinfor);
 void G_SetTSkin(edict_t *target);

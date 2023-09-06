@@ -3023,42 +3023,6 @@ void G_SetESkin(edict_t *target)
 }
 
 /**
- * Viewee joined a team, update everyone with tskin or eskin set
- */
-void G_SetCustomSkinView(edict_t *viewee)
-{
-    edict_t *ent;
-
-    for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
-        if (!ent->inuse) {
-            continue;
-        }
-
-        if (!G_Arenamates(ent, viewee)) {
-            continue;
-        }
-
-        if (!IS_PLAYER(ent)) {
-            continue;
-        }
-
-        if (ent->client->pers.enemyskin[0] && !G_Teammates(ent, viewee)) {
-            gi.WriteByte(SVC_CONFIGSTRING);
-            gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
-            gi.WriteString(va("%s\\%s", NAME(viewee), ent->client->pers.enemyskin));
-            gi.unicast(ent, true);
-        }
-
-        if (ent->client->pers.teamskin[0] && G_Teammates(ent, viewee)) {
-            gi.WriteByte(SVC_CONFIGSTRING);
-            gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
-            gi.WriteString(va("%s\\%s", NAME(viewee), ent->client->pers.teamskin));
-            gi.unicast(ent, true);
-        }
-    }
-}
-
-/**
  * Force a particular skin on a player.
  *
  */
