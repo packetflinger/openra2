@@ -31,6 +31,9 @@ static void PMenu_Write(edict_t *ent)
     const char *t;
     qboolean alt;
 
+    memset(string, 0, sizeof(string));
+    memset(entry, 0, sizeof(entry));
+
     strcpy(string, "xv 32 yv 8 picn inventory ");
     total = strlen(string);
 
