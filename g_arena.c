@@ -2970,6 +2970,17 @@ char *G_ArenaModeString(arena_t *a)
     }
 }
 
+/**
+ * Sets the teamskin property of an player and
+ * applies it to all team members. This does not
+ * set the global skin for a particular team, but
+ * the specific skin one player wants to use for
+ * their team. This allows players to override
+ * the team default skin for whatever reason.
+ *
+ * Called when a player manually types "tskin"
+ * command.
+ */
 void G_SetTSkin(edict_t *target)
 {
     edict_t *ent;
@@ -2994,6 +3005,13 @@ void G_SetTSkin(edict_t *target)
     }
 }
 
+/**
+ * Sets the enemyskin property of an player and
+ * applies it to all enemy players.
+ *
+ * Called when a player manually types "eskin"
+ * command.
+ */
 void G_SetESkin(edict_t *target)
 {
     edict_t *ent;
@@ -3023,7 +3041,13 @@ void G_SetESkin(edict_t *target)
 }
 
 /**
- * Force a particular skin on a player.
+ * Figure which skin should be seen for a player
+ * and who should see it, then send configstrings.
+ *
+ * Called when a player joins a team. Someone people
+ * will have tskin and eskin set, so they'll get
+ * custom skins, and everyone else will get the skin
+ * associated with that particular team.
  *
  */
 void G_SetSkin(edict_t *skinfor)
