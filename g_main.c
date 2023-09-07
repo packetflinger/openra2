@@ -963,9 +963,8 @@ static void G_Init(void) {
 
     g_default_arena = gi.cvar("g_default_arena", "1", CVAR_LATCH);
     g_weapon_flags = gi.cvar("g_weapon_flags", "1023", CVAR_LATCH);    // default: all except bfg
-    g_damage_flags = gi.cvar("g_damage_flags", va("%d", ARENADAMAGE_SELF | ARENADAMAGE_TEAM |
-                                                        ARENADAMAGE_TEAM_ARMOR |
-                                                        ARENADAMAGE_FALL), CVAR_LATCH);
+    g_damage_flags = gi.cvar("g_damage_flags",
+            va("%d", ARENADAMAGE_SELF_ARMOR |ARENADAMAGE_FALL), CVAR_LATCH);
     g_drop_allowed = gi.cvar("g_drop_allowed", "1", CVAR_LATCH);
     g_skin_lock = gi.cvar("g_skin_lock", "0", CVAR_GENERAL);
     g_ammo_slugs = gi.cvar("g_ammo_slugs", "50", CVAR_LATCH);
@@ -985,9 +984,9 @@ static void G_Init(void) {
     g_team_reset = gi.cvar("g_team_reset", "0", CVAR_GENERAL);
     g_team_chat = gi.cvar("g_team_chat", "0", CVAR_GENERAL);
     g_all_chat = gi.cvar("g_all_chat", "1", CVAR_GENERAL);
-    g_frag_drop = gi.cvar("g_frag_drop", "1", CVAR_GENERAL);
-    g_round_timelimit = gi.cvar("g_round_timelimit", "180", CVAR_GENERAL);
-    g_fast_weapon_change =gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
+    g_frag_drop = gi.cvar("g_frag_drop", "0", CVAR_GENERAL);
+    g_round_timelimit = gi.cvar("g_round_timelimit", "0", CVAR_GENERAL);
+    g_fast_weapon_change = gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
 
     // Sane limits
     clamp(g_round_countdown->value, 3, 30);
