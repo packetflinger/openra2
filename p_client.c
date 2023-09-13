@@ -1127,9 +1127,7 @@ void respawn(edict_t *self)
 
     // there is no respawning during a match, so just chase if possible
     if (ARENA(self)->state > ARENA_STATE_COUNTDOWN) {
-        if (ValidChaseTarget(self, self->killer)) {
-            SetChaseTarget(self, self->killer);
-        }
+        ChaseNext(self);
         return;
     }
 
