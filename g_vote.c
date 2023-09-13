@@ -476,7 +476,7 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         sprintf(buffer, "timelimit %d", a->vote.value);
         break;
     case VOTE_MODE:
-        sprintf(buffer, "%s mode", (a->vote.value) ? "red rover" : "normal");
+        sprintf(buffer, "%s mode", (a->vote.value) ? "competition" : "normal");
         break;
     case VOTE_CORPSE:
         sprintf(buffer, "corpse-view %s", (a->vote.value) ? "on" : "off");
