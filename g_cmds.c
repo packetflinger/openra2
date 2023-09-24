@@ -1814,6 +1814,7 @@ static void Cmd_Teams_f(edict_t *ent)
     uint8_t i, j;
     arena_team_t *t;
 
+    // actual players first
     for (i=0; i<ARENA(ent)->team_count; i++) {
         t = &ARENA(ent)->teams[i];
         gi.cprintf(ent, PRINT_HIGH, "%s <%s>:\n", t->name, t->skin);
@@ -1826,6 +1827,15 @@ static void Cmd_Teams_f(edict_t *ent)
         }
 
         gi.cprintf(ent, PRINT_HIGH, "\n");
+    }
+
+    // now spectators
+    gi.cprintf(ent, PRINT_HIGH, "Spectators\n");
+    for (i=0; i<ARENA(ent)->spectator_count; i++) {
+        if (ARENA(ent)->spectators[i] == NULL) {
+            continue;
+        }
+        gi.cprintf(ent, PRINT_HIGH, "   %s\n", NAME(ARENA(ent)->spectators[i]));
     }
 }
 
@@ -2076,7 +2086,7 @@ void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
  */
 static void Cmd_Test_f(edict_t *ent)
 {
-
+    gi.cprintf(ent, PRINT_HIGH, "%d\n", ent->client->pers.connected);
 }
 
 /**
