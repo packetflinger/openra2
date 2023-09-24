@@ -1127,10 +1127,7 @@ void respawn(edict_t *self)
 
     // there is no respawning during a match, so just chase if possible
     if (ARENA(self)->state > ARENA_STATE_COUNTDOWN) {
-        ChaseNext(self);
-        if (self->client->chase_target == NULL) {
-            gi.cprintf(self, PRINT_HIGH, "No suitable chase targets available.\n");
-        }
+        ChaseTeamMate(self);
         return;
     }
 

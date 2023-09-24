@@ -361,3 +361,24 @@ void ChaseEndServerFrame(edict_t *ent)
     // stats
     SetChaseStats(c);
 }
+
+/**
+ * Cycle through ent's teammates to find someone to chase. This happens
+ * on respawn when ent is killed but the game is still going.
+ */
+void ChaseTeamMate(edict_t *ent)
+{
+    edict_t *tm;
+    uint8_t i;
+    arena_team_t *t = TEAM(ent);
+
+    for (i=0; i<t->player_count; i++) {
+        tm = t->players[i];
+        if (tm != ent) {
+            SetChaseTarget(ent, tm);
+            return;
+        }
+    }
+
+    gi.cprintf(ent, PRINT_HIGH, "No suitable chase targets available.\n");
+}
