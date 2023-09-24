@@ -36,9 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LAYOUT_LINE_HEIGHT       8
 #define LAYOUT_CHAR_WIDTH        8
 
-#define NAME(e)   (e->client->pers.netname)
-#define TEAM(e)   (e->client->pers.team)
-#define ARENA(e)  (e->client->pers.arena)
+#define NAME(e)          (e->client->pers.netname)
+#define TEAM(e)          (e->client->pers.team)
+#define ARENA(e)         (e->client->pers.arena)
+#define ARENASTATE(e)    (e->client->pers.arena->state)
 
 #define IS_PLAYER(e)     (TEAM(e) && (TEAM(e)->type != TEAM_SPECTATORS))
 #define IS_SPECTATOR(e)  (TEAM(e) && (TEAM(e)->type == TEAM_SPECTATORS))
