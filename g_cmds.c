@@ -1207,6 +1207,11 @@ static void Cmd_Chase_f(edict_t *ent)
     edict_t *target = NULL;
     chase_mode_t mode = CHASE_NONE;
 
+    // they're currently on a team, remove them
+    if (TEAM(ent) != NULL) {
+        G_TeamPart(ent, false);
+    }
+
     if (gi.argc() == 2) {
         char *who = gi.argv(1);
 
