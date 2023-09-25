@@ -254,6 +254,8 @@ void G_CheckArenaRules(arena_t *a);
 qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
 void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
+void G_CheckArenaReady(arena_t *a);
+void G_CheckTeamReady(arena_team_t *t);
 void G_CheckTimers(arena_t *a);
 void G_ChangeArena(edict_t *ent, arena_t *arena);
 void G_ClearRoundInfo(arena_t *a);

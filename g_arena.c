@@ -1624,6 +1624,10 @@ void G_TeamPart(edict_t *ent, qboolean silent)
 
     G_SpectatorsJoin(ent);
 
+    // if everyone else is already ready, start the match
+    G_CheckTeamReady(oldteam);
+    G_CheckArenaReady(ARENA(ent));
+
     spectator_respawn(ent, CONN_SPECTATOR);
 }
 
@@ -3084,4 +3088,53 @@ void G_SetSkin(edict_t *skinfor)
         gi.WriteString(string);
         gi.unicast(ent, qtrue);
     }
+}
+
+/**
+ * Check each player on the team for their ready status. If nobody
+ * is not ready, set the overall team status to ready.
+ */
+void G_CheckTeamReady(arena_team_t *t)
+{
+    uint8_t i;
+
+    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+        if (!t->players[i]) {
+            continue;
+        }
+
+        if (!t->players[i]->client->pers.ready) {
+            gi.dprintf("%s is not ready\n", NAME(t->players[i]));
+            t->ready = qfalse;
+            return;
+        }
+    }
+
+    t->ready = qtrue;
+}
+
+/**
+ * Check each team in the arena for their ready status. If no team
+ * is not ready, then set the overall arena status to ready. This
+ * will trigger the start of a match.
+ */
+void G_CheckArenaReady(arena_t *a)
+{
+    uint8_t i;
+    arena_team_t *t;
+
+    for (i=0; i<a->team_count; i++) {
+        t = &a->teams[i];
+        if (!t) {
+            continue;
+        }
+
+        if (!t->ready) {
+            gi.dprintf("%s is not ready\n", t->name);
+            a->ready = qfalse;
+            return;
+        }
+    }
+
+    a->ready = qtrue;
 }

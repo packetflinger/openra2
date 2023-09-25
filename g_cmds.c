@@ -1870,6 +1870,8 @@ static void Cmd_ReadyTeam_f(edict_t *ent)
     ARENA(ent)->ready_think_frame = level.framenum;
     
     G_ForceReady(team, qtrue);
+    G_CheckTeamReady(team);
+    G_CheckArenaReady(ARENA(ent));
 }
 
 /**
