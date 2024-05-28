@@ -255,6 +255,7 @@ qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
 void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
 void G_CheckArenaReady(arena_t *a);
+qboolean G_CheckTeamAlive(edict_t *ent);
 void G_CheckTeamReady(arena_team_t *t);
 void G_CheckTimers(arena_t *a);
 void G_ChangeArena(edict_t *ent, arena_t *arena);
@@ -272,6 +273,7 @@ arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
 void G_InitArenaTeams(arena_t *arena);    // in g_spawn.c
+qboolean G_IsRoundOver(arena_t *a);
 void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);

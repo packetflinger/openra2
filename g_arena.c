@@ -3138,3 +3138,45 @@ void G_CheckArenaReady(arena_t *a)
 
     a->ready = qtrue;
 }
+
+/**
+ * Check if anyone on the team is still alive.
+ *
+ * Called when a player dies or the team population changes (joins/quits/etc).
+ */
+qboolean G_CheckTeamAlive(edict_t *ent)
+{
+    uint8_t i;
+    arena_team_t *t = TEAM(ent);
+
+    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+        if (!t->players[i]) {
+            continue;
+        }
+
+        if (t->players[i]->health > 0) {
+            return qtrue;
+        }
+    }
+
+    return qfalse;
+}
+
+/**
+ * Check if a round is being played, if that round
+ * is over (only 1 team left alive). Used to determine
+ * if arena should proceed into intermission
+ */
+qboolean G_IsRoundOver(arena_t *a)
+{
+    if (!a) {
+        return qfalse;
+    }
+    if (a->teams_alive <= 1) {
+        return qtrue;
+    }
+    return qfalse;
+}
+
+
+
