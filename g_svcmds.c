@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static void Svcmd_Test_f(void)
 {
     gi.cprintf(NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
+    ClockInit(&level.clock, NULL, "match_countdown", 10, 0, CLOCK_DOWN);
+    level.clock.postthink = (void *) ClockTestPostThink;
+    level.clock.finish = (void *) ClockTestMatchCountdown;
+    ClockStart(&level.clock);
 }
 
 static void Svcmd_Reset_f(void)

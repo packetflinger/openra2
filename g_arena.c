@@ -414,6 +414,11 @@ void G_ArenaThink(arena_t *a)
         a->round_frame++;
         a->match_frame++;
     }
+
+    //ClockThink(&a->clock);
+    if (a->clock.tick) {
+        a->clock.tick(&a->clock);
+    }
 }
 
 /**
@@ -1834,6 +1839,10 @@ void G_TimeoutFrame(arena_t *a)
     }
 
     a->match_frame++;
+    //ClockThink(&a->timeout_clock);
+    if (a->timeout_clock.tick) {
+        a->timeout_clock.tick(&a->timeout_clock);
+    }
 }
 
 

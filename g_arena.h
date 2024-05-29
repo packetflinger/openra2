@@ -201,8 +201,9 @@ typedef struct {
     qboolean        fastswitch;                  // enable fast weapon switching
     arena_mode_t    mode;                        // gameplay mode
     qboolean        corpseview;                  // gag, see chasers
+    arena_clock_t   clock;                       // match countdown, timer, intermission
+    arena_clock_t   timeout_clock;               // used for timeouts
 } arena_t;
-
 
 // maps contain multiple arenas
 typedef struct {

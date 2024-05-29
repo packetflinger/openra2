@@ -814,6 +814,10 @@ void G_RunFrame(void)
     // advance for next frame
     level.framenum++;
     level.time = level.framenum * FRAMETIME;
+    //ClockThink(&level.clock);
+    if (level.clock.tick) {
+        level.clock.tick(&level.clock);
+    }
 }
 
 static void G_Shutdown(void)

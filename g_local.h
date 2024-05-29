@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 // g_local.h -- local definitions for game module
+#pragma once
 
 #include "q_shared.h"
 #include "q_list.h"
@@ -39,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // because we define the full size ones in this file
 #define GAME_INCLUDE
 #include "g_public.h"
+#include "g_clock.h"
 #include "g_arena.h"
 
 // should be set at build-time in Makefile
@@ -595,6 +597,7 @@ typedef struct {
     int         arena_count;
     int         default_arena;
     arena_entry_t arena_defaults[MAX_ARENAS];
+    arena_clock_t clock;
 
     map_entry_t *map;
 } level_locals_t;
