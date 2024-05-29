@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAME_INCLUDE
 #include "g_public.h"
 #include "g_clock.h"
+#include "g_team.h"
 #include "g_arena.h"
 
 // should be set at build-time in Makefile

@@ -57,6 +57,7 @@ OBJS := \
 	g_spawn.o \
 	g_svcmds.o \
 	g_target.o \
+	g_team.o \
 	g_trigger.o \
 	g_utils.o \
 	g_vote.o \

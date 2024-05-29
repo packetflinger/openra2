@@ -279,7 +279,6 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
-void G_TeamPart(edict_t *ent, qboolean silent);
 void G_RandomizeAmmo(uint16_t *out);
 void G_RefillInventory(edict_t *ent);
 void G_RefillPlayers(arena_t *a);
