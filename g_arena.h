@@ -17,16 +17,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+#include "g_local.h"
+
 #ifndef ARENA_H
 #define ARENA_H
 
-#define MAX_INVENTORY            33
-#define MAX_ARENAS               9
-#define MAX_TEAMS                5
-#define MAX_ARENA_TEAM_PLAYERS   10
-#define MAX_TEAM_NAME            20
-#define MAX_TEAM_SKIN            25
-#define MAX_ROUNDS               21
+#define MAX_INVENTORY           33
+#define MAX_ARENAS              9
+#define MAX_ROUNDS              21
+#define MAX_TEAMS               5
+#define MAX_ARENA_TEAM_PLAYERS  10
+#define MAX_TEAM_NAME           20
+#define MAX_TEAM_SKIN           25
 
 #define str_equal(x, y)          (Q_stricmp((x), (y)) == 0)
 
@@ -36,13 +38,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LAYOUT_LINE_HEIGHT       8
 #define LAYOUT_CHAR_WIDTH        8
 
-#define NAME(e)          (e->client->pers.netname)
-#define TEAM(e)          (e->client->pers.team)
-#define ARENA(e)         (e->client->pers.arena)
-#define ARENASTATE(e)    (e->client->pers.arena->state)
+#define NAME(e)                 (e->client->pers.netname)
+#define TEAM(e)                 (e->client->pers.team)
+#define ARENA(e)                (e->client->pers.arena)
+#define ARENASTATE(e)           (e->client->pers.arena->state)
 
-#define IS_PLAYER(e)     (TEAM(e) && (TEAM(e)->type != TEAM_SPECTATORS))
-#define IS_SPECTATOR(e)  (TEAM(e) && (TEAM(e)->type == TEAM_SPECTATORS))
+#define IS_PLAYER(e)            (TEAM(e) && (TEAM(e)->type != TEAM_SPECTATORS))
+#define IS_SPECTATOR(e)         (TEAM(e) && (TEAM(e)->type == TEAM_SPECTATORS))
 
 #define ROUNDOVER(a) (a->state == ARENA_STATE_PLAY && a->teams_alive == 1)
 
@@ -75,17 +77,6 @@ typedef enum {
     WINNER_TIE,
 } round_winner_t;
 
-
-typedef enum {
-    TEAM_SPECTATORS,
-    TEAM_RED,
-    TEAM_BLUE,
-    TEAM_GREEN,
-    TEAM_YELLOW,
-    TEAM_AQUA
-} arena_team_type_t;
-
-
 typedef struct {
     int  num;
     char name[20];
@@ -104,106 +95,12 @@ typedef struct {
     char        original[MAX_STRING_CHARS];  // the original vote command
 } arena_vote_t;
 
-// don't change the order of these
-typedef enum {
-    ARENA_STATE_WARMUP,
-    ARENA_STATE_COUNTDOWN,
-    ARENA_STATE_PLAY,
-    ARENA_STATE_OVERTIME,
-    ARENA_STATE_TIMEOUT,
-    ARENA_STATE_ROUNDPAUSE,        // the gap between rounds in a match
-    ARENA_STATE_INTERMISSION,
-} arena_state_t;
-
-
 // the arena to join on connect by default
 typedef enum {
     ARENA_DEFAULT_FIRST,     // always #1
     ARENA_DEFAULT_POPULAR,   // which ever has the most players
     ARENA_DEFAULT_RANDOM,    // random one
 } arena_default_t;
-
-
-typedef enum {
-    ARENA_MODE_NORMAL,
-    ARENA_MODE_COMPETITION,
-    ARENA_MODE_REDROVER,
-    ARENA_MODE_MAX,
-} arena_mode_t;
-
-
-typedef struct {
-    char       name[MAX_TEAM_NAME];
-    char       skin[MAX_TEAM_SKIN];
-    edict_t    *players[MAX_ARENA_TEAM_PLAYERS];
-    edict_t    *captain;
-    arena_team_type_t  type;
-    int8_t     player_count;
-    int8_t     players_alive;
-    qboolean   locked;
-    qboolean   ready;
-    uint32_t   damage_dealt;
-    uint32_t   damage_taken;
-    list_t     entry;
-} arena_team_t;
-
-
-typedef struct {
-    uint8_t         number;                      // level.arenas[] index
-    char            name[MAX_TEAM_NAME];         // name used in menu
-    arena_state_t   state;
-    uint32_t        match_frame;                 // total frames this match
-    uint32_t        round_frame;                 // current frame this round
-    uint32_t        round_start_frame;           // when this round started
-    uint32_t        round_end_frame;             // when this round ended
-    uint32_t        timeout_frame;               // when timeout was called
-    uint32_t        timein_frame;                // when timeout will end
-    edict_t         *timeout_caller;             // player who called it
-    int             countdown;
-    uint8_t         round_limit;                 // how many rounds in a match
-    uint8_t         current_round;
-    uint32_t        weapon_flags;
-    uint32_t        damage_flags;
-    uint32_t        original_weapon_flags;       // for resetting
-    uint32_t        original_damage_flags;       // for resetting
-    uint16_t        health;
-    uint16_t        armor;
-    char            oldscores[MAX_STRING_CHARS];
-    edict_t         *clients[MAX_CLIENTS];       // all players and specs
-    int             client_count;
-    edict_t         *spectators[MAX_CLIENTS];    // make this not suck later
-    uint8_t         spectator_count;
-    arena_team_t    teams[MAX_TEAMS];            // [team_count]
-    uint8_t         team_count;                  // how many teams are enabled
-    uint8_t         player_count;
-    uint16_t        ammo[MAX_INVENTORY];
-    uint16_t        defaultammo[MAX_INVENTORY];
-    qboolean        infinite[MAX_INVENTORY];
-    qboolean        defaultinfinite[MAX_INVENTORY];
-    int32_t         ready_think_frame;           // next time we check if everyone is ready
-    int32_t         ready_notify_frame;          // next time we nag about being ready
-    qboolean        ready;                       // are all team players ready?
-    int32_t         timer_last_frame;            // the frame we last ran timers
-    qboolean        recording;                   // were players forced to start recording demos?
-    uint32_t        intermission_framenum;       // time the intermission was started
-    uint32_t        intermission_exit;           // time the intermission was exited
-    vec3_t          intermission_origin;         // intermission spot
-    vec3_t          intermission_angle;          // view angle from ^ spot
-    uint32_t        version;                     // map version
-    list_t          entry;                       // for making linked list of arenas
-    arena_vote_t    vote;                        // the current local vote
-    qboolean        modified;                    // defaults have been changed via votes
-    uint32_t        timelimit;                   // how long to allow each round
-    int32_t         round_intermission_start;    // frame round intermission started
-    int32_t         round_intermission_end;      // frame we should end round intermission
-    int32_t         teams_alive;                 // how many teams have players alive
-    uint32_t        countdown_start_frame;       // frame number when the count started
-    qboolean        fastswitch;                  // enable fast weapon switching
-    arena_mode_t    mode;                        // gameplay mode
-    qboolean        corpseview;                  // gag, see chasers
-    arena_clock_t   clock;                       // match countdown, timer, intermission
-    arena_clock_t   timeout_clock;               // used for timeouts
-} arena_t;
 
 // maps contain multiple arenas
 typedef struct {
@@ -275,7 +172,6 @@ void G_GiveItems(edict_t *ent);
 void G_HideScores(arena_t *a);
 void G_InitArenaTeams(arena_t *arena);    // in g_spawn.c
 qboolean G_IsRoundOver(arena_t *a);
-void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
