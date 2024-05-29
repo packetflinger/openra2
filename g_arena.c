@@ -1857,7 +1857,7 @@ void G_SecsToString(char *out, int seconds)
     mins = seconds / 60;
     seconds -= (mins * 60);
 
-    sprintf(out, "%d:%.2d", mins, seconds);
+    sprintf(out, "%.2d:%.2d", mins, seconds);
 }
 
 /**
