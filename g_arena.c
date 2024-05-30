@@ -352,30 +352,24 @@ void G_CheckArenaRules(arena_t *a)
  * round/match beginning and ending, timeouts, countdowns, votes, etc.
  *
  */
-void G_ArenaThink(arena_t *a)
-{
+void G_ArenaThink(arena_t *a) {
     if (!a) {
         return;
     }
-
-    // don't waste cpu if nobody is in this arena
     if (a->client_count == 0) {
         return;
     }
-
     if (a->state == ARENA_STATE_TIMEOUT) {
         G_TimeoutFrame(a);
         return;
     }
-    
     G_CheckIntermission(a);
-    
-    // end of round
     if (ROUNDOVER(a)) {
         G_BeginRoundIntermission(a);
     }
 
     // countdown to start
+    /*
     if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
         int framesleft = a->round_start_frame - level.framenum;
 
@@ -386,14 +380,15 @@ void G_ArenaThink(arena_t *a)
             return;
         }
     }
+    */
 
     // pregame
     if (a->state == ARENA_STATE_WARMUP) {
         if (a->ready) {    // is everyone ready?
             a->state = ARENA_STATE_COUNTDOWN;
-            
+
             G_ClearRoundInfo(a);
-            
+
             a->round_start_frame = level.framenum
                     + SECS_TO_FRAMES((int) g_round_countdown->value);
             a->round_frame = a->round_start_frame;
@@ -403,6 +398,7 @@ void G_ArenaThink(arena_t *a)
 
             G_RespawnPlayers(a);
             G_ForceDemo(a);
+            ClockStartRoundCountdown(a);
         }
     }
 
@@ -1144,6 +1140,9 @@ void G_CheckReady(arena_t *a)
  */
 void G_CheckTimers(arena_t *a)
 {
+    if (!a) {
+        return;
+    }
     // only run once per second
     if (!(a->timer_last_frame + SECS_TO_FRAMES(1) <= level.framenum)) {
         return;

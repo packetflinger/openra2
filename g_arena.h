@@ -233,6 +233,8 @@ typedef struct {
 
 
 void change_arena(edict_t *self);
+void ClockStartRound(arena_clock_t *c, arena_t *a);
+void ClockStartRoundCountdown(arena_t *a);
 const char *DemoName(edict_t *ent);
 void G_ArenaCast(arena_t *a, qboolean reliable);
 qboolean G_Arenamates(edict_t *p1, edict_t *p2);

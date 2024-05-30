@@ -48,7 +48,8 @@ void ClockThink(arena_clock_t *c) {
     if (c->value == c->endvalue) {
         c->state = CLOCK_STATE_STOPPED;
         if (c->finish) {
-            c->finish((arena_clock_t *)c, (arena_t *)c->arena);
+            gi.dprintf("finish arena value: %p\n", c->arena);
+            c->finish(c, c->arena);
         }
     }
 }
@@ -82,7 +83,7 @@ void ClockReset(arena_clock_t *c) {
  * This is just for testing.
  */
 void ClockTestPostThink(arena_clock_t *c) {
-    gi.dprintf("%s (%d)\n", c->string, c->value);
+    gi.dprintf("%s (%d) ((arena=%p))\n", c->string, c->value, c->arena);
 }
 
 /**
@@ -129,4 +130,27 @@ void ClockTestMatchCountdown(arena_clock_t *c) {
 void ClockTestMatchFinish(arena_clock_t *c) {
     gi.dprintf("match end!\n");
     ClockReset(c);
+}
+
+/**
+ * Start a round countdown timer
+ */
+void ClockStartRoundCountdown(arena_t *a) {
+    arena_clock_t *clock;
+    if (!a) {
+        return;
+    }
+    clock = &a->clock;
+    ClockInit(clock, a, "countdown", a->countdown, 0, CLOCK_DOWN);
+    clock->postthink = (void *) ClockTestPostThink;
+    clock->finish = (void *) ClockStartRound;
+    ClockStart(clock);
+}
+
+/**
+ *
+ */
+void ClockStartRound(arena_clock_t *c, arena_t *a) {
+    gi.dprintf("starting match!\n");
+    G_StartRound(a);
 }
