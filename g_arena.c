@@ -353,11 +353,11 @@ void G_CheckArenaRules(arena_t *a)
  * EOM (via timeout) handled via match clock callback
  */
 void G_CheckState(arena_t *a) {
-    if (ROUNDOVER(a)) {
+    if (a->state == ARENA_STATE_PLAY && a->teams_alive == 1) { //round finished
         G_BeginRoundIntermission(a);
     }
 
-    if (a->state == ARENA_STATE_WARMUP && a->ready) {
+    if (a->state == ARENA_STATE_WARMUP && a->ready) { // everyone ready, start
         a->state = ARENA_STATE_COUNTDOWN;
         a->round_start_frame = level.framenum
                 + SECS_TO_FRAMES((int) g_round_countdown->value);
