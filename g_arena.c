@@ -403,7 +403,7 @@ void G_ArenaThink(arena_t *a) {
     }
 
     G_CheckTimers(a);
-    G_UpdateArenaVote(a);
+    G_CheckArenaVote(a);
     G_CheckArenaRules(a);
 
     if (a->state > ARENA_STATE_WARMUP) {
