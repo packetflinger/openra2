@@ -258,7 +258,6 @@ qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
 void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
 void G_CheckArenaReady(arena_t *a);
-void G_CheckArenaVote(arena_t *a);
 qboolean G_CheckTeamAlive(edict_t *ent);
 void G_CheckTeamReady(arena_team_t *t);
 void G_CheckTimers(arena_t *a);
@@ -307,6 +306,7 @@ void G_StartRound(arena_t *a);
 void G_TeamCast(arena_team_t *t, qboolean reliable);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
 void G_TimeoutFrame(arena_t *a);
+void G_UpdateArenaVote(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
 void G_UpdatePlayerStatusBars(arena_t *a);
 void G_UpdateSkins(edict_t *ent);
