@@ -348,7 +348,9 @@ void G_CheckArenaRules(arena_t *a)
 }
 
 /**
- * Look for and handle stage changes
+ * Look for and handle stage changes.
+ * Match starts are handled via countdown clock callback
+ * EOM (via timeout) handled via match clock callback
  */
 void G_CheckState(arena_t *a) {
     if (ROUNDOVER(a)) {
