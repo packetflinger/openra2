@@ -348,6 +348,29 @@ void G_CheckArenaRules(arena_t *a)
 }
 
 /**
+ * Look for and handle stage changes
+ */
+void G_CheckState(arena_t *a) {
+    if (ROUNDOVER(a)) {
+        G_BeginRoundIntermission(a);
+    }
+
+    if (a->state == ARENA_STATE_WARMUP && a->ready) {
+        a->state = ARENA_STATE_COUNTDOWN;
+        a->round_start_frame = level.framenum
+                + SECS_TO_FRAMES((int) g_round_countdown->value);
+        a->round_frame = a->round_start_frame;
+        a->match_frame = a->round_start_frame;
+        a->countdown = (int) g_round_countdown->value;
+
+        G_ClearRoundInfo(a);
+        G_RespawnPlayers(a);
+        G_ForceDemo(a);
+        ClockStartRoundCountdown(a);
+    }
+}
+
+/**
  * Run once per frame for each arena in the map. Keeps track of state changes,
  * round/match beginning and ending, timeouts, countdowns, votes, etc.
  *
@@ -356,52 +379,18 @@ void G_ArenaThink(arena_t *a) {
     if (!a) {
         return;
     }
+
     if (a->client_count == 0) {
         return;
     }
+
     if (a->state == ARENA_STATE_TIMEOUT) {
         G_TimeoutFrame(a);
         return;
     }
+
     G_CheckIntermission(a);
-    if (ROUNDOVER(a)) {
-        G_BeginRoundIntermission(a);
-    }
-
-    // countdown to start
-    /*
-    if (a->state < ARENA_STATE_PLAY && a->round_start_frame) {
-        int framesleft = a->round_start_frame - level.framenum;
-
-        if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-            a->countdown = FRAMES_TO_SECS(framesleft);
-        } else if (framesleft == 0) {
-            G_StartRound(a);
-            return;
-        }
-    }
-    */
-
-    // pregame
-    if (a->state == ARENA_STATE_WARMUP) {
-        if (a->ready) {    // is everyone ready?
-            a->state = ARENA_STATE_COUNTDOWN;
-
-            G_ClearRoundInfo(a);
-
-            a->round_start_frame = level.framenum
-                    + SECS_TO_FRAMES((int) g_round_countdown->value);
-            a->round_frame = a->round_start_frame;
-            a->match_frame = a->round_start_frame;
-
-            a->countdown = (int) g_round_countdown->value;
-
-            G_RespawnPlayers(a);
-            G_ForceDemo(a);
-            ClockStartRoundCountdown(a);
-        }
-    }
-
+    G_CheckState(a);
     G_CheckTimers(a);
     G_CheckVoteStatus(a);
     G_CheckArenaRules(a);
@@ -411,7 +400,6 @@ void G_ArenaThink(arena_t *a) {
         a->match_frame++;
     }
 
-    //ClockThink(&a->clock);
     if (a->clock.tick) {
         a->clock.tick(&a->clock);
     }
