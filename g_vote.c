@@ -151,7 +151,7 @@ void G_FinishVote(void)
 /**
  * Arena specific votes
  */
-void G_UpdateArenaVote(arena_t *a) {
+void G_CheckVoteStatus(arena_t *a) {
     char buffer[MAX_QPATH];
     uint8_t total;
     uint32_t remaining;
