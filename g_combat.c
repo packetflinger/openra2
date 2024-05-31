@@ -272,6 +272,11 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         return;
     }
 
+    // Don't accept damage dealt/received if not in play state
+    if (ARENA(targ)->state != ARENA_STATE_PLAY) {
+        return;
+    }
+
     // friendly fire avoidance
     // if enabled you can't hurt teammates (but you can hurt yourself)
     // knockback still occurs
