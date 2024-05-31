@@ -1360,6 +1360,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
     G_HideScores(a);
     G_RespawnPlayers(a);
+    ClockStartRoundCountdown(a);
 }
 
 
@@ -2914,11 +2915,11 @@ void G_BeginRoundIntermission(arena_t *a)
     }
 
     a->state = ARENA_STATE_ROUNDPAUSE;
-    a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
-    a->round_intermission_start = level.framenum;
-    a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
-
+    //a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
+    //a->round_intermission_start = level.framenum;
+    //a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
     G_ShowScores(a);
+    ClockStartIntermission(a);
 }
 
 /**
@@ -2930,8 +2931,8 @@ void G_EndRoundIntermission(arena_t *a)
         return;
     }
 
-    a->round_intermission_start = 0;
-    a->round_intermission_end   = 0;
+    //a->round_intermission_start = 0;
+    //a->round_intermission_end   = 0;
 
     G_EndRound(a, NULL);
 }

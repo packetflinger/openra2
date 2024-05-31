@@ -233,6 +233,8 @@ typedef struct {
 
 
 void change_arena(edict_t *self);
+void ClockEndIntermission(arena_clock_t *c, arena_t *a);
+void ClockStartIntermission(arena_t *a);
 void ClockStartRound(arena_clock_t *c, arena_t *a);
 void ClockStartRoundCountdown(arena_t *a);
 const char *DemoName(edict_t *ent);

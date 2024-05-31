@@ -83,7 +83,7 @@ void ClockReset(arena_clock_t *c) {
  * This is just for testing.
  */
 void ClockTestPostThink(arena_clock_t *c) {
-    gi.dprintf("%s (%d) ((arena=%p))\n", c->string, c->value, c->arena);
+    gi.dprintf("%s (%s)\n", c->string, c->name);
 }
 
 /**
@@ -153,4 +153,26 @@ void ClockStartRoundCountdown(arena_t *a) {
 void ClockStartRound(arena_clock_t *c, arena_t *a) {
     gi.dprintf("starting match!\n");
     G_StartRound(a);
+}
+
+/**
+ *
+ */
+void ClockStartIntermission(arena_t *a) {
+    arena_clock_t *clock;
+    if (!a) {
+        return;
+    }
+    clock = &a->clock;
+    ClockInit(clock, a, "intermission", (int)g_round_end_time->value, 0, CLOCK_DOWN);
+    clock->postthink = (void *) ClockTestPostThink;
+    clock->finish = (void *) ClockEndIntermission;
+    ClockStart(clock);
+}
+
+/**
+ *
+ */
+void ClockEndIntermission(arena_clock_t *c, arena_t *a) {
+    G_EndRoundIntermission(a);
 }
