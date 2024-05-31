@@ -1741,6 +1741,37 @@ void G_HideScores(arena_t *a)
     }
 }
 
+/**
+ * Arenas rounds can be set with time limits, where the round is over when the
+ * clock reaches 00:00 regardless if more than 1 team is alive at the time.
+ * The default is to just let the action play out until there is one team left,
+ * in which case the clock will just count up keeping track of how long the
+ * round took.
+ *
+ * Don't bother with the postthink hook, we don't care about every tick.
+ */
+void G_StartRoundClock(arena_t *a) {
+    arena_clock_t *c;
+    if (!a) {
+        return;
+    }
+    c = &a->clock;
+    if (a->timelimit > 0) {
+        ClockInit(c, a, "round", a->timelimit, 0, CLOCK_DOWN);
+        c->finish = (void *) G_RoundTimelimitHit;
+    } else {
+        ClockInit(c, a, "round", 0, 0, CLOCK_UP);
+    }
+    ClockStart(c);
+}
+
+/**
+ * Round timelimit has been hit, regardless if more than one team is still
+ * alive, start intermission.
+ */
+void G_RoundTimelimitHit(arena_clock_t *c, arena_t *a) {
+    G_BeginRoundIntermission(a);
+}
 
 /**
  * Begin a round
@@ -1764,6 +1795,7 @@ void G_StartRound(arena_t *a)
 
     G_Centerprintf(a, "Fight!");
     G_ArenaSound(a, level.sounds.secret);
+    G_StartRoundClock(a);
 }
 
 
