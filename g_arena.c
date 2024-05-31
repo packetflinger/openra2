@@ -1158,37 +1158,20 @@ void G_CheckTimers(arena_t *a)
 /**
  * Send strings to clients depending on the state
  */
-void G_UpdateConfigStrings(arena_t *a)
-{
-    char countdown[10];
-    char roundtime[10];
-    char timeouttime[10];
+void G_UpdateConfigStrings(arena_t *a) {
     char buf[0xff];
-
     buf[0] = 0;
-
-    // no timelimit given, so count up, otherwise count down
-    if (!a->timelimit) {
-        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_frame - a->round_start_frame));
-    } else {
-        G_SecsToString(roundtime, FRAMES_TO_SECS(a->round_end_frame - a->round_frame));
-    }
 
     switch (a->state) {
     case ARENA_STATE_COUNTDOWN:
-        G_SecsToString(countdown, (a->round_start_frame - level.framenum) * FRAMETIME);
-        strcat(buf, va("Starting in %s", countdown));
+        strcat(buf, va("Starting in %s", a->clock.string));
         break;
-
     case ARENA_STATE_PLAY:
-        strcat(buf, va("Playing %s", roundtime));
+        strcat(buf, va("Playing %s", a->clock.string));
         break;
-
     case ARENA_STATE_TIMEOUT:
-        G_SecsToString(timeouttime, (a->timein_frame - level.framenum) * FRAMETIME);
-        strcat(buf, va("Timeout %s   (%s)", timeouttime, roundtime));
+        strcat(buf, va("Timeout %s   (%s)", a->timeout_clock.string, a->clock.string));
         break;
-
     default:
         buf[0] = 0;
     }
