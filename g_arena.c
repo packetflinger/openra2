@@ -1815,43 +1815,6 @@ void G_StartingWeapon(edict_t *ent)
     ChangeWeapon(ent);
 }
 
-
-/**
- * do stuff if this arena is currently in a timeout
- */
-void G_TimeoutFrame(arena_t *a)
-{
-    // expired
-    if (a->timein_frame == level.framenum) {
-        a->state = ARENA_STATE_PLAY;
-        a->timeout_frame = 0;
-        a->timein_frame = 0;
-        a->timeout_caller = NULL;
-        G_ArenaSound(a, level.sounds.timein);
-        return;
-    }
-
-    // countdown timer
-    int framesleft = a->timein_frame - level.framenum;
-    if (framesleft > 0 && framesleft % SECS_TO_FRAMES(1) == 0) {
-
-        G_UpdateConfigStrings(a);
-
-        uint32_t remaining;
-        remaining = (a->timein_frame - level.framenum) * FRAMETIME;
-
-        if (remaining > 0 && remaining <= 10) {
-            G_ArenaSound(a, level.sounds.countdown[remaining]);
-        }
-    }
-
-    a->match_frame++;
-    if (a->timeout_clock.tick) {
-        a->timeout_clock.tick(&a->timeout_clock);
-    }
-}
-
-
 /**
  * Get time string (mm:ss) from seconds
  *

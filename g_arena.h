@@ -156,8 +156,6 @@ typedef struct {
     uint32_t        round_frame;                 // current frame this round
     uint32_t        round_start_frame;           // when this round started
     uint32_t        round_end_frame;             // when this round ended
-    uint32_t        timeout_frame;               // when timeout was called
-    uint32_t        timein_frame;                // when timeout will end
     edict_t         *timeout_caller;             // player who called it
     int             countdown;
     uint8_t         round_limit;                 // how many rounds in a match
@@ -312,7 +310,6 @@ void G_StartRound(arena_t *a);
 void G_StartRoundClock(arena_t *a);
 void G_TeamCast(arena_team_t *t, qboolean reliable);
 qboolean G_Teammates(edict_t *p1, edict_t *p2);
-void G_TimeoutFrame(arena_t *a);
 void G_UpdateConfigStrings(arena_t *a);
 void G_UpdatePlayerStatusBars(arena_t *a);
 void G_UpdateSkins(edict_t *ent);

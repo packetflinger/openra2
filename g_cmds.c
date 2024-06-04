@@ -476,8 +476,6 @@ static void Cmd_Timeout_f(edict_t *ent) {
     }
 
     a->state = ARENA_STATE_TIMEOUT;
-    a->timeout_frame = level.framenum;
-    a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timeout_time->value);
     a->timeout_caller = ent;
 
     G_bprintf(a, PRINT_HIGH, "%s called timeout\n", NAME(ent));
