@@ -198,4 +198,6 @@ void ClockStartTimeout(arena_t *a) {
  */
 void ClockEndTimeout(arena_clock_t *c, arena_t *a) {
     a->state = ARENA_STATE_PLAY;
+    a->timeout_caller = NULL;
+    G_ArenaSound(a, level.sounds.timein);
 }
