@@ -83,7 +83,11 @@ void ClockReset(arena_clock_t *c) {
  * This is just for testing.
  */
 void ClockTestPostThink(arena_clock_t *c) {
-    G_UpdateConfigStrings(c->arena);
+    arena_t *a = c->arena;
+    G_UpdateConfigStrings(a);
+    if (a->state == ARENA_STATE_COUNTDOWN) {
+        a->countdown = c->value; // for center screen number
+    }
     gi.dprintf("%s (%s)\n", c->string, c->name);
 }
 
