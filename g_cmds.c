@@ -447,35 +447,42 @@ static void Cmd_Noclip_f(edict_t *ent)
 }
 
 /**
- * Call a timeout, all players freeze
+ * Call a timeout, all players freeze.
+ *
+ * Normally we'd want to stop the regular game clock for a timeout, but
+ * G_ArenaThink() returns after G_TimeoutFrame() runs, so the clock's tick
+ * function pointer won't get called anyway.
  */
-static void Cmd_Timeout_f(edict_t *ent)
-{
+static void Cmd_Timeout_f(edict_t *ent) {
     arena_t *a = ARENA(ent);
-    
+
     if (!TEAM(ent)) {
         return;
     }
-    
+
     // handle timein
-    if (a->timeout_frame) {
+    if (a->state == ARENA_STATE_TIMEOUT) {
         if (ent == a->timeout_caller || ent->client->pers.admin) {
-            a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timein_time->value);    
+            G_bprintf(a, PRINT_HIGH, "%s canceled the timeout\n", NAME(ent));
+            if (a->timeout_clock.value > (int)g_timein_time->value) {
+                a->timeout_clock.value = (int)g_timein_time->value;
+            }
         } 
-        
         return;
     }
 
-    if (a->state != ARENA_STATE_PLAY)
+    if (a->state != ARENA_STATE_PLAY) {
         return;
+    }
 
     a->state = ARENA_STATE_TIMEOUT;
     a->timeout_frame = level.framenum;
     a->timein_frame = level.framenum + SECS_TO_FRAMES((int) g_timeout_time->value);
     a->timeout_caller = ent;
-    
+
     G_bprintf(a, PRINT_HIGH, "%s called timeout\n", NAME(ent));
     G_ArenaSound(a, level.sounds.timeout);
+    ClockStartTimeout(a);
 }
 
 /**

@@ -387,7 +387,9 @@ void G_ArenaThink(arena_t *a) {
     }
 
     if (a->state == ARENA_STATE_TIMEOUT) {
-        G_TimeoutFrame(a);
+        if (a->timeout_clock.tick) {
+            a->timeout_clock.tick(&a->timeout_clock);
+        }
         return;
     }
 
@@ -1844,7 +1846,6 @@ void G_TimeoutFrame(arena_t *a)
     }
 
     a->match_frame++;
-    //ClockThink(&a->timeout_clock);
     if (a->timeout_clock.tick) {
         a->timeout_clock.tick(&a->timeout_clock);
     }

@@ -83,6 +83,7 @@ void ClockReset(arena_clock_t *c) {
  * This is just for testing.
  */
 void ClockTestPostThink(arena_clock_t *c) {
+    G_UpdateConfigStrings(c->arena);
     gi.dprintf("%s (%s)\n", c->string, c->name);
 }
 
@@ -175,4 +176,26 @@ void ClockStartIntermission(arena_t *a) {
  */
 void ClockEndIntermission(arena_clock_t *c, arena_t *a) {
     G_EndRoundIntermission(a);
+}
+
+/**
+ *
+ */
+void ClockStartTimeout(arena_t *a) {
+    arena_clock_t *clock;
+    if (!a) {
+        return;
+    }
+    clock = &a->timeout_clock;
+    ClockInit(clock, a, "timeout", (int)g_timeout_time->value, 0, CLOCK_DOWN);
+    clock->postthink = (void *) ClockTestPostThink;
+    clock->finish = (void *) ClockEndTimeout;
+    ClockStart(clock);
+}
+
+/**
+ *
+ */
+void ClockEndTimeout(arena_clock_t *c, arena_t *a) {
+    a->state = ARENA_STATE_PLAY;
 }
