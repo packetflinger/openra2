@@ -212,28 +212,17 @@ void Think_Weapon(edict_t *ent)
         ent->client->newweapon = NULL;
         ChangeWeapon(ent);
     }
-	
-	// No attacks in timeouts
-	if (ARENA(ent)->state == ARENA_STATE_TIMEOUT) {
-		return;
-	}
 
-	// should have a gun, but no shooting during intermission
-	if (ARENA(ent)->state == ARENA_STATE_MINTERMISSION) {
-		return;
-	}
+    // No attacks in timeouts or intermissions (round and match)
+    if (ARENA(ent)->state >= ARENA_STATE_TIMEOUT) {
+        return;
+    }
 
-	// No firing during countdown
-	if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
-		ent->client->buttons &= ~BUTTON_ATTACK;
-		ent->client->latched_buttons &= ~BUTTON_ATTACK;
-	}
-	
-	// don't allow firing during round intermissions
-	if (ARENA(ent)->round_intermission_start) {
-		ent->client->buttons &= ~BUTTON_ATTACK;
-		ent->client->latched_buttons &= ~BUTTON_ATTACK;
-	}
+    // No firing during countdown
+    if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
+        ent->client->buttons &= ~BUTTON_ATTACK;
+        ent->client->latched_buttons &= ~BUTTON_ATTACK;
+    }
 
     // call active weapon think routine
     if (ent->client->weapon && ent->client->weapon->weaponthink) {
