@@ -1899,7 +1899,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
     }
 
     // no moving during arena intermission
-    if (ARENA(ent)->state == ARENA_STATE_MINTERMISSION) {
+    if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
         client->ps.pmove.pm_type = PM_FREEZE;
         return;
     }
