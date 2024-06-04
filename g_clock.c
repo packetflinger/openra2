@@ -205,3 +205,27 @@ void ClockEndTimeout(arena_clock_t *c, arena_t *a) {
     a->timeout_caller = NULL;
     G_ArenaSound(a, level.sounds.timein);
 }
+
+/**
+ *
+ */
+void ClockStartMatchIntermission(arena_t *a) {
+    arena_clock_t *clock;
+    if (!a) {
+        return;
+    }
+    clock = &a->clock;
+    ClockInit(clock, a, "match intermission", (int)g_intermission_time->value, 0, CLOCK_DOWN);
+    clock->postthink = (void *) ClockTestPostThink;
+    clock->finish = (void *) ClockEndMatchIntermission;
+    ClockStart(clock);
+}
+
+/**
+ *
+ */
+void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a) {
+    if (a->state == ARENA_STATE_MINTERMISSION) {
+        G_ResetArena(a);
+    }
+}

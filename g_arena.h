@@ -232,8 +232,10 @@ typedef struct {
 
 void change_arena(edict_t *self);
 void ClockEndIntermission(arena_clock_t *c, arena_t *a);
+void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a);
 void ClockEndTimeout(arena_clock_t *c, arena_t *a);
 void ClockStartIntermission(arena_t *a);
+void ClockStartMatchIntermission(arena_t *a);
 void ClockStartRound(arena_clock_t *c, arena_t *a);
 void ClockStartRoundCountdown(arena_t *a);
 void ClockStartTimeout(arena_t *a);
@@ -257,7 +259,6 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team);
 void G_Centerprintf(arena_t *a, const char *fmt, ...);
 void G_CheckArenaRules(arena_t *a);
 qboolean G_CheckArenaVote(arena_t *a);    // in g_vote.c
-void G_CheckIntermission(arena_t *a);
 void G_CheckReady(arena_t *a);
 void G_CheckArenaReady(arena_t *a);
 qboolean G_CheckTeamAlive(edict_t *ent);

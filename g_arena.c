@@ -393,7 +393,6 @@ void G_ArenaThink(arena_t *a) {
         return;
     }
 
-    G_CheckIntermission(a);
     G_CheckState(a);
     G_CheckTimers(a);
     G_CheckVoteStatus(a);
@@ -1304,6 +1303,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
     BeginIntermission(a);
     G_ForceScreenshot(a);
     G_ForceDemo(a);
+    ClockStartMatchIntermission(a);
 }
 
 
@@ -2309,37 +2309,6 @@ void G_ResetArena(arena_t *a)
 
     G_FinishArenaVote(a);
 }
-
-/**
- * Manage the arena intermission screens
- */
-void G_CheckIntermission(arena_t *a)
-{
-    int32_t i, duration, exit_frame;
-    edict_t *ent;
-    
-    if (a->intermission_exit) {
-        if (level.framenum > a->intermission_exit + 5) {
-            G_ResetArena(a); // in case gamemap failed
-        }
-    } else if (a->intermission_framenum) {
-        exit_frame = SECS_TO_FRAMES(g_intermission_time->value);
-
-        clamp(exit_frame, SECS_TO_FRAMES(5), SECS_TO_FRAMES(120));
-
-        duration = level.framenum - a->intermission_framenum;
-        if (duration == SECS_TO_FRAMES(1)) {
-            for (i = 0, ent = &g_edicts[1]; i < game.maxclients; i++, ent++) {
-                if (ent->client->pers.connected > CONN_CONNECTED) {
-                    G_ArenaScoreboardMessage(ent, qtrue);
-                }
-            }    
-        } else if (duration == exit_frame) {
-            G_ResetArena(a);
-        }
-    }
-}
-
 
 /**
  * Similar to gi.multicast() but only sends the msg buffer to the members of 1 arena
