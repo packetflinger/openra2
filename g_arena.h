@@ -111,7 +111,7 @@ typedef enum {
     ARENA_STATE_PLAY,
     ARENA_STATE_OVERTIME,
     ARENA_STATE_TIMEOUT,
-    ARENA_STATE_ROUNDPAUSE,        // the gap between rounds in a match
+    ARENA_STATE_RINTERMISSION,  // between rounds
     ARENA_STATE_INTERMISSION,
 } arena_state_t;
 
