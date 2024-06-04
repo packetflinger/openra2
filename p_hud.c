@@ -355,7 +355,7 @@ void BeginIntermission(arena_t *a)
         return;
     }
 
-    a->state = ARENA_STATE_INTERMISSION;
+    a->state = ARENA_STATE_MINTERMISSION;
     a->intermission_framenum = level.framenum;
 
     G_FinishVote(); // ? maybe not

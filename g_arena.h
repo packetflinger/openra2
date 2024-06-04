@@ -112,7 +112,7 @@ typedef enum {
     ARENA_STATE_OVERTIME,
     ARENA_STATE_TIMEOUT,
     ARENA_STATE_RINTERMISSION,  // between rounds
-    ARENA_STATE_INTERMISSION,
+    ARENA_STATE_MINTERMISSION,  // between matches
 } arena_state_t;
 
 

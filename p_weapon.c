@@ -219,7 +219,7 @@ void Think_Weapon(edict_t *ent)
 	}
 
 	// should have a gun, but no shooting during intermission
-	if (ARENA(ent)->state == ARENA_STATE_INTERMISSION) {
+	if (ARENA(ent)->state == ARENA_STATE_MINTERMISSION) {
 		return;
 	}
 
