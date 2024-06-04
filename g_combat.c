@@ -272,6 +272,11 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         return;
     }
 
+    // possible fragged body
+    if (!targ->client) {
+        return;
+    }
+
     // Don't accept damage dealt/received if not in play state
     if (ARENA(targ)->state != ARENA_STATE_PLAY) {
         return;
