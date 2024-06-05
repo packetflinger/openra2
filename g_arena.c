@@ -394,7 +394,6 @@ void G_ArenaThink(arena_t *a) {
     }
 
     G_CheckState(a);
-    // G_CheckTimers(a);
     G_CheckVoteStatus(a);
     G_CheckArenaRules(a);
 
