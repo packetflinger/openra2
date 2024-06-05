@@ -334,11 +334,6 @@ void G_CheckArenaRules(arena_t *a)
             }
         }
     }
-
-    // round timelimit hit
-    if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
-        G_BeginRoundIntermission(a);
-    }
 }
 
 /**
@@ -1302,7 +1297,6 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
     a->state = ARENA_STATE_COUNTDOWN;
     a->countdown = (int) g_round_countdown->value;
     a->round_start_frame = level.framenum + SECS_TO_FRAMES(a->countdown);
-    a->round_end_frame = 0;
     a->teams_alive = a->team_count;
 
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
@@ -1752,11 +1746,6 @@ void G_StartRound(arena_t *a)
 
     a->state = ARENA_STATE_PLAY;
     a->round_start_frame = a->round_frame - SECS_TO_FRAMES(1);
-    if (!a->timelimit) {
-        a->round_end_frame = 0;
-    } else {
-        a->round_end_frame = a->round_start_frame + SECS_TO_FRAMES(a->timelimit);
-    }
 
     G_Centerprintf(a, "Fight!");
     G_ArenaSound(a, level.sounds.secret);

@@ -155,7 +155,6 @@ typedef struct {
     uint32_t        match_frame;                 // total frames this match
     uint32_t        round_frame;                 // current frame this round
     uint32_t        round_start_frame;           // when this round started
-    uint32_t        round_end_frame;             // when this round ended
     edict_t         *timeout_caller;             // player who called it
     int             countdown;
     uint8_t         round_limit;                 // how many rounds in a match
