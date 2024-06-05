@@ -335,12 +335,6 @@ void G_CheckArenaRules(arena_t *a)
         }
     }
 
-    // round intermission just expired
-    if (a->round_intermission_start && level.framenum == a->round_intermission_end) {
-        G_EndRoundIntermission(a);
-        return;
-    }
-
     // round timelimit hit
     if (a->round_end_frame > 0 && a->round_end_frame == a->round_frame) {
         G_BeginRoundIntermission(a);
