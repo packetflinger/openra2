@@ -1706,8 +1706,6 @@ void G_HideScores(arena_t *a)
  * The default is to just let the action play out until there is one team left,
  * in which case the clock will just count up keeping track of how long the
  * round took.
- *
- * Don't bother with the postthink hook, we don't care about every tick.
  */
 void G_StartRoundClock(arena_t *a) {
     arena_clock_t *c;
@@ -1717,6 +1715,7 @@ void G_StartRoundClock(arena_t *a) {
     c = &a->clock;
     if (a->timelimit > 0) {
         ClockInit(c, a, "round", a->timelimit, 0, CLOCK_DOWN);
+        c->postthink = (void *) ClockTestPostThink;
         c->finish = (void *) G_RoundTimelimitHit;
     } else {
         ClockInit(c, a, "round", 0, 0, CLOCK_UP);
