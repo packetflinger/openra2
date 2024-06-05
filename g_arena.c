@@ -394,7 +394,7 @@ void G_ArenaThink(arena_t *a) {
     }
 
     G_CheckState(a);
-    G_CheckTimers(a);
+    // G_CheckTimers(a);
     G_CheckVoteStatus(a);
     G_CheckArenaRules(a);
 
@@ -1124,36 +1124,6 @@ void G_CheckReady(arena_t *a)
 
     // if we made it this far, everyone is ready, start the round
     a->ready = true;
-}
-
-/**
- * Match countdowns and clocks. Runs only once per second
- */
-void G_CheckTimers(arena_t *a)
-{
-    if (!a) {
-        return;
-    }
-    // only run once per second
-    if (!(a->timer_last_frame + SECS_TO_FRAMES(1) <= level.framenum)) {
-        return;
-    }
-    
-    a->timer_last_frame = level.framenum;
-    
-    uint32_t remaining;
-    
-    G_UpdateConfigStrings(a);
-    
-    if (a->state == ARENA_STATE_COUNTDOWN) {
-        remaining = (a->round_start_frame - level.framenum) * FRAMETIME;
-
-        if (remaining > 0 && remaining <= 10 && remaining < ((int) g_round_countdown->value - 2)) {
-            G_ArenaSound(a, level.sounds.countdown[remaining]);
-        }
-    }
-
-    // timeout countdown handled in G_TimeoutFrame()
 }
 
 /**

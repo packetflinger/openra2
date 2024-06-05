@@ -87,6 +87,9 @@ void ClockTestPostThink(arena_clock_t *c) {
     G_UpdateConfigStrings(a);
     if (a->state == ARENA_STATE_COUNTDOWN) {
         a->countdown = c->value; // for center screen number
+        if (c->value > 0 && c->value <= 10) {
+            G_ArenaSound(a, level.sounds.countdown[c->value]);
+        }
     }
     gi.dprintf("%s (%s)\n", c->string, c->name);
 }
