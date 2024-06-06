@@ -91,7 +91,9 @@ void ClockTestPostThink(arena_clock_t *c) {
             G_ArenaSound(a, level.sounds.countdown[c->value]);
         }
     }
-    gi.dprintf("%s (%s)\n", c->string, c->name);
+    if ((int)g_debug_clocks->value) {
+        gi.cprintf(NULL, PRINT_HIGH, "%s (%s)\n", c->string, c->name);
+    }
 }
 
 /**

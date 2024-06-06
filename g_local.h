@@ -824,6 +824,7 @@ extern  cvar_t  *g_team_reset;
 extern  cvar_t  *g_all_chat;
 extern  cvar_t  *g_round_timelimit;
 extern  cvar_t  *g_fast_weapon_change;
+extern  cvar_t  *g_debug_clocks;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
