@@ -329,7 +329,7 @@ void G_CheckArenaRules(arena_t *a)
     if (MATCHPLAYING(a)) {
         for (i=0; i<a->team_count; i++) {
             if (a->teams[i].player_count == 0) {
-                G_EndRound(a, NULL);
+                G_EndMatch(a, NULL);
                 return;
             }
         }
