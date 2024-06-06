@@ -238,7 +238,7 @@ void change_arena(edict_t *self)
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable)
 {
     char buffer[MAX_STRING_CHARS];
-    
+
     if (ARENA(ent)->state == ARENA_STATE_WARMUP)
         G_BuildPregameScoreboard(buffer, ent->client, ARENA(ent));
     else
@@ -1119,9 +1119,14 @@ void G_CheckReady(arena_t *a)
  */
 void G_UpdateConfigStrings(arena_t *a) {
     char buf[0xff];
+    char roundtime[10];
     buf[0] = 0;
 
     switch (a->state) {
+    case ARENA_STATE_WARMUP:
+        G_SecsToString(roundtime, a->timelimit);
+        strcat(buf, va("Warmup %s", roundtime));
+        break;
     case ARENA_STATE_COUNTDOWN:
         strcat(buf, va("Starting in %s", a->clock.string));
         break;
@@ -2241,18 +2246,16 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent)
 void G_ResetArena(arena_t *a)
 {
     uint8_t i;
-    char roundtime[6];
-    
+
     a->intermission_framenum = 0;
     a->intermission_exit = 0;
     a->state = ARENA_STATE_WARMUP;
     a->ready = qfalse;
     a->teams_alive = a->team_count;
     a->current_round = 1;
-    
-    G_SecsToString(roundtime, a->timelimit);
-    G_ConfigString(a, CS_MATCH_STATUS, va("Warmup %s", roundtime));
+
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
+    G_UpdateConfigStrings(a);
 
     for (i=0; i<a->team_count; i++) {
         G_ResetTeam(&a->teams[i]);
