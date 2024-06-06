@@ -50,6 +50,6 @@ void ClockStop(arena_clock_t *c);
 void ClockReset(arena_clock_t *c);
 void ClockTestMatchCountdown(arena_clock_t *c);
 void ClockTestMatchFinish(arena_clock_t *c);
-void ClockTestPostThink(arena_clock_t *c);
+void ClockPostThink(arena_clock_t *c);
 void ClockTestFinish(arena_clock_t *c);
 

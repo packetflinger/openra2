@@ -80,9 +80,8 @@ void ClockReset(arena_clock_t *c) {
 
 /**
  * Called just after the clock is advanced each time.
- * This is just for testing.
  */
-void ClockTestPostThink(arena_clock_t *c) {
+void ClockPostThink(arena_clock_t *c) {
     arena_t *a = c->arena;
     G_UpdateConfigStrings(a);
     if (a->state == ARENA_STATE_COUNTDOWN) {
@@ -117,7 +116,7 @@ void ClockTestFinish(arena_clock_t *c) {
     }
     c->thinkinterval = HZ;
     c->tick = (void *) ClockThink;
-    c->postthink = (void *) ClockTestPostThink;
+    c->postthink = (void *) ClockPostThink;
     c->finish = (void *) ClockTestFinish;
     ClockStart(c);
 }
@@ -129,7 +128,7 @@ void ClockTestMatchCountdown(arena_clock_t *c) {
     gi.dprintf("match start!\n");
     ClockReset(c);
     ClockInit(c, NULL, "match", 30, 0, CLOCK_DOWN);
-    c->postthink = (void *) ClockTestPostThink;
+    c->postthink = (void *) ClockPostThink;
     c->finish = (void *) ClockTestMatchFinish;
     ClockStart(c);
 }
@@ -152,7 +151,7 @@ void ClockStartRoundCountdown(arena_t *a) {
     }
     clock = &a->clock;
     ClockInit(clock, a, "countdown", a->countdown, 0, CLOCK_DOWN);
-    clock->postthink = (void *) ClockTestPostThink;
+    clock->postthink = (void *) ClockPostThink;
     clock->finish = (void *) ClockStartRound;
     ClockStart(clock);
 }
@@ -175,7 +174,7 @@ void ClockStartIntermission(arena_t *a) {
     }
     clock = &a->clock;
     ClockInit(clock, a, "intermission", (int)g_round_end_time->value, 0, CLOCK_DOWN);
-    clock->postthink = (void *) ClockTestPostThink;
+    clock->postthink = (void *) ClockPostThink;
     clock->finish = (void *) ClockEndIntermission;
     ClockStart(clock);
 }
@@ -197,7 +196,7 @@ void ClockStartTimeout(arena_t *a) {
     }
     clock = &a->timeout_clock;
     ClockInit(clock, a, "timeout", (int)g_timeout_time->value, 0, CLOCK_DOWN);
-    clock->postthink = (void *) ClockTestPostThink;
+    clock->postthink = (void *) ClockPostThink;
     clock->finish = (void *) ClockEndTimeout;
     ClockStart(clock);
 }
@@ -221,7 +220,7 @@ void ClockStartMatchIntermission(arena_t *a) {
     }
     clock = &a->clock;
     ClockInit(clock, a, "match intermission", (int)g_intermission_time->value, 0, CLOCK_DOWN);
-    clock->postthink = (void *) ClockTestPostThink;
+    clock->postthink = (void *) ClockPostThink;
     clock->finish = (void *) ClockEndMatchIntermission;
     ClockStart(clock);
 }

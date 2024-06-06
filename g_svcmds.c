@@ -24,7 +24,7 @@ static void Svcmd_Test_f(void)
 {
     gi.cprintf(NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
     ClockInit(&level.clock, NULL, "match_countdown", 10, 0, CLOCK_DOWN);
-    level.clock.postthink = (void *) ClockTestPostThink;
+    level.clock.postthink = (void *) ClockPostThink;
     level.clock.finish = (void *) ClockTestMatchCountdown;
     ClockStart(&level.clock);
 }
