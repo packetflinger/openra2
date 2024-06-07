@@ -669,6 +669,7 @@ void Drop_PowerArmor(edict_t *ent, gitem_t *item)
 //======================================================================
 
 // stolen from OpenTDM
+// ent is what was picked up, other is player who pickd it up
 static void AccountItemPickup(edict_t *ent, edict_t *other)
 {
     gclient_t *c;
@@ -698,7 +699,7 @@ static void AccountItemPickup(edict_t *ent, edict_t *other)
     other->client->resp.items[index].pickups++;
 
     for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-        if (c->pers.connected == CONN_SPAWNED && c != other->client) {
+        if (IS_PLAYER(c->edict) && c != other->client) {
             c->resp.items[index].misses++;
         }
     }
