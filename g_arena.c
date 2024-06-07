@@ -874,7 +874,7 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
     for (i = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
 
-        if (!c || c->pers.connected <= CONN_CONNECTED) {
+        if (!c) {
             continue;
         }
 
@@ -925,15 +925,14 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team)
     // sort the clients by score, then by eff
     total = 0;
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-        if (!team->players[i])
+        if (!team->players[i]) {
             continue;
-
-        if (team->players[i]->client->pers.connected == CONN_SPAWNED) {
-            if (ranks) {
-                ranks[total] = team->players[i]->client;
-            }
-            total++;
         }
+
+        if (ranks) {
+            ranks[total] = team->players[i]->client;
+        }
+        total++;
     }
 
     if (ranks) {
@@ -1039,7 +1038,6 @@ void G_ChangeArena(edict_t *ent, arena_t *arena)
 
     ARENA(ent) = arena;
 
-    ent->client->pers.connected = CONN_SPECTATOR;
     ent->client->pers.ready = false;
 
     G_SpectatorsJoin(ent);
