@@ -273,6 +273,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner);
 void G_FinishArenaVote(arena_t *a);
 void G_ForceDemo(arena_t *arena);
 void G_ForceReady(arena_team_t *team, qboolean ready);
+void G_FreezePlayer(edict_t *ent, qboolean freeze);
 void G_FreezePlayers(arena_t *a, qboolean freeze);
 arena_team_t *G_GetWinningTeam(arena_t *a);
 void G_GiveItems(edict_t *ent);

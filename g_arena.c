@@ -1318,30 +1318,31 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
 void G_FreezePlayers(arena_t *a, qboolean freeze)
 {
     uint8_t i, j;
-    edict_t *ent;
     arena_team_t *team;
 
     if (!a) {
         return;
     }
 
-    pmtype_t type;
-
-    if (freeze) {
-        type = PM_FREEZE;
-    } else {
-        type = PM_NORMAL;
-    }
-
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
         for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
-            ent = team->players[j];
-            if (ent && ent->inuse) {
-                ent->client->ps.pmove.pm_type = type;
-            }
+            G_FreezePlayer(team->players[j], freeze);
         }
     }
+}
+
+/**
+ * Lock a player in place (for timeouts)
+ */
+void G_FreezePlayer(edict_t *ent, qboolean freeze) {
+    if (!ent->inuse) {
+        return;
+    }
+    if (!ent->client) {
+        return;
+    }
+    ent->client->ps.pmove.pm_type = (freeze) ? PM_FREEZE : PM_NORMAL;
 }
 
 /**
