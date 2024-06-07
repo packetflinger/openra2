@@ -1222,7 +1222,6 @@ typedef struct {
     float           fov;
     gender_t        gender;
     int             uf;
-    conn_t          connected;
     qboolean        loopback: 1,
                     mvdspec: 1,
                     admin: 1,
