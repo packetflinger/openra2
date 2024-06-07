@@ -120,7 +120,7 @@ void ValidateSelectedItem(edict_t *ent)
  */
 static qboolean CheckCheats(edict_t *ent)
 {
-    if (!PLAYER_SPAWNED(ent)) {
+    if (!ent->client) {
         return qfalse;
     }
 
@@ -732,11 +732,13 @@ static void Cmd_InvDrop_f(edict_t *ent)
  */
 static void Cmd_Kill_f(edict_t *ent)
 {
-    if (!PLAYER_SPAWNED(ent))
+    if (!IS_PLAYER(ent)) {
         return;
+    }
 
-    if (level.framenum - ent->client->respawn_framenum < 5 * HZ)
+    if (level.framenum - ent->client->respawn_framenum < 5 * HZ) {
         return;
+    }
 
     ent->flags &= ~FL_GODMODE;
     ent->health = 0;
@@ -799,7 +801,7 @@ static void Cmd_Wave_f(edict_t *ent)
     int     i;
 
     // spectators can't wave!
-    if (!PLAYER_SPAWNED(ent)) {
+    if (!IS_PLAYER(ent)) {
         return;
     }
 
@@ -1005,11 +1007,11 @@ void Cmd_Players_f(edict_t *ent)
 
     for (i = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
-        if (c->pers.connected <= CONN_CONNECTED) {
+        if (!c->pers.team) {
             continue;
         }
 
-        if (c->pers.connected == CONN_SPAWNED) {
+        if (IS_PLAYER(c->edict)) {
             sprintf(score, "%d", c->resp.score);
             sec = (level.framenum - c->resp.activity_framenum) / HZ;
             if (level.framenum < 10 * 60 * HZ) {
@@ -1196,12 +1198,6 @@ static void Cmd_Observe_f(edict_t *ent)
 {
     G_TeamPart(ent, false);
     G_SpectatorsJoin(ent);
-    
-    if (ent->client->pers.connected == CONN_PREGAME) {
-        ent->client->pers.connected = CONN_SPECTATOR;
-        gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
-        return;
-    }
 }
 
 /**
@@ -1233,27 +1229,6 @@ static void Cmd_Chase_f(edict_t *ent)
                 return;
             }
         }
-    }
-
-    // changing from pregame mode into spectator
-    if (ent->client->pers.connected == CONN_PREGAME) {
-        ent->client->pers.connected = CONN_SPECTATOR;
-        gi.cprintf(ent, PRINT_HIGH, "Changed to spectator mode.\n");
-        if (target) {
-            SetChaseTarget(ent, target);
-            ent->client->chase_mode = CHASE_NONE;
-        } else {
-            GetChaseTarget(ent, mode);
-        }
-        return;
-    }
-
-    // respawn the spectator
-    if (ent->client->pers.connected != CONN_SPECTATOR) {
-        if (G_SpecRateLimited(ent)) {
-            return;
-        }
-        spectator_respawn(ent, CONN_SPECTATOR);
     }
 
     if (target) {
@@ -1978,15 +1953,18 @@ static void Cmd_PickTeammate_f(edict_t *ent)
     for (i=0; i<game.maxclients; i++) {
         c = &game.clients[i];
         
-        if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR)
+        if (c->pers.arena != arena) {
             continue;
+        }
         
-        if (c->pers.arena != arena)
+        if (IS_PLAYER(c->edict)) {
             continue;
-        
+        }
+
         // ignore caller
-        if (c == ent->client)
+        if (c == ent->client) {
             continue;
+        }
         
         if (match(namepattern, c->pers.netname)) {
             matches++;
@@ -2098,7 +2076,6 @@ void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
  */
 static void Cmd_Test_f(edict_t *ent)
 {
-    gi.cprintf(ent, PRINT_HIGH, "%d\n", ent->client->pers.connected);
 }
 
 /**
@@ -2108,11 +2085,8 @@ void ClientCommand(edict_t *ent)
 {
     char    *cmd;
 
-    if (!ent->client)
+    if (!ent->client) {
         return;     // not fully in game yet
-
-    if (ent->client->pers.connected <= CONN_CONNECTED) {
-        return;
     }
 
     cmd = gi.argv(0);
