@@ -167,7 +167,7 @@ static void ClientEndServerFrames(void)
         // if the end of unit layout is displayed, don't give
         // the player any normal movement attributes
         for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-            if (c->pers.connected <= CONN_CONNECTED) {
+            if (!c->pers.team) {
                 continue;
             }
             IntermissionEndServerFrame(c->edict);
@@ -178,7 +178,7 @@ static void ClientEndServerFrames(void)
     // calc the player views now that all pushing
     // and damage has been added
     for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-        if (c->pers.connected <= CONN_CONNECTED) {
+        if (!c->pers.team) {
             continue;
         }
 
@@ -196,7 +196,7 @@ static void ClientEndServerFrames(void)
 
     // update chase cam after all stats and positions are calculated
     for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-        if (c->pers.connected <= CONN_CONNECTED) {
+        if (!IS_SPECTATOR(c->edict)) {
             continue;
         }
         if (c->chase_target) {
