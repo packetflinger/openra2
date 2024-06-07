@@ -190,7 +190,7 @@ void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
         if (!other->inuse) {
             continue;
         }
-        if (other->client->pers.connected != CONN_SPECTATOR) {
+        if (IS_SPECTATOR(other)) {
             continue;
         }
         if (other->client->chase_mode != mode) {
@@ -341,8 +341,8 @@ void ChaseEndServerFrame(edict_t *ent)
         return;
     }
 
-    // is our chase target gone?
-    if (c->chase_target->client->pers.connected != CONN_SPAWNED) {
+    // our chase target is gone?
+    if (!c->chase_target->client || IS_SPECTATOR(c->chase_target)) {
         edict_t *old = c->chase_target;
         ChaseNext(ent);
         if (c->chase_target == old) {
