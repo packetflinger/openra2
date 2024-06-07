@@ -1109,9 +1109,6 @@ double genrand_float32_notone(void);
 #define ANIM_DEATH      5
 #define ANIM_REVERSE    6
 
-#define PLAYER_SPAWNED(e) \
-    ((e)->client->pers.connected == CONN_SPAWNED)
-
 #define MAX_MENU_ENTRIES    18
 
 typedef enum {
