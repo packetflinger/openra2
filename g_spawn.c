@@ -804,7 +804,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     edict_t     *ent;
     gclient_t   *client;
     int         i, j;
-    client_persistant_t pers;
+    client_persistent_t pers;
     char        *token;
     char        playerskin[MAX_QPATH];
 	qboolean	notra2map = qfalse;

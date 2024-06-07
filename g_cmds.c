@@ -138,7 +138,7 @@ static qboolean CheckCheats(edict_t *ent)
 static void Cmd_Ready_f(edict_t *ent)
 {
     uint8_t i;
-    client_persistant_t *p;
+    client_persistent_t *p;
     char roundtime[6];
 
     if (!ent->client)

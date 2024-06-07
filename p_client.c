@@ -1235,7 +1235,7 @@ void PutClientInServer(edict_t *ent)
     int     index;
     vec3_t  spawn_origin, spawn_angles;
     gclient_t   *client;
-    client_persistant_t pers;
+    client_persistent_t pers;
     client_respawn_t    resp;
     client_level_t      lvl;
     vec3_t temp, temp2;

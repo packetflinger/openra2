@@ -1232,7 +1232,7 @@ typedef struct {
     arena_team_t    *team;
     char            teamskin[MAX_SKINNAME];
     char            enemyskin[MAX_SKINNAME];
-} client_persistant_t;
+} client_persistent_t;
 
 // client data that stays across deathmatch respawns,
 // but cleared on spectator respawns
@@ -1274,7 +1274,7 @@ struct gclient_s {
     int             clientNum;
 
     // private to game
-    client_persistant_t pers;
+    client_persistent_t pers;
     client_respawn_t    resp;
     client_level_t      level;
     pmove_state_t       old_pmove;  // for detecting out-of-pmove changes
