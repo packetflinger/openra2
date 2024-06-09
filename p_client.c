@@ -367,7 +367,7 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
             if (!ent->inuse) {
                 continue;
             }
-            if (ent->client->pers.connected <= CONN_CONNECTED) {
+            if (!TEAM(ent)) {
                 continue;
             }
             name = self->client->pers.netname;
@@ -470,7 +470,7 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
                 if (!ent->inuse) {
                     continue;
                 }
-                if (ent->client->pers.connected <= CONN_CONNECTED) {
+                if (!TEAM(ent)) {
                     continue;
                 }
                 name = self->client->pers.netname;
@@ -1157,7 +1157,6 @@ void spectator_respawn(edict_t *ent, int connected)
 {
     int total;
 
-    ent->client->pers.connected = connected;
     total = G_UpdateRanks();
     if (total) {} // temp - silense compiler warning
 
@@ -1346,7 +1345,7 @@ void PutClientInServer(edict_t *ent)
     VectorCopy(spawn_angles, client->v_angle);
 
     // spawn a spectator
-    if (client->pers.connected != CONN_SPAWNED || level.intermission_framenum) {
+    if (IS_SPECTATOR(ent) || level.intermission_framenum) {
         ent->movetype = MOVETYPE_NOCLIP;
         ent->solid = SOLID_NOT;
         ent->svflags |= SVF_NOCLIENT;
@@ -1438,9 +1437,6 @@ void ClientBegin(edict_t *ent)
     memset(&ent->client->resp, 0, sizeof(ent->client->resp));
 
     ent->client->resp.enter_framenum = level.framenum;
-
-    ent->client->pers.connected = (level.intermission_framenum ||
-                                   ent->client->pers.mvdspec) ? CONN_SPECTATOR : CONN_PREGAME;
 
     int anum = level.default_arena;
     switch ((int)g_default_arena->value) {
@@ -1715,7 +1711,6 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
 
     memset(ent->client, 0, sizeof(gclient_t));
     ent->client->edict = ent;
-    ent->client->pers.connected = CONN_CONNECTED;
     ent->client->level.first_time = qtrue;
     ent->client->pers.loopback = !strcmp(s, "loopback");
     ent->client->pers.muted = action == IPA_MUTE;
@@ -1745,16 +1740,15 @@ Will not be called between levels.
 void ClientDisconnect(edict_t *ent)
 {
     int     total;
-    conn_t  connected;
+    arena_team_t *team;
 
     if (!ent->client) {
         return;
     }
 
+    team = TEAM(ent);
     G_ChangeArena(ent, NULL);
 
-    connected = ent->client->pers.connected;
-    ent->client->pers.connected = CONN_DISCONNECTED;
     ent->client->ps.stats[STAT_FRAGS] = 0;
 
 #if USE_SQLITE
@@ -1765,7 +1759,7 @@ void ClientDisconnect(edict_t *ent)
     }
 #endif
 
-    if (connected == CONN_SPAWNED && !level.intermission_framenum) {
+    if (team->type != TEAM_SPECTATORS && !level.intermission_framenum) {
         // send effect
         gi.WriteByte(SVC_MUZZLEFLASH);
         gi.WriteShort(ent - g_edicts);
@@ -1776,14 +1770,14 @@ void ClientDisconnect(edict_t *ent)
         total = G_UpdateRanks();
         gi.bprintf(PRINT_HIGH, "%s disconnected (%d player%s)\n",
                    ent->client->pers.netname, total, total == 1 ? "" : "s");
-    } else if (connected > CONN_CONNECTED) {
+    } else if (team) {
         gi.bprintf(PRINT_HIGH, "%s disconnected\n",
                    ent->client->pers.netname);
     }
 
     PMenu_Close(ent);
 
-    if (connected > CONN_CONNECTED) {
+    if (team) {
         // track map stats
         level.players_out++;
     }
@@ -1882,7 +1876,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
     if (abs(ucmd->forwardmove) >= 10 || abs(ucmd->upmove) >= 10 ||
         abs(ucmd->sidemove) >= 10 || client->buttons != ucmd->buttons) {
         client->resp.activity_framenum = level.framenum;
-        if (client->pers.connected == CONN_SPAWNED) {
+        if (IS_PLAYER(ent)) {
             level.activity_framenum = level.framenum;
         }
     }
@@ -2015,9 +2009,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             respawn(ent);
         }
 
-        if (client->pers.connected == CONN_PREGAME) {
-            //spectator_respawn(ent, CONN_SPAWNED);
-        } else if (client->pers.connected == CONN_SPECTATOR) {
+        if (IS_SPECTATOR(client->edict)) {
             client->latched_buttons = 0;
             if (client->chase_target) {
                 SetChaseTarget(ent, NULL);
@@ -2030,7 +2022,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         }
     }
 
-    if (client->pers.connected == CONN_SPECTATOR) {
+    if (IS_SPECTATOR(client->edict)) {
         if (abs(ucmd->upmove) >= 10) {
             if (!client->level.jump_held) {
                 client->level.jump_held = qtrue;
@@ -2068,7 +2060,7 @@ void ClientBeginServerFrame(edict_t *ent)
 
     client = ent->client;
 
-    if (client->pers.connected == CONN_SPAWNED) {
+    if (IS_PLAYER(client->edict)) {
         if (FRAMESYNC) {
             // run weapon animations if it hasn't been done by a ucmd_t
             if (!client->weapon_thunk)
