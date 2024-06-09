@@ -153,7 +153,7 @@ void G_LogClients( void ) {
 
     G_BeginLogging();
     for( i = 0, c = game.clients; i < game.maxclients; i++, c++ ) {
-        if( c->pers.connected == CONN_SPAWNED ) {
+        if (c->pers.team) {
             G_LogClient( c );
         }
     }
