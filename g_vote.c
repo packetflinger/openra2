@@ -239,13 +239,13 @@ qboolean G_CheckVote(void)
     }
 
     // is vote initiator gone?
-    if (!level.vote.initiator->pers.connected) {
+    if (!level.vote.initiator->pers.team) {
         gi.bprintf(PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
         goto finish;
     }
 
     // is vote victim gone?
-    if (level.vote.victim && !level.vote.victim->pers.connected) {
+    if (level.vote.victim && !level.vote.victim->pers.team) {
         gi.bprintf(PRINT_HIGH, "Vote aborted due to the victim disconnect.\n");
         goto finish;
     }
@@ -309,13 +309,13 @@ qboolean G_CheckArenaVote(arena_t *a)
     }
 
     // is vote initiator gone?
-    if (!a->vote.initiator->client->pers.connected) {
+    if (!a->vote.initiator->client->pers.team) {
         G_bprintf(a, PRINT_HIGH, "Vote aborted due to the initiator disconnect.\n");
         goto finish;
     }
 
     // is vote victim gone?
-    if (a->vote.victim && !a->vote.victim->client->pers.connected) {
+    if (a->vote.victim && !a->vote.victim->client->pers.team) {
         G_bprintf(a, PRINT_HIGH, "Vote aborted due to the victim disconnect.\n");
         goto finish;
     }
