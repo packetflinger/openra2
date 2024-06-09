@@ -829,7 +829,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         ent->client = client;
         ent->inuse = qfalse;
 
-        if (!client->pers.connected) {
+        if (!client->pers.team) {
             continue;
         }
 
@@ -839,8 +839,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         client->pers = pers;
         client->edict = ent;
         client->clientNum = i;
-        client->pers.connected = CONN_CONNECTED;
-
         client->pers.arena = NULL;
         client->pers.team = NULL;
 
@@ -1005,17 +1003,15 @@ void G_ResetLevel(void)
     // respawn all clients
     for (i = 0; i < game.maxclients; i++) {
         client = &game.clients[i];
-        if (!client->pers.connected) {
+        if (!client->pers.team) {
             continue;
         }
         memset(&client->resp, 0, sizeof(client->resp));
         memset(&client->level.vote, 0, sizeof(client->level.vote));
-        if (client->pers.connected == CONN_SPAWNED) {
-            ent = client->edict;
-            G_ScoreChanged(ent);
-            ent->movetype = MOVETYPE_NOCLIP; // do not leave body
-            respawn(ent);
-        }
+        ent = client->edict;
+        G_ScoreChanged(ent);
+        ent->movetype = MOVETYPE_NOCLIP; // do not leave body
+        respawn(ent);
     }
 
     G_UpdateRanks();
