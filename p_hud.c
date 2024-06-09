@@ -53,7 +53,7 @@ int G_CalcRanks(gclient_t **ranks)
     // sort the clients by score, then by eff
     total = 0;
     for (i = 0; i < game.maxclients; i++) {
-        if (game.clients[i].pers.connected == CONN_SPAWNED) {
+        if (IS_PLAYER(game.clients[i].edict)) {
             if (ranks) {
                 ranks[total] = &game.clients[i];
             }
@@ -155,7 +155,7 @@ static size_t BuildScoreboard(char *buffer, gclient_t *client)
     // add spectators in fixed order
     for (i = 0, j = 0; i < game.maxclients; i++) {
         c = &game.clients[i];
-        if (c->pers.connected != CONN_PREGAME && c->pers.connected != CONN_SPECTATOR) {
+        if (!IS_SPECTATOR(c->edict)) {
             continue;
         }
         if (c->pers.mvdspec) {
@@ -422,7 +422,7 @@ void G_PrivateString(edict_t *ent, int index, const char *string)
         return;
     }
     for (i = 0, client = game.clients; i < game.maxclients; i++, client++) {
-        if (client->pers.connected != CONN_SPECTATOR) {
+        if (!IS_SPECTATOR(client->edict)) {
             continue;
         }
         if (client->chase_target == ent) {
@@ -736,7 +736,7 @@ void G_SetStats(edict_t *ent)
     if (level.intermission_framenum || ARENA(ent)->round_intermission_start) {
         ent->client->ps.stats[STAT_VIEWID] = 0;
     } else {
-        if (ent->client->pers.connected == CONN_SPAWNED) {
+        if (IS_PLAYER(ent)) {
             // countdown
             if (ent->client->pers.arena->state == ARENA_STATE_COUNTDOWN) {
                 ent->client->ps.stats[STAT_COUNTDOWN] = ARENA(ent)->countdown;
@@ -744,7 +744,7 @@ void G_SetStats(edict_t *ent)
                 ent->client->ps.stats[STAT_COUNTDOWN] = 0;
             }
         } else {
-            if (ent->client->pers.connected == CONN_SPECTATOR) {
+            if (IS_SPECTATOR(ent)) {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_SPECMODE;
             } else {
                 ent->client->ps.stats[STAT_SPECTATOR] = CS_PREGAME;
