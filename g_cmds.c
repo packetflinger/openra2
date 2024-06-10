@@ -1181,6 +1181,7 @@ edict_t *G_SetVictim(edict_t *ent, int start)
 /**
  *
  */
+/*
 static qboolean G_SpecRateLimited(edict_t *ent)
 {
     if (level.framenum - ent->client->resp.enter_framenum < 5 * HZ) {
@@ -1190,6 +1191,7 @@ static qboolean G_SpecRateLimited(edict_t *ent)
 
     return qfalse;
 }
+*/
 
 /**
  *
