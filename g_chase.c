@@ -301,7 +301,7 @@ qboolean GetChaseTarget(edict_t *ent, chase_mode_t mode)
         if (!other->inuse) {
             continue;
         }
-        if (!PLAYER_SPAWNED(other)) {
+        if (!IS_PLAYER(other)) {
             continue;
         }
         switch (mode) {
