@@ -819,9 +819,8 @@ static float PlayersRangeFromSpot(edict_t *spot)
 
         if (!player->inuse)
             continue;
-        if (!IS_PLAYER(player)) {
+        if (!PLAYER_SPAWNED(player))
             continue;
-        }
 
         if (player->health <= 0)
             continue;
