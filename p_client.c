@@ -819,8 +819,9 @@ static float PlayersRangeFromSpot(edict_t *spot)
 
         if (!player->inuse)
             continue;
-        if (!PLAYER_SPAWNED(player))
+        if (!IS_PLAYER(player)) {
             continue;
+        }
 
         if (player->health <= 0)
             continue;
@@ -1083,7 +1084,7 @@ static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
     edict_t *spot = NULL;
     spot = SelectArenaSpawnPoint(ent);
 
-    if (!spot && level.numspawns && PLAYER_SPAWNED(ent)) {
+    if (!spot && level.numspawns && IS_PLAYER(ent)) {
         spot = SelectDeathmatchSpawnPoint();
     }
 
