@@ -53,7 +53,7 @@ int G_CalcRanks(gclient_t **ranks)
     // sort the clients by score, then by eff
     total = 0;
     for (i = 0; i < game.maxclients; i++) {
-        if (IS_PLAYER(game.clients[i].edict)) {
+        if (game.clients[i].pers.team && (game.clients[i].pers.team->type != TEAM_SPECTATORS)) {
             if (ranks) {
                 ranks[total] = &game.clients[i];
             }
@@ -422,7 +422,7 @@ void G_PrivateString(edict_t *ent, int index, const char *string)
         return;
     }
     for (i = 0, client = game.clients; i < game.maxclients; i++, client++) {
-        if (!IS_SPECTATOR(client->edict)) {
+        if (game.clients[i].pers.team && game.clients[i].pers.team->type != TEAM_SPECTATORS) {
             continue;
         }
         if (client->chase_target == ent) {

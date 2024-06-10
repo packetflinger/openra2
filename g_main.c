@@ -196,7 +196,10 @@ static void ClientEndServerFrames(void)
 
     // update chase cam after all stats and positions are calculated
     for (i = 0, c = game.clients; i < game.maxclients; i++, c++) {
-        if (!IS_SPECTATOR(c->edict)) {
+        if (!c->pers.team) {
+            continue;
+        }
+        if (c->pers.team != TEAM_SPECTATORS) {
             continue;
         }
         if (c->chase_target) {
