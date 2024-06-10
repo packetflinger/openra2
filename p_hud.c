@@ -330,7 +330,7 @@ void MoveClientToIntermission(edict_t *ent)
     ent->svflags = SVF_NOCLIENT;
     gi.unlinkentity(ent);
 
-    if (PLAYER_SPAWNED(ent) || ent->client->chase_target) {
+    if (IS_PLAYER(ent) || ent->client->chase_target) {
         Cmd_Stats_f(ent, qfalse);
     }
 
@@ -560,7 +560,7 @@ static edict_t *find_by_angles(edict_t *ent)
             continue;
         }
 
-        if (!PLAYER_SPAWNED(who)) {
+        if (!IS_PLAYER(who)) {
             continue;
         }
 
