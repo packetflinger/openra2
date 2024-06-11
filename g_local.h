@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // because we define the full size ones in this file
 #define GAME_INCLUDE
 #include "g_public.h"
+#include "g_net.h"
 #include "g_clock.h"
 #include "g_arena.h"
 

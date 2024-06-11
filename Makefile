@@ -52,6 +52,7 @@ OBJS := \
 	g_items.o \
 	g_main.o \
 	g_misc.o \
+	g_net.o \
 	g_phys.o \
 	g_random.o \
 	g_spawn.o \
