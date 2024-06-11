@@ -48,7 +48,6 @@ void ClockThink(arena_clock_t *c) {
     if (c->value == c->endvalue) {
         c->state = CLOCK_STATE_STOPPED;
         if (c->finish) {
-            gi.dprintf("finish arena value: %p\n", c->arena);
             c->finish(c, c->arena);
         }
     }
@@ -125,7 +124,6 @@ void ClockTestFinish(arena_clock_t *c) {
  * Test a match countdown timer
  */
 void ClockTestMatchCountdown(arena_clock_t *c) {
-    gi.dprintf("match start!\n");
     ClockReset(c);
     ClockInit(c, NULL, "match", 30, 0, CLOCK_DOWN);
     c->postthink = (void *) ClockPostThink;
@@ -160,7 +158,6 @@ void ClockStartRoundCountdown(arena_t *a) {
  *
  */
 void ClockStartRound(arena_clock_t *c, arena_t *a) {
-    gi.dprintf("starting match!\n");
     G_StartRound(a);
 }
 
