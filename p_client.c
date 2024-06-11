@@ -2061,7 +2061,7 @@ void ClientBeginServerFrame(edict_t *ent)
 
     client = ent->client;
 
-    if (IS_PLAYER(client->edict)) {
+    if (client->pers.team && client->pers.team != TEAM_SPECTATORS) {
         if (FRAMESYNC) {
             // run weapon animations if it hasn't been done by a ucmd_t
             if (!client->weapon_thunk)

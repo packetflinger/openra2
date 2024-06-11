@@ -844,6 +844,7 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
     gclient_t *c;
     time_t t;
     arena_t *a;
+    edict_t *ent;
 
     // starting point down from top of screen
     y = 20;
@@ -871,9 +872,17 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
 
     y += LAYOUT_LINE_HEIGHT * 4;
 
-    for (i = 0; i < game.maxclients; i++) {
-        c = &game.clients[i];
-
+    //for (i = 0; i < game.maxclients; i++) {
+    for (ent=g_edicts, i=0; i<game.maxclients; i++, g_edicts++) {
+        if (!ent) {
+            continue;
+        }
+        if (!ent->inuse) {
+            continue;
+        }
+        //c = &game.clients[i];
+        c = (gclient_t *)ent->client;
+        gi.dprintf("i=%d client=%p\n", i, &game.clients[i]);
         if (!c) {
             continue;
         }
