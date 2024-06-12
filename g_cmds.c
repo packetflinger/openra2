@@ -1046,7 +1046,7 @@ void Cmd_Players_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "%2d %5s %4d %4s %-15s %4s %5s %-15s %4s %4s\n",
                    i, score, c->ping, time, c->pers.netname, idle,
                    va("%d", arena->number), teamname, capt,
-                   show_ips ? c->pers.ip : ""
+                   show_ips ? IP(&c->pers.addr) : ""
         );
     }
 }
@@ -1440,7 +1440,7 @@ static void Cmd_Admin_f(edict_t *ent)
         gi.cprintf(ent, PRINT_HIGH, "Bad admin password.\n");
         if ((int)dedicated->value) {
             gi.dprintf("%s[%s] failed to become an admin.\n",
-                       ent->client->pers.netname, ent->client->pers.ip);
+                       ent->client->pers.netname, IP(&ent->client->pers.addr));
         }
         return;
     }

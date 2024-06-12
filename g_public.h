@@ -53,6 +53,8 @@ typedef enum {
 #define GMF_VARIABLE_FPS            0x00000800
 #define GMF_EXTRA_USERINFO          0x00001000
 
+#define GMF_IPV6_ADDRESS_AWARE      BIT(13)
+
 //===============================================================
 
 #define MAX_ENT_CLUSTERS    16

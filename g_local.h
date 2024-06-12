@@ -32,6 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define true        1
 #define false       0
 
+#define BIT(n)      (1U << (n))
+
 #define TAG_GAME    765     // clear when unloading the dll
 #define TAG_LEVEL   766     // clear when loading a new level
 
@@ -62,7 +64,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // features this game supports
 #define G_FEATURES  (GMF_CLIENTNUM | GMF_PROPERINUSE | GMF_MVDSPEC | \
-                     GMF_WANT_ALL_DISCONNECTS | G_GMF_VARIABLE_FPS)
+                     GMF_WANT_ALL_DISCONNECTS | G_GMF_VARIABLE_FPS | \
+                     GMF_IPV6_ADDRESS_AWARE)
 
 // the "gameversion" client command will print this plus compile date
 #define GAMEVERSION "OpenRA2"
@@ -1218,7 +1221,7 @@ typedef struct flood_s {
 typedef struct {
     char            netname[MAX_NETNAME];
     char            skin[MAX_SKINNAME];
-    char            ip[32];
+    netadr_t        addr;
     int             hand;
     float           fov;
     gender_t        gender;

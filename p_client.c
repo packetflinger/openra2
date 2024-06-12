@@ -1721,7 +1721,7 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
     ent->client->pers.muted = action == IPA_MUTE;
 
     // save ip
-    Q_strlcpy(ent->client->pers.ip, s, sizeof(ent->client->pers.ip));
+    ent->client->pers.addr = net_parseIP(s);
 
     if (game.serverFeatures & GMF_MVDSPEC) {
         s = Info_ValueForKey(userinfo, "mvdspec");
