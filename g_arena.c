@@ -23,87 +23,75 @@
 /**
  * convert normal ascii string to console characters
  */
-void G_AsciiToConsole(char *out, char *in)
-{
+void G_AsciiToConsole(char *out, char *in) {
     uint32_t i;
     
     for (i=0; in[i] != '\0'; i++) {
         out[i] = (char)(in[i] | 0x80);
     }
-    
     out[i] = '\0';
 }
 
 /**
  * Find the index in the client array for the client's current arena
  */
-static int arena_find_cl_index(gclient_t *cl)
-{
-
+static int arena_find_cl_index(gclient_t *cl) {
     int i;
     for (i = 0; i < cl->pers.arena->client_count; i++) {
         if (cl->pers.arena->clients[i] == cl->edict) {
             return i;
         }
     }
-
     return -1;
 }
 
 /**
  * Find the index in the spectator array for the current arena
  */
-static int arena_find_sp_index(edict_t *ent)
-{
+static int arena_find_sp_index(edict_t *ent) {
     int i;
     for (i = 0; i < ARENA(ent)->spectator_count; i++) {
         if (ARENA(ent)->spectators[i] == ent) {
             return i;
         }
     }
-
     return -1;
 }
 
 /**
  * find the next open slot in the clients array
  */
-static int arena_find_cl_slot(arena_t *a)
-{
+static int arena_find_cl_slot(arena_t *a) {
     int i;
     for (i = 0; i < game.maxclients; i++) {
         if (!a->clients[i]) {
             return i;
         }
     }
-
     return -1;
 }
 
 /**
  * find the next open slot in the spectator array
  */
-static int arena_find_sp_slot(arena_t *a)
-{
+static int arena_find_sp_slot(arena_t *a) {
     int i;
     for (i = 0; i < game.maxclients; i++) {
         if (!a->spectators[i]) {
             return i;
         }
     }
-
     return 0;
 }
 
 /**
  * Join the spectators "team" for the player's arena
  */
-void G_SpectatorsJoin(edict_t *ent)
-{
+void G_SpectatorsJoin(edict_t *ent) {
     int8_t idx;
-    if (!ent->client)
+    if (!ent->client) {
         return;
-
+    }
     if (arena_find_sp_index(ent) == -1) {
         idx = arena_find_sp_slot(ARENA(ent));
         ARENA(ent)->spectators[idx] = ent;
@@ -114,15 +102,13 @@ void G_SpectatorsJoin(edict_t *ent)
 /**
  * Leave the spectator "team" for the player's arena
  */
-void G_SpectatorsPart(edict_t *ent)
-{
+void G_SpectatorsPart(edict_t *ent) {
     int8_t idx;
 
-    if (!ent->client)
+    if (!ent->client) {
         return;
-
+    }
     idx = arena_find_sp_index(ent);
-
     if (idx >= 0) {
         ARENA(ent)->spectators[idx] = NULL;
         ARENA(ent)->spectator_count--;
@@ -132,39 +118,35 @@ void G_SpectatorsPart(edict_t *ent)
 /**
  * Get a pointer to the team of type in an arena
  */
-static arena_team_t *FindTeam(arena_t *a, arena_team_type_t type)
-{
+static arena_team_t *FindTeam(arena_t *a, arena_team_type_t type) {
     uint8_t i;
 
     if (!a) {
         return NULL;
     }
-
     for (i=0; i<a->team_count; i++) {
         if (a->teams[i].type == type) {
             return &a->teams[i];
         }
     }
-
     return NULL;
 }
 
 /**
- * generate a name for auto-recorded demos
+ * Generate a name for auto-recorded demos, replace weird chars with
+ * underscores
  */
-const char *DemoName(edict_t *ent)
-{
-    if (!TEAM(ent))
+const char *DemoName(edict_t *ent) {
+    if (!TEAM(ent)) {
         return "";
-    
+    }
     static char name[MAX_STRING_CHARS];
-    
-    int32_t            i;
-    size_t            namesize;
-    struct tm        *ts;
-    time_t            t;
-    cvar_t            *hostname;
-    cvar_t            *demohostname;
+    int32_t i;
+    size_t namesize;
+    struct tm *ts;
+    time_t t;
+    cvar_t *hostname;
+    cvar_t *demohostname;
 
     hostname = gi.cvar("hostname", "unnamed_server", 0);
     demohostname = gi.cvar("g_demo_hostname", hostname->string, 0);
@@ -185,22 +167,20 @@ const char *DemoName(edict_t *ent)
         ts->tm_min,
         ts->tm_sec
     );
-
     for (i = 0; i < namesize; i++) {
         if ((name[i] < '!' && name[i] > '~') || name[i] == '\\' || name[i] == '\"' ||
             name[i] == ':' || name[i] == '*' || name[i] == '/' || name[i] == '?' ||
-            name[i] == '>' || name[i] == '<' || name[i] == '|' || name[i] == ' ')
+            name[i] == '>' || name[i] == '<' || name[i] == '|' || name[i] == ' ') {
             name[i] = '_';
+        }
     }
-
     return name;
 }
 
 /**
  * Periodically count players to make sure none got lost
  */
-void update_playercounts(arena_t *a)
-{
+void update_playercounts(arena_t *a) {
     int i;
     int count = 0;
     gclient_t *cl;
@@ -211,39 +191,31 @@ void update_playercounts(arena_t *a)
             count++;
         }
     }
-
     a->player_count = count;
 }
 
 /**
  * Probably get rid of this later
  */
-void change_arena(edict_t *self)
-{
+void change_arena(edict_t *self) {
     PutClientInServer(self);
-
-    // add a teleportation effect
-    self->s.event = EV_PLAYER_TELEPORT;
-
-    // hold in place briefly
-    self->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    self->s.event = EV_PLAYER_TELEPORT; // tele effect
+    self->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT; // briefly hold em
     self->client->ps.pmove.pm_time = 14;
-
     self->client->respawn_framenum = level.framenum;
 }
 
 /**
  * Send a scoreboard to a particular player
  */
-void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable)
-{
+void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
 
-    if (ARENA(ent)->state == ARENA_STATE_WARMUP)
+    if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
         G_BuildPregameScoreboard(buffer, ent->client, ARENA(ent));
-    else
+    } else {
         G_BuildScoreboard(buffer, ent->client, ARENA(ent));
-
+    }
     gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
     gi.unicast(ent, reliable);
@@ -252,12 +224,10 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable)
 /**
  * Playerboard lists who is in what arena
  */
-void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable)
-{
+void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
 
     G_BuildPlayerboard(buffer, ARENA(ent));
-
     gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
     gi.unicast(ent, reliable);
@@ -266,8 +236,7 @@ void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable)
 /**
  * start a sound for all arena members, people in other arenas shouldn't hear it
  */
-void G_ArenaSound(arena_t *a, int index)
-{
+void G_ArenaSound(arena_t *a, int index) {
     if (!a) {
         return;
     }
@@ -280,7 +249,6 @@ void G_ArenaSound(arena_t *a, int index)
         if (!cl) {
             continue;
         }
-
         if (cl->pers.arena == a) {
             gi.sound(cl->edict, CHAN_AUTO, index, 1, ATTN_NORM, 0);
         }
@@ -290,8 +258,7 @@ void G_ArenaSound(arena_t *a, int index)
 /**
  * Stuff a command to each client in an arena
  */
-void G_ArenaStuff(arena_t *a, const char *command)
-{
+void G_ArenaStuff(arena_t *a, const char *command) {
     if (!a) {
         return;
     }
@@ -304,7 +271,6 @@ void G_ArenaStuff(arena_t *a, const char *command)
         if (!cl) {
             continue;
         }
-
         if (cl->pers.arena == a) {
             gi.WriteByte(SVC_STUFFTEXT);
             gi.WriteString(command);
@@ -317,14 +283,12 @@ void G_ArenaStuff(arena_t *a, const char *command)
 /**
  * Check for things like players dropping from teams
  */
-void G_CheckArenaRules(arena_t *a)
-{
+void G_CheckArenaRules(arena_t *a) {
     uint8_t i;
 
     if (!a) {
         return;
     }
-
     // watch for players disconnecting mid match
     if (MATCHPLAYING(a)) {
         for (i=0; i<a->team_count; i++) {
@@ -345,7 +309,6 @@ void G_CheckState(arena_t *a) {
     if (a->state == ARENA_STATE_PLAY && a->teams_alive == 1) { //round finished
         G_BeginRoundIntermission(a);
     }
-
     if (a->state == ARENA_STATE_WARMUP && a->ready) { // everyone ready, start
         a->state = ARENA_STATE_COUNTDOWN;
         a->round_start_frame = level.framenum
@@ -399,27 +362,22 @@ void G_ArenaThink(arena_t *a) {
 /**
  * Stuff that needs to be reset between rounds
  */
-void G_ClearRoundInfo(arena_t *a)
-{
+void G_ClearRoundInfo(arena_t *a) {
     uint8_t i;
 
     a->current_round = 1;
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
-
     for (i=0; i<a->team_count; i++) {
         a->teams[i].damage_dealt = 0;
         a->teams[i].damage_taken = 0;
     }
-
     a->teams_alive = a->team_count;
 }
-
 
 /**
  * Send a configstring to everyone in a particular arena
  */
-void G_ConfigString(arena_t *arena, uint16_t index, const char *string)
-{
+void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
     uint8_t i;
     edict_t *ent;
 
@@ -428,11 +386,9 @@ void G_ConfigString(arena_t *arena, uint16_t index, const char *string)
         if (!ent) {
             continue;
         }
-
         if (!ent->client) {
             continue;
         }
-
         gi.WriteByte(SVC_CONFIGSTRING);
         gi.WriteShort(index);
         gi.WriteString(string);
@@ -440,12 +396,10 @@ void G_ConfigString(arena_t *arena, uint16_t index, const char *string)
     }
 }
 
-
 /**
- * broadcast print to only members of specified arena
+ * Broadcast print to only members of specified arena
  */
-void G_bprintf(arena_t *arena, int level, const char *fmt, ...)
-{
+void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
     va_list argptr;
     char string[MAX_STRING_CHARS];
     size_t len;
@@ -459,35 +413,28 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...)
     if (len >= sizeof(string)) {
         return;
     }
-
     for (i = 1; i <= game.maxclients; i++) {
         other = &g_edicts[i];
-
         if (!other->inuse) {
             continue;
         }
-
         if (!other->client) {
             continue;
         }
-
         if (arena != ARENA(other)) {
             continue;
         }
-
         gi.cprintf(other, level, "%s", string);
     }
 }
 
 /**
- * build the arena menu structure
+ * Build the arena menu structure
  */
-void G_BuildMenu(void)
-{
+void G_BuildMenu(void) {
     int i, j;
 
     memset(&menu_lookup, 0, sizeof(pmenu_arena_t) * MAX_ARENAS);
-
     for (i = 0, j = 0; i < MAX_ARENAS; i++) {
         if (level.arenas[i].number) {
             menu_lookup[j].num = level.arenas[i].number;
@@ -504,8 +451,7 @@ void G_BuildMenu(void)
  *
  * Build Vertically
  */
-size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
-{
+size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
     char entry[MAX_STRING_CHARS];
     char status[MAX_QPATH];
     char timebuf[16];
@@ -659,17 +605,14 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena)
             total += len;
         }
     }
-
     buffer[total] = 0;
-
     return total;
 }
 
 /**
  * Scoreboard before match starts
  */
-size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
-{
+size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
     char entry[MAX_STRING_CHARS];
     char status[MAX_QPATH];
     char timebuf[16];
@@ -684,7 +627,6 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
 
     char bracketopen[2];
     char bracketclosed[2];
-    
     G_AsciiToConsole(bracketopen, "[");
     G_AsciiToConsole(bracketclosed, "]");
     
@@ -827,17 +769,14 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
             total += len;
         }
     }
-
     buffer[total] = 0;
-
     return total;
 }
 
 /**
  * Show all players connected.
  */
-size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
-{
+size_t G_BuildPlayerboard(char *buffer, arena_t *arena) {
     char entry[MAX_STRING_CHARS], status[MAX_QPATH];
     size_t total, len;
     int i, y;
@@ -909,25 +848,22 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena)
             total += len;
         }
     }
-
     buffer[total] = 0;
-
     return total;
 }
 
 /**
- *
+ * Rank players by their scores
  */
-int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team)
-{
+int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
     int i, total;
 
     // sort the clients by score, then by eff
     total = 0;
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
-        if (!team->players[i])
+        if (!team->players[i]) {
             continue;
-
+        }
         if (team->players[i]->client->pers.connected == CONN_SPAWNED) {
             if (ranks) {
                 ranks[total] = team->players[i]->client;
@@ -935,19 +871,16 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team)
             total++;
         }
     }
-
     if (ranks) {
         qsort(ranks, total, sizeof(gclient_t *), G_PlayerCmp);
     }
-
     return total;
 }
 
 /**
  * Send a centerprint to every player of an arena
  */
-void G_Centerprintf(arena_t *a, const char *fmt, ...)
-{
+void G_Centerprintf(arena_t *a, const char *fmt, ...) {
     va_list argptr;
     char string[MAX_STRING_CHARS];
     size_t len;
@@ -958,17 +891,13 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
     va_start(argptr, fmt);
     len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
     va_end(argptr);
-
     if (len == 0) {
         return;
     }
-
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
-
         for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
             ent = team->players[j];
-
             if (ent && ent->inuse) {
                 gi.WriteByte(SVC_CENTERPRINT);
                 gi.WriteString(string);
@@ -984,74 +913,56 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...)
  * cl - the client moving
  * arena - the new (destination) arena
  */
-void G_ChangeArena(edict_t *ent, arena_t *arena)
-{
+void G_ChangeArena(edict_t *ent, arena_t *arena) {
     int index = 0, i;
     char roundtime[6];
 
     if (!ent) {
         return;
     }
-
     if (!ent->client) {
         return;
     }
-
     // leave the old arena
     if (ARENA(ent)) {
         index = arena_find_cl_index(ent->client);
-
         ARENA(ent)->clients[index] = NULL;
         ARENA(ent)->client_count--;
-
         G_TeamPart(ent, true);
-
         if (arena) {
             for (i=0; i<ARENA(ent)->client_count; i++) {
                 if (!ARENA(ent)->clients[i]) {
                     continue;
                 }
-
                 if (ARENA(ent)->clients[i] == ent) {
                     continue;   // don't bother sending to the one moving
                 }
-
                 gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s left this arena\n", NAME(ent));
             }
         }
-
         G_SpectatorsPart(ent);
     }
 
     if (!arena) {
         return;
     }
-
     index = arena_find_cl_slot(arena);
-
     // reset arena back to defaults
     if (arena->modified && arena->client_count == 0) {
         G_ApplyDefaults(arena);
     }
-
     arena->client_count++;
     arena->clients[index] = ent;
-
     ARENA(ent) = arena;
-
     ent->client->pers.connected = CONN_SPECTATOR;
     ent->client->pers.ready = false;
-
     G_SpectatorsJoin(ent);
-
     ClientString(ent, CS_ROUND, G_RoundToString(ARENA(ent)));
-
     G_SecsToString(roundtime, arena->timelimit);
     ClientString(ent, CS_MATCH_STATUS, va("Warmup %s", roundtime));
 
     // send all current player skins to this new player
     G_UpdateSkins(ent);
-
     PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
 
@@ -1059,57 +970,45 @@ void G_ChangeArena(edict_t *ent, arena_t *arena)
         if (!ARENA(ent)->clients[i]) {
             continue;
         }
-
         if (ARENA(ent)->clients[i] == ent) {
             continue;   // don't bother sending to the one moving
         }
-
         gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s joined this arena\n", NAME(ent));
     }
 
     // hold in place briefly
     ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
     ent->client->ps.pmove.pm_time = 14;
-
     ent->client->respawn_framenum = level.framenum;
 }
 
 /**
  * Check if all players are ready and set the next time we should check
  */
-void G_CheckReady(arena_t *a)
-{
+void G_CheckReady(arena_t *a) {
     uint8_t i, count;
 
     count = 0;
-    
     for (i=0; i<a->team_count; i++) {
-        // just being safe, shouldn't happen
         if (!&a->teams[i]) {
             continue;
         }
-
         // all teams need at least 1 player to be considered ready
         if (a->teams[i].player_count == 0)    {
             a->ready = qfalse;
             return;
         }
-
         // any team not currently ready means arena isn't ready
         if (!a->teams[i].ready) {
             a->ready = qfalse;
             return;
         }
-
-        //
         if (g_team_balance->value > 0 && a->teams[i].player_count != count && count != 0) {
             a->ready = qfalse;
             return;
         }
-
         count = a->teams[i].player_count;
     }
-
     // if we made it this far, everyone is ready, start the round
     a->ready = true;
 }
@@ -1139,7 +1038,6 @@ void G_UpdateConfigStrings(arena_t *a) {
     default:
         buf[0] = 0;
     }
-
     if (buf[0]) {
         G_ConfigString(a, CS_MATCH_STATUS, buf);
     }
@@ -1148,8 +1046,7 @@ void G_UpdateConfigStrings(arena_t *a) {
 /**
  * Send this edict the skins everyone is using so they display properly
  */
-void G_UpdateSkins(edict_t *ent)
-{
+void G_UpdateSkins(edict_t *ent) {
     uint8_t i, j;
 
     // each team
@@ -1167,23 +1064,20 @@ void G_UpdateSkins(edict_t *ent)
 /**
  * Force the ready state for all players on a team
  */
-void G_ForceReady(arena_team_t *team, qboolean ready)
-{
+void G_ForceReady(arena_team_t *team, qboolean ready) {
     int i;
     for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
         if (team->players[i]) {
             team->players[i]->client->pers.ready = ready;
         }
     }
-
     team->ready = ready;
 }
 
 /**
  * Make all players in an arena record a demo of the match
  */
-void G_ForceDemo(arena_t *arena)
-{
+void G_ForceDemo(arena_t *arena) {
     uint8_t i, j;
     edict_t *ent;
     arena_team_t *team;
@@ -1191,7 +1085,6 @@ void G_ForceDemo(arena_t *arena)
     if (!g_demo->value) {
         return;
     }
-    
     if (arena->recording) {
         for (i=0; i<arena->team_count; i++) {
             team = &arena->teams[i];
@@ -1220,8 +1113,7 @@ void G_ForceDemo(arena_t *arena)
 /**
  * Make all players take a screen of the match intermission screen
  */
-void G_ForceScreenshot(arena_t *arena)
-{
+void G_ForceScreenshot(arena_t *arena) {
     uint8_t i, j;
     edict_t *ent;
     arena_team_t *team;
@@ -1229,7 +1121,6 @@ void G_ForceScreenshot(arena_t *arena)
     if (!g_screenshot->value) {
         return;
     }
-    
     for (i=0; i<arena->team_count; i++) {
         team = &arena->teams[i];
         for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
@@ -1244,8 +1135,7 @@ void G_ForceScreenshot(arena_t *arena)
 /**
  * Reset after match is finished
  */
-void G_EndMatch(arena_t *a, arena_team_t *winner)
-{
+void G_EndMatch(arena_t *a, arena_team_t *winner) {
     uint8_t i;
 
     if (winner) {
@@ -1253,14 +1143,12 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
             if (!winner->players[i]) {
                 continue;
             }
-
             winner->players[i]->client->resp.match_score++;
         }
     }
 
     // save the current scoreboard as an oldscore
     G_BuildScoreboard(a->oldscores, NULL, a);
-
     G_bprintf(a, PRINT_HIGH, "Match finished\n");
     G_ArenaSound(a, level.sounds.horn);
     BeginIntermission(a);
@@ -1269,26 +1157,21 @@ void G_EndMatch(arena_t *a, arena_team_t *winner)
     ClockStartMatchIntermission(a);
 }
 
-
 /**
  * All players on a particular team have been fragged
  */
-void G_EndRound(arena_t *a, arena_team_t *winner)
-{
+void G_EndRound(arena_t *a, arena_team_t *winner) {
     int i;
     a->round_start_frame = 0;
     
     if (winner) {
         G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
                 a->current_round, a->round_limit);
-
         update_playercounts(a);    // for sanity
-
         for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
             if (!winner->players[i]) {
                 continue;
             }
-
             winner->players[i]->client->resp.round_score++;
         }
     }
@@ -1310,20 +1193,17 @@ void G_EndRound(arena_t *a, arena_team_t *winner)
     ClockStartRoundCountdown(a);
 }
 
-
 /**
  * Lock players in place during timeouts
  *
  */
-void G_FreezePlayers(arena_t *a, qboolean freeze)
-{
+void G_FreezePlayers(arena_t *a, qboolean freeze) {
     uint8_t i, j;
     arena_team_t *team;
 
     if (!a) {
         return;
     }
-
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
         for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
@@ -1349,8 +1229,7 @@ void G_FreezePlayer(edict_t *ent, qboolean freeze) {
  * Give the player all the items/weapons they need. Called in PutClientInServer()
  *
  */
-void G_GiveItems(edict_t *ent)
-{
+void G_GiveItems(edict_t *ent) {
     if (!ent->client) {
         return;
     }
@@ -1434,13 +1313,10 @@ void G_GiveItems(edict_t *ent)
     ent->health = a->health;
 }
 
-
 /**
  * Add player to a team
- *
  */
-void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
-{
+void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
     if (!ent->client) {
         return;
     }
@@ -1506,24 +1382,14 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced)
     }
 
     G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", NAME(ent), team->name);
-
-    // Send default team skin to everyone for this player
-    //G_SetSkin(ent, team->skin);
-
-    // Setup custom skin view for players specifying tskin and/or eskin
-    //G_SetCustomSkinView(ent);
     G_SetSkin(ent);
-
-    // throw them into the game
     spectator_respawn(ent, CONN_SPAWNED);
 }
 
 /**
  * Remove this player from whatever team they're on
- *
  */
-void G_TeamPart(edict_t *ent, qboolean silent)
-{
+void G_TeamPart(edict_t *ent, qboolean silent) {
     arena_team_t *oldteam;
     int i;
 
@@ -1566,44 +1432,33 @@ void G_TeamPart(edict_t *ent, qboolean silent)
     ent->client->pers.team = 0;
 
     G_SpectatorsJoin(ent);
-
-    // if everyone else is already ready, start the match
     G_CheckTeamReady(oldteam);
     G_CheckArenaReady(ARENA(ent));
 
     spectator_respawn(ent, CONN_SPECTATOR);
 }
 
-
 /**
  * Give back all the ammo, health and armor for start of a round
- *
  */
-void G_RefillInventory(edict_t *ent)
-{
+void G_RefillInventory(edict_t *ent) {
     arena_t *a;
     a = ARENA(ent);
-    
-    // ammo
+
     ent->client->inventory[ITEM_SLUGS]    = a->ammo[ITEM_SLUGS];
     ent->client->inventory[ITEM_ROCKETS]  = a->ammo[ITEM_ROCKETS];
     ent->client->inventory[ITEM_CELLS]    = a->ammo[ITEM_CELLS];
     ent->client->inventory[ITEM_GRENADES] = a->ammo[ITEM_GRENADES];
     ent->client->inventory[ITEM_BULLETS]  = a->ammo[ITEM_BULLETS];
     ent->client->inventory[ITEM_SHELLS]   = a->ammo[ITEM_SHELLS];
-
-    // armor
     ent->client->inventory[ITEM_ARMOR_BODY] = a->armor;
-
-    // health
     ent->health = a->health;
 }
 
 /**
  * refill all inventory for all players in this arena
  */
-void G_RefillPlayers(arena_t *a)
-{
+void G_RefillPlayers(arena_t *a) {
     uint8_t i, j;
     edict_t *ent;
 
@@ -1620,13 +1475,10 @@ void G_RefillPlayers(arena_t *a)
     }
 }
 
-
 /**
  * Respawn all players resetting their inventory
- *
  */
-void G_RespawnPlayers(arena_t *a)
-{
+void G_RespawnPlayers(arena_t *a) {
     uint8_t i, j;
     edict_t *ent;
 
@@ -1650,22 +1502,19 @@ void G_RespawnPlayers(arena_t *a)
 }
 
 /**
- *
+ * Format a string saying what round we're on
  */
-char *G_RoundToString(arena_t *a)
-{
+char *G_RoundToString(arena_t *a) {
     static char round_buffer[12];
-    sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
 
+    sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
     return round_buffer;
 }
 
 /**
  * Display scores layout to all arena players
- *
  */
-void G_ShowScores(arena_t *a)
-{
+void G_ShowScores(arena_t *a) {
     uint8_t i, j;
     edict_t *ent;
 
@@ -1683,13 +1532,10 @@ void G_ShowScores(arena_t *a)
     }
 }
 
-
 /**
  * Hide scores layout from players
- *
  */
-void G_HideScores(arena_t *a)
-{
+void G_HideScores(arena_t *a) {
     uint8_t i, j;
     edict_t *ent;
 
@@ -1739,10 +1585,8 @@ void G_RoundTimelimitHit(arena_clock_t *c, arena_t *a) {
 
 /**
  * Begin a round
- *
  */
-void G_StartRound(arena_t *a)
-{
+void G_StartRound(arena_t *a) {
     uint8_t i;
 
     for (i=0; i<a->team_count; i++) {
@@ -1757,13 +1601,10 @@ void G_StartRound(arena_t *a)
     G_StartRoundClock(a);
 }
 
-
 /**
  * Switches the player's gun-in-hand after spawning
- *
  */
-void G_StartingWeapon(edict_t *ent)
-{
+void G_StartingWeapon(edict_t *ent) {
     if (!ent->client) {
         return;
     }
@@ -1774,10 +1615,8 @@ void G_StartingWeapon(edict_t *ent)
 
 /**
  * Get time string (mm:ss) from seconds
- *
  */
-void G_SecsToString(char *out, int seconds)
-{
+void G_SecsToString(char *out, int seconds) {
     int mins;
 
     mins = seconds / 60;
@@ -1787,10 +1626,9 @@ void G_SecsToString(char *out, int seconds)
 }
 
 /**
- *
+ * Get a pointer to the team that won a match (if there is a clear winner)
  */
-arena_team_t *G_GetWinningTeam(arena_t *a)
-{
+arena_team_t *G_GetWinningTeam(arena_t *a) {
     uint8_t i;
 
     static uint8_t alivecount = 0;
@@ -1820,8 +1658,7 @@ arena_team_t *G_GetWinningTeam(arena_t *a)
  * get applied to the level structure here.
  *
  */
-void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
-{
+void G_MergeArenaSettings(arena_t *a, arena_entry_t *m) {
     if (!a) {
         return;
     }
@@ -1947,24 +1784,20 @@ void G_MergeArenaSettings(arena_t *a, arena_entry_t *m)
 /**
  * Are the two players teammates?
  */
-qboolean G_Teammates(edict_t *p1, edict_t *p2)
-{
+qboolean G_Teammates(edict_t *p1, edict_t *p2) {
     if (!(p1->client && p2->client)) {
         return qfalse;
     }
-
     return TEAM(p1) == TEAM(p2);
 }
 
 /**
  * Are the two players in the same arena?
  */
-qboolean G_Arenamates(edict_t *p1, edict_t *p2)
-{
+qboolean G_Arenamates(edict_t *p1, edict_t *p2) {
     if (!(p1->client && p2->client)) {
         return qfalse;
     }
-
     return ARENA(p1) == ARENA(p2);
 }
 
@@ -1973,8 +1806,7 @@ qboolean G_Arenamates(edict_t *p1, edict_t *p2)
  *
  * return the number of arenas found in the file.
  */
-size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
-{
+size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
     size_t len;
     int count;
     char path[MAX_OSPATH];
@@ -2102,18 +1934,15 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname)
                 entry[arena_num].corpseview = atoi(COM_Parse(&fp_data));
             }
         }
-
         fclose(fp);
     }
-
     return count;
 }
 
 /**
  * Set the best weapon available as current
  */
-void G_SelectBestWeapon(edict_t *ent)
-{
+void G_SelectBestWeapon(edict_t *ent) {
     if (!ent) {
         return;
     }
@@ -2156,14 +1985,12 @@ void G_SelectBestWeapon(edict_t *ent)
 /**
  * Get the team ready to play again
  */
-void G_ResetTeam(arena_team_t *t)
-{
+void G_ResetTeam(arena_team_t *t) {
     uint8_t i;
     edict_t *player;
     
     t->damage_dealt = 0;
     t->damage_taken = 0;
-    
     t->ready = qfalse;
 
     // respawn all players
@@ -2189,24 +2016,23 @@ void G_ResetTeam(arena_team_t *t)
 /**
  * Re-initialize an arena when settings are changed
  */
-void G_RecreateArena(arena_t *a)
-{
+void G_RecreateArena(arena_t *a) {
     uint8_t i;
 
     // remove all players from all teams
     for (i=0; i<a->team_count; i++) {
         G_RemoveAllTeamPlayers(&a->teams[i], qtrue);
     }
-
     G_InitArenaTeams(a);
 }
 
 /**
  * Use glib's regex stuff to test patterns. Just returns yey or ney
- * if the pattern matches, no way to get the actual part that matches
+ * if the pattern matches, no way to get the actual part that matches.
+ *
+ * Not currently used, probably remove and deps on glib2
  */
-qboolean G_RegexMatch(const char *pattern, const char *string)
-{
+qboolean G_RegexMatch(const char *pattern, const char *string) {
     GRegex *regex;
     GMatchInfo *matchinfo;
     qboolean matches;
@@ -2229,14 +2055,12 @@ qboolean G_RegexMatch(const char *pattern, const char *string)
 /**
  * Drop every player from a team
  */
-void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent)
-{
+void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
     uint8_t i;
     for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {
             continue;
         }
-
         G_TeamPart(team->players[i], silent);
     }
 }
@@ -2244,8 +2068,7 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent)
 /**
  * Return an arena to it's original state. Called after match ends
  */
-void G_ResetArena(arena_t *a)
-{
+void G_ResetArena(arena_t *a) {
     uint8_t i;
 
     a->intermission_framenum = 0;
@@ -2268,14 +2091,12 @@ void G_ResetArena(arena_t *a)
 /**
  * Similar to gi.multicast() but only sends the msg buffer to the members of 1 arena
  */
-void G_ArenaCast(arena_t *a, qboolean reliable)
-{
+void G_ArenaCast(arena_t *a, qboolean reliable) {
     uint8_t i;
     arena_team_t *team;
 
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
-
         G_TeamCast(team, reliable);
     }
 }
@@ -2284,8 +2105,7 @@ void G_ArenaCast(arena_t *a, qboolean reliable)
 /**
  * Just like gi.multicast() but to every team player
  */
-void G_TeamCast(arena_team_t *t, qboolean reliable)
-{
+void G_TeamCast(arena_team_t *t, qboolean reliable) {
     uint8_t i;
     edict_t *ent;
 
@@ -2300,8 +2120,7 @@ void G_TeamCast(arena_team_t *t, qboolean reliable)
 /**
  * Get the english version of the weapon flags
  */
-char *G_WeaponFlagsToString(arena_t *a)
-{
+char *G_WeaponFlagsToString(arena_t *a) {
     static char str[200];
 
     memset(&str, 0, sizeof(str));
@@ -2396,8 +2215,7 @@ char *G_WeaponFlagsToString(arena_t *a)
 /**
  * Get the english version of damage flags
  */
-char *G_DamageFlagsToString(uint32_t df)
-{
+char *G_DamageFlagsToString(uint32_t df) {
     static char str[200];
 
     memset(&str, 0, sizeof(str));
@@ -2434,10 +2252,12 @@ char *G_DamageFlagsToString(uint32_t df)
 }
 
 /**
+ * Random ammo quantities could be fun.
  *
+ * Maybe call this at match start rather than before the countdown for an
+ * element of surprise.
  */
-void G_RandomizeAmmo(uint16_t *out)
-{
+void G_RandomizeAmmo(uint16_t *out) {
     out[ITEM_SHELLS]   = genrand_int32() & 0xF;
     out[ITEM_BULLETS]  = genrand_int32() & 0xFF;
     out[ITEM_GRENADES] = genrand_int32() & 0xF;
@@ -2448,10 +2268,8 @@ void G_RandomizeAmmo(uint16_t *out)
 
 /**
  * Generate a player-specific statusbar
- *
  */
-const char *G_CreatePlayerStatusBar(edict_t *player)
-{
+const char *G_CreatePlayerStatusBar(edict_t *player) {
     static char *statusbar;
     static char weaponhud[175];        // the weapon icons
     static char ammohud[135];        // the ammo counts
@@ -2644,10 +2462,8 @@ const char *G_CreatePlayerStatusBar(edict_t *player)
 
 /**
  * Generate a spec-specific statusbar
- *
  */
-const char *G_CreateSpectatorStatusBar(edict_t *player)
-{
+const char *G_CreateSpectatorStatusBar(edict_t *player) {
     static char *statusbar;
 
     if (!player->client) {
@@ -2773,8 +2589,7 @@ const char *G_CreateSpectatorStatusBar(edict_t *player)
 /**
  * Send player/spec their specific statusbar
  */
-void G_SendStatusBar(edict_t *ent)
-{
+void G_SendStatusBar(edict_t *ent) {
     gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_STATUSBAR);
 
@@ -2787,20 +2602,16 @@ void G_SendStatusBar(edict_t *ent)
     gi.unicast(ent, true);
 }
 
-
 /**
  * Update statusbars for all arena players
- *
  */
-void G_UpdatePlayerStatusBars(arena_t *a)
-{
+void G_UpdatePlayerStatusBars(arena_t *a) {
     uint8_t i;
 
     for (i=0; i<game.maxclients; i++) {
         if (!a->clients[i]) {
             continue;
         }
-
         G_SendStatusBar(a->clients[i]);
     }
 }
@@ -2810,17 +2621,11 @@ void G_UpdatePlayerStatusBars(arena_t *a)
  *
  * Triggered when all but 1 team are dead or timelimit expires
  */
-void G_BeginRoundIntermission(arena_t *a)
-{
-    // we're already in intermission
+void G_BeginRoundIntermission(arena_t *a) {
     if (a->state == ARENA_STATE_RINTERMISSION) {
         return;
     }
-
     a->state = ARENA_STATE_RINTERMISSION;
-    //a->round_end_frame = level.framenum + SECS_TO_FRAMES((int) g_round_end_time->value);
-    //a->round_intermission_start = level.framenum;
-    //a->round_intermission_end = a->round_intermission_start + SECS_TO_FRAMES(5);
     G_ShowScores(a);
     ClockStartIntermission(a);
 }
@@ -2828,23 +2633,17 @@ void G_BeginRoundIntermission(arena_t *a)
 /**
  * Round intermission is over, reset and proceed to next round
  */
-void G_EndRoundIntermission(arena_t *a)
-{
+void G_EndRoundIntermission(arena_t *a) {
     if (a->state != ARENA_STATE_RINTERMISSION) {
         return;
     }
-
-    //a->round_intermission_start = 0;
-    //a->round_intermission_end   = 0;
-
     G_EndRound(a, NULL);
 }
 
 /**
  * Reset this arena back to the defaults
  */
-void G_ApplyDefaults(arena_t *a)
-{
+void G_ApplyDefaults(arena_t *a) {
     uint8_t i;
 
     if (!a) {
@@ -2862,8 +2661,7 @@ void G_ApplyDefaults(arena_t *a)
 /**
  * Get a string value for the arena mode
  */
-char *G_ArenaModeString(arena_t *a)
-{
+char *G_ArenaModeString(arena_t *a) {
     switch (a->mode) {
     case ARENA_MODE_COMPETITION:
         return va("competition");
@@ -2887,23 +2685,19 @@ char *G_ArenaModeString(arena_t *a)
  * Called when a player manually types "tskin"
  * command.
  */
-void G_SetTSkin(edict_t *target)
-{
+void G_SetTSkin(edict_t *target) {
     edict_t *ent;
 
     if (!target->client->pers.teamskin[0]) {
         return;
     }
-
     for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
         if (!ent->inuse) {
             continue;
         }
-
         if (!G_Teammates(ent, target)) {
             continue;
         }
-
         gi.WriteByte(SVC_CONFIGSTRING);
         gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
         gi.WriteString(va("%s\\%s", NAME(ent), target->client->pers.teamskin));
@@ -2918,27 +2712,22 @@ void G_SetTSkin(edict_t *target)
  * Called when a player manually types "eskin"
  * command.
  */
-void G_SetESkin(edict_t *target)
-{
+void G_SetESkin(edict_t *target) {
     edict_t *ent;
 
     if (!target->client->pers.enemyskin[0]) {
         return;
     }
-
     for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
         if (!ent->inuse) {
             continue;
         }
-
         if (!IS_PLAYER(ent)) {
             continue;
         }
-
         if (G_Teammates(ent, target)) {
             continue;
         }
-
         gi.WriteByte(SVC_CONFIGSTRING);
         gi.WriteShort(CS_PLAYERSKINS + (ent - g_edicts) -1);
         gi.WriteString(va("%s\\%s", NAME(ent), target->client->pers.enemyskin));
@@ -2956,24 +2745,20 @@ void G_SetESkin(edict_t *target)
  * associated with that particular team.
  *
  */
-void G_SetSkin(edict_t *skinfor)
-{
+void G_SetSkin(edict_t *skinfor) {
     edict_t *ent;
     char *string;
 
     if (!skinfor->client) {
         return;
     }
-
     for (ent = g_edicts + 1; ent <= g_edicts + game.maxclients; ent++) {
         if (!ent->inuse) {
             continue;
         }
-
         if (!G_Arenamates(ent, skinfor)) {
             continue;
         }
-
         // the default skin associated with skinfor's team
         string = va("%s\\%s", NAME(skinfor), TEAM(skinfor)->skin);
 
@@ -2996,22 +2781,19 @@ void G_SetSkin(edict_t *skinfor)
  * Check each player on the team for their ready status. If nobody
  * is not ready, set the overall team status to ready.
  */
-void G_CheckTeamReady(arena_team_t *t)
-{
+void G_CheckTeamReady(arena_team_t *t) {
     uint8_t i;
 
     for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
         if (!t->players[i]) {
             continue;
         }
-
         if (!t->players[i]->client->pers.ready) {
             gi.dprintf("%s is not ready\n", NAME(t->players[i]));
             t->ready = qfalse;
             return;
         }
     }
-
     t->ready = qtrue;
 }
 
@@ -3020,8 +2802,7 @@ void G_CheckTeamReady(arena_team_t *t)
  * is not ready, then set the overall arena status to ready. This
  * will trigger the start of a match.
  */
-void G_CheckArenaReady(arena_t *a)
-{
+void G_CheckArenaReady(arena_t *a) {
     uint8_t i;
     arena_team_t *t;
 
@@ -3030,14 +2811,12 @@ void G_CheckArenaReady(arena_t *a)
         if (!t) {
             continue;
         }
-
         if (!t->ready) {
             gi.dprintf("%s is not ready\n", t->name);
             a->ready = qfalse;
             return;
         }
     }
-
     a->ready = qtrue;
 }
 
@@ -3046,8 +2825,7 @@ void G_CheckArenaReady(arena_t *a)
  *
  * Called when a player dies or the team population changes (joins/quits/etc).
  */
-qboolean G_CheckTeamAlive(edict_t *ent)
-{
+qboolean G_CheckTeamAlive(edict_t *ent) {
     uint8_t i;
     arena_team_t *t = TEAM(ent);
 
@@ -3055,12 +2833,10 @@ qboolean G_CheckTeamAlive(edict_t *ent)
         if (!t->players[i]) {
             continue;
         }
-
         if (t->players[i]->health > 0) {
             return qtrue;
         }
     }
-
     return qfalse;
 }
 
@@ -3069,8 +2845,7 @@ qboolean G_CheckTeamAlive(edict_t *ent)
  * is over (only 1 team left alive). Used to determine
  * if arena should proceed into intermission
  */
-qboolean G_IsRoundOver(arena_t *a)
-{
+qboolean G_IsRoundOver(arena_t *a) {
     if (!a) {
         return qfalse;
     }
@@ -3079,6 +2854,3 @@ qboolean G_IsRoundOver(arena_t *a)
     }
     return qfalse;
 }
-
-
-
