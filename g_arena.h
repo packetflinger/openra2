@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ARENA_H
 #define ARENA_H
 
-#define MAX_INVENTORY            33
-#define MAX_ARENAS               9
-#define MAX_TEAMS                5
-#define MAX_TEAM_PLAYERS   10
-#define MAX_TEAM_NAME            20
-#define MAX_TEAM_SKIN            25
-#define MAX_ROUNDS               21
+#define MAX_INVENTORY       33
+#define MAX_ARENAS          9
+#define MAX_TEAMS           5
+#define MAX_TEAM_PLAYERS    10
+#define MAX_TEAM_NAME       20
+#define MAX_TEAM_SKIN       25
+#define MAX_ROUNDS          21
 
 #define str_equal(x, y)          (Q_stricmp((x), (y)) == 0)
 
