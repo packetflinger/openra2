@@ -860,7 +860,7 @@ int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
 
     // sort the clients by score, then by eff
     total = 0;
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {
             continue;
         }
@@ -896,7 +896,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
     }
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
-        for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j=0; j<MAX_TEAM_PLAYERS; j++) {
             ent = team->players[j];
             if (ent && ent->inuse) {
                 gi.WriteByte(SVC_CENTERPRINT);
@@ -1066,7 +1066,7 @@ void G_UpdateSkins(edict_t *ent) {
  */
 void G_ForceReady(arena_team_t *team, qboolean ready) {
     int i;
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (team->players[i]) {
             team->players[i]->client->pers.ready = ready;
         }
@@ -1088,7 +1088,7 @@ void G_ForceDemo(arena_t *arena) {
     if (arena->recording) {
         for (i=0; i<arena->team_count; i++) {
             team = &arena->teams[i];
-            for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+            for (j=0; j<MAX_TEAM_PLAYERS; j++) {
                 ent = team->players[j];
                 if (ent && ent->inuse) {
                     G_StuffText(ent, "stop\n");
@@ -1099,7 +1099,7 @@ void G_ForceDemo(arena_t *arena) {
     } else {
         for (i=0; i<arena->team_count; i++) {
             team = &arena->teams[i];
-            for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+            for (j=0; j<MAX_TEAM_PLAYERS; j++) {
                 ent = team->players[j];
                 if (ent && ent->inuse) {
                     G_StuffText(ent, va("record \"%s\"\n", DemoName(ent)));
@@ -1123,7 +1123,7 @@ void G_ForceScreenshot(arena_t *arena) {
     }
     for (i=0; i<arena->team_count; i++) {
         team = &arena->teams[i];
-        for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j=0; j<MAX_TEAM_PLAYERS; j++) {
             ent = team->players[j];
             if (ent && ent->inuse) {
                 G_StuffText(ent, "wait; screenshot\n");
@@ -1139,7 +1139,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
     uint8_t i;
 
     if (winner) {
-        for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+        for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
             if (!winner->players[i]) {
                 continue;
             }
@@ -1168,7 +1168,7 @@ void G_EndRound(arena_t *a, arena_team_t *winner) {
         G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
                 a->current_round, a->round_limit);
         update_playercounts(a);    // for sanity
-        for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+        for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
             if (!winner->players[i]) {
                 continue;
             }
@@ -1206,7 +1206,7 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
     }
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
-        for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j=0; j<MAX_TEAM_PLAYERS; j++) {
             G_FreezePlayer(team->players[j], freeze);
         }
     }
@@ -1347,7 +1347,7 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
         return;
     }
 
-    if (team->player_count == MAX_ARENA_TEAM_PLAYERS) {
+    if (team->player_count == MAX_TEAM_PLAYERS) {
         gi.cprintf(ent, PRINT_HIGH, "Team %s is full\n", team->name);
         return;
     }
@@ -1366,7 +1366,7 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
     team->player_count++;
 
     int i;
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {    // free player slot, take it
             team->players[i] = ent;
             break;
@@ -1404,7 +1404,7 @@ void G_TeamPart(edict_t *ent, qboolean silent) {
     }
 
     // remove player
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (oldteam->players[i] == ent) {
             oldteam->players[i] = NULL;
             break;
@@ -1413,7 +1413,7 @@ void G_TeamPart(edict_t *ent, qboolean silent) {
 
     // we're the captain, reassign to next player
     if (oldteam->captain == ent) {
-        for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+        for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
             if (oldteam->players[i]) {
                 oldteam->captain = oldteam->players[i];
                 break;
@@ -1465,7 +1465,7 @@ void G_RefillPlayers(arena_t *a) {
     // for each team
     for (i = 0; i < a->team_count; i++) {
         // for each player
-        for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
             ent = a->teams[i].players[j];
 
             if (ent && ent->inuse) {
@@ -1485,7 +1485,7 @@ void G_RespawnPlayers(arena_t *a) {
     // for each team
     for (i = 0; i < a->team_count; i++) {
         // for each player
-        for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
             ent = a->teams[i].players[j];
 
             if (ent && ent->inuse) {
@@ -1521,7 +1521,7 @@ void G_ShowScores(arena_t *a) {
     // for each team
     for (i = 0; i < a->team_count; i++) {
         // for each player
-        for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
             ent = a->teams[i].players[j];
 
             if (ent && ent->inuse) {
@@ -1542,7 +1542,7 @@ void G_HideScores(arena_t *a) {
     // for each team
     for (i = 0; i < a->team_count; i++) {
         // for each player
-        for (j = 0; j < MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
             ent = a->teams[i].players[j];
 
             if (ent && ent->inuse) {
@@ -1994,7 +1994,7 @@ void G_ResetTeam(arena_team_t *t) {
     t->ready = qfalse;
 
     // respawn all players
-    for (i = 0; i < MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (t->players[i]) {
             player = t->players[i];
             
@@ -2057,7 +2057,7 @@ qboolean G_RegexMatch(const char *pattern, const char *string) {
  */
 void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
     uint8_t i;
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {
             continue;
         }
@@ -2109,7 +2109,7 @@ void G_TeamCast(arena_team_t *t, qboolean reliable) {
     uint8_t i;
     edict_t *ent;
 
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         ent = t->players[i];
         if (ent && ent->inuse) {
             gi.unicast(ent, reliable);
@@ -2784,7 +2784,7 @@ void G_SetSkin(edict_t *skinfor) {
 void G_CheckTeamReady(arena_team_t *t) {
     uint8_t i;
 
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!t->players[i]) {
             continue;
         }
@@ -2829,7 +2829,7 @@ qboolean G_CheckTeamAlive(edict_t *ent) {
     uint8_t i;
     arena_team_t *t = TEAM(ent);
 
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!t->players[i]) {
             continue;
         }

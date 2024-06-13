@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAX_INVENTORY            33
 #define MAX_ARENAS               9
 #define MAX_TEAMS                5
-#define MAX_ARENA_TEAM_PLAYERS   10
+#define MAX_TEAM_PLAYERS   10
 #define MAX_TEAM_NAME            20
 #define MAX_TEAM_SKIN            25
 #define MAX_ROUNDS               21
@@ -135,7 +135,7 @@ typedef enum {
 typedef struct {
     char       name[MAX_TEAM_NAME];
     char       skin[MAX_TEAM_SKIN];
-    edict_t    *players[MAX_ARENA_TEAM_PLAYERS];
+    edict_t    *players[MAX_TEAM_PLAYERS];
     edict_t    *captain;
     arena_team_type_t  type;
     int8_t     player_count;

@@ -157,7 +157,7 @@ static void Cmd_Ready_f(edict_t *ent)
     if (!p->ready) {
         p->ready = qtrue;
         G_bprintf(ARENA(ent), PRINT_HIGH, "%s is ready\n", NAME(ent));
-        for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+        for (i=0; i<MAX_TEAM_PLAYERS; i++) {
             if (!TEAM(ent)->players[i])
                 continue;
 
@@ -1829,7 +1829,7 @@ static void Cmd_Teams_f(edict_t *ent)
         t = &ARENA(ent)->teams[i];
         gi.cprintf(ent, PRINT_HIGH, "%s <%s>:\n", t->name, t->skin);
 
-        for (j=0; j<MAX_ARENA_TEAM_PLAYERS; j++) {
+        for (j=0; j<MAX_TEAM_PLAYERS; j++) {
             if (!t->players[j])
                 continue;
 
@@ -1907,7 +1907,7 @@ static void Cmd_RemoveTeammate_f(edict_t *ent)
     edict_t *playermatch = NULL;
     uint8_t i;
     
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i])
             continue;
         
@@ -1963,7 +1963,7 @@ static void Cmd_PickTeammate_f(edict_t *ent)
         return;
     }
     
-    if (team->player_count == MAX_ARENA_TEAM_PLAYERS) {
+    if (team->player_count == MAX_TEAM_PLAYERS) {
         gi.cprintf(ent, PRINT_HIGH, "Too many players, remove someone first\n");
         return;
     }
@@ -2049,7 +2049,7 @@ static void Cmd_TeamSkin_f(edict_t *ent)
     Q_strlcpy(team->skin, skin, sizeof(team->skin));
     
     uint8_t i;
-    for (i=0; i<MAX_ARENA_TEAM_PLAYERS; i++) {
+    for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i])
             continue;
         
