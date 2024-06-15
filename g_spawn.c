@@ -416,69 +416,66 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
  *
  */
 qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint32_t *target) {
-	qboolean modifier;
-	const char *fulltoken;
-	char *token;
-	uint8_t index;
-	long testval;
-	char *next;
+    qboolean modifier;
+    const char *fulltoken;
+    char *token;
+    uint8_t index;
+    long testval;
+    char *next;
 
-	fulltoken = COM_Parse_Newline(input);
+    fulltoken = COM_Parse_Newline(input);
 
-	// check if it's a number, if so assume raw dmg flags value
-	testval = strtol(fulltoken, &next, 10);
-	if (!((next == fulltoken) || (*next != '\0'))) {
-		*target = testval;
-		return qtrue;
-	}
+    // check if it's a number, if so assume raw dmg flags value
+    testval = strtol(fulltoken, &next, 10);
+    if (!((next == fulltoken) || (*next != '\0'))) {
+        *target = testval;
+        return qtrue;
+    }
 
-	token = COM_Parse(&fulltoken);
-	while (token[0]) {
+    token = COM_Parse(&fulltoken);
+    while (token[0]) {
+        // EOL
+        if (token[0] == '\n') {
+            return qtrue;
+        }
 
-		// EOL
-		if (token[0] == '\n') {
-			return qtrue;
-		}
+        // parse out the +/- modifier
+        if (token[0] == '-') {
+            modifier = qfalse;
+            token++;
+        } else if (token[0] == '+') {
+            modifier = qtrue;
+            token++;
+        } else { // no modifier, assume add
+            modifier = qtrue;
+        }
 
-		// parse out the +/- modifier
-		if (token[0] == '-') {
-			modifier = qfalse;
-			token++;
-		} else if (token[0] == '+') {
-			modifier = qtrue;
-			token++;
-		} else { // no modifier, assume add
-			modifier = qtrue;
-		}
+        // reset back to original status
+        if (str_equal(token, "reset")) {
+            *target = (a) ? a->original_damage_flags : 0;
+            return qtrue;
+        }
 
-		// reset back to original status
-		if (str_equal(token, "reset")) {
-			*target = (a) ? a->original_damage_flags : 0;
-			return qtrue;
-		}
+        if (str_equal(token, "all")) {
+            *target = (modifier) ? ARENADAMAGE_ALL : 0;
+            token = COM_Parse(&fulltoken);
+            continue;
+        }
 
-		if (str_equal(token, "all")) {
-			*target = (modifier) ? ARENADAMAGE_ALL : 0;
-			token = COM_Parse(&fulltoken);
-			continue;
-		}
-
-		index = damage_vote_index(token);
-		if (index > -1) {
-			if (modifier) {
-				*target |= damagevotes[index].value;
-			} else {
-				*target &= ~damagevotes[index].value;
-			}
-		} else {
-			gi.cprintf(ent, PRINT_HIGH, "Unknown damage type '%s'", token);
-			return qfalse;
-		}
-
-		token = COM_Parse(&fulltoken);
-	}
-
-	return qtrue;
+        index = damage_vote_index(token);
+        if (index > -1) {
+            if (modifier) {
+                *target |= damagevotes[index].value;
+            } else {
+                *target &= ~damagevotes[index].value;
+            }
+        } else {
+            gi.cprintf(ent, PRINT_HIGH, "Unknown damage type '%s'", token);
+            return qfalse;
+        }
+        token = COM_Parse(&fulltoken);
+    }
+    return qtrue;
 }
 
 /*
