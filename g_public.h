@@ -43,17 +43,16 @@ typedef enum {
 } solid_t;
 
 // extended features
-
-#define GMF_CLIENTNUM               0x00000001
-#define GMF_PROPERINUSE             0x00000002
-#define GMF_MVDSPEC                 0x00000004
-#define GMF_WANT_ALL_DISCONNECTS    0x00000008
-
-#define GMF_ENHANCED_SAVEGAMES      0x00000400
-#define GMF_VARIABLE_FPS            0x00000800
-#define GMF_EXTRA_USERINFO          0x00001000
-
-#define GMF_IPV6_ADDRESS_AWARE      BIT(13)
+#define GMF_CLIENTNUM               BIT(0)  // game sets clientnum in gclient_s
+#define GMF_PROPERINUSE             BIT(1)  // game maintains edict_s inuse properly
+#define GMF_MVDSPEC                 BIT(2)  // game is dummy MVD client aware
+#define GMF_WANT_ALL_DISCONNECTS    BIT(3)  // game wants ClientDisconnect() for non-spawned clients
+#define GMF_ENHANCED_SAVEGAMES      BIT(10) // game supports safe/portable savegames
+#define GMF_VARIABLE_FPS            BIT(11) // game supports variable server FPS
+#define GMF_EXTRA_USERINFO          BIT(12) // game wants extra userinfo after normal userinfo
+#define GMF_IPV6_ADDRESS_AWARE      BIT(13) // game support clients using IPv6 transit
+#define GMF_ALLOW_INDEX_OVERFLOW    BIT(14) // game wants PF_FindIndex() to return 0 on overflow
+#define GMF_PROTOCOL_EXTENSIONS     BIT(15) // game supports protocol extensions
 
 //===============================================================
 
