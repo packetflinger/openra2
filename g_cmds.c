@@ -2093,6 +2093,42 @@ void Cmd_TeamEnemySkin_f (edict_t *ent, qboolean team)
         G_SetESkin(ent);
     }
 }
+
+/**
+ * For client to reconnect using IPv6 for transit
+ * Requires net_ip6 and net_enable_ipv6 cvars set
+ */
+void Cmd_Reconnect_IPv6_f(edict_t *ent) {
+    cvar_t *net_ip6;
+    cvar_t *net_enable_ipv6;
+    cvar_t *net_port;
+
+    if (!(game.serverFeatures & GMF_IPV6_ADDRESS_AWARE)) {
+        gi.cprintf(ent, PRINT_HIGH, "IPv6 not supported at server level\n");
+        return;
+    }
+
+    if (!(G_FEATURES & GMF_IPV6_ADDRESS_AWARE)) {
+        gi.cprintf(ent, PRINT_HIGH, "IPv6 not supported at game level\n");
+        return;
+    }
+
+    net_enable_ipv6 = gi.cvar("net_enable_ipv6", "0", CVAR_LATCH);
+    net_ip6 = gi.cvar("net_ip6", "", CVAR_LATCH);
+    net_port = gi.cvar("net_port", "27910", CVAR_LATCH);
+    if (net_enable_ipv6->value < 2) {
+        gi.cprintf(ent, PRINT_HIGH, "IPv6 support disabled\n");
+        return;
+    }
+    if (!(int)net_ip6->value) {
+        gi.cprintf(ent, PRINT_HIGH, "IPv6 address not set in server config");
+        return;
+    }
+    gi.WriteByte(SVC_STUFFTEXT);
+    gi.WriteString(va("connect [%s]:%d\n", net_ip6->string, (int)net_port->value));
+    gi.unicast(ent, false);
+}
+
 /**
  * For testing stuff
  */
@@ -2198,6 +2234,10 @@ void ClientCommand(edict_t *ent)
     }
     if (Q_stricmp(cmd, "id") == 0) {
         Cmd_Id_f(ent);
+        return;
+    }
+    if (Q_stricmp(cmd, "reconnect6") == 0) {
+        Cmd_Reconnect_IPv6_f(ent);
         return;
     }
 
