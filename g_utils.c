@@ -621,3 +621,38 @@ qboolean match(char *pattern, char *haystack) {
 	
     return false;
 }
+
+/**
+ * Break a key/value string into an array of it's parts.
+ *
+ * input is the input string
+ * delimiter is the character between the key and value
+ * len is the size to allocate for each the key and value
+ *
+ * Returned pointern needs to be free()'d
+ */
+char **KeyValueSplit(char *input, char *delimiter, size_t len) {
+    char **out;
+    uint8_t i = 0;
+    char *start;
+
+    out = malloc(2 * sizeof(char *));
+    out[0] = malloc(len * sizeof(char *));
+    out[1] = malloc(len * sizeof(char *));
+
+    memset(out, 0, 2);
+    memset(out[0], 0, len);
+    memset(out[1], 0, len);
+
+    start = input;
+    while (*input) {
+        if (*input == *delimiter) {
+            memcpy(out[i], start, input - start);
+            start = input + 1;
+            i++;
+        }
+        input++;
+    }
+    memcpy(out[i], start, input - start);
+    return out;
+}

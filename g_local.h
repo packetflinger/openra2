@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "q_shared.h"
 #include "q_list.h"
-#include <glib.h>
 
 #if defined(_WIN32) && !(defined(__MINGW32__) || defined(__MINGW64__))
 #include "GitRevisionInfo.h" // Derived from template via GitWCRev
@@ -915,6 +914,7 @@ char    *vtos(vec3_t v);
 float   vectoyaw(vec3_t vec);
 void    vectoangles(vec3_t vec, vec3_t angles);
 qboolean match(char *pattern, char *haystack);
+char **KeyValueSplit(char *input, char *delimiter, size_t len);
 
 //
 // g_combat.c

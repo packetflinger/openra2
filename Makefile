@@ -26,9 +26,6 @@ RM ?= rm -f
 CFLAGS ?= -O0 -fno-strict-aliasing -g -Wall -MMD $(INCLUDES)
 LDFLAGS ?= -shared
 
-GLIB_CFLAGS ?= $(shell pkg-config --cflags glib-2.0)
-GLIB_LDFLAGS ?= $(shell pkg-config --libs glib-2.0)
-
 ifdef CONFIG_WINDOWS
     LDFLAGS += -mconsole
     LDFLAGS += -Wl,--nxcompat,--dynamicbase
@@ -38,7 +35,6 @@ else
 endif
 
 CFLAGS += -DOPENRA2_VERSION='"$(VER)"' -DOPENRA2_REVISION=$(REV) $(GLIB_CFLAGS)
-LDFLAGS += $(GLIB_LDFLAGS)
 RCFLAGS += -DOPENRA2_VERSION='\"$(VER)\"' -DOPENRA2_REVISION=$(REV) -DCOPYRIGHT='\"$(COPYRIGHT)\"'
 
 OBJS := \
