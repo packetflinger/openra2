@@ -1155,8 +1155,7 @@ Only used for the world.
 "gravity"   800 is default gravity
 "message"   text to print at user logon
 */
-void SP_worldspawn(edict_t *ent)
-{
+void SP_worldspawn(edict_t *ent) {
     char buffer[MAX_QPATH];
 
     ent->movetype = MOVETYPE_PUSH;
@@ -1164,51 +1163,23 @@ void SP_worldspawn(edict_t *ent)
     ent->inuse = qtrue;         // since the world doesn't use G_Spawn()
     ent->s.modelindex = 1;      // world model is always index 1
 
-    //---------------
-
-    // reserve some spots for dead player bodies for coop / deathmatch
-    InitBodyQue();
-
-    // set configstrings for items
-    SetItemNames();
-
-    //if (st.nextmap)
-    //  strcpy(level.nextmap, st.nextmap);
-
-    // make some data visible to the server
+    InitBodyQue();  // reserve some spots for dead player bodies
+    SetItemNames(); // set configstrings for items
 
     if (ent->message && ent->message[0]) {
         gi.configstring(CS_NAME, ent->message);
     }
     ent->message = NULL;
-
-    if (st.sky && st.sky[0])
-        gi.configstring(CS_SKY, st.sky);
-    else
-        gi.configstring(CS_SKY, "unit1_");
-
+    gi.configstring(CS_SKY, (st.sky && st.sky[0]) ? st.sky : "unit1_");
     gi.configstring(CS_SKYROTATE, va("%f", st.skyrotate));
-
     gi.configstring(CS_SKYAXIS, va("%f %f %f", st.skyaxis[0], st.skyaxis[1], st.skyaxis[2]));
-
     gi.configstring(CS_CDTRACK, va("%i", ent->sounds));
-
     gi.configstring(CS_MAXCLIENTS, va("%i", (int)(maxclients->value)));
-
     gi.configstring(CS_STATUSBAR, statusbar);
-
     gi.configstring(CS_OBSERVE, "SPECT");
-
     G_HighlightStr(buffer, "SPECTATOR MODE", sizeof(buffer));
     gi.configstring(CS_SPECMODE, buffer);
 
-    //G_HighlightStr(buffer, "Press ATTACK to join", sizeof(buffer));
-    //gi.configstring(CS_PREGAME, buffer);
-
-    //---------------
-
-
-    // help icon for statusbar
     gi.imageindex("i_help");
     level.images.health = gi.imageindex("i_health");
     gi.imageindex("help");
@@ -1220,12 +1191,9 @@ void SP_worldspawn(edict_t *ent)
     level.images.envirosuit = gi.imageindex("p_envirosuit");
     level.images.rebreather = gi.imageindex("p_rebreather");
 
-    if (!st.gravity)
-        gi.cvar_set("sv_gravity", "800");
-    else
-        gi.cvar_set("sv_gravity", st.gravity);
+    gi.cvar_set("sv_gravity", (!st.gravity) ? "800" : st.gravity);
 
-    level.sounds.fry = gi.soundindex("player/fry.wav");     // standing in lava / slime
+    level.sounds.fry = gi.soundindex("player/fry.wav"); // standing in lava / slime
     level.sounds.lava_in = gi.soundindex("player/lava_in.wav");
     level.sounds.burn[0] = gi.soundindex("player/burn1.wav");
     level.sounds.burn[1] = gi.soundindex("player/burn2.wav");
@@ -1235,35 +1203,34 @@ void SP_worldspawn(edict_t *ent)
 
     gi.soundindex("player/lava1.wav");
     gi.soundindex("player/lava2.wav");
-
     gi.soundindex("misc/pc_up.wav");
     gi.soundindex("misc/talk1.wav");
+    gi.soundindex("items/respawn1.wav");
+
     level.sounds.secret = gi.soundindex("misc/secret.wav");
     level.sounds.count = gi.soundindex("world/10_0.wav");
-	level.sounds.teleport = gi.soundindex("misc/tele1.wav");
+    level.sounds.teleport = gi.soundindex("misc/tele1.wav");
     level.sounds.udeath = gi.soundindex("misc/udeath.wav");
-
-    gi.soundindex("items/respawn1.wav");
 
     level.sounds.fight[1] = gi.soundindex("fight1.wav");
     level.sounds.fight[2] = gi.soundindex("fight2.wav");
     level.sounds.fight[3] = gi.soundindex("fight3.wav");
     level.sounds.fight[4] = gi.soundindex("fight4.wav");
-	level.sounds.fight[5] = gi.soundindex("fight5.wav");
-	level.sounds.fight[6] = gi.soundindex("fight6.wav");
+    level.sounds.fight[5] = gi.soundindex("fight5.wav");
+    level.sounds.fight[6] = gi.soundindex("fight6.wav");
 
     level.sounds.countdown[1] = gi.soundindex("count01.wav");
     level.sounds.countdown[2] = gi.soundindex("count02.wav");
     level.sounds.countdown[3] = gi.soundindex("count03.wav");
-	level.sounds.countdown[4] = gi.soundindex("count04.wav");
+    level.sounds.countdown[4] = gi.soundindex("count04.wav");
     level.sounds.countdown[5] = gi.soundindex("count05.wav");
     level.sounds.countdown[6] = gi.soundindex("count06.wav");
     level.sounds.countdown[7] = gi.soundindex("count07.wav");
-	level.sounds.countdown[8] = gi.soundindex("count08.wav");
+    level.sounds.countdown[8] = gi.soundindex("count08.wav");
     level.sounds.countdown[9] = gi.soundindex("count09.wav");
     level.sounds.countdown[10] = gi.soundindex("count10.wav");
     level.sounds.countdown[11] = gi.soundindex("count11.wav");
-	level.sounds.countdown[12] = gi.soundindex("count12.wav");
+    level.sounds.countdown[12] = gi.soundindex("count12.wav");
 
     level.sounds.round[1] = gi.soundindex("round01.wav");
     level.sounds.round[2] = gi.soundindex("round02.wav");
@@ -1304,7 +1271,7 @@ void SP_worldspawn(edict_t *ent)
     level.sounds.death[3] = gi.soundindex("*death4.wav");
     level.sounds.fall[0] = gi.soundindex("*fall1.wav");
     level.sounds.fall[1] = gi.soundindex("*fall2.wav");
-    level.sounds.gurp[0] = gi.soundindex("*gurp1.wav");         // drowning damage
+    level.sounds.gurp[0] = gi.soundindex("*gurp1.wav");     // drowning damage
     level.sounds.gurp[1] = gi.soundindex("*gurp2.wav");
     level.sounds.jump = gi.soundindex("*jump1.wav");        // player jump
     level.sounds.pain[0][0] = gi.soundindex("*pain25_1.wav");
@@ -1315,7 +1282,6 @@ void SP_worldspawn(edict_t *ent)
     level.sounds.pain[2][1] = gi.soundindex("*pain75_2.wav");
     level.sounds.pain[3][0] = gi.soundindex("*pain100_1.wav");
     level.sounds.pain[3][1] = gi.soundindex("*pain100_2.wav");
-
     level.sounds.rg_hum = gi.soundindex("weapons/rg_hum.wav");
     level.sounds.bfg_hum = gi.soundindex("weapons/bfg_hum.wav");
 
@@ -1334,46 +1300,33 @@ void SP_worldspawn(edict_t *ent)
     gi.modelindex("#w_railgun.md2");
     gi.modelindex("#w_bfg.md2");
 
-    //-------------------
-
     level.sounds.gasp[0] = gi.soundindex("player/gasp1.wav");       // gasping for air
     level.sounds.gasp[1] = gi.soundindex("player/gasp2.wav");       // head breaking surface, not gasping
-
     level.sounds.watr_in = gi.soundindex("player/watr_in.wav");     // feet hitting water
     level.sounds.watr_out = gi.soundindex("player/watr_out.wav");   // feet leaving water
-
     level.sounds.watr_un = gi.soundindex("player/watr_un.wav");     // head going underwater
-
     level.sounds.breath[0] = gi.soundindex("player/u_breath1.wav");
     level.sounds.breath[1] = gi.soundindex("player/u_breath2.wav");
 
     gi.soundindex("items/pkup.wav");        // bonus item pickup
     gi.soundindex("world/land.wav");        // landing thud
     gi.soundindex("misc/h2ohit1.wav");      // landing splash
-
     gi.soundindex("items/damage.wav");
     gi.soundindex("items/protect.wav");
     gi.soundindex("items/protect4.wav");
-    level.sounds.noammo = gi.soundindex("weapons/noammo.wav");
-
     gi.soundindex("infantry/inflies1.wav");
 
+    level.sounds.noammo = gi.soundindex("weapons/noammo.wav");
     level.sounds.xian = gi.soundindex("world/xian1.wav");
     level.sounds.makron = gi.soundindex("makron/laf4.wav");
 
-    // gibs
+    // gibs, don't bother with bones, chest, skulls...
     level.models.meat = gi.modelindex("models/objects/gibs/sm_meat/tris.md2");
-    /*level.models.arm = gi.modelindex("models/objects/gibs/arm/tris.md2");
-    level.models.bones[0] = gi.modelindex("models/objects/gibs/bone/tris.md2");
-    level.models.bones[1] = gi.modelindex("models/objects/gibs/bone2/tris.md2");
-    level.models.chest = gi.modelindex("models/objects/gibs/chest/tris.md2");
-    level.models.skull = gi.modelindex("models/objects/gibs/skull/tris.md2");*/
     level.models.head = gi.modelindex("models/objects/gibs/head2/tris.md2");
 
-//
-// Setup light animation tables. 'a' is total darkness, 'z' is doublebright.
-//
-
+    /**
+     * Setup light animation tables. 'a' is total darkness, 'z' is doublebright.
+     */
     // 0 normal
     gi.configstring(CS_LIGHTS + 0, "m");
 
@@ -1414,11 +1367,11 @@ void SP_worldspawn(edict_t *ent)
 
     // 63 testing
     gi.configstring(CS_LIGHTS + 63, "a");
-	
-	char ready[6];
-	G_AsciiToConsole(ready, "ready");
-	gi.configstring(CS_READY, va("Type %s in console to begin", ready));
-	gi.configstring(CS_READY_WAIT, "Waiting for all players to ready-up");
-	gi.configstring(CS_READY_BALANCED, "Teams need to be balanced before starting");
+
+    char ready[6];
+    G_AsciiToConsole(ready, "ready");
+    gi.configstring(CS_READY, va("Type %s in console to begin", ready));
+    gi.configstring(CS_READY_WAIT, "Waiting for all players to ready-up");
+    gi.configstring(CS_READY_BALANCED, "Teams need to be balanced before starting");
 }
 
