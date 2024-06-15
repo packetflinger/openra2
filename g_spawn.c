@@ -318,7 +318,6 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
     token = COM_Parse(&fulltoken);
 
     while (token[0]) {
-
         // parse out the +/- modifier
         if (token[0] == '-') {
             modifier = qfalse;
@@ -375,13 +374,11 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
                         clamp(t->ammo[w.ammoindex], 1, 999);
                         t->infinite[w.ammoindex] = qfalse;
                     }
-
                 } else {
                     t->weaponflags &= ~w.value;
                     t->ammo[w.ammoindex] = 0;
                     t->infinite[w.ammoindex] = qfalse;
                 }
-
             } else {
                 gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", weapammopair[0]);
                 // free weapammopair?
@@ -404,16 +401,13 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
                     t->weaponflags &= ~w.value;
                     // dont take ammo away, in case shared (sg/ssg, mg/cg)
                 }
-
             } else {
                 gi.cprintf(ent, PRINT_HIGH, "Unknown weapon '%s'\n", token);
                 return qfalse;
             }
         }
-
         token = COM_Parse(&fulltoken);
     }
-
     return qtrue;
 }
 
