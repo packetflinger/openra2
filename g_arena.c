@@ -965,16 +965,7 @@ void G_ChangeArena(edict_t *ent, arena_t *arena) {
     G_UpdateSkins(ent);
     PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
-
-    for (i=0; i<ARENA(ent)->client_count; i++) {
-        if (!ARENA(ent)->clients[i]) {
-            continue;
-        }
-        if (ARENA(ent)->clients[i] == ent) {
-            continue;   // don't bother sending to the one moving
-        }
-        gi.cprintf(ARENA(ent)->clients[i], PRINT_HIGH, "%s joined this arena\n", NAME(ent));
-    }
+    G_bprintf(ARENA(ent), PRINT_HIGH, "%s joined this arena\n", NAME(ent));
 
     // hold in place briefly
     ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
