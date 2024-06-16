@@ -965,7 +965,7 @@ void G_ChangeArena(edict_t *ent, arena_t *arena) {
     G_UpdateSkins(ent);
     PutClientInServer(ent);
     G_ArenaSound(arena, level.sounds.teleport);
-    G_bprintf(ARENA(ent), PRINT_HIGH, "%s joined this arena\n", NAME(ent));
+    G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", NAME(ent));
 
     // hold in place briefly
     ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
