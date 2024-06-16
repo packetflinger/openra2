@@ -195,17 +195,6 @@ void update_playercounts(arena_t *a) {
 }
 
 /**
- * Probably get rid of this later
- */
-void change_arena(edict_t *self) {
-    PutClientInServer(self);
-    self->s.event = EV_PLAYER_TELEPORT; // tele effect
-    self->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT; // briefly hold em
-    self->client->ps.pmove.pm_time = 14;
-    self->client->respawn_framenum = level.framenum;
-}
-
-/**
  * Send a scoreboard to a particular player
  */
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {

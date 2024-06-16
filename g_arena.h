@@ -228,8 +228,6 @@ typedef struct {
     qboolean    infinite[MAX_INVENTORY];
 } arena_entry_t;
 
-
-void change_arena(edict_t *self);
 void ClockEndIntermission(arena_clock_t *c, arena_t *a);
 void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a);
 void ClockEndTimeout(arena_clock_t *c, arena_t *a);
