@@ -1124,6 +1124,146 @@ void InitBodyQue(void)
     }
 }
 
+/**
+ *
+ */
+void G_RespawnPlayer(edict_t *ent) {
+    int index;
+    vec3_t  spawn_origin, spawn_angles;
+    vec3_t temp, temp2;
+    gclient_t   *client;
+    client_persistant_t pers;
+    client_respawn_t    resp;
+    client_level_t      lvl;
+    trace_t tr;
+    int total;
+
+    if (!ent) {
+        return;
+    }
+
+    // can't respawn during a round, just chase instead
+    if (ARENA(ent)->state > ARENA_STATE_COUNTDOWN) {
+        ChaseTeamMate(ent);
+        return;
+    }
+
+    index = ent - g_edicts - 1;
+    client = ent->client;
+
+    ent->client->pers.connected = CONN_SPAWNED;
+    total = G_UpdateRanks();
+    if (total) {} // silence compiler warning
+
+    ent->client->resp.damage_given = 0;
+    ent->client->resp.damage_recvd = 0;
+    ent->killer = NULL;
+
+    ent->health = 0;
+    SelectSpawnPoint(ent, spawn_origin, spawn_angles);
+    PMenu_Close(ent);
+
+    resp = client->resp;
+    pers = client->pers;
+    lvl = client->level;
+
+    memset(client, 0, sizeof(*client));
+    client->pers = pers;
+    client->resp = resp;
+    client->level = lvl;
+    client->edict = ent;
+    client->clientNum = index;
+
+    client->max_bullets     = 200;
+    client->max_shells      = 100;
+    client->max_rockets     = 50;
+    client->max_grenades    = 50;
+    client->max_cells       = 200;
+    client->max_slugs       = 50;
+
+    ent->health = ent->client->pers.arena->health;
+    ent->max_health = ent->client->pers.arena->health;
+    ent->groundentity = NULL;
+    ent->client = &game.clients[index];
+    ent->takedamage = DAMAGE_AIM;
+    ent->movetype = MOVETYPE_WALK;
+    ent->viewheight = 22;
+    ent->inuse = qtrue;
+    ent->classname = "player";
+    ent->mass = 200;
+    ent->solid = SOLID_BBOX;
+    ent->deadflag = DEAD_NO;
+    ent->air_finished_framenum = level.framenum + 12 * HZ;
+    ent->clipmask = MASK_PLAYERSOLID;
+    ent->model = "players/male/tris.md2";
+    ent->pain = player_pain;
+    ent->die = player_die;
+    ent->waterlevel = 0;
+    ent->watertype = 0;
+    ent->flags &= ~(FL_NO_KNOCKBACK | FL_MEGAHEALTH);
+    ent->svflags &= ~(SVF_DEADMONSTER | SVF_NOCLIENT);
+    VectorSet(ent->mins, -16, -16, -24);
+    VectorSet(ent->maxs, 16, 16, 32);
+    VectorClear(ent->velocity);
+    client->ps.fov = client->pers.fov;
+    ent->s.sound = 0;
+    ent->s.effects = 0;
+    ent->s.renderfx = 0;
+    ent->s.modelindex = 255;        // will use the skin specified model
+    ent->s.modelindex2 = 255;       // custom gun model
+    // sknum is player num and weapon number
+    // weapon number will be added in changeweapon
+    ent->s.skinnum = index;
+    ent->s.frame = 0;
+    VectorCopy(spawn_origin, temp);
+    VectorCopy(spawn_origin, temp2);
+    temp[2] -= 64;
+    temp2[2] += 16;
+    tr = gi.trace(temp2, ent->mins, ent->maxs, temp, ent, MASK_PLAYERSOLID);
+    if (!tr.allsolid && !tr.startsolid) {
+        VectorCopy(tr.endpos, ent->s.origin);
+        ent->groundentity = tr.ent;
+    } else {
+        VectorCopy(spawn_origin, ent->s.origin);
+        ent->s.origin[2] += 10; // make sure off ground
+    }
+    VectorCopy(ent->s.origin, ent->s.old_origin);
+    VectorCopy(ent->s.origin, ent->old_origin);
+
+    client->ps.pmove.origin[0] = ent->s.origin[0] * 8;
+    client->ps.pmove.origin[1] = ent->s.origin[1] * 8;
+    client->ps.pmove.origin[2] = ent->s.origin[2] * 8;
+
+    spawn_angles[ROLL] = 0;
+
+    // set the delta angle
+    G_SetDeltaAngles(ent, spawn_angles);
+
+    VectorCopy(spawn_angles, ent->s.angles);
+    VectorCopy(spawn_angles, client->ps.viewangles);
+    VectorCopy(spawn_angles, client->v_angle);
+
+    // we must link before killbox since it uses absmin/absmax
+    gi.linkentity(ent);
+    if (!G_KillBox(ent)) {
+        // could't spawn in?
+    }
+
+    G_GiveItems(ent);
+    G_SendStatusBar(ent);
+    G_SelectBestWeapon(ent);
+
+    if (g_protection_time->value > 0) {
+        ent->client->invincible_framenum = level.framenum +
+                                      g_protection_time->value * HZ;
+    }
+
+    ent->s.event = EV_PLAYER_TELEPORT;
+    ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
+    ent->client->ps.pmove.pm_time = 14;
+    ent->client->respawn_framenum = level.framenum;
+    gi.dprintf("G_SpawnPlayer(%p) called\n", ent);
+}
 
 void respawn(edict_t *self)
 {

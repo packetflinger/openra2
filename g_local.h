@@ -979,8 +979,7 @@ void G_ScoreChanged(edict_t *ent);
 int G_UpdateRanks(void);
 edict_t *SelectIntermissionPoint(arena_t *a);
 void ClientString(edict_t *ent, uint16_t index, const char *str);
-
-
+void G_RespawnPlayer(edict_t *ent);
 
 //
 // g_player.c

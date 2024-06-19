@@ -96,6 +96,23 @@ void G_SpectatorsJoin(edict_t *ent) {
         idx = arena_find_sp_slot(ARENA(ent));
         ARENA(ent)->spectators[idx] = ent;
         ARENA(ent)->spectator_count++;
+
+        ent->movetype = MOVETYPE_NOCLIP;
+        ent->solid = SOLID_NOT;
+        ent->svflags |= SVF_NOCLIENT;
+        ent->client->ps.gunindex = 0;
+        ent->client->ps.pmove.pm_type = PM_SPECTATOR;
+        ent->client->pers.connected = CONN_SPECTATOR;
+
+        memset(&ent->client->resp, 0, sizeof(ent->client->resp));
+
+        gi.WriteByte(SVC_TEMP_ENTITY);
+        gi.WriteByte(TE_BLOOD);
+        gi.WritePosition(ent->s.origin);
+        gi.WriteDir(vec3_origin);
+        gi.multicast(ent->s.origin, MULTICAST_PVS);
+
+        G_SendStatusBar(ent);
     }
 }
 
@@ -1363,7 +1380,7 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
 
     G_bprintf(arena, PRINT_HIGH, "%s joined team %s\n", NAME(ent), team->name);
     G_SetSkin(ent);
-    spectator_respawn(ent, CONN_SPAWNED);
+    G_RespawnPlayer(ent);
 }
 
 /**
@@ -1415,7 +1432,7 @@ void G_TeamPart(edict_t *ent, qboolean silent) {
     G_CheckTeamReady(oldteam);
     G_CheckArenaReady(ARENA(ent));
 
-    spectator_respawn(ent, CONN_SPECTATOR);
+    //spectator_respawn(ent, CONN_SPECTATOR);
 }
 
 /**
@@ -1460,24 +1477,12 @@ void G_RefillPlayers(arena_t *a) {
  */
 void G_RespawnPlayers(arena_t *a) {
     uint8_t i, j;
-    edict_t *ent;
 
-    // for each team
     for (i = 0; i < a->team_count; i++) {
-        // for each player
         for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
-            ent = a->teams[i].players[j];
-
-            if (ent && ent->inuse) {
-                ent->client->resp.damage_given = 0;
-                ent->client->resp.damage_recvd = 0;
-                ent->killer = NULL;
-                G_RefillInventory(ent);
-                spectator_respawn(ent, CONN_SPAWNED);
-            }
-
-            a->teams[i].players_alive = a->teams[i].player_count;
+            G_RespawnPlayer(a->teams[i].players[j]);
         }
+        a->teams[i].players_alive = a->teams[i].player_count;
     }
 }
 
@@ -2428,38 +2433,38 @@ const char *G_CreateSpectatorStatusBar(edict_t *player) {
         "yb -24 "
 
         // health
-        "xv 0 "
-        "hnum "
-        "xv 50 "
-        "pic 0 "
+        //"xv 0 "
+        //"hnum "
+        //"xv 50 "
+        //"pic 0 "
 
         // ammo
-        "if 2 "
-            "xv 100 "
-            "anum "
-            "xv 150 "
-            "pic 2 "
-        "endif "
+        //"if 2 "
+        //    "xv 100 "
+        //    "anum "
+        //    "xv 150 "
+        //    "pic 2 "
+        //"endif "
 
         // armor
-        "if 4 "
-            "xv 200 "
-            "rnum "
-            "xv 250 "
-            "pic 4 "
-        "endif "
+        //"if 4 "
+        //    "xv 200 "
+        //    "rnum "
+        //    "xv 250 "
+        //    "pic 4 "
+        //"endif "
 
         "yb -50 "
 
         // picked up item
-        "if 7 "
-            "xv 0 "
-            "pic 7 "
-            "xv 26 "
-            "yb -42 "
-            "stat_string 8 "
-            "yb -50 "
-        "endif "
+        //"if 7 "
+        //    "xv 0 "
+        //    "pic 7 "
+        //    "xv 26 "
+        //    "yb -42 "
+        //    "stat_string 8 "
+        //    "yb -50 "
+        //"endif "
 
         // timer 1 (quad, enviro, breather)
         "if 9 "
@@ -2470,10 +2475,10 @@ const char *G_CreateSpectatorStatusBar(edict_t *player) {
         "endif "
 
         //  help / weapon icon
-        "if 11 "
-            "xv 148 "
-            "pic 11 "
-        "endif "
+        //"if 11 "
+        //    "xv 148 "
+        //    "pic 11 "
+        //"endif "
 
         // points (damage dealt)
         "xr -80 "
@@ -2522,17 +2527,17 @@ const char *G_CreateSpectatorStatusBar(edict_t *player) {
             "stat_string 26 "
         "endif "
 
-        // status
+        // match status
         "if 31 "
-            "yb -60 "
-            "xv 0 "
+            "yb -35 "
+            "xl 8 "
             "stat_string 31 "
         "endif "
 
         // round
         "if 28 "
-            "xr -24 "
-            "yt 30 "
+            "yb -35 "
+            "xr -96 "
             "stat_string 28 "
         "endif "
     );
@@ -2547,7 +2552,7 @@ void G_SendStatusBar(edict_t *ent) {
     gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_STATUSBAR);
 
-    if (TEAM(ent)) {
+    if (TEAM(ent) || ent->client->chase_target) {
         gi.WriteString(G_CreatePlayerStatusBar(ent));
     } else {
         gi.WriteString(G_CreateSpectatorStatusBar(ent));
