@@ -1216,6 +1216,11 @@ typedef struct flood_s {
     int     whenhead;           // head pointer for when said
 } flood_t;
 
+typedef enum {
+    SB_SPEC,
+    SB_PLAYER,
+} statusbar_t;
+
 // client data that stays across multiple level loads
 typedef struct {
     char            netname[MAX_NETNAME];
@@ -1236,6 +1241,7 @@ typedef struct {
     arena_team_t    *team;
     char            teamskin[MAX_SKINNAME];
     char            enemyskin[MAX_SKINNAME];
+    statusbar_t     current_statusbar;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,

@@ -2554,8 +2554,10 @@ void G_SendStatusBar(edict_t *ent) {
 
     if (TEAM(ent) || ent->client->chase_target) {
         gi.WriteString(G_CreatePlayerStatusBar(ent));
+        ent->client->pers.current_statusbar = SB_PLAYER;
     } else {
         gi.WriteString(G_CreateSpectatorStatusBar(ent));
+        ent->client->pers.current_statusbar = SB_SPEC;
     }
 
     gi.unicast(ent, true);

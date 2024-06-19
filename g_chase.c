@@ -141,7 +141,10 @@ static void UpdateChaseCam(gclient_t *client)
 }
 
 /**
- * Chase target selected already, make it happen
+ * Chase target selected already, make it happen.
+ *
+ * ent is the spectator
+ * targ is the player being watched
  */
 void SetChaseTarget(edict_t *ent, edict_t *targ)
 {
@@ -153,6 +156,9 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
 
     // stop chasecam
     if (!targ) {
+        if (ent->client->pers.current_statusbar != SB_SPEC) {
+            G_SendStatusBar(ent);
+        }
         ent->client->clientNum = (ent - g_edicts) - 1;
         ent->client->ps.pmove.pm_flags = 0;
         ent->client->ps.pmove.pm_type = PM_SPECTATOR;
@@ -164,6 +170,9 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
         ent->client->chase_mode = CHASE_NONE;
         ClientEndServerFrame(ent);
     } else {
+        if (ent->client->pers.current_statusbar != SB_PLAYER) {
+            G_SendStatusBar(ent);
+        }
         ent->client->clientNum = (targ - g_edicts) - 1;
         ent->client->ps.pmove.pm_flags = 0;
         ent->client->ps.pmove.pm_type = PM_SPECTATOR;
