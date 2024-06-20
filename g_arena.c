@@ -2745,6 +2745,9 @@ void G_SetSkin(edict_t *skinfor) {
 void G_CheckTeamReady(arena_team_t *t) {
     uint8_t i;
 
+    if (t->player_count == 0) {
+        return;
+    }
     for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!t->players[i]) {
             continue;
