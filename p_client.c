@@ -2166,6 +2166,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             }
         } else if (!client->weapon_thunk) {
             client->weapon_thunk = qtrue;
+            client->latched_buttons &= ~BUTTON_ATTACK;
             Think_Weapon(ent);
         }
     }
