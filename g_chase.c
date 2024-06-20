@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "g_local.h"
 
-static void SetChaseStats(gclient_t *client)
-{
+/**
+ * Override specific playerstate stats when chasing
+ */
+static void SetChaseStats(gclient_t *client) {
     qboolean teammate;
     edict_t *targ = client->chase_target;
     int playernum = (targ - g_edicts) - 1;
@@ -48,8 +50,11 @@ static void SetChaseStats(gclient_t *client)
     }
 }
 
-static void UpdateChaseCamHack(gclient_t *client)
-{
+/**
+ * If the game doesn't support the GMF_CLIENTNUM feature, update chasecams
+ * with this.
+ */
+static void UpdateChaseCamHack(gclient_t *client) {
     vec3_t o, ownerv, goal;
     edict_t *ent = client->edict;
     edict_t *targ = client->chase_target;
@@ -58,27 +63,26 @@ static void UpdateChaseCamHack(gclient_t *client)
     vec3_t angles;
 
     VectorCopy(targ->s.origin, ownerv);
-
     ownerv[2] += targ->viewheight;
-
     VectorCopy(targ->client->v_angle, angles);
-    if (angles[PITCH] > 56)
+    if (angles[PITCH] > 56) {
         angles[PITCH] = 56;
+    }
     AngleVectors(angles, forward, right, NULL);
     VectorNormalize(forward);
     VectorMA(ownerv, -30, forward, o);
 
-    if (o[2] < targ->s.origin[2] + 20)
+    if (o[2] < targ->s.origin[2] + 20) {
         o[2] = targ->s.origin[2] + 20;
+    }
 
     // jump animation lifts
-    if (!targ->groundentity)
+    if (!targ->groundentity) {
         o[2] += 16;
+    }
 
     trace = gi.trace(ownerv, vec3_origin, vec3_origin, o, targ, MASK_SOLID);
-
     VectorCopy(trace.endpos, goal);
-
     VectorMA(goal, 2, forward, goal);
 
     // pad for floors and ceilings
@@ -98,13 +102,8 @@ static void UpdateChaseCamHack(gclient_t *client)
         goal[2] += 6;
     }
 
-    if (targ->deadflag)
-        client->ps.pmove.pm_type = PM_DEAD;
-    else
-        client->ps.pmove.pm_type = PM_FREEZE;
-
+    client->ps.pmove.pm_type = (targ->deadflag) ? PM_DEAD : PM_FREEZE;
     client->ps.pmove.pm_flags |= PMF_NO_PREDICTION;
-
     VectorCopy(goal, ent->s.origin);
     VectorScale(goal, 8, client->ps.pmove.origin);
 
@@ -117,13 +116,13 @@ static void UpdateChaseCamHack(gclient_t *client)
         VectorCopy(targ->client->v_angle, ent->client->ps.viewangles);
         VectorCopy(targ->client->v_angle, client->v_angle);
     }
-
     ent->viewheight = 0;
-//  gi.linkentity(ent);
 }
 
-static void UpdateChaseCam(gclient_t *client)
-{
+/**
+ * Update chase view
+ */
+static void UpdateChaseCam(gclient_t *client) {
     edict_t *ent = client->edict;
     edict_t *targ = client->chase_target;
 
@@ -133,7 +132,6 @@ static void UpdateChaseCam(gclient_t *client)
     }
     client->ps.pmove.pm_flags |= PMF_NO_PREDICTION;
     client->ps.pmove.pm_type = PM_FREEZE;
-
     VectorCopy(ent->client->ps.viewangles, ent->s.angles);
     VectorCopy(ent->client->ps.viewangles, ent->client->v_angle);
     VectorScale(ent->client->ps.pmove.origin, 0.125f, ent->s.origin);
@@ -146,8 +144,7 @@ static void UpdateChaseCam(gclient_t *client)
  * ent is the spectator
  * targ is the player being watched
  */
-void SetChaseTarget(edict_t *ent, edict_t *targ)
-{
+void SetChaseTarget(edict_t *ent, edict_t *targ) {
     if (!ent->client) {
         return;
     }
@@ -189,8 +186,7 @@ void SetChaseTarget(edict_t *ent, edict_t *targ)
  * When a chase mode is set, the target changes as the game is played.
  * Not arena-aware
  */
-void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
-{
+void UpdateChaseTargets(chase_mode_t mode, edict_t *targ) {
     edict_t *other;
     int i;
 
@@ -218,8 +214,7 @@ void UpdateChaseTargets(chase_mode_t mode, edict_t *targ)
  * 2. on a player team
  * 3. a teammate of ent (if in competition mode)
  */
-qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
-{
+qboolean ValidChaseTarget(edict_t *ent, edict_t *targ) {
     qboolean allowed = qtrue;
     if (!G_Arenamates(ent, targ)) {
         allowed = qfalse;
@@ -240,8 +235,7 @@ qboolean ValidChaseTarget(edict_t *ent, edict_t *targ)
 /**
  * Find the next player in the list (forward) to chase
  */
-void ChaseNext(edict_t *ent)
-{
+void ChaseNext(edict_t *ent) {
     int i;
     edict_t *e, *targ = ent->client->chase_target;
 
@@ -267,8 +261,7 @@ void ChaseNext(edict_t *ent)
 /**
  * Find the next player in the list (backwards) to chase
  */
-void ChasePrev(edict_t *ent)
-{
+void ChasePrev(edict_t *ent) {
     int i;
     edict_t *e, *targ = ent->client->chase_target;
 
@@ -291,8 +284,10 @@ void ChasePrev(edict_t *ent)
     SetChaseTarget(ent, e);
 }
 
-qboolean GetChaseTarget(edict_t *ent, chase_mode_t mode)
-{
+/**
+ * Find the next player to chase based on mode (quad/invuln/etc)
+ */
+qboolean GetChaseTarget(edict_t *ent, chase_mode_t mode) {
     gclient_t *ranks[MAX_CLIENTS];
     edict_t *other;
     int i;
@@ -341,9 +336,10 @@ found:
     return qtrue;
 }
 
-
-void ChaseEndServerFrame(edict_t *ent)
-{
+/**
+ * Finish up chase stuff for this frame
+ */
+void ChaseEndServerFrame(edict_t *ent) {
     gclient_t *c = ent->client;
 
     if (!c->chase_target) {
@@ -375,8 +371,7 @@ void ChaseEndServerFrame(edict_t *ent)
  * Cycle through ent's teammates to find someone to chase. This happens
  * on respawn when ent is killed but the game is still going.
  */
-void ChaseTeamMate(edict_t *ent)
-{
+void ChaseTeamMate(edict_t *ent) {
     edict_t *tm;
     uint8_t i;
     arena_team_t *t = TEAM(ent);
