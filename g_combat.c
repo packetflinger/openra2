@@ -17,39 +17,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// g_combat.c
 
 #include "g_local.h"
 
-/*
-============
-CanDamage
-
-Returns qtrue if the inflictor can directly damage the target.  Used for
-explosions and melee attacks.
-============
-*/
-qboolean CanDamage(edict_t *targ, edict_t *inflictor)
-{
+/**
+ * Returns true if the inflictor can directly damage the target.
+ * Used for explosions and melee attacks.
+ */
+qboolean CanDamage(edict_t *targ, edict_t *inflictor) {
     vec3_t  dest;
     trace_t trace;
     int i;
 
-// bmodels need special checking because their origin is 0,0,0
+    // bmodels need special checking because their origin is 0,0,0
     if (targ->movetype == MOVETYPE_PUSH) {
         VectorAdd(targ->absmin, targ->absmax, dest);
         VectorScale(dest, 0.5, dest);
         trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID);
-        if (trace.fraction == 1.0)
+        if (trace.fraction == 1.0) {
             return qtrue;
-        if (trace.ent == targ)
+        }
+        if (trace.ent == targ) {
             return qtrue;
+        }
         return qfalse;
     }
 
     trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, targ->s.origin, inflictor, MASK_SOLID);
-    if (trace.fraction == 1.0)
+    if (trace.fraction == 1.0) {
         return qtrue;
+    }
 
     if ((int)g_bugs->value < 1) {
         vec_t *bounds[] = { targ->absmin, targ->absmax };
@@ -60,8 +57,9 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
             dest[2] = bounds[(i >> 2) & 1][2];
 
             trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID);
-            if (trace.fraction == 1.0)
+            if (trace.fraction == 1.0) {
                 return qtrue;
+            }
         }
     } else {
         dest[2] = targ->s.origin[2];
@@ -78,11 +76,11 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
             }
 
             trace = gi.trace(inflictor->s.origin, vec3_origin, vec3_origin, dest, inflictor, MASK_SOLID);
-            if (trace.fraction == 1.0)
+            if (trace.fraction == 1.0) {
                 return qtrue;
+            }
         }
     }
-
     return qfalse;
 }
 
@@ -96,24 +94,19 @@ qboolean CanDamage(edict_t *targ, edict_t *inflictor)
  * damage = the amount of damage applied
  * point = where it happened
  */
-static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
-{
-    if (targ->health < -999)
+static void Killed(edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point) {
+    if (targ->health < -999) {
         targ->health = -999;
-
+    }
     targ->enemy = attacker;
     targ->killer = attacker;
     targ->die(targ, inflictor, attacker, damage, point);
 }
 
-
-/*
-================
-SpawnDamage
-================
-*/
-static void SpawnDamage(int type, vec3_t origin, vec3_t normal)
-{
+/**
+ * Show damage in the world
+ */
+static void SpawnDamage(int type, vec3_t origin, vec3_t normal) {
     gi.WriteByte(SVC_TEMP_ENTITY);
     gi.WriteByte(type);
     gi.WritePosition(origin);
@@ -121,33 +114,10 @@ static void SpawnDamage(int type, vec3_t origin, vec3_t normal)
     gi.multicast(origin, MULTICAST_PVS);
 }
 
-
-/*
-============
-T_Damage
-
-targ        entity that is being damaged
-inflictor   entity that is causing the damage
-attacker    entity that caused the inflictor to damage targ
-    example: targ=monster, inflictor=rocket, attacker=player
-
-dir         direction of the attack
-point       point at which the damage is being inflicted
-normal      normal vector from that point
-damage      amount of damage being inflicted
-knockback   force to be applied against targ as a result of the damage
-
-dflags      these flags are used to control how T_Damage works
-    DAMAGE_RADIUS           damage was indirect (from a nearby explosion)
-    DAMAGE_NO_ARMOR         armor does not protect from this damage
-    DAMAGE_ENERGY           damage is from an energy based weapon
-    DAMAGE_NO_KNOCKBACK     do not affect velocity, just view angles
-    DAMAGE_BULLET           damage is from a bullet (used for ricochets)
-    DAMAGE_NO_PROTECTION    kills godmode, armor, everything
-============
-*/
-static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage, int dflags)
-{
+/**
+ * See how much damage power armor absorbs
+ */
+static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage, int dflags) {
     gclient_t   *client;
     int         save;
     int         power_armor_index;
@@ -156,24 +126,28 @@ static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage
     int         power;
     int         power_used;
 
-    if (!damage)
+    if (!damage) {
         return 0;
+    }
 
     client = ent->client;
     if (!client) {
         return 0;
     }
 
-    if (dflags & DAMAGE_NO_ARMOR)
+    if (dflags & DAMAGE_NO_ARMOR) {
         return 0;
+    }
 
     power_armor_index = PowerArmorIndex(ent);
-    if (!power_armor_index)
+    if (!power_armor_index) {
         return 0;
+    }
 
     power = client->inventory[ITEM_CELLS];
-    if (!power)
+    if (!power) {
         return 0;
+    }
 
     if (power_armor_index == ITEM_POWER_SCREEN) {
         vec3_t      vec;
@@ -185,8 +159,9 @@ static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage
         VectorSubtract(point, ent->s.origin, vec);
         VectorNormalize(vec);
         dot = DotProduct(vec, forward);
-        if (dot <= 0.3)
+        if (dot <= 0.3) {
             return 0;
+        }
 
         damagePerCell = 1;
         pa_te_type = TE_SCREEN_SPARKS;
@@ -198,10 +173,12 @@ static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage
     }
 
     save = power * damagePerCell;
-    if (!save)
+    if (!save) {
         return 0;
-    if (save > damage)
+    }
+    if (save > damage) {
         save = damage;
+    }
 
     SpawnDamage(pa_te_type, point, normal);
     client->powerarmor_framenum = level.framenum + 0.2 * HZ;
@@ -212,39 +189,48 @@ static int CheckPowerArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage
     return save;
 }
 
-static int CheckArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage, int te_sparks, int dflags)
-{
+/**
+ * How much damage does player's armor absorb?
+ */
+static int CheckArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage, int te_sparks, int dflags) {
     gclient_t   *client;
     int         save;
     int         index;
     gitem_t     *armor;
 
-    if (!damage)
+    if (!damage) {
         return 0;
+    }
 
     client = ent->client;
 
-    if (!client)
+    if (!client) {
         return 0;
+    }
 
-    if (dflags & DAMAGE_NO_ARMOR)
+    if (dflags & DAMAGE_NO_ARMOR) {
         return 0;
+    }
 
     index = ArmorIndex(ent);
-    if (!index)
+    if (!index) {
         return 0;
+    }
 
     armor = INDEX_ITEM(index);
 
-    if (dflags & DAMAGE_ENERGY)
+    if (dflags & DAMAGE_ENERGY) {
         save = ceilf(((gitem_armor_t *)armor->info)->energy_protection * damage);
-    else
+    } else {
         save = ceilf(((gitem_armor_t *)armor->info)->normal_protection * damage);
-    if (save >= client->inventory[index])
+    }
+    if (save >= client->inventory[index]) {
         save = client->inventory[index];
+    }
 
-    if (!save)
+    if (!save) {
         return 0;
+    }
 
     client->inventory[index] -= save;
     SpawnDamage(te_sparks, point, normal);
@@ -252,15 +238,40 @@ static int CheckArmor(edict_t *ent, vec3_t point, vec3_t normal, int damage, int
     return save;
 }
 
-static qboolean CheckTeamDamage(edict_t *targ, edict_t *attacker)
-{
+/**
+ * Should attacker be able to damage targ based on their team status?
+ *
+ * TODO: implement
+ */
+static qboolean CheckTeamDamage(edict_t *targ, edict_t *attacker) {
     //FIXME make the next line real and uncomment this block
     // if ((ability to damage a teammate == OFF) && (targ's team == attacker's team))
     return qfalse;
 }
 
-void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod)
-{
+/**
+ * Apply damage to someone
+ *
+ * targ        entity that is being damaged
+ * inflictor   entity that is causing the damage
+ * attacker    entity that caused the inflictor to damage targ
+ *   example: targ=monster, inflictor=rocket, attacker=player
+ *
+ * dir         direction of the attack
+ * point       point at which the damage is being inflicted
+ * normal      normal vector from that point
+ * damage      amount of damage being inflicted
+ * knockback   force to be applied against targ as a result of the damage
+ *
+ * dflags      these flags are used to control how T_Damage works
+ *   DAMAGE_RADIUS           damage was indirect (from a nearby explosion)
+ *   DAMAGE_NO_ARMOR         armor does not protect from this damage
+ *   DAMAGE_ENERGY           damage is from an energy based weapon
+ *   DAMAGE_NO_KNOCKBACK     do not affect velocity, just view angles
+ *   DAMAGE_BULLET           damage is from a bullet (used for ricochets)
+ *   DAMAGE_NO_PROTECTION    kills godmode, armor, everything
+ */
+void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, vec3_t point, vec3_t normal, int damage, int knockback, int dflags, int mod) {
     gclient_t   *client;
     int         take;
     int         save;
@@ -369,24 +380,23 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     asave = 0;
 
     if (client) {
+        // check if self damage should take armor away
+        if (targ == attacker && !(NOHURT(targ, SELF_ARMOR))) {
+            asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+            take -= asave;
+        }
 
-		// check if self damage should take armor away
-    	if (targ == attacker && !(NOHURT(targ, SELF_ARMOR))) {
-			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-			take -= asave;
-		}
+        // check if team damage should take armor away
+        if (targ != attacker && G_Teammates(targ, attacker) && !(NOHURT(targ, TEAM_ARMOR))) {
+            asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+            take -= asave;
+        }
 
-		// check if team damage should take armor away
-    	if (targ != attacker && G_Teammates(targ, attacker) && !(NOHURT(targ, TEAM_ARMOR))) {
-			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-			take -= asave;
-		}
-
-		// enemy hit, should affect armor
-		if (targ != attacker && !G_Teammates(targ, attacker)) {
-			asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
-			take -= asave;
-		}
+        // enemy hit, should affect armor
+        if (targ != attacker && !G_Teammates(targ, attacker)) {
+            asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+            take -= asave;
+        }
     }
 
     //treat cheat/powerup savings the same as armor
@@ -418,17 +428,17 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
 
         // hurting someone else
         if (targ != attacker) {
-        	if (!G_Teammates(targ, attacker)) {
-        		targ->health -= take;
-        	} else {
-        		if (!NOHURT(targ, TEAM)) {
-        			targ->health -= take;
-        		}
-        	}
+            if (!G_Teammates(targ, attacker)) {
+                targ->health -= take;
+            } else {
+                if (!NOHURT(targ, TEAM)) {
+                    targ->health -= take;
+                }
+            }
         } else {
-        	if (!NOHURT(targ, SELF)) {
-        		targ->health -= take;
-        	}
+            if (!NOHURT(targ, SELF)) {
+                targ->health -= take;
+            }
         }
 
         if (targ->health <= 0 && targ->deadflag != DEAD_DEAD) {
@@ -462,31 +472,30 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
     }
 }
 
-
-/*
-============
-T_RadiusDamage
-============
-*/
-void T_RadiusDamage(edict_t *inflictor, edict_t *attacker, float damage, edict_t *ignore, float radius, int mod)
-{
+/**
+ * Do some damage based on radius around
+ */
+void T_RadiusDamage(edict_t *inflictor, edict_t *attacker, float damage, edict_t *ignore, float radius, int mod) {
     float   points;
     edict_t *ent = NULL;
     vec3_t  v;
     vec3_t  dir;
 
     while ((ent = findradius(ent, inflictor->s.origin, radius)) != NULL) {
-        if (ent == ignore)
+        if (ent == ignore) {
             continue;
-        if (!ent->takedamage)
+        }
+        if (!ent->takedamage) {
             continue;
+        }
 
         VectorAdd(ent->mins, ent->maxs, v);
         VectorMA(ent->s.origin, 0.5, v, v);
         VectorSubtract(inflictor->s.origin, v, v);
         points = damage - 0.5 * VectorLength(v);
-        if (ent == attacker)
+        if (ent == attacker) {
             points = points * 0.5;
+        }
         if (points > 0) {
             if (CanDamage(ent, inflictor)) {
                 VectorSubtract(ent->s.origin, inflictor->s.origin, dir);
@@ -495,4 +504,3 @@ void T_RadiusDamage(edict_t *inflictor, edict_t *attacker, float damage, edict_t
         }
     }
 }
-
