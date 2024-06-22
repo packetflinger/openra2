@@ -1552,11 +1552,11 @@ void G_StartRoundClock(arena_t *a) {
     c = &a->clock;
     if (a->timelimit > 0) {
         ClockInit(c, a, "round", a->timelimit, 0, CLOCK_DOWN);
-        c->postthink = (void *) ClockPostThink;
         c->finish = (void *) G_RoundTimelimitHit;
     } else {
         ClockInit(c, a, "round", 0, 0, CLOCK_UP);
     }
+    c->postthink = (void *) ClockPostThink;
     ClockStart(c);
 }
 
