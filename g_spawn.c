@@ -1010,7 +1010,7 @@ void G_ResetLevel(void)
             ent = client->edict;
             G_ScoreChanged(ent);
             ent->movetype = MOVETYPE_NOCLIP; // do not leave body
-            respawn(ent);
+            G_RespawnPlayer(ent);
         }
     }
 

@@ -839,7 +839,7 @@ static float PlayersRangeFromSpot(edict_t *spot)
  * Pick spawn point in the current arena randomly, trying not to telefrag...
  *
  */
-static edict_t *SelectArenaSpawnPoint(edict_t *player) {
+edict_t *G_SpawnPoint(edict_t *player) {
     edict_t *spot = NULL;
     edict_t *spawns[MAX_SPAWNS];
     int i;
@@ -1081,7 +1081,7 @@ Chooses a player start, deathmatch start, coop start, etc
 static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
 {
     edict_t *spot = NULL;
-    spot = SelectArenaSpawnPoint(ent);
+    spot = G_SpawnPoint(ent);
 
     if (!spot && level.numspawns && PLAYER_SPAWNED(ent)) {
         spot = SelectDeathmatchSpawnPoint();
@@ -1125,11 +1125,10 @@ void InitBodyQue(void)
 }
 
 /**
- *
+ * Setup the player and place them at a random spawn point
  */
 void G_RespawnPlayer(edict_t *ent) {
     int index;
-    vec3_t  spawn_origin, spawn_angles;
     vec3_t temp, temp2;
     gclient_t   *client;
     client_persistant_t pers;
@@ -1137,6 +1136,7 @@ void G_RespawnPlayer(edict_t *ent) {
     client_level_t      lvl;
     trace_t tr;
     int total;
+    edict_t *spot;
 
     if (!ent) {
         return;
@@ -1158,9 +1158,8 @@ void G_RespawnPlayer(edict_t *ent) {
     ent->client->resp.damage_given = 0;
     ent->client->resp.damage_recvd = 0;
     ent->killer = NULL;
-
     ent->health = 0;
-    SelectSpawnPoint(ent, spawn_origin, spawn_angles);
+
     PMenu_Close(ent);
 
     resp = client->resp;
@@ -1215,8 +1214,11 @@ void G_RespawnPlayer(edict_t *ent) {
     // weapon number will be added in changeweapon
     ent->s.skinnum = index;
     ent->s.frame = 0;
-    VectorCopy(spawn_origin, temp);
-    VectorCopy(spawn_origin, temp2);
+
+    spot = G_SpawnPoint(ent);
+
+    VectorCopy(spot->s.origin, temp);
+    VectorCopy(spot->s.origin, temp2);
     temp[2] -= 64;
     temp2[2] += 16;
     tr = gi.trace(temp2, ent->mins, ent->maxs, temp, ent, MASK_PLAYERSOLID);
@@ -1224,9 +1226,10 @@ void G_RespawnPlayer(edict_t *ent) {
         VectorCopy(tr.endpos, ent->s.origin);
         ent->groundentity = tr.ent;
     } else {
-        VectorCopy(spawn_origin, ent->s.origin);
+        VectorCopy(spot->s.origin, ent->s.origin);
         ent->s.origin[2] += 10; // make sure off ground
     }
+    // TODO: move these up?
     VectorCopy(ent->s.origin, ent->s.old_origin);
     VectorCopy(ent->s.origin, ent->old_origin);
 
@@ -1234,14 +1237,13 @@ void G_RespawnPlayer(edict_t *ent) {
     client->ps.pmove.origin[1] = ent->s.origin[1] * 8;
     client->ps.pmove.origin[2] = ent->s.origin[2] * 8;
 
-    spawn_angles[ROLL] = 0;
+    spot->s.angles[ROLL] = 0;
 
-    // set the delta angle
-    G_SetDeltaAngles(ent, spawn_angles);
+    G_SetDeltaAngles(ent, spot->s.angles);
 
-    VectorCopy(spawn_angles, ent->s.angles);
-    VectorCopy(spawn_angles, client->ps.viewangles);
-    VectorCopy(spawn_angles, client->v_angle);
+    VectorCopy(spot->s.angles, ent->s.angles);
+    VectorCopy(spot->s.angles, client->ps.viewangles);
+    VectorCopy(spot->s.angles, client->v_angle);
 
     // we must link before killbox since it uses absmin/absmax
     gi.linkentity(ent);
@@ -1262,91 +1264,6 @@ void G_RespawnPlayer(edict_t *ent) {
     ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
     ent->client->ps.pmove.pm_time = 14;
     ent->client->respawn_framenum = level.framenum;
-    gi.dprintf("G_SpawnPlayer(%p) called\n", ent);
-}
-
-void respawn(edict_t *self)
-{
-    // spectator's don't leave bodies
-    if (self->movetype != MOVETYPE_NOCLIP) {
-        CopyToBodyQue(self);
-    }
-
-    // there is no respawning during a match, so just chase if possible
-    if (ARENA(self)->state > ARENA_STATE_COUNTDOWN) {
-        ChaseTeamMate(self);
-        return;
-    }
-
-    PutClientInServer(self);
-
-    // add a teleportation effect
-    self->s.event = EV_PLAYER_TELEPORT;
-
-    // hold in place briefly
-    self->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
-    self->client->ps.pmove.pm_time = 14;
-
-    self->client->respawn_framenum = level.framenum;
-}
-
-/*
- * only called when pers.spectator changes
- */
-void spectator_respawn(edict_t *ent, int connected)
-{
-    int total;
-
-    ent->client->pers.connected = connected;
-    total = G_UpdateRanks();
-    if (total) {} // temp - silense compiler warning
-
-    // notify others
-    if (connected == CONN_SPAWNED) {
-        //gi.bprintf(PRINT_HIGH, "%s entered the game (%d player%s)\n",
-        //           ent->client->pers.netname, total, total == 1 ? "" : "s");
-
-        PutClientInServer(ent);
-
-        G_ScoreChanged(ent);
-
-        // add a teleportation effect
-        ent->s.event = EV_PLAYER_TELEPORT;
-
-        // hold in place briefly
-        ent->client->ps.pmove.pm_flags = PMF_TIME_TELEPORT;
-        ent->client->ps.pmove.pm_time = 14;
-    } else {
-        //gi.bprintf(PRINT_HIGH, "%s moved to the sidelines (%d player%s)\n",
-        //           ent->client->pers.netname, total, total == 1 ? "" : "s");
-
-        //TossClientWeapon(ent);
-
-#if USE_SQLITE
-        G_BeginLogging();
-        G_LogClient(ent->client);
-        G_EndLogging();
-#endif
-
-        // clear client on respawn
-        memset(&ent->client->resp, 0, sizeof(ent->client->resp));
-
-        // send effect on removed player
-        gi.WriteByte(SVC_TEMP_ENTITY);
-        gi.WriteByte(TE_BLOOD);
-        gi.WritePosition(ent->s.origin);
-        gi.WriteDir(vec3_origin);
-        gi.multicast(ent->s.origin, MULTICAST_PVS);
-
-        PutClientInServer(ent);
-    }
-
-    ent->client->resp.enter_framenum = level.framenum;
-    ent->client->resp.activity_framenum = level.framenum;
-    ent->client->respawn_framenum = level.framenum;
-
-    G_CheckVote();
-    G_SelectBestWeapon(ent);
 }
 
 //==============================================================
@@ -2152,11 +2069,10 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
 
         if (ARENA(ent)->state == ARENA_STATE_PLAY && ent->health < 1) {
             client->latched_buttons = 0;
-            respawn(ent);
+            G_RespawnPlayer(ent);
         }
 
         if (client->pers.connected == CONN_PREGAME) {
-            //spectator_respawn(ent, CONN_SPAWNED);
         } else if (client->pers.connected == CONN_SPECTATOR) {
             client->latched_buttons = 0;
             if (client->chase_target) {
@@ -2222,14 +2138,14 @@ void ClientBeginServerFrame(edict_t *ent)
             if (level.framenum - client->resp.activity_framenum > g_idle_time->value * HZ) {
                 gi.bprintf(PRINT_HIGH, "Removing %s from the game due to inactivity.\n",
                            client->pers.netname);
-                spectator_respawn(ent, CONN_SPECTATOR);
+                G_TeamPart(ent, qfalse);
                 return;
             }
         }
 
         if (ent->deadflag) {
             if (level.framenum > client->respawn_framenum && ARENA(ent)->state < ARENA_STATE_PLAY) {
-                respawn(ent);
+                G_RespawnPlayer(ent);
             }
             return;
         }

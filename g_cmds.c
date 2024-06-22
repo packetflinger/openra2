@@ -1220,7 +1220,7 @@ static void Cmd_Chase_f(edict_t *ent) {
         if (G_SpecRateLimited(ent)) {
             return;
         }
-        spectator_respawn(ent, CONN_SPECTATOR);
+        G_TeamPart(ent, false);
     }
 
     if (target) {

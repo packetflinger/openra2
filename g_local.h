@@ -964,8 +964,6 @@ void fire_bfg(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, fl
 //
 // p_client.c
 //
-void respawn(edict_t *ent);
-void spectator_respawn(edict_t *ent, int connected);
 void BeginIntermission(arena_t *a);
 void PutClientInServer(edict_t *ent);
 void InitBodyQue(void);
@@ -980,6 +978,7 @@ int G_UpdateRanks(void);
 edict_t *SelectIntermissionPoint(arena_t *a);
 void ClientString(edict_t *ent, uint16_t index, const char *str);
 void G_RespawnPlayer(edict_t *ent);
+edict_t *G_SpawnPoint(edict_t *player);
 
 //
 // g_player.c

@@ -280,6 +280,7 @@ void G_InitArenaTeams(arena_t *arena);    // in g_spawn.c
 qboolean G_IsRoundOver(arena_t *a);
 void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced);
 void G_MergeArenaSettings(arena_t *a, arena_entry_t *m);
+void G_MovePlayerToSpawnSpot(edict_t *ent, edict_t *spot);
 size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname);
 int G_PlayerCmp(const void *p1, const void *p2);
 void G_TeamPart(edict_t *ent, qboolean silent);

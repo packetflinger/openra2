@@ -369,7 +369,7 @@ void BeginIntermission(arena_t *a)
         }
 
         if (client->health <= 0 && ARENA(client) == a) {
-            respawn(client);
+            G_RespawnPlayer(client);
         }
     }
 

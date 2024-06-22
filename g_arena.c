@@ -966,10 +966,8 @@ void G_ChangeArena(edict_t *ent, arena_t *arena) {
     ClientString(ent, CS_ROUND, G_RoundToString(ARENA(ent)));
     G_SecsToString(roundtime, arena->timelimit);
     ClientString(ent, CS_MATCH_STATUS, va("Warmup %s", roundtime));
-
-    // send all current player skins to this new player
-    G_UpdateSkins(ent);
-    PutClientInServer(ent);
+    G_UpdateSkins(ent); // send all current player skins to this new player
+    G_MovePlayerToSpawnSpot(ent, G_SpawnPoint(ent));
     G_ArenaSound(arena, level.sounds.teleport);
     G_bprintf(arena, PRINT_HIGH, "%s joined this arena\n", NAME(ent));
 
@@ -1031,6 +1029,10 @@ void G_UpdateConfigStrings(arena_t *a) {
         break;
     case ARENA_STATE_TIMEOUT:
         strcat(buf, va("Timeout %s   (%s)", a->timeout_clock.string, a->clock.string));
+        break;
+    case ARENA_STATE_RINTERMISSION:
+    case ARENA_STATE_MINTERMISSION:
+        strcat(buf, va("Intermission %s", a->clock.string));
         break;
     default:
         buf[0] = 0;
@@ -1160,7 +1162,7 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
 void G_EndRound(arena_t *a, arena_team_t *winner) {
     int i;
     a->round_start_frame = 0;
-    
+
     if (winner) {
         G_bprintf(a, PRINT_HIGH, "Team %s won round %d/%d!\n", winner->name,
                 a->current_round, a->round_limit);
@@ -1431,8 +1433,6 @@ void G_TeamPart(edict_t *ent, qboolean silent) {
     G_SpectatorsJoin(ent);
     G_CheckTeamReady(oldteam);
     G_CheckArenaReady(ARENA(ent));
-
-    //spectator_respawn(ent, CONN_SPECTATOR);
 }
 
 /**
@@ -1973,7 +1973,7 @@ void G_SelectBestWeapon(edict_t *ent) {
 void G_ResetTeam(arena_team_t *t) {
     uint8_t i;
     edict_t *player;
-    
+
     t->damage_dealt = 0;
     t->damage_taken = 0;
     t->ready = qfalse;
@@ -1982,17 +1982,17 @@ void G_ResetTeam(arena_team_t *t) {
     for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (t->players[i]) {
             player = t->players[i];
-            
+
             memset(&player->client->resp, 0, sizeof(player->client->resp));
             memset(&player->client->level.vote, 0, sizeof(player->client->level.vote));
-            
+
             player->movetype = MOVETYPE_NOCLIP; // don't leave a body
             player->client->pers.ready = qfalse;
-            
+
             if (g_team_reset->value) {
                 G_TeamPart(player, true);
             } else {
-                respawn(player);
+                G_RespawnPlayer(player);
             }
         }
     }
@@ -2817,4 +2817,12 @@ qboolean G_IsRoundOver(arena_t *a) {
         return qtrue;
     }
     return qfalse;
+}
+
+/**
+ * Move the player to the place in the map where they will spawn
+ */
+void G_MovePlayerToSpawnSpot(edict_t *ent, edict_t *spot) {
+    VectorCopy(spot->s.origin, ent->s.origin);
+    VectorCopy(spot->s.angles, ent->s.angles);
 }
