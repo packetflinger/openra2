@@ -88,62 +88,6 @@ static void body_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int d
     }
 }
 
-static void CopyToBodyQue(edict_t *ent)
-{
-    edict_t     *body;
-
-    gi.unlinkentity(ent);
-
-    // grab a body que and cycle to the next one
-    body = &g_edicts[game.maxclients + level.body_que + 1];
-    level.body_que = (level.body_que + 1) % BODY_QUEUE_SIZE;
-
-    // send an effect on the removed body
-    if (body->s.modelindex) {
-        gi.WriteByte(SVC_TEMP_ENTITY);
-        gi.WriteByte(TE_BLOOD);
-        gi.WritePosition(body->s.origin);
-        gi.WriteDir(vec3_origin);
-        gi.multicast(body->s.origin, MULTICAST_PVS);
-    }
-
-    gi.unlinkentity(body);
-
-    body->s.number = body - g_edicts;
-    VectorCopy(ent->s.origin, body->s.origin);
-    VectorCopy(ent->s.origin, body->s.old_origin);
-    VectorCopy(ent->s.origin, body->old_origin);
-    VectorCopy(ent->s.angles, body->s.angles);
-    body->s.modelindex = ent->s.modelindex;
-    body->s.frame = ent->s.frame;
-    body->s.skinnum = ent->s.skinnum;
-    body->s.event = EV_OTHER_TELEPORT;
-
-    // start with dead player frame
-    if (ent->s.modelindex == 255 && ent->client && ent->client->anim_priority == ANIM_DEATH)
-        body->s.frame = ent->client->anim_end;
-
-    body->svflags = ent->svflags;
-    VectorCopy(ent->mins, body->mins);
-    VectorCopy(ent->maxs, body->maxs);
-    VectorCopy(ent->absmin, body->absmin);
-    VectorCopy(ent->absmax, body->absmax);
-    VectorCopy(ent->size, body->size);
-    VectorCopy(ent->velocity, body->velocity);
-    VectorCopy(ent->avelocity, body->avelocity);
-    body->solid = ent->solid;
-    body->clipmask = ent->clipmask;
-    body->owner = ent->owner;
-    body->movetype = ent->movetype;
-    body->groundentity = ent->groundentity;
-
-    body->die = body_die;
-    body->takedamage = DAMAGE_YES;
-
-    gi.linkentity(body);
-}
-
-
 int G_UpdateRanks(void)
 {
     gclient_t   *ranks[MAX_CLIENTS];
