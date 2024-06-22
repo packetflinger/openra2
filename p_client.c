@@ -67,27 +67,6 @@ void player_pain(edict_t *self, edict_t *other, float kick, int damage)
     // player pain is handled at the end of the frame in P_DamageFeedback
 }
 
-static void body_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
-{
-    int n;
-
-    if (self->health < -40) {
-        gi.sound(self, CHAN_BODY, level.sounds.udeath, 1, ATTN_NORM, 0);
-        for (n = 0; n < 4; n++)
-            ThrowGib(self, level.models.meat, damage, GIB_ORGANIC);
-#if 0
-        ThrowGib(self, level.models.arm, damage, GIB_ORGANIC);
-        ThrowGib(self, level.models.leg, damage, GIB_ORGANIC);
-        ThrowGib(self, level.models.chest, damage, GIB_ORGANIC);
-        ThrowGib(self, level.models.bones[0], damage, GIB_ORGANIC);
-        ThrowGib(self, level.models.bones[1], damage, GIB_ORGANIC);
-#endif
-        self->s.origin[2] -= 48;
-        ThrowClientHead(self, damage);
-        self->takedamage = DAMAGE_NO;
-    }
-}
-
 int G_UpdateRanks(void)
 {
     gclient_t   *ranks[MAX_CLIENTS];
