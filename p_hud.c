@@ -31,16 +31,10 @@ int G_PlayerCmp(const void *p1, const void *p2) {
     gclient_t *a = *(gclient_t * const *)p1;
     gclient_t *b = *(gclient_t * const *)p2;
 
-    if (a->resp.damage_given > b->resp.damage_given) {
+    if (a->pers.damage > b->pers.damage) {
         return -1;
     }
-    if (a->resp.damage_given < b->resp.damage_given) {
-        return 1;
-    }
-    if (a->resp.damage_recvd < b->resp.damage_recvd) {
-        return -1;
-    }
-    if (a->resp.damage_recvd > b->resp.damage_recvd) {
+    if (a->pers.damage < b->pers.damage) {
         return 1;
     }
     return 0;
@@ -725,10 +719,17 @@ void G_SetStats(edict_t *ent)
     if (ent->health <= 0 || level.intermission_framenum || ent->client->layout)
         ent->client->ps.stats[STAT_LAYOUTS] |= 1;
 
-    //
-    // frags
-    //
-    ent->client->ps.stats[STAT_FRAGS] = ent->client->resp.damage_given;
+    // score
+    switch (ARENA(ent)->scoremode) {
+    case SCOREMODE_FRAGS:
+        ent->client->ps.stats[STAT_FRAGS] = ent->client->pers.frags;
+        break;
+    case SCOREMODE_DAMAGE:
+        ent->client->ps.stats[STAT_FRAGS] = ent->client->pers.damage;
+        break;
+    default:
+        ent->client->ps.stats[STAT_FRAGS] = ent->client->pers.score;
+    }
 
     ent->client->ps.stats[STAT_SPECTATOR] = 0;
     ent->client->ps.stats[STAT_CHASE] = 0;

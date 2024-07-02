@@ -828,6 +828,7 @@ extern  cvar_t  *g_all_chat;
 extern  cvar_t  *g_round_timelimit;
 extern  cvar_t  *g_fast_weapon_change;
 extern  cvar_t  *g_debug_clocks;
+extern  cvar_t  *g_scoremode;   // server level
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
@@ -1241,6 +1242,9 @@ typedef struct {
     char            teamskin[MAX_SKINNAME];
     char            enemyskin[MAX_SKINNAME];
     statusbar_t     current_statusbar;
+    int32_t         score;
+    int32_t         frags;
+    int32_t         damage;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,
@@ -1255,6 +1259,7 @@ typedef struct {
     fragstat_t  frags[FRAG_TOTAL];
     itemstat_t  items[ITEM_TOTAL];
     int         damage_given, damage_recvd;
+    int         points;     // 1 for every 100 damage_given
 } client_respawn_t;
 
 // client data that stays across respawns,

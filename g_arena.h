@@ -91,6 +91,12 @@ typedef struct {
     char name[20];
 } pmenu_arena_t;
 
+typedef enum {
+    SCOREMODE_POINTS,   // Every 100 damage dealt is 1 point, original ra2 mode
+    SCOREMODE_DAMAGE,   // Credit for raw damage dealt (including armor)
+    SCOREMODE_FRAGS     // Only credit if you actually frag someone
+} scoremode_t;
+
 typedef struct {
     int32_t     proposal;                    // which VOTE_*
     int8_t      index;                       // matches index in client_level_t
@@ -144,6 +150,7 @@ typedef struct {
     qboolean   ready;
     uint32_t   damage_dealt;
     uint32_t   damage_taken;
+    uint32_t   points;
     list_t     entry;
 } arena_team_t;
 
@@ -200,6 +207,7 @@ typedef struct {
     qboolean        corpseview;                  // gag, see chasers
     arena_clock_t   clock;                       // match countdown, timer, intermission
     arena_clock_t   timeout_clock;               // used for timeouts
+    scoremode_t     scoremode;                   // how players are scored
 } arena_t;
 
 // maps contain multiple arenas

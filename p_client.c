@@ -452,8 +452,16 @@ void G_BeginDamage(void)
     damaging = 1;
 }
 
-// called from T_Damage only when target is a living player
-// and inflictor is a real entity (not world)
+/**
+ * Called from T_Damage only when target is a living player and inflictor is a
+ * real entity (not world)
+ *
+ * targ = recieved the damage
+ * inflictor = the edict that did the damage (rocket, etc
+ * attacker = who did the damage
+ * points = the amount of damage done
+ */
+
 void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int points)
 {
     frag_t frag;
@@ -474,16 +482,6 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     targ->client->resp.damage_recvd += points;
     if (targ == attacker) {
         return; // no credit for shooting yourself
-    }
-
-    if (!G_Teammates(attacker, targ)) {
-        attacker->client->resp.damage_given += points;
-        TEAM(attacker)->damage_dealt += points;
-        TEAM(targ)->damage_taken += points;
-    } else {
-        attacker->client->resp.damage_given -= points;
-        TEAM(attacker)->damage_dealt -= points;
-        TEAM(targ)->damage_taken += points;
     }
 
     // don't count multiple damage as multiple hits (but railgun still counts)

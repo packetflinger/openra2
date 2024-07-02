@@ -890,6 +890,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         level.arenas[j].fastswitch = (int) g_fast_weapon_change->value;
         level.arenas[j].mode = ARENA_MODE_NORMAL;
         level.arenas[j].corpseview = qfalse;
+        level.arenas[j].scoremode = (int) g_scoremode->value;
 
         Q_strlcpy(level.arenas[j].name, ent->message, sizeof(level.arenas[j].name));
 

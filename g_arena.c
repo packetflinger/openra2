@@ -499,9 +499,9 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
                 "yt %d "
                 "cstring \"Team %s - %d\" "
                 "yt %d "
-                "cstring2 \"Name                 Damage     Time Ping\"", entry, y,
+                "cstring2 \"Name                 Score      Time Ping\"", entry, y,
                 arena->teams[k].name,
-                arena->teams[k].damage_dealt,
+                arena->teams[k].points,
                 y + LAYOUT_LINE_HEIGHT
         );
 
@@ -518,8 +518,8 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
                 sec = 1;
             }
 
-            if (c->resp.score > 0) {
-                j = c->resp.score + c->resp.deaths;
+            if (c->pers.score > 0) {
+                j = c->pers.score + c->resp.deaths;
             }
 
             if (level.framenum < 10 * 60 * HZ) {
@@ -531,7 +531,7 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
             len = Q_snprintf(entry, sizeof(entry),
                     "yt %d cstring \"%-21s %6d     %4s %4d\"", y,
                     c->pers.netname,
-                    c->resp.damage_given,
+                    c->pers.score,
                     timebuf,
                     c->ping
             );
