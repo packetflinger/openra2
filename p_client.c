@@ -611,17 +611,7 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
     if (!self->deadflag) {
         if (arena && team && arena->state >= ARENA_STATE_PLAY) {
-            /*TEAM(self)->players_alive--;
-            if (TEAM(self)->players_alive == 0) {
-                ARENA(self)->teams_alive--;
-            }*/
-            if (!G_CheckTeamAlive(self)) {
-                arena->teams_alive--;
-            }
-
-            if (!G_IsRoundOver(arena)) {
-                arena->teams_alive = 1;
-            }
+            G_CountEveryone(arena);
         }
 
         self->client->respawn_framenum = level.framenum + 1 * HZ;

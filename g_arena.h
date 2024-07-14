@@ -272,6 +272,7 @@ void G_CheckVoteStatus(arena_t *a);
 void G_ChangeArena(edict_t *ent, arena_t *arena);
 void G_ClearRoundInfo(arena_t *a);
 void G_ConfigString(arena_t *arena, uint16_t index, const char *string);
+void G_CountEveryone(arena_t *a);
 const char *G_CreatePlayerStatusBar(edict_t *player);
 char *G_DamageFlagsToString(uint32_t df);
 void G_EndMatch(arena_t *a, arena_team_t *winner);

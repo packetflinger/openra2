@@ -2826,3 +2826,28 @@ void G_MovePlayerToSpawnSpot(edict_t *ent, edict_t *spot) {
     VectorCopy(spot->s.origin, ent->s.origin);
     VectorCopy(spot->s.angles, ent->s.angles);
 }
+
+/**
+ * Count everyone on all the teams in a particular arena keeping track of
+ * how many players are alive.
+ *
+ * Called from player_die() when ever a player is fragged
+ */
+void G_CountEveryone(arena_t *a) {
+    int8_t players_alive;
+    int32_t teams_alive = 0;
+
+    for (int i=0; i<a->team_count; i++) {
+        players_alive = 0;
+        for (int j=0; j<a->teams[i].player_count; j++) {
+            if (a->teams[i].players[j]->health > 0) {
+                players_alive++;
+            }
+        }
+        a->teams[i].players_alive = players_alive;
+        if (players_alive > 0) {
+            teams_alive++;
+        }
+    }
+    a->teams_alive = teams_alive;
+}
