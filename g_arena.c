@@ -964,7 +964,7 @@ void G_ChangeArena(edict_t *ent, arena_t *arena) {
     ent->client->pers.ready = false;
     G_SpectatorsJoin(ent);
     ClientString(ent, CS_ROUND, G_RoundToString(ARENA(ent)));
-    G_SecsToString(roundtime, arena->timelimit);
+    G_SecsToString(roundtime, arena->timelimit * 60);
     ClientString(ent, CS_MATCH_STATUS, va("Warmup %s", roundtime));
     G_UpdateSkins(ent); // send all current player skins to this new player
     G_MovePlayerToSpawnSpot(ent, G_SpawnPoint(ent));
@@ -1551,7 +1551,7 @@ void G_StartRoundClock(arena_t *a) {
     }
     c = &a->clock;
     if (a->timelimit > 0) {
-        ClockInit(c, a, "round", a->timelimit, 0, CLOCK_DOWN);
+        ClockInit(c, a, "round", a->timelimit * 60, 0, CLOCK_DOWN);
         c->finish = (void *) G_RoundTimelimitHit;
     } else {
         ClockInit(c, a, "round", 0, 0, CLOCK_UP);
