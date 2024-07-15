@@ -787,6 +787,29 @@ void G_InitArenaTeams(arena_t *arena)
     }
 }
 
+/**
+ * Recursively sort the arenas array by their numbers.
+ *
+ * Called from G_SpawnEntities() after arenas are parsed from the .bsp map
+ */
+void sort_arenas() {
+    qboolean swapped = false;
+    arena_t temp;
+
+    for (int i; i<level.arena_count-1; i++) {
+        if (level.arenas[i].number > level.arenas[i+1].number) {
+            temp = level.arenas[i];
+            level.arenas[i] = level.arenas[i+1];
+            level.arenas[i+1] = temp;
+            swapped = qtrue;
+        }
+    }
+
+    if (swapped) {
+        sort_arenas();
+    }
+}
+
 /*
 ==============
 SpawnEntities
@@ -901,7 +924,11 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         G_InitArenaTeams(&level.arenas[j]);
 
         level.arena_count++;
-        List_Append(&g_arenalist, &level.arenas[j].entry);
+    }
+
+    sort_arenas();
+    for (int i=1; i<=level.arena_count; i++) {
+        List_Append(&g_arenalist, &level.arenas[i].entry);
     }
 
     // find the default arena
@@ -957,6 +984,13 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
     gi.dprintf("%d spawn points\n", level.numspawns);
     gi.dprintf("%d arena%s\n", level.arena_count, (level.arena_count > 1) ? "s":"");
+
+    if (DEBUG) {
+        arena_t *a;
+        FOR_EACH_ARENA(a) {
+            gi.dprintf("  [%d] %s\n", a->number, a->name);
+        }
+    }
 }
 
 void G_ResetLevel(void)
