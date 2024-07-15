@@ -376,6 +376,12 @@ void ChaseTeamMate(edict_t *ent) {
     uint8_t i;
     arena_team_t *t = TEAM(ent);
 
+    // probably a spec
+    if (!t) {
+        ChaseNext(ent);
+        return;
+    }
+
     for (i=0; i<t->player_count; i++) {
         tm = t->players[i];
         if (tm != ent) {
