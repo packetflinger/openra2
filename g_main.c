@@ -139,6 +139,7 @@ cvar_t *g_round_timelimit;
 cvar_t *g_fast_weapon_change;
 cvar_t *g_debug_clocks;
 cvar_t *g_scoremode;
+cvar_t *g_debug;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -995,6 +996,7 @@ static void G_Init(void) {
     g_fast_weapon_change = gi.cvar("g_fast_weapon_change", "1", CVAR_GENERAL);
     g_debug_clocks = gi.cvar("g_debug_clocks", "0", CVAR_GENERAL);
     g_scoremode = gi.cvar("g_scoremode", "0", CVAR_LATCH);
+    g_debug = gi.cvar("g_debug", "0", CVAR_GENERAL);
 
     // Sane limits
     clamp(g_round_countdown->value, 3, 30);

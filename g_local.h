@@ -829,6 +829,7 @@ extern  cvar_t  *g_round_timelimit;
 extern  cvar_t  *g_fast_weapon_change;
 extern  cvar_t  *g_debug_clocks;
 extern  cvar_t  *g_scoremode;   // server level
+extern  cvar_t  *g_debug;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
@@ -836,6 +837,8 @@ extern  list_t  g_map_queue;
 //extern  cvar_t  *sv_features;
 
 #define world   (&g_edicts[0])
+
+#define DEBUG       ((int)g_debug->value > 0)
 
 // item spawnflags
 #define ITEM_TRIGGER_SPAWN      0x00000001
