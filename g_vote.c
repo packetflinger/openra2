@@ -414,6 +414,12 @@ qboolean G_CheckArenaVote(arena_t *a)
             G_RecreateArena(a);
             break;
 
+        case VOTE_CONFIG:
+            a->modified = qtrue;
+            gi.AddCommandString(va("exec config/%s.cfg\n", a->vote.map));
+            G_bprintf(a, PRINT_HIGH, "Local vote passed: local config file applied\n");
+            break;
+
         default:
             break;
         }
@@ -480,6 +486,9 @@ static void G_BuildProposal(char *buffer, arena_t *a)
         break;
     case VOTE_CORPSE:
         sprintf(buffer, "corpse-view %s", (a->vote.value) ? "on" : "off");
+        break;
+    case VOTE_CONFIG:
+        snprintf(buffer, MAX_QPATH + 20, "apply local config: %s", a->vote.map);
         break;
     default:
         strcpy(buffer, "unknown");
@@ -706,6 +715,13 @@ static qboolean vote_corpseview(edict_t *ent)
     return qtrue;
 }
 
+static qboolean vote_config(edict_t *ent) {
+    char *arg = gi.argv(2);
+    // just use the map field for the config file name
+    strncpy(ARENA(ent)->vote.map, arg, MAX_QPATH);
+    return qtrue;
+}
+
 typedef struct {
     const char  *name;
     int         bit;
@@ -727,6 +743,7 @@ static const vote_proposal_t vote_proposals[] = {
     {"timelimit",   VOTE_TIMELIMIT, vote_timelimit},
     {"mode",        VOTE_MODE,      vote_mode},
     {"corpseview",  VOTE_CORPSE,    vote_corpseview},
+    {"config",      VOTE_CONFIG,    vote_config},
     {NULL}
 };
 
@@ -842,6 +859,10 @@ void Cmd_Vote_f(edict_t *ent)
             gi.cprintf(ent, PRINT_HIGH,
                        " mode <0/1>                     Gameplay mode, 0=regular, 1=competition\n");
         }
+        if (mask & VOTE_CONFIG) {
+            gi.cprintf(ent, PRINT_HIGH,
+                       " config <configname>            exec a local config\n");
+        }
 
         // leave corpseview out of help
 
@@ -930,6 +951,8 @@ void Cmd_Vote_f(edict_t *ent)
             }
             buffer[total] = 0;
             gi.cprintf(ent, PRINT_HIGH, "Available maplist: %s\n", buffer);
+        } else if (v->bit == VOTE_CONFIG) {
+            gi.cprintf(ent, PRINT_HIGH, "Available configs:\n  <under construction>\n");
         } else {
             gi.cprintf(ent, PRINT_HIGH, "Argument required for '%s'. Type '%s help' for usage.\n", v->name, gi.argv(0));
         }
