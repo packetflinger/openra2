@@ -715,9 +715,35 @@ static qboolean vote_corpseview(edict_t *ent)
     return qtrue;
 }
 
+/**
+ * Check if config voting command is valid or not.
+ *
+ * Doesn't check if requested config file exists in the filesystem, only if
+ * it's been defined in the g_configlist cvar.
+ */
 static qboolean vote_config(edict_t *ent) {
+    localconfig_t *c;
+    qboolean found = qfalse;
     char *arg = gi.argv(2);
-    // just use the map field for the config file name
+
+    // List is empty, most likely g_configlist cvar is empty (default)
+    if (configlist.next == configlist.prev) {   // init'd empty list
+        gi.cprintf(ent, PRINT_HIGH, "No server configs are available");
+        return qfalse;
+    }
+
+    // Make sure config name requested is in the list
+    FOR_EACH_CONFIG(c) {
+        if (!Q_stricmp(c->config, arg)) {
+            found = qtrue;
+        }
+    }
+    if (!found) {
+        gi.cprintf(ent, PRINT_HIGH, "config '%s' not allowed\n", arg);
+        return qfalse;
+    }
+
+    // Just use the map field for the config file name
     strncpy(ARENA(ent)->vote.map, arg, MAX_QPATH);
     return qtrue;
 }
