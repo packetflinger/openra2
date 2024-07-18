@@ -726,8 +726,7 @@ static qboolean vote_config(edict_t *ent) {
     qboolean found = qfalse;
     char *arg = gi.argv(2);
 
-    // List is empty, most likely g_configlist cvar is empty (default)
-    if (configlist.next == configlist.prev) {   // init'd empty list
+    if (LIST_EMPTY(&configlist)) {
         gi.cprintf(ent, PRINT_HIGH, "No server configs are available");
         return qfalse;
     }
@@ -978,7 +977,15 @@ void Cmd_Vote_f(edict_t *ent)
             buffer[total] = 0;
             gi.cprintf(ent, PRINT_HIGH, "Available maplist: %s\n", buffer);
         } else if (v->bit == VOTE_CONFIG) {
-            gi.cprintf(ent, PRINT_HIGH, "Available configs:\n  <under construction>\n");
+            if (LIST_EMPTY(&configlist)) {
+                gi.cprintf(ent, PRINT_HIGH, "No configs are defined\n");
+            } else {
+                gi.cprintf(ent, PRINT_HIGH, "Available configs:\n");
+                localconfig_t *c;
+                FOR_EACH_CONFIG(c) {
+                    gi.cprintf(ent, PRINT_HIGH, "  %s\n", c->config);
+                }
+            }
         } else {
             gi.cprintf(ent, PRINT_HIGH, "Argument required for '%s'. Type '%s help' for usage.\n", v->name, gi.argv(0));
         }
