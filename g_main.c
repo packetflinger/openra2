@@ -864,7 +864,7 @@ static void G_BuildConfigList() {
     char *token;
     localconfig_t *current = 0;
 
-    if (!Q_stricmp(g_configlist->string, "")) {
+    if (!g_configlist->string[0]) {
         return;
     }
 
