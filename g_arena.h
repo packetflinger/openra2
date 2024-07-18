@@ -52,6 +52,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern list_t    g_arenalist;
 
+#define FOR_EACH_CONFIG(c) \
+    LIST_FOR_EACH(localconfig_t, c, &configlist, entry)
+extern list_t    configlist;
+
 #ifdef _WIN32
 #define DATE_FORMAT ("%b %d, %Y %H:%M ")
 #else

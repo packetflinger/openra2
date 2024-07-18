@@ -661,6 +661,14 @@ typedef struct {
     void        (*endfunc)(edict_t *);
 } moveinfo_t;
 
+/**
+ * linked-list node for local config voting. List created by parsing the
+ * g_configlist cvar (space separated (no .cfg))
+ */
+typedef struct {
+    char *config;
+    list_t entry;
+} localconfig_t;
 
 #define MAP_NOAUTO      1
 #define MAP_NOVOTE      2
@@ -831,6 +839,7 @@ extern  cvar_t  *g_fast_weapon_change;
 extern  cvar_t  *g_debug_clocks;
 extern  cvar_t  *g_scoremode;   // server level
 extern  cvar_t  *g_debug;
+extern  cvar_t  *g_configlist;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;

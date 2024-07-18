@@ -22,6 +22,7 @@
 #include "g_local.h"
 
 LIST_DECL(g_arenalist);
+LIST_DECL(configlist);
 
 game_locals_t  game;
 level_locals_t level;
@@ -140,6 +141,7 @@ cvar_t *g_fast_weapon_change;
 cvar_t *g_debug_clocks;
 cvar_t *g_scoremode;
 cvar_t *g_debug;
+cvar_t *g_configlist;
 
 LIST_DECL(g_map_list);
 LIST_DECL(g_map_queue);
@@ -854,6 +856,36 @@ static void check_cvar(cvar_t *cv)
     }
 }
 
+/**
+ * Parse the g_configlist cvar value into a linked list
+ */
+static void G_BuildConfigList() {
+    char buffer[MAX_STRING_CHARS];
+    char *token;
+    localconfig_t *current = 0;
+
+    memset(buffer, 0, sizeof(buffer));
+    strncpy(buffer, g_configlist->string, MAX_STRING_CHARS);
+    List_Init(&configlist);
+
+    gi.cprintf(NULL, PRINT_HIGH, "Building local config list\n");
+    token = strtok(buffer, " ");
+    while (token) {
+        current = G_Malloc(sizeof(localconfig_t));
+        current->config = G_Malloc(strlen(token));
+        current->config = token;
+        List_Append(&configlist, &current->entry);
+        token = strtok(NULL, " ");
+    }
+
+    if (DEBUG) {
+        localconfig_t *c;
+        FOR_EACH_CONFIG(c) {
+            gi.dprintf("  %s\n", c->config);
+        }
+    }
+}
+
 /*
  ============
  InitGame
@@ -997,6 +1029,7 @@ static void G_Init(void) {
     g_debug_clocks = gi.cvar("g_debug_clocks", "0", CVAR_GENERAL);
     g_scoremode = gi.cvar("g_scoremode", "0", CVAR_LATCH);
     g_debug = gi.cvar("g_debug", "0", CVAR_GENERAL);
+    g_configlist = gi.cvar("g_configlist", "", CVAR_LATCH);
 
     // Sane limits
     clamp(g_round_countdown->value, 3, 30);
@@ -1098,6 +1131,7 @@ static void G_Init(void) {
     // export our own features
     gi.cvar_forceset("g_features", va("%d", G_FEATURES));
 
+    G_BuildConfigList();
     gi.dprintf("==== Game Initialized ====\n\n");
 }
 
