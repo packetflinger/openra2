@@ -666,7 +666,7 @@ typedef struct {
  * g_configlist cvar (space separated (no .cfg))
  */
 typedef struct {
-    char *config;
+    char config[MAX_OSPATH];
     list_t entry;
 } localconfig_t;
 

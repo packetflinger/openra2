@@ -876,8 +876,8 @@ static void G_BuildConfigList() {
     token = strtok(buffer, " ");
     while (token) {
         current = G_Malloc(sizeof(localconfig_t));
-        current->config = G_Malloc(strlen(token));
-        current->config = token;
+        memset(&current->config[0], 0, sizeof(current->config));
+        strncpy(current->config, token, sizeof(current->config));
         List_Append(&configlist, &current->entry);
         token = strtok(NULL, " ");
     }
