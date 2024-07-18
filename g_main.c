@@ -864,6 +864,10 @@ static void G_BuildConfigList() {
     char *token;
     localconfig_t *current = 0;
 
+    if (!Q_stricmp(g_configlist->string, "")) {
+        return;
+    }
+
     memset(buffer, 0, sizeof(buffer));
     strncpy(buffer, g_configlist->string, MAX_STRING_CHARS);
     List_Init(&configlist);
