@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 
 /**
- * Returns true if the inflictor can directly damage the target.
+ * Returns true if the inflicter can directly damage the target.
  * Used for explosions and melee attacks.
  */
 qboolean CanDamage(edict_t *targ, edict_t *inflictor) {
