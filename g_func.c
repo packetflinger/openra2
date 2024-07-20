@@ -169,9 +169,9 @@ static void Move_Calc(edict_t *ent, void(*func)(edict_t*)) {
     }
 }
 
-//
-// Support routines for angular movement (changes in angle using avelocity)
-//
+/**
+ * Support routines for angular movement (changes in angle using avelocity)
+ */
 static void AngleMove_Done(edict_t *ent) {
     VectorClear(ent->avelocity);
     ent->moveinfo.endfunc(ent);
@@ -246,14 +246,9 @@ static void AngleMove_Calc(edict_t *ent, void(*func)(edict_t*)) {
     }
 }
 
-/*
-==============
-Think_AccelMove
-
-The team has completed a frame of movement, so
-change the speed for the next frame
-==============
-*/
+/**
+ *
+ */
 static void plat_CalcAcceleratedMove(moveinfo_t *moveinfo) {
     float   accel_dist;
     float   decel_dist;
@@ -291,8 +286,9 @@ static void plat_Accelerate(moveinfo_t *moveinfo) {
                 moveinfo->next_speed = 0;
                 return;
             }
-            if (moveinfo->current_speed > moveinfo->decel)
+            if (moveinfo->current_speed > moveinfo->decel) {
                 moveinfo->current_speed -= moveinfo->decel;
+            }
         }
         return;
     }
@@ -314,22 +310,24 @@ static void plat_Accelerate(moveinfo_t *moveinfo) {
 
     // are we accelerating?
     if (moveinfo->current_speed < moveinfo->speed) {
-        float   old_speed;
-        float   p1_distance;
-        float   p1_speed;
-        float   p2_distance;
-        float   distance;
+        float old_speed;
+        float p1_distance;
+        float p1_speed;
+        float p2_distance;
+        float distance;
 
         old_speed = moveinfo->current_speed;
 
         // figure simple acceleration up to move_speed
         moveinfo->current_speed += moveinfo->accel;
-        if (moveinfo->current_speed > moveinfo->speed)
+        if (moveinfo->current_speed > moveinfo->speed) {
             moveinfo->current_speed = moveinfo->speed;
+        }
 
         // are we accelerating throughout this entire move?
-        if ((moveinfo->remaining_distance - moveinfo->current_speed) >= moveinfo->decel_distance)
+        if ((moveinfo->remaining_distance - moveinfo->current_speed) >= moveinfo->decel_distance) {
             return;
+        }
 
         // during this move we will accelrate from current_speed to move_speed
         // and cross over the decel_distance; figure the average speed for the
@@ -405,8 +403,9 @@ static void plat_go_down(edict_t *ent);
  */
 static void plat_hit_top(edict_t *ent) {
     if (!(ent->flags & FL_TEAMSLAVE)) {
-        if (ent->moveinfo.sound_end)
+        if (ent->moveinfo.sound_end) {
             gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_end, 1, ATTN_STATIC, 0);
+        }
         ent->s.sound = 0;
     }
     ent->moveinfo.state = STATE_TOP;
@@ -419,8 +418,9 @@ static void plat_hit_top(edict_t *ent) {
  */
 static void plat_hit_bottom(edict_t *ent) {
     if (!(ent->flags & FL_TEAMSLAVE)) {
-        if (ent->moveinfo.sound_end)
+        if (ent->moveinfo.sound_end) {
             gi.sound(ent, CHAN_NO_PHS_ADD + CHAN_VOICE, ent->moveinfo.sound_end, 1, ATTN_STATIC, 0);
+        }
         ent->s.sound = 0;
     }
     ent->moveinfo.state = STATE_BOTTOM;
@@ -551,24 +551,9 @@ static void plat_spawn_inside_trigger(edict_t *ent) {
     gi.linkentity(trigger);
 }
 
-
-/*QUAKED func_plat (0 .5 .8) ? PLAT_LOW_TRIGGER
-speed   default 150
-
-Plats are always drawn in the extended position, so they will light correctly.
-
-If the plat is the target of another trigger or button, it will start out disabled in the extended position until it is trigger, when it will lower and become a normal plat.
-
-"speed" overrides default 200.
-"accel" overrides default 500
-"lip"   overrides default 8 pixel lip
-
-If the "height" key is set, that will determine the amount the plat moves, instead of being implicitly determoveinfoned by the model's height.
-
-Set "sounds" to one of the following:
-1) base fast
-2) chain slow
-*/
+/**
+ *
+ */
 void SP_func_plat(edict_t *ent) {
     VectorClear(ent->s.angles);
     ent->solid = SOLID_BSP;
@@ -644,20 +629,6 @@ void SP_func_plat(edict_t *ent) {
     ent->moveinfo.sound_end = gi.soundindex("plats/pt1_end.wav");
 }
 
-//====================================================================
-
-/*QUAKED func_rotating (0 .5 .8) ? START_ON REVERSE X_AXIS Y_AXIS TOUCH_PAIN STOP ANIMATED ANIMATED_FAST
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the X_AXIS or Y_AXIS box to change that.
-
-"speed" determines how fast it moves; default value is 100.
-"dmg"   damage to inflict when blocked (2 default)
-
-REVERSE will cause the it to rotate in the opposite direction.
-STOP mean it will stop moving instead of pushing entities
-*/
-
 /**
  *
  */
@@ -723,8 +694,6 @@ void SP_func_rotating(edict_t *ent) {
         ent->dmg = 2;
     }
 
-//  ent->moveinfo.sound_middle = "doors/hydro1.wav";
-
     ent->use = rotating_use;
     if (ent->dmg) {
         ent->blocked = rotating_blocked;
@@ -744,31 +713,6 @@ void SP_func_rotating(edict_t *ent) {
     gi.setmodel(ent, ent->model);
     gi.linkentity(ent);
 }
-
-/*
-======================================================================
-
-BUTTONS
-
-======================================================================
-*/
-
-/*QUAKED func_button (0 .5 .8) ?
-When a button is touched, it moves some distance in the direction of it's angle, triggers all of it's targets, waits some time, then returns to it's original position where it can be triggered again.
-
-"angle"     determines the opening direction
-"target"    all entities with a matching targetname will be used
-"speed"     override the default 40 speed
-"wait"      override the default 1 second wait (-1 = never return)
-"lip"       override the default 4 pixel lip remaining at end of move
-"health"    if set, the button must be killed instead of touched
-"sounds"
-1) silent
-2) steam metal
-3) wooden clunk
-4) metallic click
-5) in-out
-*/
 
 /**
  *
@@ -931,37 +875,6 @@ void SP_func_button(edict_t *ent) {
     gi.linkentity(ent);
 }
 
-/*
-======================================================================
-
-DOORS
-
-  spawn a trigger surrounding the entire team unless it is
-  already targeted by another
-
-======================================================================
-*/
-
-/*QUAKED func_door (0 .5 .8) ? START_OPEN x CRUSHER NOMONSTER ANIMATED TOGGLE ANIMATED_FAST
-TOGGLE      wait in both the start and end states for a trigger event.
-START_OPEN  the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER   monsters will not trigger this door
-
-"message"   is printed when the door is touched if it is a trigger door and it hasn't been fired yet
-"angle"     determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"health"    if set, door must be shot open
-"speed"     movement speed (100 default)
-"wait"      wait before returning (3 default, -1 = never return)
-"lip"       lip remaining at end of move (8 default)
-"dmg"       damage to inflict when blocked (2 default)
-"sounds"
-1)  silent
-2)  light
-3)  medium
-4)  heavy
-*/
-
 /**
  *
  */
@@ -986,8 +899,9 @@ static void door_go_down(edict_t *self);
  */
 static void door_hit_top(edict_t *self) {
     if (!(self->flags & FL_TEAMSLAVE)) {
-        if (self->moveinfo.sound_end)
+        if (self->moveinfo.sound_end) {
             gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_end, 1, ATTN_STATIC, 0);
+        }
         self->s.sound = 0;
     }
     self->moveinfo.state = STATE_TOP;
@@ -1381,36 +1295,6 @@ void SP_func_door(edict_t *ent) {
     }
 }
 
-
-/*QUAKED func_door_rotating (0 .5 .8) ? START_OPEN REVERSE CRUSHER NOMONSTER ANIMATED TOGGLE X_AXIS Y_AXIS
-TOGGLE causes the door to wait in both the start and end states for a trigger event.
-
-START_OPEN  the door to moves to its destination when spawned, and operate in reverse.  It is used to temporarily or permanently close off an area when triggered (not useful for touch or takedamage doors).
-NOMONSTER   monsters will not trigger this door
-
-You need to have an origin brush as part of this entity.  The center of that brush will be
-the point around which it is rotated. It will rotate around the Z axis by default.  You can
-check either the X_AXIS or Y_AXIS box to change that.
-
-"distance" is how many degrees the door will be rotated.
-"speed" determines how fast the door moves; default value is 100.
-
-REVERSE will cause the door to rotate in the opposite direction.
-
-"message"   is printed when the door is touched if it is a trigger door and it hasn't been fired yet
-"angle"     determines the opening direction
-"targetname" if set, no touch field will be spawned and a remote button or trigger field activates the door.
-"health"    if set, door must be shot open
-"speed"     movement speed (100 default)
-"wait"      wait before returning (3 default, -1 = never return)
-"dmg"       damage to inflict when blocked (2 default)
-"sounds"
-1)  silent
-2)  light
-3)  medium
-4)  heavy
-*/
-
 /**
  *
  */
@@ -1519,22 +1403,6 @@ void SP_func_door_rotating(edict_t *ent) {
     }
 }
 
-
-/*QUAKED func_water (0 .5 .8) ? START_OPEN
-func_water is a moveable water brush.  It must be targeted to operate.  Use a non-water texture at your own risk.
-
-START_OPEN causes the water to move to its destination when spawned and operate in reverse.
-
-"angle"     determines the opening direction (up or down only)
-"speed"     movement speed (25 default)
-"wait"      wait before returning (-1 default, -1 = TOGGLE)
-"lip"       lip remaining at end of move (0 default)
-"sounds"    (yes, these need to be changed)
-0)  no sound
-1)  water
-2)  lava
-*/
-
 /**
  *
  */
@@ -1588,38 +1456,22 @@ void SP_func_water(edict_t *self) {
     }
 
     self->moveinfo.speed = self->speed * FRAMETIME;
-
     if (!self->wait) {
         self->wait = -1;
     }
     self->moveinfo.wait = self->wait * HZ;
-
     self->use = door_use;
-
     if (self->wait == -1) {
         self->spawnflags |= DOOR_TOGGLE;
     }
-
     self->classname = "func_door";
-
     gi.linkentity(self);
 }
-
 
 #define TRAIN_START_ON      1
 #define TRAIN_TOGGLE        2
 #define TRAIN_BLOCK_STOPS   4
 
-/*QUAKED func_train (0 .5 .8) ? START_ON TOGGLE BLOCK_STOPS
-Trains are moving platforms that players can ride.
-The targets origin specifies the min point of the train at each corner.
-The train spawns at the first target it is pointing at.
-If the train is the target of a button or trigger, it will not begin moving until activated.
-speed   default 100
-dmg     default 2
-noise   looping sound to play when the train is in motion
-
-*/
 static void train_next(edict_t *self);
 
 /**
@@ -1630,8 +1482,9 @@ static void train_blocked(edict_t *self, edict_t *other) {
         // give it a chance to go away on it's own terms (like gibs)
         T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
         // if it's still there, nuke it
-        if (other)
+        if (other) {
             BecomeExplosion1(other);
+        }
         return;
     }
 
@@ -1699,7 +1552,6 @@ static void train_next(edict_t *self) {
     first = qtrue;
 again:
     if (!self->target) {
-//      gi.dprintf ("train_next: no next target\n");
         return;
     }
 
@@ -1730,8 +1582,9 @@ again:
     self->target_ent = ent;
 
     if (!(self->flags & FL_TEAMSLAVE)) {
-        if (self->moveinfo.sound_start)
+        if (self->moveinfo.sound_start) {
             gi.sound(self, CHAN_NO_PHS_ADD + CHAN_VOICE, self->moveinfo.sound_start, 1, ATTN_STATIC, 0);
+        }
         self->s.sound = self->moveinfo.sound_middle;
     }
 
@@ -1751,7 +1604,6 @@ static void train_resume(edict_t *self) {
     vec3_t  dest;
 
     ent = self->target_ent;
-
     VectorSubtract(ent->s.origin, self->mins, dest);
     self->moveinfo.state = STATE_UP;
     VectorCopy(self->s.origin, self->moveinfo.start_origin);
@@ -1776,7 +1628,6 @@ void func_train_find(edict_t *self) {
         return;
     }
     self->target = ent->target;
-
     VectorSubtract(ent->s.origin, self->mins, self->s.origin);
     gi.linkentity(self);
 
@@ -1796,7 +1647,6 @@ void func_train_find(edict_t *self) {
  */
 void train_use(edict_t *self, edict_t *other, edict_t *activator) {
     self->activator = activator;
-
     if (self->spawnflags & TRAIN_START_ON) {
         if (!(self->spawnflags & TRAIN_TOGGLE)) {
             return;
@@ -1818,7 +1668,6 @@ void train_use(edict_t *self, edict_t *other, edict_t *activator) {
  */
 void SP_func_train(edict_t *self) {
     self->movetype = MOVETYPE_PUSH;
-
     VectorClear(self->s.angles);
     self->blocked = train_blocked;
     if (self->spawnflags & TRAIN_BLOCK_STOPS) {
@@ -1834,15 +1683,12 @@ void SP_func_train(edict_t *self) {
     if (st.noise) {
         self->moveinfo.sound_middle = gi.soundindex(st.noise);
     }
-
     if (!self->speed) {
         self->speed = 100;
     }
 
     self->moveinfo.speed = self->speed * FRAMETIME;
-
     self->use = train_use;
-
     gi.linkentity(self);
 
     if (self->target) {
@@ -1861,21 +1707,17 @@ static void trigger_elevator_use(edict_t *self, edict_t *other, edict_t *activat
     edict_t *target;
 
     if (self->movetarget->nextthink) {
-//      gi.dprintf("elevator busy\n");
         return;
     }
-
     if (!other->pathtarget) {
         gi.dprintf("elevator used with no pathtarget\n");
         return;
     }
-
     target = G_PickTarget(other->pathtarget);
     if (!target) {
         gi.dprintf("elevator used with bad pathtarget: %s\n", other->pathtarget);
         return;
     }
-
     self->movetarget->target_ent = target;
     train_resume(self->movetarget);
 }
@@ -1897,7 +1739,6 @@ static void trigger_elevator_init(edict_t *self) {
         gi.dprintf("trigger_elevator target %s is not a train\n", self->target);
         return;
     }
-
     self->use = trigger_elevator_use;
     self->svflags = SVF_NOCLIENT;
 }
@@ -1909,21 +1750,6 @@ void SP_trigger_elevator(edict_t *self) {
     NEXT_FRAME(self, trigger_elevator_init);
 }
 
-
-/*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-"wait"          base time between triggering all targets, default is 1
-"random"        wait variance, default is 0
-
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
-
-"delay"         delay before first firing when turned on, default is 0
-
-"pausetime"     additional delay used only the very first time
-                and only if spawned with START_ON
-
-These can used but not touched.
-*/
 /**
  *
  */
@@ -1976,13 +1802,6 @@ void SP_func_timer(edict_t *self) {
     self->svflags = SVF_NOCLIENT;
 }
 
-
-/*QUAKED func_conveyor (0 .5 .8) ? START_ON TOGGLE
-Conveyors are stationary brushes that move what's on them.
-The brush should be have a surface with at least one current content enabled.
-speed   default 100
-*/
-
 /**
  *
  */
@@ -2019,19 +1838,6 @@ void SP_func_conveyor(edict_t *self) {
     self->solid = SOLID_BSP;
     gi.linkentity(self);
 }
-
-/*QUAKED func_door_secret (0 .5 .8) ? always_shoot 1st_left 1st_down
-A secret door.  Slide back and then to the side.
-
-open_once       doors never closes
-1st_left        1st move is left of arrow
-1st_down        1st move is down from arrow
-always_shoot    door is shootebale even if targeted
-
-"angle"     determines the direction
-"dmg"       damage to inflic when blocked (default 2)
-"wait"      how long to hold in the open position (default 5, -1 means hold)
-*/
 
 #define SECRET_ALWAYS_SHOOT 1
 #define SECRET_1ST_LEFT     2
@@ -2129,8 +1935,9 @@ static void door_secret_blocked(edict_t *self, edict_t *other) {
         // give it a chance to go away on it's own terms (like gibs)
         T_Damage(other, self, self, vec3_origin, other->s.origin, vec3_origin, 100000, 1, 0, MOD_CRUSH);
         // if it's still there, nuke it
-        if (other)
+        if (other) {
             BecomeExplosion1(other);
+        }
         return;
     }
 
@@ -2210,16 +2017,10 @@ void SP_func_door_secret(edict_t *ent) {
         gi.soundindex("misc/talk.wav");
         ent->touch = door_touch;
     }
-
     ent->classname = "func_door";
-
     gi.linkentity(ent);
 }
 
-
-/*QUAKED func_killbox (1 0 0) ?
-Kills everything inside when fired, irrespective of protection.
-*/
 /**
  *
  */
