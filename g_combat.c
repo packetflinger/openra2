@@ -413,8 +413,6 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         TEAM(attacker)->damage_dealt += damage;
         TEAM(attacker)->points = (int)(TEAM(attacker)->damage_dealt / 100);
         TEAM(targ)->damage_taken += damage;
-        gi.dprintf("damage: %d\n", attacker->client->pers.damage);
-        gi.dprintf("score: %d\n", attacker->client->pers.damage / 100);
     } else {
         attacker->client->pers.damage -= damage;
         attacker->client->pers.score = attacker->client->pers.damage / 100;
