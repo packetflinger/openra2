@@ -153,17 +153,10 @@ void ClientDisconnect(edict_t *ent);
 void ClientBegin(edict_t *ent);
 void ClientCommand(edict_t *ent);
 
-//===================================================================
-
-/*
- =================
- ClientEndServerFrames
-
- Return number of connected cliets
- =================
-*/
-static void ClientEndServerFrames(void)
-{
+/**
+ *
+ */
+static void ClientEndServerFrames(void) {
     int i;
     gclient_t *c;
 
@@ -209,8 +202,10 @@ static void ClientEndServerFrames(void)
     }
 }
 
-static int ScoreCmp(const void *p1, const void *p2)
-{
+/**
+ *
+ */
+static int ScoreCmp(const void *p1, const void *p2) {
     score_t *a = (score_t *) p1;
     score_t *b = (score_t *) p2;
 
@@ -233,8 +228,10 @@ static int ScoreCmp(const void *p1, const void *p2)
     return 0;
 }
 
-static void G_SaveScores(void)
-{
+/**
+ * Write the highscores file for the current map
+ */
+static void G_SaveScores(void) {
     char    path[MAX_OSPATH];
     score_t *s;
     FILE    *fp;
@@ -271,8 +268,10 @@ static void G_SaveScores(void)
     fclose(fp);
 }
 
-static void G_RegisterScore(void)
-{
+/**
+ * Add highscore to the current list of scores
+ */
+static void G_RegisterScore(void) {
     gclient_t *ranks[MAX_CLIENTS];
     gclient_t *c;
     score_t   *s;
@@ -322,8 +321,10 @@ static void G_RegisterScore(void)
     G_SaveScores();
 }
 
-void G_LoadScores(void)
-{
+/**
+ *
+ */
+void G_LoadScores(void) {
     char       path[MAX_OSPATH];
     char       buffer[MAX_STRING_CHARS];
     char       *token;
@@ -371,34 +372,33 @@ void G_LoadScores(void)
         token = COM_Parse(&data);
         s->time = strtoul(token, NULL, 10);
     } while (level.numscores < MAX_SCORES);
-
     fclose(fp);
-
     qsort(level.scores, level.numscores, sizeof(score_t), ScoreCmp);
-
     gi.dprintf("Loaded %d scores from '%s'\n", level.numscores, path);
 }
 
-map_entry_t *G_FindMap(const char *name)
-{
+/**
+ * Get a pointer to the map_entry_t for a particular map name
+ */
+map_entry_t *G_FindMap(const char *name) {
     map_entry_t *map;
 
-    LIST_FOR_EACH(map_entry_t, map, &g_map_list, list)
-    {
+    LIST_FOR_EACH(map_entry_t, map, &g_map_list, list) {
         if (!Q_stricmp(map->name, name)) {
             return map;
         }
     }
-
     return NULL;
 }
 
-static int G_RebuildMapQueue(void)
-{
-    map_entry_t **pool,
-                *map;
-    int         i,
-                count;
+/**
+ *
+ */
+static int G_RebuildMapQueue(void) {
+    map_entry_t **pool;
+    map_entry_t *map;
+    int i;
+    int count;
 
     List_Init(&g_map_queue);
 
@@ -411,8 +411,7 @@ static int G_RebuildMapQueue(void)
 
     // build the queue from available map list
     count = 0;
-    LIST_FOR_EACH(map_entry_t, map, &g_map_list, list)
-    {
+    LIST_FOR_EACH(map_entry_t, map, &g_map_list, list) {
         if (map->flags & MAP_NOAUTO) {
             continue;
         }
@@ -433,10 +432,9 @@ static int G_RebuildMapQueue(void)
         goto done;
     }
 
-    gi.dprintf("Map queue: %d entries\n", count);
+    gi.cprintf(NULL, PRINT_HIGH, "Map queue: %d entries\n", count);
 
     // randomize it
-
     if ((int) g_maps_random->value > 0) {
         G_ShuffleArray(pool, count);
     }
@@ -449,13 +447,14 @@ static int G_RebuildMapQueue(void)
     return count;
 }
 
-static map_entry_t *G_FindSuitableMap(void)
-{
+/**
+ * Pick a map based on player count
+ */
+static map_entry_t *G_FindSuitableMap(void) {
     int total = G_CalcRanks(NULL);
     map_entry_t *map;
 
-    LIST_FOR_EACH(map_entry_t, map, &g_map_queue, queue)
-    {
+    LIST_FOR_EACH(map_entry_t, map, &g_map_queue, queue) {
         if (total >= map->min_players && total <= map->max_players) {
             if ((int) g_maps_random->value < 2
                     || strcmp(map->name, level.mapname)) {
@@ -463,12 +462,13 @@ static map_entry_t *G_FindSuitableMap(void)
             }
         }
     }
-
     return NULL;
 }
 
-static void G_PickNextMap(void)
-{
+/**
+ *
+ */
+static void G_PickNextMap(void) {
     map_entry_t *map;
 
     // if map list is empty, stay on the same level
@@ -494,15 +494,14 @@ static void G_PickNextMap(void)
     List_Delete(&map->queue);
     map->num_hits++;
 
-    gi.dprintf("Next map is %s.\n", map->name);
+    gi.cprintf(NULL, PRINT_HIGH, "Next map is %s.\n", map->name);
     strcpy(level.nextmap, map->name);
 }
 
 /**
  * Read the map list file. These maps will be voteable in-game.
  */
-static void G_LoadMapList(void)
-{
+static void G_LoadMapList(void) {
     char        path[MAX_OSPATH];
     char        buffer[MAX_STRING_CHARS];
     char        *token;
@@ -524,7 +523,7 @@ static void G_LoadMapList(void)
 
     fp = fopen(path, "r");
     if (!fp) {
-        gi.dprintf("Couldn't load '%s'...\n", path);
+        gi.cprintf(NULL, PRINT_HIGH, "Couldn't load '%s'...\n", path);
         return;
     }
 
@@ -549,7 +548,7 @@ static void G_LoadMapList(void)
 
         len = strlen(token);
         if (len >= MAX_QPATH) {
-            gi.dprintf("%s: oversize mapname at line %d\n", __func__, linenum);
+            gi.cprintf(NULL, PRINT_HIGH, "%s: oversize mapname at line %d\n", __func__, linenum);
             continue;
         }
 
@@ -563,8 +562,10 @@ static void G_LoadMapList(void)
     fclose(fp);
 }
 
-static void G_LoadSkinList(void)
-{
+/**
+ *
+ */
+static void G_LoadSkinList(void) {
     char         path[MAX_OSPATH];
     char         buffer[MAX_STRING_CHARS];
     char         *token;
@@ -612,7 +613,7 @@ static void G_LoadSkinList(void)
 
         len = strlen(token);
         if (len >= MAX_SKINNAME) {
-            gi.dprintf("%s: oversize skinname at line %d\n", __func__, linenum);
+            gi.cprintf(NULL, PRINT_HIGH, "%s: oversize skinname at line %d\n", __func__, linenum);
             continue;
         }
 
@@ -629,26 +630,21 @@ static void G_LoadSkinList(void)
             game.skins->down = skin;
             numskins++;
         } else {
-            gi.dprintf("%s: skinname before directory at line %d\n", __func__,
+            gi.cprintf(NULL, PRINT_HIGH, "%s: skinname before directory at line %d\n", __func__,
                     linenum);
         }
     }
 
     fclose(fp);
 
-    gi.dprintf("Loaded %d skins in %d dirs from '%s'\n", numskins, numdirs,
+    gi.cprintf(NULL, PRINT_HIGH, "Loaded %d skins in %d dirs from '%s'\n", numskins, numdirs,
             path);
 }
 
-/*
- =================
- EndDMLevel
-
- The timelimit or fraglimit has been exceeded
- =================
+/**
+ *
  */
-void G_EndLevel(void)
-{
+void G_EndLevel(void) {
     uint8_t i;
 
     G_RegisterScore();
@@ -671,14 +667,18 @@ void G_EndLevel(void)
     G_PickNextMap();
 }
 
-void G_StartSound(int index)
-{
+/**
+ *
+ */
+void G_StartSound(int index) {
     //gi.sound(world, CHAN_RELIABLE, index, 1, ATTN_NONE, 0);
     //gi.sound(world, CHAN_AUTO, index, 1, ATTN_NORM, 0);    // doesn't work
 }
 
-void G_StuffText(edict_t *ent, const char *text)
-{
+/**
+ * Force a client to do a specific command
+ */
+void G_StuffText(edict_t *ent, const char *text) {
     gi.WriteByte(SVC_STUFFTEXT);
     gi.WriteString(text);
     gi.unicast(ent, qtrue);
@@ -687,8 +687,7 @@ void G_StuffText(edict_t *ent, const char *text)
 /**
  * Check gameplay rules
  */
-static void G_CheckRules(void)
-{
+static void G_CheckRules(void) {
     if (g_vote_threshold->modified) {
         G_CheckVote();
         g_vote_threshold->modified = qfalse;
@@ -700,8 +699,10 @@ static void G_CheckRules(void)
     }
 }
 
-static void G_ResetSettings(void)
-{
+/**
+ *
+ */
+static void G_ResetSettings(void) {
     char command[256];
 
     gi.bprintf(PRINT_HIGH,
@@ -716,13 +717,10 @@ static void G_ResetSettings(void)
     game.settings_modified = 0;
 }
 
-/*
- =============
- ExitLevel
- =============
+/**
+ *
  */
-void G_ExitLevel(void)
-{
+void G_ExitLevel(void) {
     char        command[256];
     map_entry_t *map;
 
@@ -747,29 +745,21 @@ void G_ExitLevel(void)
     level.intermission_exit = level.framenum;
 }
 
-/*
- ================
- G_RunFrame
-
- Advances the world by 0.1 seconds
- ================
+/**
+ * Advances the world by 0.1 seconds
  */
-void G_RunFrame(void)
-{
+void G_RunFrame(void) {
     int     i;
     edict_t *ent;
     arena_t *a;
 
-    //
-    // treat each object in turn
-    // even the world gets a chance to think
-    //
+    // Treat each object in turn, even the world gets a chance to think
     for (i = 0, ent = g_edicts; i < globals.num_edicts; i++, ent++) {
-        if (!ent->inuse)
+        if (!ent->inuse) {
             continue;
+        }
 
         level.current_entity = ent;
-
         VectorCopy(ent->old_origin, ent->s.old_origin);
 
         // if the ground entity moved, make sure we are still on it
@@ -786,10 +776,8 @@ void G_RunFrame(void)
         G_RunEntity(ent);
     }
 
-    // see if it is time to end a deathmatch
     G_CheckRules();
 
-    // let each arena think in turn
     FOR_EACH_ARENA(a) {
         G_ArenaThink(a);
     }
@@ -798,7 +786,6 @@ void G_RunFrame(void)
     if (level.vote.proposal) {
         G_UpdateVote();
     }
-    //}
 
     // build the playerstate_t structures for all players
     ClientEndServerFrames();
@@ -819,15 +806,16 @@ void G_RunFrame(void)
     // advance for next frame
     level.framenum++;
     level.time = level.framenum * FRAMETIME;
-    //ClockThink(&level.clock);
     if (level.clock.tick) {
         level.clock.tick(&level.clock);
     }
 }
 
-static void G_Shutdown(void)
-{
-    gi.dprintf("==== ShutdownGame ====\n");
+/**
+ *
+ */
+static void G_Shutdown(void) {
+    gi.cprintf(NULL, PRINT_HIGH, "==== ShutdownGame ====\n");
 
 #if USE_SQLITE
     if (game.clients) {
@@ -848,10 +836,12 @@ static void G_Shutdown(void)
     List_Init(&g_map_queue);
 }
 
-static void check_cvar(cvar_t *cv)
-{
+/**
+ * Check filename cvar for pathy stuff
+ */
+static void check_cvar(cvar_t *cv) {
     if (strchr(cv->string, '/') || strstr(cv->string, "..")) {
-        gi.dprintf("'%s' should be a single filename, not a path.\n", cv->name);
+        gi.cprintf(NULL, PRINT_HIGH, "'%s' should be a single filename, not a path.\n", cv->name);
         gi.cvar_forceset(cv->name, "");
     }
 }
@@ -890,20 +880,15 @@ static void G_BuildConfigList() {
     }
 }
 
-/*
- ============
- InitGame
-
- This will be called when the dll is first loaded, which
- only happens when a new game is started or a save game
- is loaded.
- ============
+/**
+ * This will be called when the dll is first loaded, which only happens when
+ * a new game is started or a save game is loaded.
  */
 static void G_Init(void) {
     cvar_t *cv;
     size_t len;
 
-    gi.dprintf("\n==== Game Init - %s %s ====\n", GAMEVERSION, OPENRA2_VERSION);
+    gi.cprintf(NULL, PRINT_HIGH, "\n==== Game Init - %s %s ====\n", GAMEVERSION, OPENRA2_VERSION);
 
     gun_x = gi.cvar("gun_x", "0", 0);
     gun_y = gi.cvar("gun_y", "0", 0);
@@ -1081,9 +1066,9 @@ static void G_Init(void) {
     }
 
     if (!len) {
-        gi.dprintf("Failed to determine game directory.\n");
+        gi.cprintf(NULL, PRINT_HIGH, "Failed to determine game directory.\n");
     } else if (len >= sizeof(game.dir)) {
-        gi.dprintf("Oversize game directory.\n");
+        gi.cprintf(NULL, PRINT_HIGH, "Oversize game directory.\n");
         game.dir[0] = 0;
     }
 
@@ -1115,8 +1100,9 @@ static void G_Init(void) {
         int framediv;
 
         cv = gi.cvar("sv_fps", NULL, 0);
-        if (!cv)
-        gi.error("GMF_VARIABLE_FPS exported but no 'sv_fps' cvar");
+        if (!cv) {
+            gi.error("GMF_VARIABLE_FPS exported but no 'sv_fps' cvar");
+        }
 
         framediv = (int)cv->value / BASE_FRAMERATE;
 
@@ -1136,7 +1122,7 @@ static void G_Init(void) {
     gi.cvar_forceset("g_features", va("%d", G_FEATURES));
 
     G_BuildConfigList();
-    gi.dprintf("==== Game Initialized ====\n\n");
+    gi.cprintf(NULL, PRINT_HIGH, "==== Game Initialized ====\n\n");
 }
 
 static void G_WriteGame(const char *filename, qboolean autosave) {}
@@ -1144,13 +1130,13 @@ static void G_ReadGame(const char *filename) {}
 static void G_WriteLevel(const char *filename) {}
 static void G_ReadLevel(const char *filename) {}
 
-//======================================================================
-
 #ifndef GAME_HARD_LINKED
 
 // this is only here so the functions in q_shared.c can link
-void Com_LPrintf(print_type_t type, const char *fmt, ...)
-{
+/**
+ *
+ */
+void Com_LPrintf(print_type_t type, const char *fmt, ...) {
     va_list argptr;
     char text[MAX_STRING_CHARS];
 
@@ -1161,54 +1147,45 @@ void Com_LPrintf(print_type_t type, const char *fmt, ...)
     gi.dprintf("%s", text);
 }
 
-void Com_Error(error_type_t code, const char *error, ...)
-{
+/**
+ *
+ */
+void Com_Error(error_type_t code, const char *error, ...) {
     va_list argptr;
     char text[MAX_STRING_CHARS];
 
     va_start(argptr, error);
     Q_vsnprintf(text, sizeof(text), error, argptr);
     va_end(argptr);
-
     gi.error("%s", text);
 }
 
 #endif
 
-/*
- =================
- GetGameAPI
-
- Returns a pointer to the structure with all entry points
- and global variables
- =================
+/**
+ * Returns a pointer to the structure with all entry points and global variables
+ *
+ * This is the only exported function in the library
  */
-q_exported game_export_t *GetGameAPI(game_import_t *import)
-{
+q_exported game_export_t *GetGameAPI(game_import_t *import) {
     gi = *import;
 
     globals.apiversion = GAME_API_VERSION;
     globals.Init = G_Init;
     globals.Shutdown = G_Shutdown;
     globals.SpawnEntities = G_SpawnEntities;
-
     globals.WriteGame = G_WriteGame;
     globals.ReadGame = G_ReadGame;
     globals.WriteLevel = G_WriteLevel;
     globals.ReadLevel = G_ReadLevel;
-
     globals.ClientThink = ClientThink;
     globals.ClientConnect = ClientConnect;
     globals.ClientUserinfoChanged = ClientUserinfoChanged;
     globals.ClientDisconnect = ClientDisconnect;
     globals.ClientBegin = ClientBegin;
     globals.ClientCommand = ClientCommand;
-
     globals.RunFrame = G_RunFrame;
-
     globals.ServerCommand = G_ServerCommand;
-
     globals.edict_size = sizeof(edict_t);
-
     return &globals;
 }
