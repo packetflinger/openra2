@@ -26,15 +26,15 @@ typedef struct {
     void    (*spawn)(edict_t *ent);
 } spawn_t;
 
-//
-// fields are needed for spawning from the entity string
-// and saving / loading games
-//
+/**
+ * Fields are needed for spawning from the entity string and saving / loading
+ * games
+ */
 typedef enum {
     F_INT,
     F_FLOAT,
-    F_LSTRING,          // string on disk, pointer in memory, TAG_LEVEL
-    F_GSTRING,          // string on disk, pointer in memory, TAG_GAME
+    F_LSTRING,  // string on disk, pointer in memory, TAG_LEVEL
+    F_GSTRING,  // string on disk, pointer in memory, TAG_GAME
     F_VECTOR,
     F_ANGLEHACK,
     F_IGNORE
@@ -45,9 +45,6 @@ typedef struct {
     size_t      ofs;
     fieldtype_t type;
 } field_t;
-
-
-
 
 void SP_item_health(edict_t *self);
 void SP_item_health_small(edict_t *self);
@@ -126,7 +123,6 @@ void SP_misc_easterchick(edict_t *self);
 void SP_misc_easterchick2(edict_t *self);
 
 void SP_monster_commander_body(edict_t *self);
-
 
 static const spawn_t    g_spawns[] = {
     {"item_health", SP_item_health},
@@ -244,9 +240,9 @@ static const field_t g_fields[] = {
     {"origin", FOFS(s.origin), F_VECTOR},
     {"angles", FOFS(s.angles), F_VECTOR},
     {"angle", FOFS(s.angles), F_ANGLEHACK},
-	{"arena", FOFS(arena), F_INT},			// 
-	{"override", FOFS(override), F_INT},	// for adding ents that would otherwise be filtered out 
-	{"version", FOFS(version), F_INT},		// map version (original ra2 and non-ra2 maps will be null)
+	{"arena", FOFS(arena), F_INT},
+	{"override", FOFS(override), F_INT},    // for adding ents that would otherwise be filtered out
+	{"version", FOFS(version), F_INT},      // map version (original ra2 and non-ra2 maps will be null)
     {NULL}
 };
 
@@ -258,7 +254,6 @@ static const field_t g_temps[] = {
     {"noise", STOFS(noise), F_LSTRING},
     {"pausetime", STOFS(pausetime), F_FLOAT},
     {"item", STOFS(item), F_LSTRING},
-
     {"gravity", STOFS(gravity), F_LSTRING},
     {"sky", STOFS(sky), F_LSTRING},
     {"skyrotate", STOFS(skyrotate), F_FLOAT},
@@ -268,7 +263,6 @@ static const field_t g_temps[] = {
     {"minpitch", STOFS(minpitch), F_FLOAT},
     {"maxpitch", STOFS(maxpitch), F_FLOAT},
     {"nextmap", STOFS(nextmap), F_LSTRING},
-
     {NULL}
 };
 
@@ -413,7 +407,6 @@ qboolean G_ParseWeaponString(arena_t *arena, edict_t *ent, const char **input, t
 
 /**
  * Take a string like "-all +falling +self" and translate that to a integer bitmask
- *
  */
 qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint32_t *target) {
     qboolean modifier;
@@ -478,15 +471,10 @@ qboolean G_ParseDamageString(arena_t *a, edict_t *ent, const char **input, uint3
     return qtrue;
 }
 
-/*
-===============
-ED_CallSpawn
-
-Finds the spawn function for the entity and calls it
-===============
-*/
-void ED_CallSpawn(edict_t *ent)
-{
+/**
+ * Finds the spawn function for the entity and calls it
+ */
+void ED_CallSpawn(edict_t *ent) {
     const spawn_t   *s;
     const gitem_t   *item;
     int     i;
@@ -498,8 +486,9 @@ void ED_CallSpawn(edict_t *ent)
 
     // check item spawn functions
     for (i = 0, item = g_itemlist; i < ITEM_TOTAL; i++, item++) {
-        if (!item->classname)
+        if (!item->classname) {
             continue;
+        }
         if (!strcmp(item->classname, ent->classname)) { // found it
             SpawnItem(ent, (gitem_t *)item);
             return;
@@ -513,52 +502,38 @@ void ED_CallSpawn(edict_t *ent)
             return;
         }
     }
-
-//  gi.dprintf ("%s doesn't have a spawn function\n", ent->classname);
     G_FreeEdict(ent);
 }
 
-/*
-=============
-ED_NewString
-=============
-*/
-static char *ED_NewString(const char *string)
-{
+/**
+ *
+ */
+static char *ED_NewString(const char *string) {
     char    *newb, *new_p;
     int     i, l;
 
     l = strlen(string) + 1;
-
     newb = gi.TagMalloc(l, TAG_LEVEL);
-
     new_p = newb;
-
     for (i = 0; i < l; i++) {
         if (string[i] == '\\' && i < l - 1) {
             i++;
-            if (string[i] == 'n')
+            if (string[i] == 'n') {
                 *new_p++ = '\n';
-            else
+            } else {
                 *new_p++ = '\\';
-        } else
+            }
+        } else {
             *new_p++ = string[i];
+        }
     }
-
     return newb;
 }
 
-
-/*
-===============
-ED_ParseField
-
-Takes a key/value pair and sets the binary values
-in an edict
-===============
-*/
-static qboolean ED_ParseField(const field_t *fields, const char *key, const char *value, byte *b)
-{
+/**
+ * Takes a key/value pair and sets the binary values in an edict
+ */
+static qboolean ED_ParseField(const field_t *fields, const char *key, const char *value, byte *b) {
     const field_t   *f;
     float   v;
     vec3_t  vec;
@@ -602,45 +577,46 @@ static qboolean ED_ParseField(const field_t *fields, const char *key, const char
     return qfalse;
 }
 
-/*
-====================
-ED_ParseEdict
-
-Parses an edict out of the given string, returning the new position
-ed should be a properly initialized empty edict.
-====================
-*/
-static void ED_ParseEdict(const char **data, edict_t *ent)
-{
+/**
+ * Parses an edict out of the given string, returning the new position.
+ *
+ * ed should be a properly initialized empty edict.
+ */
+static void ED_ParseEdict(const char **data, edict_t *ent) {
     qboolean    init;
     char        *key, *value;
 
     init = qfalse;
     memset(&st, 0, sizeof(st));
 
-// go through all the dictionary pairs
+    // go through all the dictionary pairs
     while (1) {
         // parse key
         key = COM_Parse(data);
-        if (key[0] == '}')
+        if (key[0] == '}') {
             break;
-        if (!*data)
+        }
+        if (!*data) {
             gi.error("%s: EOF without closing brace", __func__);
+        }
 
         // parse value
         value = COM_Parse(data);
-        if (!*data)
+        if (!*data) {
             gi.error("%s: EOF without closing brace", __func__);
+        }
 
-        if (value[0] == '}')
+        if (value[0] == '}') {
             gi.error("%s: closing brace without data", __func__);
+        }
 
         init = qtrue;
 
         // keynames with a leading underscore are used for utility comments,
         // and are immediately discarded by quake
-        if (key[0] == '_')
+        if (key[0] == '_') {
             continue;
+        }
 
         if (!ED_ParseField(g_fields, key, value, (byte *)ent)) {
             if (!ED_ParseField(g_temps, key, value, (byte *)&st)) {
@@ -649,23 +625,18 @@ static void ED_ParseEdict(const char **data, edict_t *ent)
         }
     }
 
-    if (!init)
+    if (!init) {
         memset(ent, 0, sizeof(*ent));
+    }
 }
 
-
-/*
-================
-G_FindTeams
-
-Chain together all entities with a matching team field.
-
-All but the first will have the FL_TEAMSLAVE flag set.
-All but the last will have the teamchain field set to the next one
-================
-*/
-static void G_FindTeams(void)
-{
+/**
+ * Chain together all entities with a matching team field.
+ *
+ * All but the first will have the FL_TEAMSLAVE flag set.
+ * All but the last will have the teamchain field set to the next one
+ */
+static void G_FindTeams(void) {
     edict_t *e, *e2, *chain;
     int     i, j;
     int     c, c2;
@@ -673,23 +644,29 @@ static void G_FindTeams(void)
     c = 0;
     c2 = 0;
     for (i = 1, e = g_edicts + i; i < globals.num_edicts; i++, e++) {
-        if (!e->inuse)
+        if (!e->inuse) {
             continue;
-        if (!e->team)
+        }
+        if (!e->team) {
             continue;
-        if (e->flags & FL_TEAMSLAVE)
+        }
+        if (e->flags & FL_TEAMSLAVE) {
             continue;
+        }
         chain = e;
         e->teammaster = e;
         c++;
         c2++;
         for (j = i + 1, e2 = e + 1; j < globals.num_edicts; j++, e2++) {
-            if (!e2->inuse)
+            if (!e2->inuse) {
                 continue;
-            if (!e2->team)
+            }
+            if (!e2->team) {
                 continue;
-            if (e2->flags & FL_TEAMSLAVE)
+            }
+            if (e2->flags & FL_TEAMSLAVE) {
                 continue;
+            }
             if (!strcmp(e->team, e2->team)) {
                 c2++;
                 chain->teamchain = e2;
@@ -699,12 +676,13 @@ static void G_FindTeams(void)
             }
         }
     }
-
-    gi.dprintf("%i teams with %i entities\n", c, c2);
+    gi.cprintf(NULL, PRINT_HIGH, "%i teams with %i entities\n", c, c2);
 }
 
-static void G_ParseString(void)
-{
+/**
+ *
+ */
+static void G_ParseString(void) {
     const char  *entities = level.entstring;
     edict_t     *ent;
     int         inhibit = 0;
@@ -714,10 +692,12 @@ static void G_ParseString(void)
     while (1) {
         // parse the opening brace
         token = COM_Parse(&entities);
-        if (!entities)
+        if (!entities) {
             break;
-        if (token[0] != '{')
+        }
+        if (token[0] != '{') {
             gi.error("%s: found %s when expecting {", __func__, token);
+        }
 
         ent = G_Spawn();
         ED_ParseEdict(&entities, ent);
@@ -736,17 +716,16 @@ static void G_ParseString(void)
             G_FreeEdict(ent);
             inhibit++;
         }
-
         ent->spawnflags &= ~INHIBIT_MASK;
-
         ED_CallSpawn(ent);
     }
-
-    gi.dprintf("%i entities inhibited\n", inhibit);
+    gi.cprintf(NULL, PRINT_HIGH, "%i entities inhibited\n", inhibit);
 }
 
-void G_InitArenaTeams(arena_t *arena)
-{
+/**
+ * Initialize all teams. Set their types, names and skins
+ */
+void G_InitArenaTeams(arena_t *arena) {
     arena_team_t *team;
     uint8_t i = 0;
 
@@ -810,24 +789,19 @@ void sort_arenas() {
     }
 }
 
-/*
-==============
-SpawnEntities
-
-Creates a server's entity / program execution context by
-parsing textual entity definitions out of an ent file.
-==============
-*/
-void G_SpawnEntities(const char *mapname, const char *entities, const char *spawnpoint)
-{
+/**
+ * Creates a server's entity / program execution context by parsing textual
+ * entity definitions out of an ent file.
+ */
+void G_SpawnEntities(const char *mapname, const char *entities, const char *spawnpoint) {
     edict_t     *ent;
     gclient_t   *client;
     int         i, j;
     client_persistant_t pers;
     char        *token;
     char        playerskin[MAX_QPATH];
-	qboolean	notra2map = qfalse;
-	size_t		parsed_arenas;
+    qboolean    notra2map = qfalse;
+    size_t      parsed_arenas;
 
 #if USE_SQLITE
     G_OpenDatabase();
@@ -859,7 +833,6 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         client->edict = ent;
         client->clientNum = i;
         client->pers.connected = CONN_CONNECTED;
-
         client->pers.arena = NULL;
         client->pers.team = NULL;
 
@@ -872,14 +845,15 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
 
     // parse worldspawn
     token = COM_Parse(&entities);
-    if (!entities)
+    if (!entities) {
         gi.error("%s: empty entity string", __func__);
-    if (token[0] != '{')
+    }
+    if (token[0] != '{') {
         gi.error("%s: found %s when expecting {", __func__, token);
+    }
 
     ent = g_edicts;
     ED_ParseEdict(&entities, ent);
-
     ED_CallSpawn(ent);
 
     level.entstring = entities;
@@ -993,8 +967,10 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
     }
 }
 
-void G_ResetLevel(void)
-{
+/**
+ *
+ */
+void G_ResetLevel(void) {
     gclient_t *client;
     edict_t *ent;
     int i;
@@ -1031,7 +1007,6 @@ void G_ResetLevel(void)
     // respawn all edicts
     G_ParseString();
     G_FindTeams();
-    //G_UpdateItemBans();
 
     // respawn all clients
     for (i = 0; i < game.maxclients; i++) {
@@ -1070,9 +1045,6 @@ void G_ResetLevel(void)
         }
     }
 }
-
-
-//===================================================================
 
 static const char statusbar[] =
 "yb -24 "
@@ -1180,16 +1152,16 @@ static const char statusbar[] =
 "endif "
 ;
 
-/*QUAKED worldspawn (0 0 0) ?
-
-Only used for the world.
-"sky"   environment map name
-"skyaxis"   vector axis for rotating sky
-"skyrotate" speed of rotation in degrees/second
-"sounds"    music cd track number
-"gravity"   800 is default gravity
-"message"   text to print at user logon
-*/
+/**
+ * Only used for the world.
+ *
+ * "sky"   environment map name
+ * "skyaxis"   vector axis for rotating sky
+ * "skyrotate" speed of rotation in degrees/second
+ * "sounds"    music cd track number
+ * "gravity"   800 is default gravity
+ * "message"   text to print at user logon
+ */
 void SP_worldspawn(edict_t *ent) {
     char buffer[MAX_QPATH];
 
@@ -1409,4 +1381,3 @@ void SP_worldspawn(edict_t *ent) {
     gi.configstring(CS_READY_WAIT, "Waiting for all players to ready-up");
     gi.configstring(CS_READY_BALANCED, "Teams need to be balanced before starting");
 }
-
