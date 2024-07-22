@@ -20,8 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 
-static void Svcmd_Test_f(void)
-{
+/**
+ * Just debugging stuff
+ */
+static void Svcmd_Test_f(void) {
     gi.cprintf(NULL, PRINT_HIGH, "Svcmd_Test_f()\n");
     ClockInit(&level.clock, NULL, "match_countdown", 10, 0, CLOCK_DOWN);
     level.clock.postthink = (void *) ClockPostThink;
@@ -29,13 +31,17 @@ static void Svcmd_Test_f(void)
     ClockStart(&level.clock);
 }
 
-static void Svcmd_Reset_f(void)
-{
+/**
+ *
+ */
+static void Svcmd_Reset_f(void) {
     G_ResetLevel();
 }
 
-static void Svcmd_NextMap_f(void)
-{
+/**
+ *
+ */
+static void Svcmd_NextMap_f(void) {
     if (gi.argc() != 3) {
         Com_Printf("Usage: nextmap <name>\n");
         return;
@@ -43,8 +49,10 @@ static void Svcmd_NextMap_f(void)
     Q_strlcpy(level.nextmap, gi.argv(2), sizeof(level.nextmap));
 }
 
-static void Svcmd_MapList_f(void)
-{
+/**
+ *
+ */
+static void Svcmd_MapList_f(void) {
     map_entry_t *map;
 
     if (LIST_EMPTY(&g_map_list)) {
@@ -64,8 +72,10 @@ static void Svcmd_MapList_f(void)
     }
 }
 
-static void Svcmd_MapQueue_f(void)
-{
+/**
+ *
+ */
+static void Svcmd_MapQueue_f(void) {
     map_entry_t *map;
     int total;
 
@@ -85,17 +95,11 @@ static void Svcmd_MapQueue_f(void)
     }
 }
 
-/*
-=================
-ServerCommand
-
-ServerCommand will be called when an "sv" command is issued.
-The game can issue gi.argc() / gi.argv() commands to get the rest
-of the parameters
-=================
-*/
-void G_ServerCommand(void)
-{
+/**
+ * ServerCommand will be called when an "sv" command is issued. The game can
+ * issue gi.argc() / gi.argv() commands to get the rest of the parameters
+ */
+void G_ServerCommand(void) {
     char    *cmd;
 
     if (gi.argc() < 2) {
@@ -104,39 +108,38 @@ void G_ServerCommand(void)
     }
 
     cmd = gi.argv(1);
-    if (!strcmp(cmd, "test"))
+    if (!strcmp(cmd, "test")) {
         Svcmd_Test_f();
-    else if (!strcmp(cmd, "addip"))
+    } else if (!strcmp(cmd, "addip")) {
         G_AddIP_f(NULL);
-    else if (!strcmp(cmd, "removeip"))
+    } else if (!strcmp(cmd, "removeip")) {
         G_RemoveIP_f(NULL);
-    else if (!strcmp(cmd, "listip"))
+    } else if (!strcmp(cmd, "listip")) {
         G_ListIP_f(NULL);
-    else if (!strcmp(cmd, "writeip"))
+    } else if (!strcmp(cmd, "writeip")) {
         G_WriteIP_f();
-    else if (!strcmp(cmd, "reset"))
+    } else if (!strcmp(cmd, "reset")) {
         Svcmd_Reset_f();
-    else if (!strcmp(cmd, "nextmap"))
+    } else if (!strcmp(cmd, "nextmap")) {
         Svcmd_NextMap_f();
-    else if (!strcmp(cmd, "maplist"))
+    } else if (!strcmp(cmd, "maplist")) {
         Svcmd_MapList_f();
-    else if (!strcmp(cmd, "mapqueue"))
+    } else if (!strcmp(cmd, "mapqueue")) {
         Svcmd_MapQueue_f();
-    else if (!strcmp(cmd, "players") || !strcmp(cmd, "playerlist"))
+    } else if (!strcmp(cmd, "players") || !strcmp(cmd, "playerlist")) {
         Cmd_Players_f(NULL);
-    else if (!strcmp(cmd, "highscores"))
+    } else if (!strcmp(cmd, "highscores")) {
         Cmd_HighScores_f(NULL);
-    else if (!strcmp(cmd, "stats") || !strcmp(cmd, "accuracy"))
+    } else if (!strcmp(cmd, "stats") || !strcmp(cmd, "accuracy")) {
         Cmd_Stats_f(NULL, qtrue);
-    else if (!strcmp(cmd, "settings") || !strcmp(cmd, "matchinfo"))
+    } else if (!strcmp(cmd, "settings") || !strcmp(cmd, "matchinfo")) {
         Cmd_Settings_f(NULL);
-	else if (!strcmp(cmd, "test2")) {
-		arena_t *ar;
-		FOR_EACH_ARENA(ar) {
-			gi.dprintf("%s\n", ar->name);
-		}
-	}
-    else
+    } else if (!strcmp(cmd, "test2")) {
+        arena_t *ar;
+        FOR_EACH_ARENA(ar) {
+            gi.dprintf("%s\n", ar->name);
+        }
+    } else {
         Com_Printf("Unknown server command \"%s\"\n", cmd);
+    }
 }
-
