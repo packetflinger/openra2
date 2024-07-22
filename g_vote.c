@@ -44,11 +44,13 @@ const damagevote_t damagevotes[DAMAGE_MAX] =
     {"falling", ARENADAMAGE_FALL},
 };
 
-
 // voting enabled and on a team or an admin
 #define MAY_VOTE(c) \
     (VF(ENABLED) && (c->pers.team || c->pers.admin))
 
+/**
+ *
+ */
 void G_FinishArenaVote(arena_t *a) {
     if (VF(SHOW)) {
         G_ConfigString(a, CS_VOTE_PROPOSAL, "");
@@ -58,8 +60,10 @@ void G_FinishArenaVote(arena_t *a) {
     a->vote.victim = NULL;
 }
 
-static int G_CalcVote(int *votes, arena_t *a)
-{
+/**
+ *
+ */
+static int G_CalcVote(int *votes, arena_t *a) {
     gclient_t *c;
     uint8_t i;
     int total = 0;
@@ -68,11 +72,13 @@ static int G_CalcVote(int *votes, arena_t *a)
 
     if (a && a->vote.proposal) {
         for (i=0; i<a->client_count; i++) {
-            if (!a->clients[i])
+            if (!a->clients[i]) {
                 continue;
+            }
 
-            if (!a->clients[i]->client)
+            if (!a->clients[i]->client) {
                 continue;
+            }
 
             c = a->clients[i]->client;
 
@@ -128,18 +134,21 @@ static int G_CalcVote(int *votes, arena_t *a)
     return total;
 }
 
-static int _G_CalcVote(int *votes, arena_t *a)
-{
+/**
+ *
+ */
+static int _G_CalcVote(int *votes, arena_t *a) {
     int threshold = (int) g_vote_threshold->value;
     int total = G_CalcVote(votes, a);
 
     total = total * threshold / 100 + 1;
-
     return total;
 }
 
-void G_FinishVote(void)
-{
+/**
+ *
+ */
+void G_FinishVote(void) {
     if (VF(SHOW)) {
         gi.configstring(CS_VOTE_PROPOSAL, "");
     }
@@ -191,8 +200,7 @@ void G_CheckVoteStatus(arena_t *a) {
 /**
  * Global votes
  */
-void G_UpdateVote(void)
-{
+void G_UpdateVote(void) {
     char buffer[MAX_QPATH];
     int votes[2], total;
     int remaining;
@@ -228,8 +236,10 @@ void G_UpdateVote(void)
     gi.multicast(NULL, MULTICAST_ALL);
 }
 
-qboolean G_CheckVote(void)
-{
+/**
+ *
+ */
+qboolean G_CheckVote(void) {
     int threshold = (int) g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
@@ -294,8 +304,10 @@ finish:
     return qtrue;
 }
 
-qboolean G_CheckArenaVote(arena_t *a)
-{
+/**
+ *
+ */
+qboolean G_CheckArenaVote(arena_t *a) {
     int threshold = (int) g_vote_threshold->value;
     int votes[2], total;
     int acc, rej;
@@ -438,8 +450,10 @@ finish:
     return qtrue;
 }
 
-static void G_BuildProposal(char *buffer, arena_t *a)
-{
+/**
+ * Generate a string representation of the current vote
+ */
+static void G_BuildProposal(char *buffer, arena_t *a) {
     uint32_t proposal;
     proposal = (level.vote.proposal) ? level.vote.proposal : (a->vote.proposal) ? a->vote.proposal : 0;
 
@@ -496,8 +510,10 @@ static void G_BuildProposal(char *buffer, arena_t *a)
     }
 }
 
-void Cmd_CastVote_f(edict_t *ent, qboolean accepted)
-{
+/**
+ *
+ */
+void Cmd_CastVote_f(edict_t *ent, qboolean accepted) {
     if (!level.vote.proposal && !ARENA(ent)->vote.proposal) {
         gi.cprintf(ent, PRINT_HIGH, "No vote in progress.\n");
         return;
@@ -534,6 +550,9 @@ void Cmd_CastVote_f(edict_t *ent, qboolean accepted)
     G_CheckArenaVote(ARENA(ent));
 }
 
+/**
+ *
+ */
 uint8_t weapon_vote_index(const char *name) {
     uint8_t i;
     for (i=0; i<WEAPON_MAX; i++) {
@@ -541,35 +560,38 @@ uint8_t weapon_vote_index(const char *name) {
             return i;
         }
     }
-
     return -1;
 }
 
-uint8_t damage_vote_index(const char *name)
-{
+/**
+ *
+ */
+uint8_t damage_vote_index(const char *name) {
     uint8_t i;
     for (i=0; i<DAMAGE_MAX; i++) {
         if (str_equal(name, damagevotes[i].name)) {
             return i;
         }
     }
-
     return -1;
 }
 
-static qboolean vote_victim(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_victim(edict_t *ent) {
     edict_t *other = G_SetVictim(ent, 1);
     if (!other) {
         return qfalse;
     }
-
     level.vote.victim = other->client;
     return qtrue;
 }
 
-static qboolean vote_map(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_map(edict_t *ent) {
     char *name = gi.argv(2);
     map_entry_t *map;
 
@@ -593,8 +615,10 @@ static qboolean vote_map(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_teams(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_teams(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 2, MAX_TEAMS);
@@ -602,8 +626,10 @@ static qboolean vote_teams(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_weapons(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_weapons(edict_t *ent) {
     const char *input = gi.args();
     arena_t *arena = ARENA(ent);
     temp_weaponflags_t temp;
@@ -627,28 +653,28 @@ static qboolean vote_weapons(edict_t *ent)
     return qfalse;
 }
 
-static qboolean vote_damage(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_damage(edict_t *ent) {
     const char *input = gi.args();
     arena_t *arena = ARENA(ent);
     uint32_t output = 0;
 
     arena->vote.value = arena->damage_flags;
-
     strncpy(arena->vote.original, input, sizeof(arena->vote.original));
-
     COM_Parse(&input);  // get rid of the word "weapon" from the head
-
     if (G_ParseDamageString(arena, ent, &input, &output)) {
         arena->vote.value = output;
         return qtrue;
     }
-
     return qfalse;
 }
 
-static qboolean vote_rounds(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_rounds(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 1, MAX_ROUNDS);
@@ -656,8 +682,10 @@ static qboolean vote_rounds(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_health(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_health(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 1, 999);
@@ -674,13 +702,17 @@ static qboolean vote_armor(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_reset(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_reset(edict_t *ent) {
     return true;
 }
 
-static qboolean vote_fastswitch(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_fastswitch(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned value = strtoul(arg, NULL, 10);
     clamp(value, 0, 1);
@@ -688,8 +720,10 @@ static qboolean vote_fastswitch(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_timelimit(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_timelimit(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, 20);
@@ -697,8 +731,10 @@ static qboolean vote_timelimit(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_mode(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_mode(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, ARENA_MODE_MAX);
@@ -706,8 +742,10 @@ static qboolean vote_mode(edict_t *ent)
     return qtrue;
 }
 
-static qboolean vote_corpseview(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean vote_corpseview(edict_t *ent) {
     char *arg = gi.argv(2);
     unsigned count = strtoul(arg, NULL, 10);
     clamp(count, 0, 1);
@@ -775,8 +813,7 @@ static const vote_proposal_t vote_proposals[] = {
 /**
  * A client used the "vote" command in console...
  */
-void Cmd_Vote_f(edict_t *ent)
-{
+void Cmd_Vote_f(edict_t *ent) {
     char buffer[MAX_STRING_CHARS];
     const vote_proposal_t *v;
     int mask = g_vote_mask->value;
@@ -824,9 +861,7 @@ void Cmd_Vote_f(edict_t *ent)
 
     s = gi.argv(1);
 
-//
-// generic commands
-//
+    // generic commands
     if (!strcmp(s, "help") || !strcmp(s, "h")) {
         gi.cprintf(ent, PRINT_HIGH,
                    "Usage: %s [yes/no/help/proposal] [arguments]\n"
@@ -908,9 +943,7 @@ void Cmd_Vote_f(edict_t *ent)
         return;
     }
 
-//
-// proposals
-//
+    // proposals
     if (level.vote.proposal) {
         gi.cprintf(ent, PRINT_HIGH, "Vote is already in progress.\n");
         return;
