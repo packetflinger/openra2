@@ -6,8 +6,7 @@
 /**
  * Check whether 2 IPs are the same
  */
-qboolean net_addressesMatch(netadr_t *a1, netadr_t *a2)
-{
+qboolean net_addressesMatch(netadr_t *a1, netadr_t *a2) {
     int len;
     if (a1->type != a2->type) {
         return false;
@@ -23,8 +22,7 @@ qboolean net_addressesMatch(netadr_t *a1, netadr_t *a2)
  * incport arg controls whether ":portnum" will be appended.
  * incmask arg controls whether "/xx" cidr mask will be appended.
  */
-char *net_addressToString(netadr_t *address, qboolean wrapv6, qboolean incport, qboolean incmask)
-{
+char *net_addressToString(netadr_t *address, qboolean wrapv6, qboolean incport, qboolean incmask) {
     char temp[INET6_ADDRSTRLEN];
     static char dest[INET6_ADDRSTRLEN];
 
@@ -56,8 +54,7 @@ char *net_addressToString(netadr_t *address, qboolean wrapv6, qboolean incport, 
 /**
  * The version in math.h was weird with values between 0-1
  */
-int net_ceil(float x)
-{
+int net_ceil(float x) {
     float temp;
 
     temp = x - (int)x;
@@ -74,8 +71,7 @@ int net_ceil(float x)
  *
  * Calculating this for IPv6 was for serious...
  */
-netadr_t net_cidrToMask(int cidr, netadrtype_t t)
-{
+netadr_t net_cidrToMask(int cidr, netadrtype_t t) {
     int i;
     uint32_t mask = 0;
     netadr_t addr;
@@ -127,8 +123,7 @@ netadr_t net_cidrToMask(int cidr, netadrtype_t t)
 /**
  * Tests if a network address is in a particular subnet
  */
-qboolean net_contains(netadr_t *network, netadr_t *host)
-{
+qboolean net_contains(netadr_t *network, netadr_t *host) {
     if (network->type != host->type) {
         return false;
     }
@@ -144,8 +139,7 @@ qboolean net_contains(netadr_t *network, netadr_t *host)
 /**
  * Just to complement q2a_ceil
  */
-int net_floor(float x)
-{
+int net_floor(float x) {
    return (int)x;
 }
 
@@ -158,8 +152,7 @@ int net_floor(float x)
  *
  * Input format: "192.2.0.4:1234" or "[2001:db8::face]:23456"
  */
-netadr_t net_parseIP(const char *ip)
-{
+netadr_t net_parseIP(const char *ip) {
     char *delim;
     int addrlen;           // number of characters in IP string
     char addr[40];         // temporarily hold just the IP part
@@ -205,8 +198,7 @@ netadr_t net_parseIP(const char *ip)
  *
  * Input format: "192.2.0.4" or "2001:db8::face"
  */
-netadr_t net_parseIPAddressBase(const char *ip)
-{
+netadr_t net_parseIPAddressBase(const char *ip) {
     netadr_t address;
     char *delim;
     char addr[40];         // temporarily hold just the IP part
@@ -245,8 +237,7 @@ netadr_t net_parseIPAddressBase(const char *ip)
  * 2002:db8::4
  * 2002:db8::4/64
  */
-netadr_t net_parseIPAddressMask(const char *ip)
-{
+netadr_t net_parseIPAddressMask(const char *ip) {
     netadr_t address;
     char *delim;
     char addr[40];         // temporarily hold just the IP part
