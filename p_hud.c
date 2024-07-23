@@ -19,14 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "g_local.h"
 
-/*
-======================================================================
-
-RANKING / SCOREBOARD
-
-======================================================================
-*/
-
+/**
+ * Compare players base on how much damage they've done.
+ *
+ * For ordering on scores layout
+ */
 int G_PlayerCmp(const void *p1, const void *p2) {
     gclient_t *a = *(gclient_t * const *)p1;
     gclient_t *b = *(gclient_t * const *)p2;
@@ -40,8 +37,10 @@ int G_PlayerCmp(const void *p1, const void *p2) {
     return 0;
 }
 
-int G_CalcRanks(gclient_t **ranks)
-{
+/**
+ *
+ */
+int G_CalcRanks(gclient_t **ranks) {
     int i, total;
 
     // sort the clients by score, then by eff
@@ -62,17 +61,11 @@ int G_CalcRanks(gclient_t **ranks)
     return total;
 }
 
-
-/*
-==================
-BuildScoreboard
-
-Used to update per-client scoreboard and build
-global oldscores (client is NULL in the latter case).
-==================
-*/
-static size_t BuildScoreboard(char *buffer, gclient_t *client)
-{
+/**
+ * Used to update per-client scoreboard and build global oldscores (client is
+ * NULL in the latter case).
+ */
+static size_t BuildScoreboard(char *buffer, gclient_t *client) {
     char    entry[MAX_STRING_CHARS];
     char    status[MAX_QPATH];
     char    timebuf[16];
@@ -94,8 +87,9 @@ static size_t BuildScoreboard(char *buffer, gclient_t *client)
     t = time(NULL);
     tm = localtime(&t);
     len = strftime(status, sizeof(status), "[%Y-%m-%d %H:%M]", tm);
-    if (len < 1)
+    if (len < 1) {
         strcpy(status, "???");
+    }
 
     total = Q_scnprintf(buffer, MAX_STRING_CHARS,
                         "xv 0 %s"
@@ -139,8 +133,9 @@ static size_t BuildScoreboard(char *buffer, gclient_t *client)
         if (len >= sizeof(entry)) {
             continue;
         }
-        if (total + len >= MAX_STRING_CHARS)
+        if (total + len >= MAX_STRING_CHARS) {
             break;
+        }
         memcpy(buffer + total, entry, len);
         total += len;
         y += 8;
@@ -175,8 +170,9 @@ static size_t BuildScoreboard(char *buffer, gclient_t *client)
         if (len >= sizeof(entry)) {
             continue;
         }
-        if (total + len >= MAX_STRING_CHARS)
+        if (total + len >= MAX_STRING_CHARS) {
             break;
+        }
         memcpy(buffer + total, entry, len);
         total += len;
         y += 8;
@@ -194,19 +190,13 @@ static size_t BuildScoreboard(char *buffer, gclient_t *client)
     }
 
     buffer[total] = 0;
-
     return total;
 }
 
-/*
-==================
-HighScoresMessage
-
-Sent to all clients during intermission.
-==================
-*/
-void HighScoresMessage(void)
-{
+/**
+ * Sent to all clients during intermission.
+ */
+void HighScoresMessage(void) {
     char    entry[MAX_STRING_CHARS];
     char    string[MAX_STRING_CHARS];
     char    date[MAX_QPATH];
@@ -240,8 +230,9 @@ void HighScoresMessage(void)
         if (len >= sizeof(entry)) {
             continue;
         }
-        if (total + len >= MAX_STRING_CHARS)
+        if (total + len >= MAX_STRING_CHARS) {
             break;
+        }
         memcpy(string + total, entry, len);
         total += len;
         y += 8;
@@ -253,36 +244,24 @@ void HighScoresMessage(void)
     gi.multicast(NULL, MULTICAST_ALL_R);
 }
 
-/*
-==================
-
-Can go either as reliable message (manual updates, intermission)
-and unreliable (automatic). Note that it isn't that hard to overflow
-the 1024 chars layout size limit!
-==================
-*/
-void ScoreboardMessage(edict_t *ent, qboolean reliable)
-{
+/**
+ * Can go either as reliable message (manual updates, intermission) and
+ * unreliable (automatic). Note that it isn't that hard to overflow the
+ * 1024 chars layout size limit!
+ */
+void ScoreboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
 
     BuildScoreboard(buffer, ent->client);
-
     gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
     gi.unicast(ent, reliable);
 }
 
-
-/*
-======================================================================
-
-INTERMISSION
-
-======================================================================
-*/
-
-void MoveClientToIntermission(edict_t *ent)
-{
+/**
+ *
+ */
+void MoveClientToIntermission(edict_t *ent) {
     arena_t *a = ARENA(ent);
 
     PMenu_Close(ent);
@@ -336,8 +315,10 @@ void MoveClientToIntermission(edict_t *ent)
     }
 }
 
-void BeginIntermission(arena_t *a)
-{
+/**
+ *
+ */
+void BeginIntermission(arena_t *a) {
     int        i;
     edict_t    *ent, *client;
 
@@ -388,10 +369,11 @@ void BeginIntermission(arena_t *a)
     }
 }
 
-//=======================================================================
-
-void G_PrivateString(edict_t *ent, int index, const char *string)
-{
+/**
+ * Sends a configstring in a special value range to a specific player instead
+ * of broadcasting to everyone.
+ */
+void G_PrivateString(edict_t *ent, int index, const char *string) {
     gclient_t *client;
     int i;
 
@@ -425,15 +407,10 @@ void G_PrivateString(edict_t *ent, int index, const char *string)
     }
 }
 
-/*
-=============
-visible
-
-returns 1 if the entity is visible to self, even if not infront ()
-=============
-*/
-static qboolean visible(edict_t *self, edict_t *other, int mask)
-{
+/**
+ * Are two edicts able to see each other?
+ */
+static qboolean visible(edict_t *self, edict_t *other, int mask){
     vec3_t  spot1;
     vec3_t  spot2;
     trace_t trace;
@@ -448,8 +425,9 @@ static qboolean visible(edict_t *self, edict_t *other, int mask)
     for (i = 0; i < 10; i++) {
         trace = gi.trace(spot1, vec3_origin, vec3_origin, spot2, self, mask);
 
-        if (trace.fraction == 1.0)
+        if (trace.fraction == 1.0) {
             return qtrue;
+        }
 
         // entire move is inside water volume
         if (trace.allsolid && (trace.contents & MASK_WATER)) {
@@ -464,22 +442,17 @@ static qboolean visible(edict_t *self, edict_t *other, int mask)
             VectorCopy(trace.endpos, spot1);
             continue;
         }
-
         break;
     }
     return qfalse;
 }
 
-/*
-==============
-TDM_GetPlayerIdView
-
-Find the best player for the id view and return configstring index.
-Code below comes from OpenTDM.
-==============
-*/
-static edict_t *find_by_tracing(edict_t *ent)
-{
+/**
+ * Find the best player for the id view and return configstring index.
+ *
+ * Code below comes from OpenTDM.
+ */
+static edict_t *find_by_tracing(edict_t *ent) {
     edict_t     *ignore;
     vec3_t      forward;
     trace_t     tr;
@@ -491,9 +464,7 @@ static edict_t *find_by_tracing(edict_t *ent)
 
     VectorCopy(ent->s.origin, start);
     start[2] += ent->viewheight;
-
     AngleVectors(ent->client->v_angle, forward, NULL, NULL);
-
     VectorScale(forward, 4096, forward);
     VectorAdd(ent->s.origin, forward, forward);
 
@@ -533,12 +504,13 @@ static edict_t *find_by_tracing(edict_t *ent)
         VectorCopy(tr.endpos, start);
         ignore = tr.ent;
     }
-
     return NULL;
 }
 
-static edict_t *find_by_angles(edict_t *ent)
-{
+/**
+ * Find the player ent is looking at based on angles
+ */
+static edict_t *find_by_angles(edict_t *ent) {
     vec3_t      forward;
     edict_t     *who, *best;
     vec3_t      dir;
@@ -593,7 +565,6 @@ static edict_t *find_by_angles(edict_t *ent)
         bd > 0.98f) {
         return best;
     }
-
     return NULL;
 }
 
@@ -602,8 +573,7 @@ static edict_t *find_by_angles(edict_t *ent)
  * Returns that player's configstring index and sets
  * the teammate pointer appropriately.
  */
-int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
-{
+int G_GetPlayerIdView(edict_t *ent, qboolean *teammate) {
     edict_t *target;
 
     target = find_by_tracing(ent);
@@ -621,28 +591,23 @@ int G_GetPlayerIdView(edict_t *ent, qboolean *teammate)
     return CS_PLAYERNAMES + (target - g_edicts) - 1;
 }
 
-/*
-===============
-G_SetStats
-===============
-*/
-void G_SetStats(edict_t *ent)
-{
+/**
+ * Set playerstats stats for each player.
+ *
+ * This is called every server frame
+ */
+void G_SetStats(edict_t *ent) {
     const gitem_t   *item;
     int             index, cells;
     int             power_armor_type;
     qboolean        teammate = qfalse;
     int             viewid = 0;
 
-    //
     // health
-    //
     ent->client->ps.stats[STAT_HEALTH_ICON] = level.images.health;
     ent->client->ps.stats[STAT_HEALTH] = ent->health;
 
-    //
     // ammo
-    //
     if (!ent->client->ammo_index /* || !ent->client->pers.inventory[ent->client->ammo_index] */) {
         ent->client->ps.stats[STAT_AMMO_ICON] = 0;
         ent->client->ps.stats[STAT_AMMO] = 0;
@@ -653,9 +618,7 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_WEAPON_ICON] = gi.imageindex(ent->client->weapon->icon);
     }
 
-    //
     // armor
-    //
     cells = 0;
     power_armor_type = PowerArmorIndex(ent);
     if (power_armor_type) {
@@ -682,9 +645,7 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_ARMOR] = 0;
     }
 
-    //
     // timer 1 (quad, enviro, breather)
-    //
     if (ent->client->quad_framenum > level.framenum) {
         ent->client->ps.stats[STAT_TIMER_ICON] = level.images.quad;
         ent->client->ps.stats[STAT_TIMER] = (ent->client->quad_framenum - level.framenum) / HZ;
@@ -699,9 +660,7 @@ void G_SetStats(edict_t *ent)
         ent->client->ps.stats[STAT_TIMER] = 0;
     }
 
-    //
     // selected item
-    //
     if (ent->client->selected_item == -1) {
         ent->client->ps.stats[STAT_SELECTED_ICON] = 0;
     } else {
@@ -711,13 +670,12 @@ void G_SetStats(edict_t *ent)
 
     ent->client->ps.stats[STAT_SELECTED_ITEM] = ent->client->selected_item;
 
-    //
     // layouts
-    //
     ent->client->ps.stats[STAT_LAYOUTS] = 0;
 
-    if (ent->health <= 0 || level.intermission_framenum || ent->client->layout)
+    if (ent->health <= 0 || level.intermission_framenum || ent->client->layout) {
         ent->client->ps.stats[STAT_LAYOUTS] |= 1;
+    }
 
     // score
     switch (ARENA(ent)->scoremode) {
