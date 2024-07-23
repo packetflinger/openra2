@@ -19,8 +19,10 @@
  */
 #include "g_local.h"
 
-static void PMenu_Write(edict_t *ent)
-{
+/**
+ * Send the menu layout to the a particular client
+ */
+static void PMenu_Write(edict_t *ent) {
     char string[MAX_STRING_CHARS];
     char entry[MAX_STRING_CHARS];
     int i;
@@ -78,8 +80,10 @@ static void PMenu_Write(edict_t *ent)
     gi.WriteString(string);
 }
 
-void PMenu_Open(edict_t *ent, const pmenu_entry_t *entries)
-{
+/**
+ * Show the current menu on the client's screen
+ */
+void PMenu_Open(edict_t *ent, const pmenu_entry_t *entries) {
     pmenu_t *menu = &ent->client->menu;
     const pmenu_entry_t *p;
     int i;
@@ -100,13 +104,14 @@ void PMenu_Open(edict_t *ent, const pmenu_entry_t *entries)
         }
     }
 
-    //ent->client->menu_framenum = 0;
     ent->client->menu_dirty = qtrue;
     ent->client->layout = LAYOUT_MENU;
 }
 
-void PMenu_Close(edict_t *ent)
-{
+/**
+ * Remove the menu from a client's screen
+ */
+void PMenu_Close(edict_t *ent) {
     if (ent->client->layout != LAYOUT_MENU) {
         return;
     }
@@ -115,8 +120,10 @@ void PMenu_Close(edict_t *ent)
     ent->client->layout = LAYOUT_NONE;
 }
 
-void PMenu_Update(edict_t *ent)
-{
+/**
+ * A menu has changed, resend it to the client
+ */
+void PMenu_Update(edict_t *ent) {
     if (ent->client->layout != LAYOUT_MENU) {
         return;
     }
@@ -131,8 +138,10 @@ void PMenu_Update(edict_t *ent)
     ent->client->menu_dirty = qfalse;
 }
 
-void PMenu_Next(edict_t *ent)
-{
+/**
+ * Move the cursor to the next menu option
+ */
+void PMenu_Next(edict_t *ent) {
     pmenu_t *menu = &ent->client->menu;
     pmenu_entry_t *p;
     int i;
@@ -140,7 +149,6 @@ void PMenu_Next(edict_t *ent)
     if (ent->client->layout != LAYOUT_MENU) {
         return;
     }
-
     if (menu->cur < 0) {
         return; // no selectable entries
     }
@@ -161,12 +169,13 @@ void PMenu_Next(edict_t *ent)
     } while (i != menu->cur);
 
     menu->cur = i;
-
     ent->client->menu_dirty = qtrue;
 }
 
-void PMenu_Prev(edict_t *ent)
-{
+/**
+ * Move the cursor to the previous menu option
+ */
+void PMenu_Prev(edict_t *ent) {
     pmenu_t *menu = &ent->client->menu;
     pmenu_entry_t *p;
     int i;
@@ -174,7 +183,6 @@ void PMenu_Prev(edict_t *ent)
     if (ent->client->layout != LAYOUT_MENU) {
         return;
     }
-
     if (menu->cur < 0) {
         return; // no selectable entries
     }
@@ -197,12 +205,13 @@ void PMenu_Prev(edict_t *ent)
     } while (i != menu->cur);
 
     menu->cur = i;
-
     ent->client->menu_dirty = qtrue;
 }
 
-void PMenu_Select(edict_t *ent)
-{
+/**
+ * A menu item was selected (client hit enter key)
+ */
+void PMenu_Select(edict_t *ent) {
     pmenu_t *menu = &ent->client->menu;
     pmenu_entry_t *p;
 
