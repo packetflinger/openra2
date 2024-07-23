@@ -21,54 +21,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "m_player.h"
 
 void ClientUserinfoChanged(edict_t *ent, char *userinfo);
-
 void SP_misc_teleporter_dest(edict_t *ent);
 
-
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-The normal starting point for a level.
-*/
-void SP_info_player_start(edict_t *self)
-{
+/**
+ * The normal starting point for a level.
+ */
+void SP_info_player_start(edict_t *self) {
 }
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32)
-potential spawning position for deathmatch games
-*/
-void SP_info_player_deathmatch(edict_t *self)
-{
+/**
+ * Potential spawning position for deathmatch games
+ */
+void SP_info_player_deathmatch(edict_t *self) {
     SP_misc_teleporter_dest(self);
 }
 
-/*QUAKED info_player_coop (1 0 1) (-16 -16 -24) (16 16 32)
-potential spawning position for coop games
-*/
-
-void SP_info_player_coop(edict_t *self)
-{
+/**
+ * Potential spawning position for coop games
+ */
+void SP_info_player_coop(edict_t *self) {
     G_FreeEdict(self);
 }
 
-
-/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The deathmatch intermission point will be at one of these
-Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  'pitch yaw roll'
-*/
-void SP_info_player_intermission(void)
-{
+/**
+ * The deathmatch intermission point will be at one of these.
+ *
+ * Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.
+ *
+ * 'pitch yaw roll'
+ */
+void SP_info_player_intermission(void){
 }
 
-
-//=======================================================================
-
-
-void player_pain(edict_t *self, edict_t *other, float kick, int damage)
-{
+/**
+ *
+ */
+void player_pain(edict_t *self, edict_t *other, float kick, int damage) {
     // player pain is handled at the end of the frame in P_DamageFeedback
 }
 
-int G_UpdateRanks(void)
-{
+/**
+ *
+ */
+int G_UpdateRanks(void) {
     gclient_t   *ranks[MAX_CLIENTS];
     gclient_t   *c;
     char buffer[MAX_QPATH];
@@ -102,21 +97,23 @@ int G_UpdateRanks(void)
         Q_snprintf(buffer, sizeof(buffer), "%d/%d", i + 1, total);
         G_PrivateString(c->edict, PCS_RANK, va("%5s", buffer));
     }
-
     return total;
 }
 
-void G_ScoreChanged(edict_t *ent)
-{
+/**
+ *
+ */
+void G_ScoreChanged(edict_t *ent) {
     char buffer[MAX_QPATH];
     Q_snprintf(buffer, sizeof(buffer), "%5d",
         ent->client->resp.damage_given);
-
     G_PrivateString(ent, PCS_DAMAGE, buffer);
 }
 
-qboolean G_IsSameView(edict_t *ent, edict_t *other)
-{
+/**
+ * Are these two specs chasing the same player?
+ */
+qboolean G_IsSameView(edict_t *ent, edict_t *other) {
     if (ent == other) {
         return qtrue;
     }
@@ -154,8 +151,10 @@ static const frag_t mod_to_frag[MOD_TOTAL] = {
     FRAG_GRENADES
 };
 
-static void AccountItemKills(edict_t *ent)
-{
+/**
+ *
+ */
+static void AccountItemKills(edict_t *ent) {
     int index;
 
     if (ent->flags & FL_MEGAHEALTH) {
@@ -180,8 +179,10 @@ static void AccountItemKills(edict_t *ent)
     }
 }
 
-static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
-{
+/**
+ *
+ */
+static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker) {
     int         mod;
     frag_t      frag;
     char        *message, *name;
@@ -447,8 +448,10 @@ static void ClientObituary(edict_t *self, edict_t *inflictor, edict_t *attacker)
 
 static int damaging;
 
-void G_BeginDamage(void)
-{
+/**
+ *
+ */
+void G_BeginDamage(void) {
     damaging = 1;
 }
 
@@ -461,9 +464,7 @@ void G_BeginDamage(void)
  * attacker = who did the damage
  * points = the amount of damage done
  */
-
-void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int points)
-{
+void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int points) {
     frag_t frag;
 
     if (!damaging) {
@@ -488,44 +489,43 @@ void G_AccountDamage(edict_t *targ, edict_t *inflictor, edict_t *attacker, int p
     if (damaging == 1 || frag == FRAG_RAILGUN) {
         attacker->client->resp.frags[frag].hits++;
     }
-
     damaging++;
-
     G_ScoreChanged(attacker);
 }
 
-void G_EndDamage(void)
-{
+/**
+ *
+ */
+void G_EndDamage(void) {
     damaging = 0;
 }
 
-
 void Touch_Item(edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf);
 
-static void TossClientWeapon(edict_t *self)
-{
+/**
+ *
+ */
+static void TossClientWeapon(edict_t *self) {
     gitem_t     *item;
     edict_t     *drop;
     qboolean    quad;
     float       spread;
 
     item = self->client->weapon;
-    if (!self->client->inventory[self->client->ammo_index])
+    if (!self->client->inventory[self->client->ammo_index]) {
         item = NULL;
-    if (item == INDEX_ITEM(ITEM_BLASTER))
+    }
+    if (item == INDEX_ITEM(ITEM_BLASTER)) {
         item = NULL;
+    }
 
-    if (!DF(QUAD_DROP))
+    if (!DF(QUAD_DROP)) {
         quad = qfalse;
-    else
+    } else {
         quad = (self->client->quad_framenum > (level.framenum + 1 * HZ));
+    }
 
     spread = (item && quad) ? 22.5 : 0.0;
-    /*if (item && quad) {
-        spread = 22.5;
-    } else {
-        spread = 0.0;
-    }*/
 
     if (item && g_frag_drop->value) {
         self->client->v_angle[YAW] -= spread;
@@ -546,14 +546,10 @@ static void TossClientWeapon(edict_t *self)
     }
 }
 
-
-/*
-==================
-LookAtKiller
-==================
-*/
-static void LookAtKiller(edict_t *self, edict_t *inflictor, edict_t *attacker)
-{
+/**
+ * Force self to face the player that fragged them
+ */
+static void LookAtKiller(edict_t *self, edict_t *inflictor, edict_t *attacker) {
     vec3_t      dir;
 
     if (attacker && attacker != world && attacker != self) {
@@ -565,48 +561,38 @@ static void LookAtKiller(edict_t *self, edict_t *inflictor, edict_t *attacker)
         return;
     }
 
-    if (dir[0])
+    if (dir[0]) {
         self->client->killer_yaw = 180 / M_PI * atan2(dir[1], dir[0]);
-    else {
+    } else {
         self->client->killer_yaw = 0;
-        if (dir[1] > 0)
+        if (dir[1] > 0) {
             self->client->killer_yaw = 90;
-        else if (dir[1] < 0)
+        } else if (dir[1] < 0) {
             self->client->killer_yaw = -90;
+        }
     }
-    if (self->client->killer_yaw < 0)
+    if (self->client->killer_yaw < 0) {
         self->client->killer_yaw += 360;
-
-
+    }
 }
 
-/*
-==================
-player_die...
-==================
-*/
-void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point)
-{
+/**
+ *
+ */
+void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage, vec3_t point) {
     int     n;
     arena_t *arena = self->client->pers.arena;
     arena_team_t *team = self->client->pers.team;
 
     VectorClear(self->avelocity);
-
     self->takedamage = DAMAGE_YES;
     self->movetype = MOVETYPE_TOSS;
-
     self->s.modelindex2 = 0;    // remove linked weapon model
-
     self->s.angles[0] = 0;
     self->s.angles[2] = 0;
-
     self->s.sound = 0;
     self->client->weapon_sound = 0;
-
     self->maxs[2] = -8;
-
-//  self->solid = SOLID_NOT;
     self->svflags |= SVF_DEADMONSTER;
 
     if (!self->deadflag) {
@@ -643,10 +629,10 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
     if (self->health < -40) {
         // gib
         gi.sound(self, CHAN_BODY, level.sounds.udeath, 1, ATTN_NORM, 0);
-        for (n = 0; n < 14; n++)
+        for (n = 0; n < 14; n++) {
             ThrowGib(self, level.models.meat, damage, GIB_ORGANIC);
+        }
         ThrowClientHead(self, damage);
-
         self->takedamage = DAMAGE_NO;
     } else {
         // normal death
@@ -683,40 +669,26 @@ void player_die(edict_t *self, edict_t *inflictor, edict_t *attacker, int damage
 
     // no normal pain sound
     self->pain_debounce_framenum = KEYFRAME(FRAMEDIV);
-
     self->deadflag = DEAD_DEAD;
-
     gi.linkentity(self);
 }
 
-/*
-=======================================================================
-
-  SelectSpawnPoint
-
-=======================================================================
-*/
-
-static edict_t *SelectRandomDeathmatchSpawnPoint(void)
-{
+/**
+ *
+ */
+static edict_t *SelectRandomDeathmatchSpawnPoint(void) {
     edict_t *spot;
     int selection;
 
     selection = rand_byte() % level.numspawns;
     spot = level.spawns[selection];
-
     return spot;
 }
 
-/*
-================
-PlayersRangeFromSpot
-
-Returns the distance to the nearest player from the given spot
-================
-*/
-static float PlayersRangeFromSpot(edict_t *spot)
-{
+/**
+ * Returns the distance to the nearest player from the given spot
+ */
+static float PlayersRangeFromSpot(edict_t *spot) {
     edict_t *player;
     float   bestplayerdistance;
     vec3_t  v;
@@ -728,27 +700,29 @@ static float PlayersRangeFromSpot(edict_t *spot)
     for (n = 1; n <= game.maxclients; n++) {
         player = &g_edicts[n];
 
-        if (!player->inuse)
+        if (!player->inuse) {
             continue;
-        if (!PLAYER_SPAWNED(player))
+        }
+        if (!PLAYER_SPAWNED(player)) {
             continue;
+        }
 
-        if (player->health <= 0)
+        if (player->health <= 0) {
             continue;
+        }
 
         VectorSubtract(spot->s.origin, player->s.origin, v);
         playerdistance = VectorLength(v);
 
-        if (playerdistance < bestplayerdistance)
+        if (playerdistance < bestplayerdistance) {
             bestplayerdistance = playerdistance;
+        }
     }
-
     return bestplayerdistance;
 }
 
 /**
  * Pick spawn point in the current arena randomly, trying not to telefrag...
- *
  */
 edict_t *G_SpawnPoint(edict_t *player) {
     edict_t *spot = NULL;
@@ -759,15 +733,12 @@ edict_t *G_SpawnPoint(edict_t *player) {
     for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
     }
-
     G_ShuffleArray(spawns, level.numspawns);
-
     for (i = 0; i < level.numspawns; i++) {
         spot = spawns[i];
 
         // the spawn is in players's current arena...
         if (spot->arena == ARENA(player)->number) {
-
             range = PlayersRangeFromSpot(spot);
             if (range > 64) {
                 return spot;
@@ -779,6 +750,9 @@ edict_t *G_SpawnPoint(edict_t *player) {
     return spot;
 }
 
+/**
+ *
+ */
 edict_t *SelectIntermissionPoint(arena_t *a) {
     edict_t *spot = NULL;
     edict_t *spawns[MAX_SPAWNS];
@@ -786,11 +760,9 @@ edict_t *SelectIntermissionPoint(arena_t *a) {
 
     // try an official intermission spot first
     while ((spot = G_Find(spot, FOFS(classname), "info_player_intermission")) != NULL) {
-
         if (!spot->arena || spot->arena >= MAX_ARENAS) {
             continue;
         }
-
         if (spot->arena == a->number) {
             return spot;
         }
@@ -800,22 +772,20 @@ edict_t *SelectIntermissionPoint(arena_t *a) {
     for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
     }
-
     G_ShuffleArray(spawns, level.numspawns);
-
     for (i = 0; i < level.numspawns; i++) {
         spot = spawns[i];
-
         if (spot->arena == a->number) {
             return spot;
         }
     }
-
     return spot;
 }
 
-static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
-{
+/**
+ *
+ */
+static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void) {
     edict_t *spawns[MAX_SPAWNS];
     edict_t *spot;
     float range;
@@ -824,9 +794,7 @@ static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
     for (i = 0; i < level.numspawns; i++) {
         spawns[i] = level.spawns[i];
     }
-
     G_ShuffleArray(spawns, level.numspawns);
-
     for (i = 0; i < level.numspawns; i++) {
         spot = spawns[i];
 
@@ -840,8 +808,10 @@ static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTelefrag(void)
     return SelectRandomDeathmatchSpawnPoint();
 }
 
-static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosest(void)
-{
+/**
+ *
+ */
+static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosest(void) {
     edict_t *spot, *spot1, *spot2;
     int     selection;
     float   range, range1, range2;
@@ -862,11 +832,9 @@ static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosest(void)
 
     for (i = 0; i < level.numspawns; i++) {
         spot = level.spawns[i];
-
         if (spot == spot1) {
             continue; // already recorded this one
         }
-
         range = PlayersRangeFromSpot(spot);
         if (range < range2) {
             range2 = range;
@@ -882,16 +850,10 @@ static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosest(void)
     return spot;
 }
 
-/*
-================
-SelectRandomDeathmatchSpawnPoint
-
-go to a random point, but NOT the two points closest
-to other players
-================
-*/
-static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosestBugged(void)
-{
+/**
+ * Go to a random point, but NOT the two points closest to other players
+ */
+static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosestBugged(void) {
     edict_t *spot, *spot1, *spot2;
     int     selection;
     float   range, range1, range2;
@@ -921,14 +883,10 @@ static edict_t *SelectRandomDeathmatchSpawnPointAvoidingTwoClosestBugged(void)
     return spot;
 }
 
-/*
-================
-SelectFarthestDeathmatchSpawnPoint
-
-================
-*/
-static edict_t *SelectFarthestDeathmatchSpawnPoint(void)
-{
+/**
+ *
+ */
+static edict_t *SelectFarthestDeathmatchSpawnPoint(void) {
     edict_t *bestspot;
     float   bestdistance, bestplayerdistance;
     edict_t *spot;
@@ -954,12 +912,13 @@ static edict_t *SelectFarthestDeathmatchSpawnPoint(void)
     // if there is a player just spawned on each and every start spot
     // we have no choice to turn one into a telefrag meltdown
     spot = level.spawns[0];
-
     return spot;
 }
 
-static edict_t *SelectDeathmatchSpawnPoint(void)
-{
+/**
+ *
+ */
+static edict_t *SelectDeathmatchSpawnPoint(void) {
     // in the first 5 seconds of a level start,
     // avoid telefrags above all other conditions
     if (level.framenum < 5 * HZ) {
@@ -982,15 +941,10 @@ static edict_t *SelectDeathmatchSpawnPoint(void)
     return SelectRandomDeathmatchSpawnPoint();
 }
 
-/*
-===========
-SelectSpawnPoint
-
-Chooses a player start, deathmatch start, coop start, etc
-============
-*/
-static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
-{
+/**
+ * Chooses a player start, deathmatch start, coop start, etc
+ */
+static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles) {
     edict_t *spot = NULL;
     spot = G_SpawnPoint(ent);
 
@@ -1020,11 +974,10 @@ static void SelectSpawnPoint(edict_t *ent, vec3_t origin, vec3_t angles)
     VectorCopy(spot->s.angles, angles);
 }
 
-//======================================================================
-
-
-void InitBodyQue(void)
-{
+/**
+ *
+ */
+void InitBodyQue(void) {
     int     i;
     edict_t *ent;
 
@@ -1177,10 +1130,10 @@ void G_RespawnPlayer(edict_t *ent) {
     ent->client->respawn_framenum = level.framenum;
 }
 
-//==============================================================
-
-void G_SetDeltaAngles(edict_t *ent, vec3_t angles)
-{
+/**
+ *
+ */
+void G_SetDeltaAngles(edict_t *ent, vec3_t angles) {
     int i;
 
     for (i = 0; i < 3; i++) {
@@ -1189,17 +1142,10 @@ void G_SetDeltaAngles(edict_t *ent, vec3_t angles)
     }
 }
 
-
-/*
-===========
-PutClientInServer
-
-Called when a player connects to a server or respawns in
-a deathmatch.
-============
-*/
-void PutClientInServer(edict_t *ent)
-{
+/**
+ * Called when a player connects to a server or respawns in a deathmatch.
+ */
+void PutClientInServer(edict_t *ent) {
     int     index;
     vec3_t  spawn_origin, spawn_angles;
     gclient_t   *client;
@@ -1320,7 +1266,6 @@ void PutClientInServer(edict_t *ent)
         ent->svflags |= SVF_NOCLIENT;
         client->ps.gunindex = 0;
         client->ps.pmove.pm_type = PM_SPECTATOR;
-        //gi.linkentity (ent);
         return;
     }
 
@@ -1349,8 +1294,10 @@ void PutClientInServer(edict_t *ent)
     }
 }
 
-void G_WriteTime(int remaining)
-{
+/**
+ *
+ */
+void G_WriteTime(int remaining) {
     char buffer[16];
     int sec = remaining % 60;
     int min = remaining / 60;
@@ -1368,7 +1315,9 @@ void G_WriteTime(int remaining)
     gi.WriteString(buffer);
 }
 
-// get the arena with the most current players
+/**
+ * Get the index of the arena with the most current players
+ */
 static int arena_num_popular(void) {
     int i, winner;
 
@@ -1377,25 +1326,18 @@ static int arena_num_popular(void) {
         if (!&level.arenas[i]) {
             continue;
         }
-
         if (level.arenas[i].client_count > level.arenas[winner].client_count) {
             winner = level.arenas[i].number;
         }
     }
-
     return winner;
 }
 
-/*
-===========
-ClientBegin
-
-called when a client has finished connecting, and is ready
-to be placed into the game.  This will happen every level load.
-============
-*/
-void ClientBegin(edict_t *ent)
-{
+/**
+ * Called when a client has finished connecting, and is ready to be placed into
+ * the game.  This will happen every level load.
+ */
+void ClientBegin(edict_t *ent) {
     arena_t *arena;
 
     ent->client = game.clients + (ent - g_edicts - 1);
@@ -1404,9 +1346,7 @@ void ClientBegin(edict_t *ent)
     G_InitEdict(ent);
 
     memset(&ent->client->resp, 0, sizeof(ent->client->resp));
-
     ent->client->resp.enter_framenum = level.framenum;
-
     ent->client->pers.connected = (level.intermission_framenum ||
                                    ent->client->pers.mvdspec) ? CONN_SPECTATOR : CONN_PREGAME;
 
@@ -1458,8 +1398,10 @@ void ClientBegin(edict_t *ent)
     ClientEndServerFrame(ent);
 }
 
-static skin_entry_t *find_skin(skin_entry_t *head, const char *name)
-{
+/**
+ *
+ */
+static skin_entry_t *find_skin(skin_entry_t *head, const char *name) {
     skin_entry_t *e;
 
     for (e = head; e; e = e->next) {
@@ -1467,29 +1409,30 @@ static skin_entry_t *find_skin(skin_entry_t *head, const char *name)
             return e;
         }
     }
-
     return head; // use default
 }
 
-static qboolean validate_skin(const char *s)
-{
+/**
+ *
+ */
+static qboolean validate_skin(const char *s) {
     if (!*s) {
         // empty skin is no good
         return qfalse;
     }
-
     do {
         if (!Q_ispath(*s)) {
             // any non-path chars are bad also
             return qfalse;
         }
     } while (*++s);
-
     return qtrue;
 }
 
-static qboolean parse_skin(char *out, const char *in)
-{
+/**
+ *
+ */
+static qboolean parse_skin(char *out, const char *in) {
     char *p;
     skin_entry_t *m, *s;
     size_t len;
@@ -1547,8 +1490,10 @@ bad:
     return qtrue;
 }
 
-static qboolean forbid_name_change(edict_t *ent)
-{
+/**
+ *
+ */
+static qboolean forbid_name_change(edict_t *ent) {
     if (!ent->client->pers.skin[0]) {
         return qfalse; // allow the very first one
     }
@@ -1558,18 +1503,13 @@ static qboolean forbid_name_change(edict_t *ent)
                           flood_perinfo->value, flood_infodelay->value);
 }
 
-/*
-===========
-ClientUserInfoChanged
-
-called whenever the player updates a userinfo variable.
-
-The game can override any of the settings in place
-(forcing skins or names, etc) before copying it off.
-============
-*/
-void ClientUserinfoChanged(edict_t *ent, char *userinfo)
-{
+/**
+ * Called whenever the player updates a userinfo variable.
+ *
+ * The game can override any of the settings in place (forcing skins or names,
+ * etc) before copying it off.
+ */
+void ClientUserinfoChanged(edict_t *ent, char *userinfo) {
     char    *s;
     int     playernum;
     gclient_t *client = ent->client;
@@ -1602,7 +1542,6 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     if (!client->pers.mvdspec && changed) {
         if (forbid_name_change(ent)) {
             Info_SetValueForKey(userinfo, "name", client->pers.netname);
-            //Info_SetValueForKey( userinfo, "skin", client->pers.skin );
             G_StuffText(ent, va("set name \"%s\"\n", client->pers.netname));
         } else {
             playernum = (ent - g_edicts) - 1;
@@ -1617,10 +1556,11 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
         client->pers.fov = 90;
     } else {
         client->pers.fov = atoi(Info_ValueForKey(userinfo, "fov"));
-        if (client->pers.fov < 1)
+        if (client->pers.fov < 1) {
             client->pers.fov = 90;
-        else if (client->pers.fov > 160)
+        } else if (client->pers.fov > 160) {
             client->pers.fov = 160;
+        }
     }
 
     client->ps.fov = client->pers.fov;
@@ -1649,21 +1589,16 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo)
     }
 }
 
-
-/*
-===========
-ClientConnect
-
-Called when a player begins connecting to the server.
-The game can refuse entrance to a client by returning qfalse.
-If the client is allowed, the connection process will continue
-and eventually get to ClientBegin()
-Changing levels will NOT cause this to be called again, but
-loadgames will.
-============
-*/
-qboolean ClientConnect(edict_t *ent, char *userinfo)
-{
+/**
+ * Called when a player begins connecting to the server.
+ *
+ * The game can refuse entrance to a client by returning qfalse. If the client
+ * is allowed, the connection process will continue and eventually get to
+ * ClientBegin().
+ *
+ * Changing levels will NOT cause this to be called again, but loadgames will.
+ */
+qboolean ClientConnect(edict_t *ent, char *userinfo) {
     char *s;
     ipaction_t action;
 
@@ -1698,20 +1633,15 @@ qboolean ClientConnect(edict_t *ent, char *userinfo)
             ent->client->level.first_time = qfalse;
         }
     }
-
     return qtrue;
 }
 
-/*
-===========
-ClientDisconnect
-
-Called when a player drops from the server.
-Will not be called between levels.
-============
-*/
-void ClientDisconnect(edict_t *ent)
-{
+/**
+ * Called when a player drops from the server.
+ *
+ * Will not be called between levels.
+ */
+void ClientDisconnect(edict_t *ent) {
     int     total;
     conn_t  connected;
 
@@ -1778,30 +1708,23 @@ void ClientDisconnect(edict_t *ent)
     G_CheckVote();
 }
 
-
-//==============================================================
-
-
 // pmove doesn't need to know about passent and contentmask
 static edict_t  *pm_passent;
 static int      pm_mask;
 
-static trace_t q_gameabi PM_trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
-{
+/**
+ *
+ */
+static trace_t q_gameabi PM_trace(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end) {
     return gi.trace(start, mins, maxs, end, pm_passent, pm_mask);
 }
 
-/*
-==============
-G_TouchProjectiles
-
-An ugly hack that runs a trace against any FL_NOCLIP_PROJECTILE entities
-for clipping purposes against players. This assumes that the ent
-will be freed on touch or bad things will happen.
-==============
-*/
-static void G_TouchProjectiles(edict_t *ent, vec3_t start)
-{
+/**
+ * An ugly hack that runs a trace against any FL_NOCLIP_PROJECTILE entities for
+ * clipping purposes against players. This assumes that the ent will be freed
+ * on touch or bad things will happen.
+ */
+static void G_TouchProjectiles(edict_t *ent, vec3_t start) {
     edict_t *ignore;
     trace_t tr;
     int i;
@@ -1810,30 +1733,24 @@ static void G_TouchProjectiles(edict_t *ent, vec3_t start)
     for (i = 0; i < 10; i++) {
         tr = gi.trace(start, ent->mins, ent->maxs, ent->s.origin,
                       ignore, CONTENTS_MONSTER | CONTENTS_DEADMONSTER);
-        if (!tr.ent || tr.ent == world)
+        if (!tr.ent || tr.ent == world) {
             continue;
+        }
         VectorCopy(tr.endpos, start);
         ignore = tr.ent;
 
-        if (!(tr.ent->flags & FL_NOCLIP_PROJECTILE))
+        if (!(tr.ent->flags & FL_NOCLIP_PROJECTILE)) {
             continue;
-
-        //gi.bprintf (PRINT_HIGH, "%s: ent %d touching ent %d\n",
-        //    __func__, ent->s.number, tr.ent->s.number);
+        }
         tr.ent->touch(tr.ent, ent, NULL, NULL);
     }
 }
 
-/*
-==============
-ClientThink
-
-This will be called once for each client frame, which will
-usually be a couple times for each server frame.
-==============
-*/
-void ClientThink(edict_t *ent, usercmd_t *ucmd)
-{
+/**
+ * This will be called once for each client frame, which will usually be a
+ * couple times for each server frame.
+ */
+void ClientThink(edict_t *ent, usercmd_t *ucmd) {
     gclient_t   *client;
     edict_t *other;
     int     i, j;
@@ -1875,15 +1792,15 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
     if (!ent->client->chase_target) {
         // set up for pmove
         memset(&pm, 0, sizeof(pm));
-
-        if (ent->movetype == MOVETYPE_NOCLIP)
+        if (ent->movetype == MOVETYPE_NOCLIP) {
             client->ps.pmove.pm_type = PM_SPECTATOR;
-        else if (ent->s.modelindex != 255)
+        } else if (ent->s.modelindex != 255) {
             client->ps.pmove.pm_type = PM_GIB;
-        else if (ent->deadflag)
+        } else if (ent->deadflag) {
             client->ps.pmove.pm_type = PM_DEAD;
-        else
+        } else {
             client->ps.pmove.pm_type = PM_NORMAL;
+        }
 
         pm_passent = ent;
         pm_mask = ent->health > 0 ? MASK_PLAYERSOLID : MASK_DEADSOLID;
@@ -1900,11 +1817,9 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
 
         if (memcmp(&client->old_pmove, &pm.s, sizeof(pm.s))) {
             pm.snapinitial = qtrue;
-            //gi.dprintf("pmove changed!\n");
         }
 
         pm.cmd = *ucmd;
-
         pm.trace = PM_trace;  // adds default parms
         pm.pointcontents = gi.pointcontents;
 
@@ -1931,8 +1846,9 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         ent->waterlevel = pm.waterlevel;
         ent->watertype = pm.watertype;
         ent->groundentity = pm.groundentity;
-        if (pm.groundentity)
+        if (pm.groundentity) {
             ent->groundentity_linkcount = pm.groundentity->linkcount;
+        }
 
         if (ent->deadflag) {
             client->ps.viewangles[ROLL] = 40;
@@ -1952,13 +1868,17 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             // touch solid objects
             for (i = 0; i < pm.numtouch; i++) {
                 other = pm.touchents[i];
-                for (j = 0; j < i; j++)
-                    if (pm.touchents[j] == other)
+                for (j = 0; j < i; j++) {
+                    if (pm.touchents[j] == other) {
                         break;
-                if (j != i)
+                    }
+                }
+                if (j != i) {
                     continue;   // duplicated
-                if (!other->touch)
+                }
+                if (!other->touch) {
                     continue;
+                }
                 other->touch(other, ent, NULL, NULL);
             }
 
@@ -2015,34 +1935,29 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             client->level.jump_held = qfalse;
         }
     }
-
 }
 
-
-/*
-==============
-ClientBeginServerFrame
-
-This will be called once for each server frame, before running
-any other entities in the world.
-==============
-*/
-void ClientBeginServerFrame(edict_t *ent)
-{
+/**
+ * This will be called once for each server frame, before running any other
+ * entities in the world.
+ */
+void ClientBeginServerFrame(edict_t *ent) {
     gclient_t   *client;
 
-    if (level.intermission_framenum)
+    if (level.intermission_framenum) {
         return;
+    }
 
     client = ent->client;
 
     if (client->pers.connected == CONN_SPAWNED) {
         if (FRAMESYNC) {
             // run weapon animations if it hasn't been done by a ucmd_t
-            if (!client->weapon_thunk)
+            if (!client->weapon_thunk) {
                 Think_Weapon(ent);
-            else
+            } else {
                 client->weapon_thunk = qfalse;
+            }
         }
 
         if (g_idle_time->value > 0) {
@@ -2066,8 +1981,7 @@ void ClientBeginServerFrame(edict_t *ent)
 /**
  * Send a configstring to a single client
  */
-void ClientString(edict_t *ent, uint16_t index, const char *str)
-{
+void ClientString(edict_t *ent, uint16_t index, const char *str) {
     if (!ent || index > MAX_CONFIGSTRINGS || !str) {
         return;
     }
