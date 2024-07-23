@@ -20,8 +20,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 vec3_t vec3_origin = { 0, 0, 0 };
 
-void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
-{
+/**
+ *
+ */
+void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up) {
     float        angle;
     float        sr, sp, sy, cr, cp, cy;
 
@@ -52,8 +54,10 @@ void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
     }
 }
 
-vec_t VectorNormalize(vec3_t v)
-{
+/**
+ *
+ */
+vec_t VectorNormalize(vec3_t v) {
     float    length, ilength;
 
     length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
@@ -65,13 +69,14 @@ vec_t VectorNormalize(vec3_t v)
         v[1] *= ilength;
         v[2] *= ilength;
     }
-
     return length;
 
 }
 
-vec_t VectorNormalize2(vec3_t v, vec3_t out)
-{
+/**
+ *
+ */
+vec_t VectorNormalize2(vec3_t v, vec3_t out) {
     float    length, ilength;
 
     length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
@@ -83,33 +88,39 @@ vec_t VectorNormalize2(vec3_t v, vec3_t out)
         out[1] = v[1] * ilength;
         out[2] = v[2] * ilength;
     }
-
     return length;
-
 }
 
-void ClearBounds(vec3_t mins, vec3_t maxs)
-{
+/**
+ *
+ */
+void ClearBounds(vec3_t mins, vec3_t maxs) {
     mins[0] = mins[1] = mins[2] = 99999;
     maxs[0] = maxs[1] = maxs[2] = -99999;
 }
 
-void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs)
-{
+/**
+ *
+ */
+void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs) {
     int        i;
     vec_t    val;
 
     for (i = 0; i < 3; i++) {
         val = v[i];
-        if (val < mins[i])
+        if (val < mins[i]) {
             mins[i] = val;
-        if (val > maxs[i])
+        }
+        if (val > maxs[i]) {
             maxs[i] = val;
+        }
     }
 }
 
-void UnionBounds(vec3_t a[2], vec3_t b[2], vec3_t c[2])
-{
+/**
+ *
+ */
+void UnionBounds(vec3_t a[2], vec3_t b[2], vec3_t c[2]) {
     c[0][0] = b[0][0] < a[0][0] ? b[0][0] : a[0][0];
     c[0][1] = b[0][1] < a[0][1] ? b[0][1] : a[0][1];
     c[0][2] = b[0][2] < a[0][2] ? b[0][2] : a[0][2];
@@ -119,13 +130,10 @@ void UnionBounds(vec3_t a[2], vec3_t b[2], vec3_t c[2])
     c[1][2] = b[1][2] > a[1][2] ? b[1][2] : a[1][2];
 }
 
-/*
-=================
-RadiusFromBounds
-=================
-*/
-vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
-{
+/**
+ *
+ */
+vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs) {
     int     i;
     vec3_t  corner;
     vec_t   a, b;
@@ -135,21 +143,13 @@ vec_t RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
         b = Q_fabs(maxs[i]);
         corner[i] = a > b ? a : b;
     }
-
     return VectorLength(corner);
 }
 
-//====================================================================================
-
-//static const char hexchars[] = "0123456789ABCDEF";
-
-/*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath(const char *pathname)
-{
+/**
+ *
+ */
+char *COM_SkipPath(const char *pathname) {
     char    *last;
 
     if (!pathname) {
@@ -158,26 +158,22 @@ char *COM_SkipPath(const char *pathname)
 
     last = (char *)pathname;
     while (*pathname) {
-        if (*pathname == '/')
+        if (*pathname == '/') {
             last = (char *)pathname + 1;
+        }
         pathname++;
     }
     return last;
 }
 
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension(const char *in, char *out, size_t size)
-{
+/**
+ *
+ */
+void COM_StripExtension(const char *in, char *out, size_t size) {
     char *s;
 
     Q_strlcpy(out, in, size);
-
     s = out + strlen(out);
-
     while (s != out) {
         if (*s == '/') {
             break;
@@ -190,13 +186,10 @@ void COM_StripExtension(const char *in, char *out, size_t size)
     }
 }
 
-/*
-============
-COM_FileExtension
-============
-*/
-char *COM_FileExtension(const char *in)
-{
+/**
+ *
+ */
+char *COM_FileExtension(const char *in) {
     const char *s;
     const char *last;
 
@@ -216,45 +209,38 @@ char *COM_FileExtension(const char *in)
         }
         s--;
     }
-
     return (char *)last;
 }
 
-/*
-============
-COM_FileBase
-============
-*/
-void COM_FileBase(char *in, char *out)
-{
+/**
+ *
+ */
+void COM_FileBase(char *in, char *out) {
     char *s, *s2;
 
     s = in + strlen(in) - 1;
 
-    while (s != in && *s != '.')
+    while (s != in && *s != '.') {
         s--;
+    }
 
-    for (s2 = s; s2 != in && *s2 != '/'; s2--)
+    for (s2 = s; s2 != in && *s2 != '/'; s2--) {
         ;
+    }
 
-    if (s - s2 < 2)
+    if (s - s2 < 2) {
         out[0] = 0;
-    else {
+    } else {
         s--;
         strncpy(out, s2 + 1, s - s2);
         out[s - s2] = 0;
     }
 }
 
-/*
-============
-COM_FilePath
-
-Returns the path up to, but not including the last /
-============
-*/
-void COM_FilePath(const char *in, char *out, size_t size)
-{
+/**
+ * Returns the path up to, but not including the last /
+ */
+void COM_FilePath(const char *in, char *out, size_t size) {
     char *s;
 
     Q_strlcpy(out, in, size);
@@ -266,17 +252,12 @@ void COM_FilePath(const char *in, char *out, size_t size)
     }
 }
 
-
-/*
-==================
-COM_DefaultExtension
-
-if path doesn't have .EXT, append extension
-(extension should include the .)
-==================
-*/
-size_t COM_DefaultExtension(char *path, const char *ext, size_t size)
-{
+/**
+ * if path doesn't have .EXT, append extension
+ *
+ * (extension should include the .)
+ */
+size_t COM_DefaultExtension(char *path, const char *ext, size_t size) {
     char    *src;
     size_t  len;
 
@@ -285,8 +266,9 @@ size_t COM_DefaultExtension(char *path, const char *ext, size_t size)
         src = path + len - 1;
 
         while (*src != '/' && src != path) {
-            if (*src == '.')
+            if (*src == '.') {
                 return len;                 // it has an extension
+            }
             src--;
         }
     }
@@ -295,16 +277,11 @@ size_t COM_DefaultExtension(char *path, const char *ext, size_t size)
     return len;
 }
 
-/*
-==================
-COM_IsFloat
-
-Returns true if the given string is valid representation
-of floating point number.
-==================
-*/
-qboolean COM_IsFloat(const char *s)
-{
+/**
+ * Returns true if the given string is valid representation of floating point
+ * number.
+ */
+qboolean COM_IsFloat(const char *s) {
     int c, dot = '.';
 
     if (*s == '-') {
@@ -326,8 +303,10 @@ qboolean COM_IsFloat(const char *s)
     return qtrue;
 }
 
-qboolean COM_IsUint(const char *s)
-{
+/**
+ *
+ */
+qboolean COM_IsUint(const char *s) {
     int c;
 
     if (!*s) {
@@ -344,8 +323,10 @@ qboolean COM_IsUint(const char *s)
     return qtrue;
 }
 
-qboolean COM_IsPath(const char *s)
-{
+/**
+ *
+ */
+qboolean COM_IsPath(const char *s) {
     int c;
 
     if (!*s) {
@@ -362,8 +343,10 @@ qboolean COM_IsPath(const char *s)
     return qtrue;
 }
 
-qboolean COM_IsWhite(const char *s)
-{
+/**
+ *
+ */
+qboolean COM_IsWhite(const char *s) {
     int c;
 
     while (*s) {
@@ -372,30 +355,28 @@ qboolean COM_IsWhite(const char *s)
             return qfalse;
         }
     }
-
     return qtrue;
 }
 
-int SortStrcmp(const void *p1, const void *p2)
-{
+/**
+ *
+ */
+int SortStrcmp(const void *p1, const void *p2) {
     return strcmp(*(const char **)p1, *(const char **)p2);
 }
 
-int SortStricmp(const void *p1, const void *p2)
-{
+/**
+ *
+ */
+int SortStricmp(const void *p1, const void *p2) {
     return Q_stricmp(*(const char **)p1, *(const char **)p2);
 }
 
-/*
-================
-COM_strclr
-
-Operates inplace, normalizing high-bit and removing unprintable characters.
-Returns final number of characters, not including the NUL character.
-================
-*/
-size_t COM_strclr(char *s)
-{
+/**
+ * Operates inplace, normalizing high-bit and removing unprintable characters.
+ * Returns final number of characters, not including the NUL character.
+ */
+size_t COM_strclr(char *s) {
     char *p;
     int c;
     size_t len;
@@ -416,9 +397,8 @@ size_t COM_strclr(char *s)
     return len;
 }
 
-
 /**
- * @brief A shorthand g_snprintf into a statically allocated buffer. Several
+ * A shorthand g_snprintf into a statically allocated buffer. Several
  * buffers are maintained internally so that nested va()'s are safe within
  * reasonable limits. This function is not thread safe.
  *
@@ -442,16 +422,10 @@ char *va(const char *format, ...) {
 static char     com_token[4][MAX_TOKEN_CHARS];
 static int      com_tokidx;
 
-/*
-==============
-COM_Parse
-
-Parse a token out of a string.
-Handles C and C++ comments.
-==============
-*/
-char *COM_Parse(const char **data_p)
-{
+/**
+ * Parse a token out of a string. Handles C and C++ comments.
+ */
+char *COM_Parse(const char **data_p) {
     int         c;
     int         len;
     const char  *data;
@@ -476,7 +450,7 @@ skipwhite:
         data++;
     }
 
-// skip // comments
+    // skip // comments
     if (c == '/' && data[1] == '/') {
         data += 2;
         while (*data && *data != '\n')
@@ -484,7 +458,7 @@ skipwhite:
         goto skipwhite;
     }
 
-// skip /* */ comments
+    // skip /* */ comments
     if (c == '/' && data[1] == '*') {
         data += 2;
         while (*data) {
@@ -497,7 +471,7 @@ skipwhite:
         goto skipwhite;
     }
 
-// handle quoted strings specially
+    // handle quoted strings specially
     if (c == '\"') {
         data++;
         while (1) {
@@ -512,7 +486,7 @@ skipwhite:
         }
     }
 
-// parse a regular word
+    // parse a regular word
     do {
         if (len < MAX_TOKEN_CHARS - 1) {
             s[len++] = c;
@@ -532,8 +506,7 @@ finish:
  * Parse a token out of a string. Tokens are newline delimited
  *
  */
-char *COM_Parse_Newline(const char **data_p)
-{
+char *COM_Parse_Newline(const char **data_p) {
     int         c;
     int         len;
     const char  *data;
@@ -558,7 +531,7 @@ skipwhite:
         data++;
     }
 
-// skip // comments
+    // skip // comments
     if (c == '/' && data[1] == '/') {
         data += 2;
         while (*data && *data != '\n')
@@ -566,7 +539,7 @@ skipwhite:
         goto skipwhite;
     }
 
-// skip /* */ comments
+    // skip /* */ comments
     if (c == '/' && data[1] == '*') {
         data += 2;
         while (*data) {
@@ -579,7 +552,7 @@ skipwhite:
         goto skipwhite;
     }
 
-// handle quoted strings specially
+    // handle quoted strings specially
     if (c == '\"') {
         data++;
         while (1) {
@@ -594,7 +567,7 @@ skipwhite:
         }
     }
 
-// parse a regular word
+    // parse a regular word
     do {
         if (len < MAX_TOKEN_CHARS - 1) {
             s[len++] = c;
@@ -610,18 +583,13 @@ finish:
     return s;
 }
 
-/*
-==============
-COM_Compress
-
-Operates in place, removing excess whitespace and comments.
-Non-contiguous line feeds are preserved.
-
-Returns resulting data length.
-==============
-*/
-size_t COM_Compress(char *data)
-{
+/**
+ * Operates in place, removing excess whitespace and comments.
+ * Non-contiguous line feeds are preserved.
+ *
+ * Returns resulting data length.
+ */
+size_t COM_Compress(char *data) {
     int     c, n = 0;
     char    *s = data, *d = data;
 
@@ -711,40 +679,39 @@ finish:
     return d - data;
 }
 
-/*
-============================================================================
-
-                    LIBRARY REPLACEMENT FUNCTIONS
-
-============================================================================
-*/
-
-int Q_strncasecmp(const char *s1, const char *s2, size_t n)
-{
+/**
+ *
+ */
+int Q_strncasecmp(const char *s1, const char *s2, size_t n) {
     int        c1, c2;
 
     do {
         c1 = *s1++;
         c2 = *s2++;
 
-        if (!n--)
+        if (!n--) {
             return 0;        /* strings are equal until end point */
+        }
 
         if (c1 != c2) {
             c1 = Q_tolower(c1);
             c2 = Q_tolower(c2);
-            if (c1 < c2)
+            if (c1 < c2) {
                 return -1;
-            if (c1 > c2)
+            }
+            if (c1 > c2) {
                 return 1;        /* strings not equal */
+            }
         }
     } while (c1);
 
     return 0;        /* strings are equal */
 }
 
-int Q_strcasecmp(const char *s1, const char *s2)
-{
+/**
+ *
+ */
+int Q_strcasecmp(const char *s1, const char *s2) {
     int        c1, c2;
 
     do {
@@ -754,18 +721,22 @@ int Q_strcasecmp(const char *s1, const char *s2)
         if (c1 != c2) {
             c1 = Q_tolower(c1);
             c2 = Q_tolower(c2);
-            if (c1 < c2)
+            if (c1 < c2) {
                 return -1;
-            if (c1 > c2)
+            }
+            if (c1 > c2) {
                 return 1;        /* strings not equal */
+            }
         }
     } while (c1);
 
     return 0;        /* strings are equal */
 }
 
-char *Q_strcasestr(const char *s1, const char *s2)
-{
+/**
+ *
+ */
+char *Q_strcasestr(const char *s1, const char *s2) {
     size_t l1, l2;
 
     l2 = strlen(s2);
@@ -785,15 +756,10 @@ char *Q_strcasestr(const char *s1, const char *s2)
     return NULL;
 }
 
-/*
-===============
-Q_strlcpy
-
-Returns length of the source string.
-===============
-*/
-size_t Q_strlcpy(char *dst, const char *src, size_t size)
-{
+/**
+ * Returns length of the source string.
+ */
+size_t Q_strlcpy(char *dst, const char *src, size_t size) {
     size_t ret = strlen(src);
 
     if (size) {
@@ -805,15 +771,10 @@ size_t Q_strlcpy(char *dst, const char *src, size_t size)
     return ret;
 }
 
-/*
-===============
-Q_strlcat
-
-Returns length of the source and destinations strings combined.
-===============
-*/
-size_t Q_strlcat(char *dst, const char *src, size_t size)
-{
+/**
+ * Returns length of the source and destinations strings combined.
+ */
+size_t Q_strlcat(char *dst, const char *src, size_t size) {
     size_t ret, len = strlen(dst);
 
     if (len >= size) {
@@ -826,17 +787,12 @@ size_t Q_strlcat(char *dst, const char *src, size_t size)
     return ret;
 }
 
-/*
-===============
-Q_concat
-
-Returns number of characters that would be written into the buffer,
-excluding trailing '\0'. If the returned value is equal to or greater than
-buffer size, resulting string is truncated.
-===============
-*/
-size_t Q_concat(char *dest, size_t size, ...)
-{
+/**
+ * Returns number of characters that would be written into the buffer,
+ * excluding trailing '\0'. If the returned value is equal to or greater than
+ * buffer size, resulting string is truncated.
+ */
+size_t Q_concat(char *dest, size_t size, ...) {
     va_list argptr;
     const char *s;
     size_t len, total = 0;
@@ -859,21 +815,17 @@ size_t Q_concat(char *dest, size_t size, ...)
     return total;
 }
 
-/*
-===============
-Q_vsnprintf
-
-Returns number of characters that would be written into the buffer,
-excluding trailing '\0'. If the returned value is equal to or greater than
-buffer size, resulting string is truncated.
-===============
-*/
-size_t Q_vsnprintf(char *dest, size_t size, const char *fmt, va_list argptr)
-{
+/**
+ * Returns number of characters that would be written into the buffer,
+ * excluding trailing '\0'. If the returned value is equal to or greater than
+ * buffer size, resulting string is truncated.
+ */
+size_t Q_vsnprintf(char *dest, size_t size, const char *fmt, va_list argptr) {
     int ret;
 
-    if (size > INT_MAX)
+    if (size > INT_MAX) {
         Com_Error(ERR_FATAL, "%s: bad buffer size", __func__);
+    }
 
 #ifdef _WIN32
     if (size) {
@@ -891,40 +843,31 @@ size_t Q_vsnprintf(char *dest, size_t size, const char *fmt, va_list argptr)
     return (size_t)ret;
 }
 
-/*
-===============
-Q_vscnprintf
-
-Returns number of characters actually written into the buffer,
-excluding trailing '\0'. If buffer size is 0, this function does nothing
-and returns 0.
-===============
-*/
-size_t Q_vscnprintf(char *dest, size_t size, const char *fmt, va_list argptr)
-{
+/**
+ * Returns number of characters actually written into the buffer, excluding
+ * trailing '\0'. If buffer size is 0, this function does nothing and returns 0.
+ */
+size_t Q_vscnprintf(char *dest, size_t size, const char *fmt, va_list argptr) {
     size_t ret;
 
-    if (!size)
+    if (!size) {
         return 0;
+    }
 
     ret = Q_vsnprintf(dest, size, fmt, argptr);
-    if (ret < size)
+    if (ret < size) {
         return ret;
+    }
 
     return size - 1;
 }
 
-/*
-===============
-Q_snprintf
-
-Returns number of characters that would be written into the buffer,
-excluding trailing '\0'. If the returned value is equal to or greater than
-buffer size, resulting string is truncated.
-===============
-*/
-size_t Q_snprintf(char *dest, size_t size, const char *fmt, ...)
-{
+/**
+ * Returns number of characters that would be written into the buffer,
+ * excluding trailing '\0'. If the returned value is equal to or greater than
+ * buffer size, resulting string is truncated.
+ */
+size_t Q_snprintf(char *dest, size_t size, const char *fmt, ...) {
     va_list argptr;
     size_t  ret;
 
@@ -935,17 +878,12 @@ size_t Q_snprintf(char *dest, size_t size, const char *fmt, ...)
     return ret;
 }
 
-/*
-===============
-Q_scnprintf
-
-Returns number of characters actually written into the buffer,
-excluding trailing '\0'. If buffer size is 0, this function does nothing
-and returns 0.
-===============
-*/
-size_t Q_scnprintf(char *dest, size_t size, const char *fmt, ...)
-{
+/**
+ * Returns number of characters actually written into the buffer,
+ * excluding trailing '\0'. If buffer size is 0, this function does nothing
+ * and returns 0.
+ */
+size_t Q_scnprintf(char *dest, size_t size, const char *fmt, ...) {
     va_list argptr;
     size_t  ret;
 
@@ -956,24 +894,21 @@ size_t Q_scnprintf(char *dest, size_t size, const char *fmt, ...)
     return ret;
 }
 
-char *Q_strchrnul(const char *s, int c)
-{
+/**
+ *
+ */
+char *Q_strchrnul(const char *s, int c) {
     while (*s && *s != c) {
         s++;
     }
     return (char *)s;
 }
 
-/*
-===============
-Q_memccpy
-
-Copies no more than 'size' bytes stopping when 'c' character is found.
-Returns pointer to next byte after 'c' in 'dst', or NULL if 'c' was not found.
-===============
-*/
-void *Q_memccpy(void *dst, const void *src, int c, size_t size)
-{
+/**
+ * Copies no more than 'size' bytes stopping when 'c' character is found.
+ * Returns pointer to next byte after 'c' in 'dst', or NULL if 'c' was not found.
+ */
+void *Q_memccpy(void *dst, const void *src, int c, size_t size) {
     byte *d = dst;
     const byte *s = src;
 
@@ -986,8 +921,10 @@ void *Q_memccpy(void *dst, const void *src, int c, size_t size)
     return NULL;
 }
 
-void Q_setenv(const char *name, const char *value)
-{
+/**
+ *
+ */
+void Q_setenv(const char *name, const char *value) {
 #ifdef _WIN32
     if (!value) {
         value = "";
@@ -1006,24 +943,11 @@ void Q_setenv(const char *name, const char *value)
 #endif // !_WIN32
 }
 
-/*
-=====================================================================
-
-  INFO STRINGS
-
-=====================================================================
-*/
-
-/*
-===============
-Info_ValueForKey
-
-Searches the string for the given
-key and returns the associated value, or an empty string.
-===============
-*/
-char *Info_ValueForKey(const char *s, const char *key)
-{
+/**
+ * Searches the string for the given key and returns the associated value, or
+ * an empty string.
+ */
+char *Info_ValueForKey(const char *s, const char *key) {
     // use 4 buffers so compares work without stomping on each other
     static char value[4][MAX_INFO_STRING];
     static int  valueindex;
@@ -1031,13 +955,15 @@ char *Info_ValueForKey(const char *s, const char *key)
     char        *o;
 
     valueindex++;
-    if (*s == '\\')
+    if (*s == '\\') {
         s++;
+    }
     while (1) {
         o = pkey;
         while (*s != '\\') {
-            if (!*s)
+            if (!*s) {
                 goto fail;
+            }
             *o++ = *s++;
         }
         *o = 0;
@@ -1049,11 +975,13 @@ char *Info_ValueForKey(const char *s, const char *key)
         }
         *o = 0;
 
-        if (!strcmp(key, pkey))
+        if (!strcmp(key, pkey)) {
             return value[valueindex & 3];
+        }
 
-        if (!*s)
+        if (!*s) {
             goto fail;
+        }
         s++;
     }
 
@@ -1063,25 +991,24 @@ fail:
     return o;
 }
 
-/*
-==================
-Info_RemoveKey
-==================
-*/
-void Info_RemoveKey(char *s, const char *key)
-{
+/**
+ *
+ */
+void Info_RemoveKey(char *s, const char *key) {
     char    *start;
     char    pkey[MAX_INFO_STRING];
     char    *o;
 
     while (1) {
         start = s;
-        if (*s == '\\')
+        if (*s == '\\') {
             s++;
+        }
         o = pkey;
         while (*s != '\\') {
-            if (!*s)
+            if (!*s) {
                 return;
+            }
             *o++ = *s++;
         }
         *o = 0;
@@ -1101,24 +1028,18 @@ void Info_RemoveKey(char *s, const char *key)
             continue; // search for duplicates
         }
 
-        if (!*s)
+        if (!*s) {
             return;
+        }
     }
-
 }
 
-
-/*
-==================
-Info_Validate
-
-Some characters are illegal in info strings because they
-can mess up the server's parsing.
-Also checks the length of keys/values and the whole string.
-==================
-*/
-qboolean Info_Validate(const char *s)
-{
+/**
+ * Some characters are illegal in info strings because they can mess up the
+ * server's parsing. Also checks the length of keys/values and the whole
+ * string.
+ */
+qboolean Info_Validate(const char *s) {
     size_t len, total;
     int c;
 
@@ -1184,13 +1105,10 @@ qboolean Info_Validate(const char *s)
     return qfalse; // quiet compiler warning
 }
 
-/*
-============
-Info_SubValidate
-============
-*/
-size_t Info_SubValidate(const char *s)
-{
+/**
+ *
+ */
+size_t Info_SubValidate(const char *s) {
     size_t len;
     int c;
 
@@ -1209,13 +1127,10 @@ size_t Info_SubValidate(const char *s)
     return len;
 }
 
-/*
-==================
-Info_SetValueForKey
-==================
-*/
-qboolean Info_SetValueForKey(char *s, const char *key, const char *value)
-{
+/**
+ *
+ */
+qboolean Info_SetValueForKey(char *s, const char *key, const char *value) {
     char    newi[MAX_INFO_STRING], *v;
     size_t  l, kl, vl;
     int     c;
@@ -1253,21 +1168,19 @@ qboolean Info_SetValueForKey(char *s, const char *key, const char *value)
     while (*v) {
         c = *v++;
         c &= 127;        // strip high bits
-        if (Q_isprint(c))
+        if (Q_isprint(c)) {
             *s++ = c;
+        }
     }
     *s = 0;
 
     return qtrue;
 }
 
-/*
-==================
-Info_NextPair
-==================
-*/
-void Info_NextPair(const char **string, char *key, char *value)
-{
+/**
+ *
+ */
+void Info_NextPair(const char **string, char *key, char *value) {
     char        *o;
     const char  *s;
 
@@ -1278,8 +1191,9 @@ void Info_NextPair(const char **string, char *key, char *value)
         return;
     }
 
-    if (*s == '\\')
+    if (*s == '\\') {
         s++;
+    }
 
     if (!*s) {
         *string = NULL;
@@ -1307,26 +1221,26 @@ void Info_NextPair(const char **string, char *key, char *value)
     *string = s;
 }
 
-/*
-==================
-Info_Print
-==================
-*/
-void Info_Print(const char *infostring)
-{
+/**
+ *
+ */
+void Info_Print(const char *infostring) {
     char    key[MAX_INFO_STRING];
     char    value[MAX_INFO_STRING];
 
     while (1) {
         Info_NextPair(&infostring, key, value);
-        if (!infostring)
+        if (!infostring) {
             break;
+        }
 
-        if (!key[0])
+        if (!key[0]) {
             strcpy(key, "<MISSING KEY>");
+        }
 
-        if (!value[0])
+        if (!value[0]) {
             strcpy(value, "<MISSING VALUE>");
+        }
 
         Com_Printf("%-20s %s\n", key, value);
     }
