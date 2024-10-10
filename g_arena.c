@@ -2840,6 +2840,9 @@ void G_CountEveryone(arena_t *a) {
     for (int i=0; i<a->team_count; i++) {
         players_alive = 0;
         for (int j=0; j<a->teams[i].player_count; j++) {
+            if (!a->teams[i].players[j]) {
+                continue;
+            }
             if (a->teams[i].players[j]->health > 0) {
                 players_alive++;
             }
