@@ -407,20 +407,18 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, vec3_t dir, 
         G_AccountDamage(targ, inflictor, attacker, take);
     }
 
-    if (ARENASTATE(targ) == ARENA_STATE_PLAY || ARENASTATE(targ) == ARENA_STATE_OVERTIME)
-        if (!G_Teammates(attacker, targ)) {
-            attacker->client->pers.damage += damage;
-            attacker->client->pers.score = attacker->client->pers.damage / 100;
-            TEAM(attacker)->damage_dealt += damage;
-            TEAM(attacker)->points = (int)(TEAM(attacker)->damage_dealt / 100);
-            TEAM(targ)->damage_taken += damage;
-        } else {
-            attacker->client->pers.damage -= damage;
-            attacker->client->pers.score = attacker->client->pers.damage / 100;
-            TEAM(attacker)->damage_dealt -= damage;
-            TEAM(attacker)->points = (int)(TEAM(attacker)->damage_dealt / 100);
-            TEAM(targ)->damage_taken += damage;
-        }
+    if (!G_Teammates(attacker, targ)) {
+        attacker->client->pers.damage += damage;
+        attacker->client->pers.score = attacker->client->pers.damage / 100;
+        TEAM(attacker)->damage_dealt += damage;
+        TEAM(attacker)->points = (int)(TEAM(attacker)->damage_dealt / 100);
+        TEAM(targ)->damage_taken += damage;
+    } else {
+        attacker->client->pers.damage -= damage;
+        attacker->client->pers.score = attacker->client->pers.damage / 100;
+        TEAM(attacker)->damage_dealt -= damage;
+        TEAM(attacker)->points = (int)(TEAM(attacker)->damage_dealt / 100);
+        TEAM(targ)->damage_taken += damage;
     }
 
     // do the damage
