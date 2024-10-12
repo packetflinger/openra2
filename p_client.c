@@ -1323,7 +1323,7 @@ static int arena_num_popular(void) {
 
     winner = 1;
     for (i=1; i<MAX_ARENAS; i++) {
-        if (!&level.arenas[i]) {
+        if (!level.arenas[i].name[0]) {
             continue;
         }
         if (level.arenas[i].client_count > level.arenas[winner].client_count) {

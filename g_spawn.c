@@ -775,7 +775,7 @@ void sort_arenas() {
     qboolean swapped = false;
     arena_t temp;
 
-    for (int i; i<level.arena_count-1; i++) {
+    for (int i=0; i<level.arena_count-1; i++) {
         if (level.arenas[i].number > level.arenas[i+1].number) {
             temp = level.arenas[i];
             level.arenas[i] = level.arenas[i+1];

@@ -985,9 +985,6 @@ void G_CheckReady(arena_t *a) {
 
     count = 0;
     for (i=0; i<a->team_count; i++) {
-        if (!&a->teams[i]) {
-            continue;
-        }
         // all teams need at least 1 player to be considered ready
         if (a->teams[i].player_count == 0)    {
             a->ready = qfalse;
@@ -1490,7 +1487,7 @@ void G_RespawnPlayers(arena_t *a) {
  * Format a string saying what round we're on
  */
 char *G_RoundToString(arena_t *a) {
-    static char round_buffer[12];
+    static char round_buffer[14];
 
     sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
     return round_buffer;
