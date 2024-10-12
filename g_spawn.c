@@ -900,9 +900,7 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
         level.arena_count++;
     }
 
-    // this is causing a crash 50% of the time. Issue #24
-    // sort_arenas();
-
+    sort_arenas();
     for (int i=1; i<=level.arena_count; i++) {
         List_Append(&g_arenalist, &level.arenas[i].entry);
     }
