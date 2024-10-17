@@ -25,7 +25,6 @@
  */
 void G_AsciiToConsole(char *out, char *in) {
     uint32_t i;
-    
     for (i=0; in[i] != '\0'; i++) {
         out[i] = (char)(in[i] | 0x80);
     }
@@ -37,6 +36,9 @@ void G_AsciiToConsole(char *out, char *in) {
  */
 static int arena_find_cl_index(gclient_t *cl) {
     int i;
+    if (!cl) {
+        return -1;
+    }
     for (i = 0; i < cl->pers.arena->client_count; i++) {
         if (cl->pers.arena->clients[i] == cl->edict) {
             return i;
