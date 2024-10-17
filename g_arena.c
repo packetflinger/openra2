@@ -2144,7 +2144,10 @@ void G_SelectBestWeapon(edict_t *ent) {
 void G_ResetTeam(arena_team_t *t) {
     uint8_t i;
     edict_t *player;
-
+    if (!t) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return;
+    }
     t->damage_dealt = 0;
     t->damage_taken = 0;
     t->ready = qfalse;
