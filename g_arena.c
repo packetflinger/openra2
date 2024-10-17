@@ -3010,6 +3010,10 @@ void G_CheckArenaReady(arena_t *a) {
     uint8_t i;
     arena_team_t *t;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (i=0; i<a->team_count; i++) {
         t = &a->teams[i];
         if (!t) {
