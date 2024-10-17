@@ -2756,6 +2756,10 @@ const char *G_CreateSpectatorStatusBar(edict_t *player) {
  * Send player/spec their specific statusbar
  */
 void G_SendStatusBar(edict_t *ent) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     gi.WriteByte(SVC_CONFIGSTRING);
     gi.WriteShort(CS_STATUSBAR);
 
