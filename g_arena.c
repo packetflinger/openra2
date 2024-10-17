@@ -238,7 +238,9 @@ void update_playercounts(arena_t *a) {
  */
 void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
-
+    if (!ent) {
+        return;
+    }
     if (ARENA(ent)->state == ARENA_STATE_WARMUP) {
         G_BuildPregameScoreboard(buffer, ent->client, ARENA(ent));
     } else {
