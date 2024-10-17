@@ -1132,6 +1132,10 @@ void G_UpdateConfigStrings(arena_t *a) {
 void G_UpdateSkins(edict_t *ent) {
     uint8_t i, j;
 
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     // each team
     for (i=0; i<ARENA(ent)->team_count; i++) {
         // each player
