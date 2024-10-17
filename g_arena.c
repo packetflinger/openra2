@@ -1687,6 +1687,7 @@ void G_HideScores(arena_t *a) {
 void G_StartRoundClock(arena_t *a) {
     arena_clock_t *c;
     if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
         return;
     }
     c = &a->clock;
