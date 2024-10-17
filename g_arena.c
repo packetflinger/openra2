@@ -3093,6 +3093,10 @@ void G_CountEveryone(arena_t *a) {
     int8_t players_alive;
     int32_t teams_alive = 0;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (int i=0; i<a->team_count; i++) {
         players_alive = 0;
         for (int j=0; j<a->teams[i].player_count; j++) {
