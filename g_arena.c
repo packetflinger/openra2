@@ -2257,6 +2257,10 @@ void G_TeamCast(arena_team_t *t, qboolean reliable) {
     uint8_t i;
     edict_t *ent;
 
+    if (!t) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return;
+    }
     for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         ent = t->players[i];
         if (ent && ent->inuse) {
