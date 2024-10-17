@@ -2874,7 +2874,10 @@ char *G_ArenaModeString(arena_t *a) {
  */
 void G_SetTSkin(edict_t *target) {
     edict_t *ent;
-
+    if (!target) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!target->client->pers.teamskin[0]) {
         return;
     }
