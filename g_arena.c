@@ -1341,6 +1341,10 @@ void G_FreezePlayer(edict_t *ent, qboolean freeze) {
  *
  */
 void G_GiveItems(edict_t *ent) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!ent->client) {
         return;
     }
