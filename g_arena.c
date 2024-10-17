@@ -1622,7 +1622,10 @@ void G_RespawnPlayers(arena_t *a) {
  */
 char *G_RoundToString(arena_t *a) {
     static char round_buffer[14];
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return round_buffer;
+    }
     sprintf(round_buffer, "Round %02d/%02d", a->current_round, a->round_limit);
     return round_buffer;
 }
