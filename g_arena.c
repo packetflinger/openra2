@@ -1213,6 +1213,10 @@ void G_ForceScreenshot(arena_t *arena) {
     edict_t *ent;
     arena_team_t *team;
 
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     if (!g_screenshot->value) {
         return;
     }
