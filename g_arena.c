@@ -135,7 +135,9 @@ void G_SpectatorsJoin(edict_t *ent) {
  */
 void G_SpectatorsPart(edict_t *ent) {
     int8_t idx;
-
+    if (!ent) {
+        return;
+    }
     if (!ent->client) {
         return;
     }
