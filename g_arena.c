@@ -2413,6 +2413,10 @@ char *G_DamageFlagsToString(uint32_t df) {
  * element of surprise.
  */
 void G_RandomizeAmmo(uint16_t *out) {
+    if (!out) {
+        gi.dprintf("%s(): null output pointer\n", __func__);
+        return;
+    }
     out[ITEM_SHELLS]   = genrand_int32() & 0xF;
     out[ITEM_BULLETS]  = genrand_int32() & 0xFF;
     out[ITEM_GRENADES] = genrand_int32() & 0xF;
