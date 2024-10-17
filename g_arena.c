@@ -2845,6 +2845,10 @@ void G_ApplyDefaults(arena_t *a) {
  * Get a string value for the arena mode
  */
 char *G_ArenaModeString(arena_t *a) {
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return "";
+    }
     switch (a->mode) {
     case ARENA_MODE_COMPETITION:
         return va("competition");
