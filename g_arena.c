@@ -935,6 +935,11 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena) {
 int G_CalcArenaRanks(gclient_t **ranks, arena_team_t *team) {
     int i, total;
 
+    if (!team) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return 0;
+    }
+
     // sort the clients by score, then by eff
     total = 0;
     for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
