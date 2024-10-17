@@ -2779,7 +2779,10 @@ void G_SendStatusBar(edict_t *ent) {
  */
 void G_UpdatePlayerStatusBars(arena_t *a) {
     uint8_t i;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (i=0; i<game.maxclients; i++) {
         if (!a->clients[i]) {
             continue;
