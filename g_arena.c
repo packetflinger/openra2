@@ -68,6 +68,9 @@ static int arena_find_sp_index(edict_t *ent) {
  */
 static int arena_find_cl_slot(arena_t *a) {
     int i;
+    if (!a) {
+        return -1;
+    }
     for (i = 0; i < game.maxclients; i++) {
         if (!a->clients[i]) {
             return i;
