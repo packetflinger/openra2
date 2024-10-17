@@ -1063,7 +1063,10 @@ void G_ChangeArena(edict_t *ent, arena_t *arena) {
  */
 void G_CheckReady(arena_t *a) {
     uint8_t i, count;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     count = 0;
     for (i=0; i<a->team_count; i++) {
         // all teams need at least 1 player to be considered ready
