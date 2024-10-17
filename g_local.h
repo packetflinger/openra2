@@ -1632,3 +1632,5 @@ typedef struct damagevote_s {
 
 extern const weaponinfo_t   weaponvotes[WEAPON_MAX];
 extern const damagevote_t   damagevotes[DAMAGE_MAX];
+
+void G_EndLevel(void);

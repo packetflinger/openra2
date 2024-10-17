@@ -28,7 +28,7 @@ typedef enum {
  */
 typedef struct {
     char name[CLOCK_MAX_NAME];  // just an identifier
-    void *arena;                // which arena is this clock in?
+    void *arena;                // which arena is this clock in? NULL = server level
     clock_type_t direction;     // up or down
     clock_state_t state;        // what's it currently doing?
     uint32_t startvalue;        // initial value
@@ -42,10 +42,13 @@ typedef struct {
     void (*finish)(void *c, void *a);    // run when timer is finished
 } arena_clock_t;
 
+// void ClockEndNextMap(arena_clock_t *c, arena_t *a);
 void ClockInit(arena_clock_t *c, void *arena, char *name, uint32_t start, uint32_t end, clock_type_t dir);
 void ClockDestroy(arena_clock_t *c);
 void ClockThink(arena_clock_t *c);
 void ClockStart(arena_clock_t *c);
+void ClockStartEndLevelIntermission(int secs);
+void ClockStartMapTimelimit(int secs);
 void ClockStop(arena_clock_t *c);
 void ClockReset(arena_clock_t *c);
 void ClockTestMatchCountdown(arena_clock_t *c);

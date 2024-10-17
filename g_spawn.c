@@ -965,6 +965,10 @@ void G_SpawnEntities(const char *mapname, const char *entities, const char *spaw
             gi.dprintf("  [%d] %s\n", a->number, a->name);
         }
     }
+
+    if ((int)timelimit->value > 0) {
+        ClockStartMapTimelimit((int)timelimit->value * 60);
+    }
 }
 
 /**

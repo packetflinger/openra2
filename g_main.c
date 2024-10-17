@@ -432,8 +432,6 @@ static int G_RebuildMapQueue(void) {
         goto done;
     }
 
-    gi.cprintf(NULL, PRINT_HIGH, "Map queue: %d entries\n", count);
-
     // randomize it
     if ((int) g_maps_random->value > 0) {
         G_ShuffleArray(pool, count);
@@ -444,6 +442,9 @@ static int G_RebuildMapQueue(void) {
     }
 
     done: gi.TagFree(pool);
+    if (DEBUG) {
+        gi.dprintf("%s: created map queue with %d maps\n", __func__, count);
+    }
     return count;
 }
 
@@ -645,9 +646,9 @@ static void G_LoadSkinList(void) {
  *
  */
 void G_EndLevel(void) {
-    uint8_t i;
+    uint8_t i, intermission_secs = 8;
 
-    G_RegisterScore();
+    // G_RegisterScore();
 
     for (i = 1; i <= level.arena_count; i++) {
         BeginIntermission(&level.arenas[i]);
@@ -665,6 +666,7 @@ void G_EndLevel(void) {
     }
 
     G_PickNextMap();
+    ClockStartEndLevelIntermission(intermission_secs);
 }
 
 /**
@@ -1122,6 +1124,7 @@ static void G_Init(void) {
     gi.cvar_forceset("g_features", va("%d", G_FEATURES));
 
     G_BuildConfigList();
+    G_RebuildMapQueue();
     gi.cprintf(NULL, PRINT_HIGH, "==== Game Initialized ====\n\n");
 }
 

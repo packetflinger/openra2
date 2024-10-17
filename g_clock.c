@@ -82,15 +82,21 @@ void ClockReset(arena_clock_t *c) {
  */
 void ClockPostThink(arena_clock_t *c) {
     arena_t *a = c->arena;
+    if ((int)g_debug_clocks->value) {
+        gi.cprintf(NULL, PRINT_HIGH, "%s (%s)\n", c->string, c->name);
+    }
+
+    // map timelimit clocks aren't linked to a specific arena
+    if (!a) {
+        return;
+    }
+
     G_UpdateConfigStrings(a);
     if (a->state == ARENA_STATE_COUNTDOWN) {
         a->countdown = c->value; // for center screen number
         if (c->value > 0 && c->value <= 10) {
             G_ArenaSound(a, level.sounds.countdown[c->value]);
         }
-    }
-    if ((int)g_debug_clocks->value) {
-        gi.cprintf(NULL, PRINT_HIGH, "%s (%s)\n", c->string, c->name);
     }
 }
 
@@ -229,4 +235,60 @@ void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a) {
     if (a->state == ARENA_STATE_MINTERMISSION) {
         G_ResetArena(a);
     }
+}
+
+/**
+ * Callback for when the timelimit clock is finished, change to next map.
+ * The arena_t arg should be NULL for this one.
+ */
+void ClockEndNextMap(arena_clock_t *c, arena_t *a) {
+    if (!c) {
+        gi.dprintf("%s called with null clock value\n", __func__);
+        return;
+    }
+    if ((int)g_debug_clocks->value) {
+        gi.dprintf("The %s clock just finished\n", c->name);
+    }
+    gi.bprintf(PRINT_HIGH, "Timelimit hit\n");
+    G_EndLevel();
+}
+
+/**
+ * The main "timelimit" cvar affects how long a map is active. Once that timer
+ * runs out, everyone should go to intermission (even mid round) and the server
+ * should proceed to the next map.
+ */
+void ClockStartMapTimelimit(int secs) {
+    arena_clock_t *c = &level.clock;
+    ClockInit(c, NULL, "Map Timelimit", secs, 0, CLOCK_DOWN);
+    c->postthink = (void *) ClockPostThink;
+    c->finish = (void *) ClockEndNextMap;
+    ClockStart(c);
+}
+
+/**
+ * Callback for when the level-end intermission is finished, change to next map.
+ * The arena_t arg should be NULL for this one.
+ */
+void ClockEndChangeMap(arena_clock_t *c, arena_t *a) {
+    if (!c) {
+        gi.dprintf("%s called with null clock value\n", __func__);
+        return;
+    }
+    if ((int)g_debug_clocks->value) {
+        gi.dprintf("The %s clock just finished\n", c->name);
+    }
+    gi.AddCommandString(va("gamemap \"%s\"\n", level.nextmap));
+}
+
+/**
+ * Pause for a few seconds at a server-level intermission, then change to the
+ * next map.
+ */
+void ClockStartEndLevelIntermission(int secs) {
+    arena_clock_t *c = &level.clock;
+    ClockInit(c, NULL, "End Level Intermission", secs, 0, CLOCK_DOWN);
+    c->postthink = (void *) ClockPostThink;
+    c->finish = (void *) ClockEndChangeMap;
+    ClockStart(c);
 }
