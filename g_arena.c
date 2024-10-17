@@ -100,6 +100,9 @@ static int arena_find_sp_slot(arena_t *a) {
  */
 void G_SpectatorsJoin(edict_t *ent) {
     int8_t idx;
+    if (!ent) {
+        return;
+    }
     if (!ent->client) {
         return;
     }
