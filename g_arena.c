@@ -1940,6 +1940,14 @@ qboolean G_Teammates(edict_t *p1, edict_t *p2) {
  * Are the two players in the same arena?
  */
 qboolean G_Arenamates(edict_t *p1, edict_t *p2) {
+    if (!p1) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return qfalse;
+    }
+    if (!p2) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return qfalse;
+    }
     if (!(p1->client && p2->client)) {
         return qfalse;
     }
