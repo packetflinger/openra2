@@ -402,7 +402,9 @@ void G_ArenaThink(arena_t *a) {
  */
 void G_ClearRoundInfo(arena_t *a) {
     uint8_t i;
-
+    if (!a) {
+        return;
+    }
     a->current_round = 1;
     G_ConfigString(a, CS_ROUND, G_RoundToString(a));
     for (i=0; i<a->team_count; i++) {
