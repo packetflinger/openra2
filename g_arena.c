@@ -403,6 +403,7 @@ void G_ArenaThink(arena_t *a) {
 void G_ClearRoundInfo(arena_t *a) {
     uint8_t i;
     if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
         return;
     }
     a->current_round = 1;
@@ -420,6 +421,11 @@ void G_ClearRoundInfo(arena_t *a) {
 void G_ConfigString(arena_t *arena, uint16_t index, const char *string) {
     uint8_t i;
     edict_t *ent;
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
+    clamp(index, 0, 2080); // CS_MAX
 
     for (i=0; i<game.maxclients; i++) {
         ent = arena->clients[i];
