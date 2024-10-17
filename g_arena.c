@@ -998,7 +998,7 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
  * Move a client to a different arena.
  *
  * cl - the client moving
- * arena - the new (destination) arena
+ * arena - the new (destination) arena, can be null (part only)
  */
 void G_ChangeArena(edict_t *ent, arena_t *arena) {
     int index = 0, i;
