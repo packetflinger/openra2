@@ -52,6 +52,9 @@ static int arena_find_cl_index(gclient_t *cl) {
  */
 static int arena_find_sp_index(edict_t *ent) {
     int i;
+    if (!ent) {
+        return -1;
+    }
     for (i = 0; i < ARENA(ent)->spectator_count; i++) {
         if (ARENA(ent)->spectators[i] == ent) {
             return i;
