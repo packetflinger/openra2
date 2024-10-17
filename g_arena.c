@@ -1096,7 +1096,10 @@ void G_UpdateConfigStrings(arena_t *a) {
     char buf[0xff];
     char roundtime[10];
     buf[0] = 0;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     switch (a->state) {
     case ARENA_STATE_WARMUP:
         G_SecsToString(roundtime, a->timelimit);
