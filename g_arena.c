@@ -1510,7 +1510,10 @@ void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
 void G_TeamPart(edict_t *ent, qboolean silent) {
     arena_team_t *oldteam;
     int i;
-
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!ent->client) {
         return;
     }
