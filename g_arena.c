@@ -1751,7 +1751,10 @@ void G_StartingWeapon(edict_t *ent) {
  */
 void G_SecsToString(char *out, int seconds) {
     int mins;
-
+    if (!out) {
+        gi.dprintf("%s(): null output pointer\n", __func__);
+        return;
+    }
     mins = seconds / 60;
     seconds -= (mins * 60);
 
