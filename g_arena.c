@@ -2628,6 +2628,10 @@ const char *G_CreatePlayerStatusBar(edict_t *player) {
 const char *G_CreateSpectatorStatusBar(edict_t *player) {
     static char *statusbar;
 
+    if (!player) {
+        gi.dprintf("%s(): null player\n", __func__);
+        return "";
+    }
     if (!player->client) {
         return "";
     }
