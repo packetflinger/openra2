@@ -1561,8 +1561,11 @@ void G_TeamPart(edict_t *ent, qboolean silent) {
  * Give back all the ammo, health and armor for start of a round
  */
 void G_RefillInventory(edict_t *ent) {
-    arena_t *a;
-    a = ARENA(ent);
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
+    arena_t *a = ARENA(ent);
 
     ent->client->inventory[ITEM_SLUGS]    = a->ammo[ITEM_SLUGS];
     ent->client->inventory[ITEM_ROCKETS]  = a->ammo[ITEM_ROCKETS];
