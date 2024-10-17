@@ -688,6 +688,15 @@ size_t G_BuildPregameScoreboard(char *buffer, gclient_t *client, arena_t *arena)
     struct tm *tm;
     edict_t *ent;
 
+    if (!buffer) {
+        gi.dprintf("%s(): null buffer\n", __func__);
+        return 0;
+    }
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return 0;
+    }
+
     char bracketopen[2];
     char bracketclosed[2];
     G_AsciiToConsole(bracketopen, "[");
