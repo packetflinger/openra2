@@ -84,6 +84,9 @@ static int arena_find_cl_slot(arena_t *a) {
  */
 static int arena_find_sp_slot(arena_t *a) {
     int i;
+    if (!a) {
+        return 0;
+    }
     for (i = 0; i < game.maxclients; i++) {
         if (!a->spectators[i]) {
             return i;
