@@ -2434,7 +2434,10 @@ const char *G_CreatePlayerStatusBar(edict_t *player) {
     static char ammohud[135];        // the ammo counts
     int         hud_x,
                 hud_y;
-
+    if (!player) {
+        gi.dprintf("%s(): null player\n", __func__);
+        return "";
+    }
     if (!player->client) {
         return "";
     }
