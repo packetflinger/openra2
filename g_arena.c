@@ -852,6 +852,15 @@ size_t G_BuildPlayerboard(char *buffer, arena_t *arena) {
     time_t t;
     arena_t *a;
 
+    if (!buffer) {
+        gi.dprintf("%s(): null buffer\n", __func__);
+        return 0;
+    }
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return 0;
+    }
+
     // starting point down from top of screen
     y = 20;
 
