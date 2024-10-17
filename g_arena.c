@@ -3071,6 +3071,14 @@ qboolean G_IsRoundOver(arena_t *a) {
  * Move the player to the place in the map where they will spawn
  */
 void G_MovePlayerToSpawnSpot(edict_t *ent, edict_t *spot) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
+    if (!spot) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     VectorCopy(spot->s.origin, ent->s.origin);
     VectorCopy(spot->s.angles, ent->s.angles);
 }
