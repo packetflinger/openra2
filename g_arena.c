@@ -451,7 +451,11 @@ void G_bprintf(arena_t *arena, int level, const char *fmt, ...) {
     size_t len;
     int i;
     edict_t *other;
-
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
+    clamp(level, PRINT_LOW, PRINT_CHAT);
     va_start(argptr, fmt);
     len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
     va_end(argptr);
