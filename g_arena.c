@@ -2797,6 +2797,10 @@ void G_UpdatePlayerStatusBars(arena_t *a) {
  * Triggered when all but 1 team are dead or timelimit expires
  */
 void G_BeginRoundIntermission(arena_t *a) {
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     if (a->state == ARENA_STATE_RINTERMISSION) {
         return;
     }
