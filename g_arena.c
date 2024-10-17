@@ -2904,7 +2904,10 @@ void G_SetTSkin(edict_t *target) {
  */
 void G_SetESkin(edict_t *target) {
     edict_t *ent;
-
+    if (!target) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!target->client->pers.enemyskin[0]) {
         return;
     }
