@@ -1432,10 +1432,13 @@ void G_GiveItems(edict_t *ent) {
  * Add player to a team
  */
 void G_TeamJoin(edict_t *ent, arena_team_type_t type, qboolean forced) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!ent->client) {
         return;
     }
-
     arena_t *arena = ARENA(ent);
     arena_team_t *team = FindTeam(arena, type);
 
