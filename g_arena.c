@@ -2239,6 +2239,10 @@ void G_ArenaCast(arena_t *a, qboolean reliable) {
     uint8_t i;
     arena_team_t *team;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (i=0; i<a->team_count; i++) {
         team = &a->teams[i];
         G_TeamCast(team, reliable);
