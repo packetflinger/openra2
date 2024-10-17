@@ -2177,7 +2177,10 @@ void G_ResetTeam(arena_team_t *t) {
  */
 void G_RecreateArena(arena_t *a) {
     uint8_t i;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     // remove all players from all teams
     for (i=0; i<a->team_count; i++) {
         G_RemoveAllTeamPlayers(&a->teams[i], qtrue);
