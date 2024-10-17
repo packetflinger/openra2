@@ -4,6 +4,10 @@
  * Setup a new clock
  */
 void ClockInit(arena_clock_t *c, void *arena, char *name, uint32_t start, uint32_t end, clock_type_t dir) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     memset(c, 0, sizeof(arena_clock_t));
     strncpy(c->name, name, sizeof(c->name));
     c->arena = arena;
@@ -57,6 +61,10 @@ void ClockThink(arena_clock_t *c) {
  * Start the clock
  */
 void ClockStart(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     c->state = CLOCK_STATE_RUNNING;
     c->nextthink = level.framenum + 1;   // start immediately
 }
@@ -66,6 +74,10 @@ void ClockStart(arena_clock_t *c) {
  * It can be started again from where it left off
  */
 void ClockStop(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     c->state = CLOCK_STATE_STOPPED;
 }
 
@@ -73,6 +85,10 @@ void ClockStop(arena_clock_t *c) {
  * Set back to starting point
  */
 void ClockReset(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     c->state = CLOCK_STATE_STOPPED;
     c->value = c->startvalue;
 }
@@ -81,6 +97,10 @@ void ClockReset(arena_clock_t *c) {
  * Called just after the clock is advanced each time.
  */
 void ClockPostThink(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     arena_t *a = c->arena;
     if ((int)g_debug_clocks->value) {
         gi.cprintf(NULL, PRINT_HIGH, "%s (%s)\n", c->string, c->name);
@@ -105,7 +125,10 @@ void ClockPostThink(arena_clock_t *c) {
  * this is just for testing
  */
 void ClockTestFinish(arena_clock_t *c) {
-    gi.dprintf("clock[%s] finished!\n", c->name);
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     if (c->direction == CLOCK_UP) {
         ClockReset(c);
         c->direction = CLOCK_DOWN;
@@ -130,6 +153,10 @@ void ClockTestFinish(arena_clock_t *c) {
  * Test a match countdown timer
  */
 void ClockTestMatchCountdown(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     ClockReset(c);
     ClockInit(c, NULL, "match", 30, 0, CLOCK_DOWN);
     c->postthink = (void *) ClockPostThink;
@@ -141,6 +168,10 @@ void ClockTestMatchCountdown(arena_clock_t *c) {
  * Test end of match timer
  */
 void ClockTestMatchFinish(arena_clock_t *c) {
+    if (!c) {
+        gi.dprintf("%s: null clock pointer passed in.\n", __func__);
+        return;
+    }
     gi.dprintf("match end!\n");
     ClockReset(c);
 }
@@ -208,6 +239,10 @@ void ClockStartTimeout(arena_t *a) {
  *
  */
 void ClockEndTimeout(arena_clock_t *c, arena_t *a) {
+    if (!a) {
+        gi.dprintf("%s(): arena_t pointer is null\n", __func__);
+        return;
+    }
     a->state = ARENA_STATE_PLAY;
     a->timeout_caller = NULL;
     G_ArenaSound(a, level.sounds.timein);
@@ -232,6 +267,10 @@ void ClockStartMatchIntermission(arena_t *a) {
  *
  */
 void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a) {
+    if (!a) {
+        gi.dprintf("%s(): arena_t pointer is null\n", __func__);
+        return;
+    }
     if (a->state == ARENA_STATE_MINTERMISSION) {
         G_ResetArena(a);
     }
@@ -243,7 +282,7 @@ void ClockEndMatchIntermission(arena_clock_t *c, arena_t *a) {
  */
 void ClockEndNextMap(arena_clock_t *c, arena_t *a) {
     if (!c) {
-        gi.dprintf("%s called with null clock value\n", __func__);
+        gi.dprintf("%s() called with null clock value\n", __func__);
         return;
     }
     if ((int)g_debug_clocks->value) {
@@ -287,6 +326,7 @@ void ClockEndChangeMap(arena_clock_t *c, arena_t *a) {
  */
 void ClockStartEndLevelIntermission(int secs) {
     arena_clock_t *c = &level.clock;
+    clamp(secs, 2, 30);
     ClockInit(c, NULL, "End Level Intermission", secs, 0, CLOCK_DOWN);
     c->postthink = (void *) ClockPostThink;
     c->finish = (void *) ClockEndChangeMap;
