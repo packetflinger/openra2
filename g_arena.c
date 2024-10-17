@@ -1265,6 +1265,10 @@ void G_EndMatch(arena_t *a, arena_team_t *winner) {
  */
 void G_EndRound(arena_t *a, arena_team_t *winner) {
     int i;
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     a->round_start_frame = 0;
 
     if (winner) {
