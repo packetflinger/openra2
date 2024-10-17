@@ -272,7 +272,7 @@ void G_ArenaSound(arena_t *a, int index) {
     if (!a) {
         return;
     }
-
+    clamp(index, 318, 574); // CS_SOUNDS through CS_IMAGES
     int i;
     gclient_t *cl;
 
