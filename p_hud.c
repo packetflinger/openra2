@@ -38,15 +38,19 @@ int G_PlayerCmp(const void *p1, const void *p2) {
 }
 
 /**
+ * Pick out only the players who are on teams, then sort that list by how much
+ * damage they've done.
  *
+ * Returns the number of players in the list of ranks (the number of current
+ * non-spectators).
+ *
+ * This is server-level, not arena-level.
  */
 int G_CalcRanks(gclient_t **ranks) {
-    int i, total;
+    int i, total = 0;
 
-    // sort the clients by score, then by eff
-    total = 0;
     for (i = 0; i < game.maxclients; i++) {
-        if (game.clients[i].pers.connected == CONN_SPAWNED) {
+        if (game.clients[i].pers.team && game.clients[i].pers.team->type) {
             if (ranks) {
                 ranks[total] = &game.clients[i];
             }
