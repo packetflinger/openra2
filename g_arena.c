@@ -1660,7 +1660,10 @@ void G_ShowScores(arena_t *a) {
 void G_HideScores(arena_t *a) {
     uint8_t i, j;
     edict_t *ent;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     // for each team
     for (i = 0; i < a->team_count; i++) {
         // for each player
