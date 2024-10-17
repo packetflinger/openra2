@@ -170,8 +170,11 @@ static arena_team_t *FindTeam(arena_t *a, arena_team_type_t type) {
  * underscores
  */
 const char *DemoName(edict_t *ent) {
+    if (!ent) {
+        return "demo";
+    }
     if (!TEAM(ent)) {
-        return "";
+        return "demo";
     }
     static char name[MAX_STRING_CHARS];
     int32_t i;
