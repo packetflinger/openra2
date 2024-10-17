@@ -514,19 +514,6 @@ size_t G_BuildScoreboard(char *buffer, gclient_t *client, arena_t *arena) {
     struct tm *tm;
     edict_t *ent;
 
-    if (!buffer) {
-        gi.dprintf("%s(): null buffer\n", __func__);
-        return 0;
-    }
-    if (!client) {
-        gi.dprintf("%s(): null client\n", __func__);
-        return 0;
-    }
-    if (!arena) {
-        gi.dprintf("%s(): null arena\n", __func__);
-        return 0;
-    }
-
     // starting point down from top of screen
     y = 20;
 
