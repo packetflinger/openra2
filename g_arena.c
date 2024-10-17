@@ -1237,6 +1237,10 @@ void G_ForceScreenshot(arena_t *arena) {
 void G_EndMatch(arena_t *a, arena_team_t *winner) {
     uint8_t i;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     if (winner) {
         for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
             if (!winner->players[i]) {
