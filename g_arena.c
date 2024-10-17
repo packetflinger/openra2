@@ -220,6 +220,9 @@ void update_playercounts(arena_t *a) {
     int i;
     int count = 0;
     gclient_t *cl;
+    if (!a) {
+        return;
+    }
 
     for (i = 0; i < game.maxclients; i++) {
         cl = &game.clients[i];
