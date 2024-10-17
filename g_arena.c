@@ -1771,6 +1771,7 @@ arena_team_t *G_GetWinningTeam(arena_t *a) {
     static arena_team_t *winner;
 
     if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
         return NULL;
     }
 
