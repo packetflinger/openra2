@@ -2211,6 +2211,10 @@ void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
 void G_ResetArena(arena_t *a) {
     uint8_t i;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     a->intermission_framenum = 0;
     a->intermission_exit = 0;
     a->state = ARENA_STATE_WARMUP;
