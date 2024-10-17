@@ -1153,6 +1153,10 @@ void G_UpdateSkins(edict_t *ent) {
  */
 void G_ForceReady(arena_team_t *team, qboolean ready) {
     int i;
+    if (!team) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return;
+    }
     for (i = 0; i < MAX_TEAM_PLAYERS; i++) {
         if (team->players[i]) {
             team->players[i]->client->pers.ready = ready;
