@@ -1605,7 +1605,10 @@ void G_RefillPlayers(arena_t *a) {
  */
 void G_RespawnPlayers(arena_t *a) {
     uint8_t i, j;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (i = 0; i < a->team_count; i++) {
         for (j = 0; j < MAX_TEAM_PLAYERS; j++) {
             G_RespawnPlayer(a->teams[i].players[j]);
