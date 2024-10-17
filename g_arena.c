@@ -1323,6 +1323,10 @@ void G_FreezePlayers(arena_t *a, qboolean freeze) {
  * Lock a player in place (for timeouts)
  */
 void G_FreezePlayer(edict_t *ent, qboolean freeze) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!ent->inuse) {
         return;
     }
