@@ -341,6 +341,9 @@ void G_CheckArenaRules(arena_t *a) {
  * EOM (via timeout) handled via match clock callback
  */
 void G_CheckState(arena_t *a) {
+    if (!a) {
+        return;
+    }
     if (a->state == ARENA_STATE_PLAY && a->teams_alive == 1) { //round finished
         G_BeginRoundIntermission(a);
     }
