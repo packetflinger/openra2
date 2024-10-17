@@ -2274,8 +2274,11 @@ void G_TeamCast(arena_team_t *t, qboolean reliable) {
  */
 char *G_WeaponFlagsToString(arena_t *a) {
     static char str[200];
-
     memset(&str, 0, sizeof(str));
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return str;
+    }
 
     char inf[4];
     G_AsciiToConsole(inf, "inf");
