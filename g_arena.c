@@ -1734,6 +1734,10 @@ void G_StartRound(arena_t *a) {
  * Switches the player's gun-in-hand after spawning
  */
 void G_StartingWeapon(edict_t *ent) {
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!ent->client) {
         return;
     }
