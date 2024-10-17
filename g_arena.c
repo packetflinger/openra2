@@ -2942,6 +2942,10 @@ void G_SetSkin(edict_t *skinfor) {
     edict_t *ent;
     char *string;
 
+    if (!skinfor) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return;
+    }
     if (!skinfor->client) {
         return;
     }
