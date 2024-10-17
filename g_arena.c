@@ -2193,6 +2193,10 @@ void G_RecreateArena(arena_t *a) {
  */
 void G_RemoveAllTeamPlayers(arena_team_t *team, qboolean silent) {
     uint8_t i;
+    if (!team) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return;
+    }
     for (i=0; i<MAX_TEAM_PLAYERS; i++) {
         if (!team->players[i]) {
             continue;
