@@ -3035,6 +3035,10 @@ void G_CheckArenaReady(arena_t *a) {
  */
 qboolean G_CheckTeamAlive(edict_t *ent) {
     uint8_t i;
+    if (!ent) {
+        gi.dprintf("%s(): null edict\n", __func__);
+        return qfalse;
+    }
     arena_team_t *t = TEAM(ent);
 
     for (i=0; i<MAX_TEAM_PLAYERS; i++) {
