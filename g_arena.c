@@ -294,7 +294,10 @@ void G_ArenaStuff(arena_t *a, const char *command) {
     if (!a) {
         return;
     }
-
+    if (*command == 0) {
+        gi.dprintf("%s(): empty command argument\n", __func__);
+        return;
+    }
     int i;
     gclient_t *cl;
 
