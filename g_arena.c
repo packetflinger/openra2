@@ -1714,7 +1714,10 @@ void G_RoundTimelimitHit(arena_clock_t *c, arena_t *a) {
  */
 void G_StartRound(arena_t *a) {
     uint8_t i;
-
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     for (i=0; i<a->team_count; i++) {
         a->teams[i].players_alive = a->teams[i].player_count;
     }
