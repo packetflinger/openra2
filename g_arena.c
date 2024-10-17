@@ -1972,7 +1972,10 @@ size_t G_ParseMapSettings(arena_entry_t *entry, const char *mapname) {
     temp_weaponflags_t twf;
 
     count = 0;
-
+    if (!entry) {
+        gi.dprintf("%s(): null arena_entry_t\n", __func__);
+        return count;
+    }
     len = Q_concat(path, sizeof(path), game.dir, "/mapcfg/", mapname, ".cfg", NULL);
 
     if (len == 0) {
