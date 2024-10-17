@@ -2813,6 +2813,10 @@ void G_BeginRoundIntermission(arena_t *a) {
  * Round intermission is over, reset and proceed to next round
  */
 void G_EndRoundIntermission(arena_t *a) {
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     if (a->state != ARENA_STATE_RINTERMISSION) {
         return;
     }
