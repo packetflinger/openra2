@@ -256,7 +256,9 @@ void G_ArenaScoreboardMessage(edict_t *ent, qboolean reliable) {
  */
 void G_ArenaPlayerboardMessage(edict_t *ent, qboolean reliable) {
     char buffer[MAX_STRING_CHARS];
-
+    if (!ent) {
+        return;
+    }
     G_BuildPlayerboard(buffer, ARENA(ent));
     gi.WriteByte(SVC_LAYOUT);
     gi.WriteString(buffer);
