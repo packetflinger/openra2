@@ -2981,6 +2981,10 @@ void G_SetSkin(edict_t *skinfor) {
 void G_CheckTeamReady(arena_team_t *t) {
     uint8_t i;
 
+    if (!t) {
+        gi.dprintf("%s(): null team\n", __func__);
+        return;
+    }
     if (t->player_count == 0) {
         return;
     }
