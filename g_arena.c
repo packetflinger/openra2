@@ -970,6 +970,11 @@ void G_Centerprintf(arena_t *a, const char *fmt, ...) {
     edict_t *ent;
     arena_team_t *team;
 
+    if (!a) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
+
     va_start(argptr, fmt);
     len = Q_vsnprintf(string, sizeof(string), fmt, argptr);
     va_end(argptr);
