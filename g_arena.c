@@ -1172,7 +1172,11 @@ void G_ForceDemo(arena_t *arena) {
     uint8_t i, j;
     edict_t *ent;
     arena_team_t *team;
-    
+
+    if (!arena) {
+        gi.dprintf("%s(): null arena\n", __func__);
+        return;
+    }
     if (!g_demo->value) {
         return;
     }
