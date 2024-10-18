@@ -806,6 +806,8 @@ void G_RunFrame(void) {
         }
     }
 
+    checkCVARChanges();
+
     // advance for next frame
     level.framenum++;
     level.time = level.framenum * FRAMETIME;
@@ -880,6 +882,46 @@ static void G_BuildConfigList() {
         FOR_EACH_CONFIG(c) {
             gi.dprintf("  %s\n", c->config);
         }
+    }
+}
+
+/**
+ * If certain cvars are changed, action needs to be taken.
+ */
+void checkCVARChanges(void) {
+    uint8_t i;
+    edict_t *ent;
+
+    /*
+     * If a server operator changes the CVAR to either force or disable the
+     * hud, the players whose huds are now in violation need to be updated.
+     */
+    if (g_weapon_hud->modified) {
+        if ((int)g_weapon_hud->value == HUD_DISABLED) {
+            for (i = 0, ent = g_edicts; i < game.maxclients; i++, ent++) {
+                if (!ent->client || !ent->inuse) {
+                    continue;
+                }
+                if (ent->client->pers.weaponhud) {
+                    ent->client->pers.weaponhud = qfalse;
+                    G_SendStatusBar(ent);
+                    G_StuffText(ent, "set weaphud 0 u\n");
+                }
+            }
+        }
+        if ((int)g_weapon_hud->value == HUD_FORCED) {
+            for (i = 0, ent = g_edicts; i < game.maxclients; i++, ent++) {
+                if (!ent->client || !ent->inuse) {
+                    continue;
+                }
+                if (!ent->client->pers.weaponhud) {
+                    ent->client->pers.weaponhud = qtrue;
+                    G_SendStatusBar(ent);
+                    G_StuffText(ent, "set weaphud 1 u\n");
+                }
+            }
+        }
+        g_weapon_hud->modified = false;
     }
 }
 
