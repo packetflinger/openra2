@@ -2442,77 +2442,82 @@ const char *G_CreatePlayerStatusBar(edict_t *player) {
         return "";
     }
 
-    hud_y = 0;
-    hud_x = -25;
+    memset(weaponhud, 0, sizeof(weaponhud));
+    memset(ammohud, 0, sizeof(ammohud));
 
-    weaponhud[0] = 0;
-    ammohud[0]   = 0;
+    if (SHOWWEAPONHUD(player)) {
+        hud_y = 0;
+        hud_x = -25;
 
-    // set x position at first for all weapon icons, to save the chars since CS max is 1000
-    strcpy(weaponhud, va("xr %d ", hud_x));
+        //weaponhud[0] = 0;
+        //ammohud[0]   = 0;
 
-    // set x position for ammo quantities ^
-    strcpy(ammohud, va("xr %d ", hud_x - 50));
+        // set x position at first for all weapon icons, to save the chars since CS max is 1000
+        strcpy(weaponhud, va("xr %d ", hud_x));
 
-    // super/shotgun
-    if (player->client->inventory[ITEM_SUPERSHOTGUN]) {
-        strcat(weaponhud, va("yv %d picn w_sshotgun ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
-        hud_y += 25;
-    } else if (player->client->inventory[ITEM_SHOTGUN]) {
-        strcat(weaponhud, va("yv %d picn w_shotgun ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
-        hud_y += 25;
-    }
+        // set x position for ammo quantities ^
+        strcpy(ammohud, va("xr %d ", hud_x - 50));
 
-    // chaingun/machinegun
-    if (player->client->inventory[ITEM_CHAINGUN]) {
-        strcat(weaponhud, va("yv %d picn w_chaingun ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_BULLETS));
-        hud_y += 25;
-    } else if (player->client->inventory[ITEM_MACHINEGUN]) {
-        strcat(weaponhud, va("yv %d picn w_machinegun ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
-        hud_y += 25;
-    }
+        // super/shotgun
+        if (player->client->inventory[ITEM_SUPERSHOTGUN]) {
+            strcat(weaponhud, va("yv %d picn w_sshotgun ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+            hud_y += 25;
+        } else if (player->client->inventory[ITEM_SHOTGUN]) {
+            strcat(weaponhud, va("yv %d picn w_shotgun ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+            hud_y += 25;
+        }
 
-    // hand grenades/launcher
-    if (player->client->inventory[ITEM_GRENADELAUNCHER]) {
-        strcat(weaponhud, va("yv %d picn w_glauncher ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
-        hud_y += 25;
-    } else if (player->client->inventory[ITEM_GRENADES]) {
-        strcat(weaponhud, va("yv %d picn w_hgrenade ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
-        hud_y += 25;
-    }
+        // chaingun/machinegun
+        if (player->client->inventory[ITEM_CHAINGUN]) {
+            strcat(weaponhud, va("yv %d picn w_chaingun ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_BULLETS));
+            hud_y += 25;
+        } else if (player->client->inventory[ITEM_MACHINEGUN]) {
+            strcat(weaponhud, va("yv %d picn w_machinegun ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SHELLS));
+            hud_y += 25;
+        }
 
-    // hyper blaster
-    if (player->client->inventory[ITEM_HYPERBLASTER]) {
-        strcat(weaponhud, va("yv %d picn w_hyperblaster ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
-        hud_y += 25;
-    }
+        // hand grenades/launcher
+        if (player->client->inventory[ITEM_GRENADELAUNCHER]) {
+            strcat(weaponhud, va("yv %d picn w_glauncher ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
+            hud_y += 25;
+        } else if (player->client->inventory[ITEM_GRENADES]) {
+            strcat(weaponhud, va("yv %d picn w_hgrenade ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_GRENADES));
+            hud_y += 25;
+        }
 
-    // rocket launcher
-    if (player->client->inventory[ITEM_ROCKETLAUNCHER]) {
-        strcat(weaponhud, va("yv %d picn w_rlauncher ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_ROCKETS));
-        hud_y += 25;
-    }
+        // hyper blaster
+        if (player->client->inventory[ITEM_HYPERBLASTER]) {
+            strcat(weaponhud, va("yv %d picn w_hyperblaster ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
+            hud_y += 25;
+        }
 
-    // railgun
-    if (player->client->inventory[ITEM_RAILGUN]) {
-        strcat(weaponhud, va("yv %d picn w_railgun ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SLUGS));
-        hud_y += 25;
-    }
+        // rocket launcher
+        if (player->client->inventory[ITEM_ROCKETLAUNCHER]) {
+            strcat(weaponhud, va("yv %d picn w_rlauncher ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_ROCKETS));
+            hud_y += 25;
+        }
 
-    // BFG
-    if (player->client->inventory[ITEM_BFG]) {
-        strcat(weaponhud, va("yv %d picn w_bfg ", hud_y));
-        strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
-        hud_y += 25;
+        // railgun
+        if (player->client->inventory[ITEM_RAILGUN]) {
+            strcat(weaponhud, va("yv %d picn w_railgun ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_SLUGS));
+            hud_y += 25;
+        }
+
+        // BFG
+        if (player->client->inventory[ITEM_BFG]) {
+            strcat(weaponhud, va("yv %d picn w_bfg ", hud_y));
+            strcat(ammohud, va("yv %d num 3 %d ", hud_y, STAT_AMMO_CELLS));
+            hud_y += 25;
+        }
     }
 
     statusbar = va(

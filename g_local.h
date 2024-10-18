@@ -840,6 +840,7 @@ extern  cvar_t  *g_debug_clocks;
 extern  cvar_t  *g_scoremode;   // server level
 extern  cvar_t  *g_debug;
 extern  cvar_t  *g_configlist;
+extern  cvar_t  *g_weapon_hud;
 
 extern  list_t  g_map_list;
 extern  list_t  g_map_queue;
@@ -1258,6 +1259,7 @@ typedef struct {
     int32_t         score;
     int32_t         frags;
     int32_t         damage;
+    qboolean        weaponhud;
 } client_persistant_t;
 
 // client data that stays across deathmatch respawns,

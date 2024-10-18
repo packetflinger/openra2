@@ -1397,6 +1397,9 @@ void ClientBegin(edict_t *ent) {
 
     // make sure all view stuff is valid
     ClientEndServerFrame(ent);
+
+    // ensure client's userinfo var for weaponhud matches client_persistent_t
+    G_StuffText(ent, va("set weaphud %d u\n", (ent->client->pers.weaponhud) ? 1 : 0));
 }
 
 /**
@@ -1515,7 +1518,8 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo) {
     int     playernum;
     gclient_t *client = ent->client;
     char    name[MAX_NETNAME], skin[MAX_SKINNAME];
-    qboolean changed;
+    qboolean changed, hud;
+
 
     // check for malformed or illegal info strings
     if (!Info_Validate(userinfo)) {
@@ -1587,6 +1591,27 @@ void ClientUserinfoChanged(edict_t *ent, char *userinfo) {
     // force team skins
     if (ent->client->pers.team && changed) {
         G_SetSkin(ent);
+    }
+
+    // weapon hud update logic
+    s = Info_ValueForKey(userinfo, "weaphud");
+    if (s[0] == 0) {    // no "weaphud" variable provided
+        if ((int)g_weapon_hud->value == HUD_FORCED || (int)g_weapon_hud->value == HUD_DEFAULT) {
+            ent->client->pers.weaponhud = qtrue;
+        } else {
+            ent->client->pers.weaponhud = qfalse;
+        }
+    } else {
+        hud = atoi(s) == 1;
+        if (hud != ent->client->pers.weaponhud) {
+            if ((int)g_weapon_hud->value == HUD_DEFAULT || (int)g_weapon_hud->value == HUD_ENABLED) {
+                ent->client->pers.weaponhud = hud;
+                G_SendStatusBar(ent);
+                gi.cprintf(ent, PRINT_HIGH, "Weapon hud %sabled\n",(hud) ? "en" : "dis");
+            } else {
+                G_StuffText(ent, va("set weaphud %d u\n", (hud) ? 0 : 1)); // set it back
+            }
+        }
     }
 }
 

@@ -50,6 +50,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FOR_EACH_ARENA(a) \
     LIST_FOR_EACH(arena_t, a, &g_arenalist, entry)
 
+typedef enum {
+    HUD_DISABLED,   // not allowed
+    HUD_ENABLED,    // allowed, but user controlled
+    HUD_DEFAULT,    // allowed, on by default, user can turn off
+    HUD_FORCED      // forced on, user cannot disable
+} weaphud_t;
+#define SHOWWEAPONHUD(e) (e && e->client && ((e->client->pers.weaponhud && g_weapon_hud->value > HUD_DISABLED) || \
+                                g_weapon_hud->value == HUD_FORCED))
+
 extern list_t    g_arenalist;
 
 #define FOR_EACH_CONFIG(c) \

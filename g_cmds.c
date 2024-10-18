@@ -1512,6 +1512,7 @@ static void Cmd_Commands_f(edict_t *ent) {
                "players          Show players on server and what arenas they're in\n"
                "highscores       Show the best results on map\n"
                "id               Toggle player ID display\n"
+               "hud              Toggle weapon hud on/off\n"
     );
 }
 
@@ -2054,6 +2055,29 @@ void Cmd_Reconnect_IPv6_f(edict_t *ent) {
 }
 
 /**
+ * Toggle the weapon hud on and off
+ *
+ * This setting is player-specific, so player's userinfo variable needs to be
+ * kept in sync with the server's understanding of whether to show the hud or
+ * not.
+ *
+ * This command simulates a client-side userinfo variable change. The actual
+ * update logic is in ClientUserinfoChanged()
+ */
+static void Cmd_Hud_f(edict_t *ent) {
+    if ((int)g_weapon_hud->value == HUD_DISABLED) {
+        gi.cprintf(ent, PRINT_HIGH, "Weapon hud is disabled in the server config\n");
+        return;
+    }
+    if ((int)g_weapon_hud->value == HUD_FORCED) {
+        gi.cprintf(ent, PRINT_HIGH, "Weapon hud is forced in the server config\n");
+        return;
+    }
+    qboolean wh = ent->client->pers.weaponhud;
+    G_StuffText(ent, va("set weaphud %d u\n", (wh) ? 0 : 1));
+}
+
+/**
  * For testing stuff
  *
  * TODO: remove this later
@@ -2163,6 +2187,10 @@ void ClientCommand(edict_t *ent) {
     }
     if (Q_stricmp(cmd, "reconnect6") == 0) {
         Cmd_Reconnect_IPv6_f(ent);
+        return;
+    }
+    if (Q_stricmp(cmd, "hud") == 0) {
+        Cmd_Hud_f(ent);
         return;
     }
 
