@@ -1481,6 +1481,25 @@ static void Cmd_Kick_f(edict_t *ent, qboolean ban) {
 }
 
 /**
+ * Admin command to set the g_weapon_hud cvar.
+ */
+static void Cmd_SetHud_f(edict_t *ent) {
+    uint8_t val;
+    if (!ent->client->pers.admin) {
+        gi.cprintf(ent, PRINT_HIGH, "admin-only command\n");
+        return;
+    }
+    if (gi.argc() != 2) {
+        gi.cprintf(ent, PRINT_HIGH, "Usage:\n%s <0-3>\n  0 = disabled\n  1 = allowed and off\n  2 = allowed and on\n  3 = forced\n", gi.argv(0));
+        return;
+    }
+    val = atoi(gi.argv(1));
+    clamp(val, HUD_DISABLED, HUD_FORCED);
+    gi.AddCommandString(va("set g_weapon_hud %d\n", val));
+    gi.cprintf(ent, PRINT_HIGH, "g_weapon_hud value set to %d\n", val);
+}
+
+/**
  * List admin commands
  */
 static void Cmd_AdminCommands_f(edict_t *ent) {
@@ -1491,6 +1510,7 @@ static void Cmd_AdminCommands_f(edict_t *ent) {
                "bans        List bans\n"
                "kick        Kick a player\n"
                "kickban     Kick a player and ban him for 1 hour\n"
+               "sethud      Set the weapon hud behavior\n"
     );
 }
 
@@ -2141,6 +2161,10 @@ void ClientCommand(edict_t *ent) {
         }
         if (Q_stricmp(cmd, "acommands") == 0) {
             Cmd_AdminCommands_f(ent);
+            return;
+        }
+        if (Q_stricmp(cmd, "sethud") == 0) {
+            Cmd_SetHud_f(ent);
             return;
         }
     }
